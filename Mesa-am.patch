@@ -5,8 +5,8 @@ diff -urN Mesa-4.0.1.org/si-glu/libnurbs/interface/Makefile.am Mesa-4.0.1/si-glu
  
  # Choose one of STANDALONE, LIBRARYBUILD, and GLBUILD. They are debugging
  # switches. grep LIBRARYBUILD `find .. -name '*.h'` for details.
--CXXFLAGS += -DLIBRARYBUILD
-+CXXFLAGS = @CXXFLAGS@ -DLIBRARYBUILD
+-CXXFLAGS += -DLIBRARYBUILD -DNDEBUG
++CXXFLAGS = @CXXFLAGS@ -DLIBRARYBUILD -DNDEBUG
  
  include libNIFac_la_SOURCES
  
@@ -17,8 +17,8 @@ diff -urN Mesa-4.0.1.org/si-glu/libnurbs/internals/Makefile.am Mesa-4.0.1/si-glu
  
  # Choose one of STANDALONE, LIBRARYBUILD, and GLBUILD. They are debugging
  # switches. grep LIBRARYBUILD `find .. -name '*.h'` for details.
--CXXFLAGS += -DLIBRARYBUILD
-+CXXFLAGS = @CXXFLAGS@ -DLIBRARYBUILD
+-CXXFLAGS += -DLIBRARYBUILD -DNDEBUG
++CXXFLAGS = @CXXFLAGS@ -DLIBRARYBUILD -DNDEBUG
  
  include libNInt_la_SOURCES
  
@@ -29,8 +29,8 @@ diff -urN Mesa-4.0.1.org/si-glu/libnurbs/nurbtess/Makefile.am Mesa-4.0.1/si-glu/
  
  # Choose one of STANDALONE, LIBRARYBUILD, and GLBUILD. They are debugging
  # switches. grep LIBRARYBUILD `find .. -name '*.h'` for details.
--CFLAGS += -DLIBRARYBUILD
-+CFLAGS = @CXXFLAGS@ -DLIBRARYBUILD
+-CFLAGS += -DLIBRARYBUILD -DNDEBUG
++CFLAGS = @CXXFLAGS@ -DLIBRARYBUILD -DNDEBUG
  
  include libNTess_la_SOURCES
  
