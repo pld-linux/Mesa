@@ -97,7 +97,7 @@ CFLAGS="$RPM_OPT_FLAGS"; export CFLAGS
 	--disable-ggi-genkgi \
 %ifarch %{ix86} \
 	--enable-x86 \
-  %ifarch i686 \
+  %ifarch i586 i686 \
 	--enable-mmx \
 	--enable-3dnow \
   %else \
@@ -158,26 +158,26 @@ rm -fr $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libGL*.so
 
 %dir %{_includedir}/GL
-%{_includedir}GL/GLwDrawA.h
-%{_includedir}GL/GLwDrawAP.h
-%{_includedir}GL/GLwMDrawA.h
-%{_includedir}GL/GLwMDrawAP.h
-%{_includedir}GL/MesaDrawingArea.h
-%{_includedir}GL/MesaDrawingAreaP.h
-%{_includedir}GL/MesaMDrawingArea.h
-%{_includedir}GL/MesaMDrawingAreaP.h
-%{_includedir}GL/MesaWorkstation.h
-%{_includedir}GL/MesaWorkstationP.h
-%{_includedir}GL/gl.h
-%{_includedir}GL/gl_mangle.h
-%{_includedir}GL/glu.h
-%{_includedir}GL/glu_mangle.h
-%{_includedir}GL/glx.h
-%{_includedir}GL/glx_mangle.h
-%{_includedir}GL/osmesa.h
-%{_includedir}GL/xmesa.h
-%{_includedir}GL/xmesa_x.h
-%{_includedir}GL/xmesa_xf86.h
+%{_includedir}/GL/GLwDrawA.h
+%{_includedir}/GL/GLwDrawAP.h
+%{_includedir}/GL/GLwMDrawA.h
+%{_includedir}/GL/GLwMDrawAP.h
+%{_includedir}/GL/MesaDrawingArea.h
+%{_includedir}/GL/MesaDrawingAreaP.h
+%{_includedir}/GL/MesaMDrawingArea.h
+%{_includedir}/GL/MesaMDrawingAreaP.h
+%{_includedir}/GL/MesaWorkstation.h
+%{_includedir}/GL/MesaWorkstationP.h
+%{_includedir}/GL/gl.h
+%{_includedir}/GL/gl_mangle.h
+%{_includedir}/GL/glu.h
+%{_includedir}/GL/glu_mangle.h
+%{_includedir}/GL/glx.h
+%{_includedir}/GL/glx_mangle.h
+%{_includedir}/GL/osmesa.h
+%{_includedir}/GL/xmesa.h
+%{_includedir}/GL/xmesa_x.h
+%{_includedir}/GL/xmesa_xf86.h
 %{_mandir}/man3/*
 
 %files static
