@@ -99,7 +99,7 @@ Programy demonstracyjne dla bibliotek Mesa.
 %setup -q -n Mesa-%{version} -b 1
 %patch0 -p1
 %patch1 -p1
-#%patch2 -p1
+%patch2 -p1
 %patch3 -p1
 
 # fix demos
@@ -140,18 +140,16 @@ perl -pi -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g" demos/*
 
 %{__make}
 	
-(cd widgets-mesa
+cd widgets-mesa
 %{__autoconf}
 %configure \
 	--with-motif
 %{__make} || :
-)
-
-(cd widgets-sgi
+cd ../widgets-sgi
 touch depend
 %{__make} dep
 %{__make} linux OPTFLAGS="%{rpmcflags}"
-)
+cd ..
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -159,7 +157,8 @@ rm -rf $RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT%{_mandir}/man3
 
-(cd widgets-mesa
+SPWD=`pwd`
+cd widgets-mesa
 %{__make} install \
 	prefix=$RPM_BUILD_ROOT%{_prefix} \
 	mandir=$RPM_BUILD_ROOT%{_mandir}/man3
@@ -167,7 +166,7 @@ install -d $RPM_BUILD_ROOT%{_mandir}/man3
 cd $RPM_BUILD_ROOT%{_includedir}/GL
 mkdir Mesa-widgets
 mv -f GLw*.h Mesa*.h Mesa-widgets
-)
+cd $SPWD
 
 install widgets-sgi/libGLw* $RPM_BUILD_ROOT%{_libdir}
 install widgets-sgi/GLw*.h $RPM_BUILD_ROOT%{_includedir}/GL
@@ -178,6 +177,7 @@ for l in book demos samples xdemos images ; do
 done
 
 rm -f docs/*~
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
