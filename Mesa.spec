@@ -1,5 +1,5 @@
 #
-# _without_glide: without GLIDE
+# _with_glide: with GLIDE
 #
 Summary:	Free OpenGL implementation
 Summary(pl):	Bezp³atna implementacja standardu OpenGL
@@ -27,8 +27,8 @@ BuildRequires:	autoconf
 BuildRequires:	motif-devel
 BuildRequires:	perl
 %ifarch %{ix86} alpha
-%{!?_without_glide:BuildRequires:	Glide3-DRI-devel}
-%{!?_without_glide:Requires:	Glide3-DRI}
+%{?_with_glide:BuildRequires:	Glide3-DRI-devel}
+%{?_with_glide:Requires:	Glide3-DRI}
 %endif
 Provides:	OpenGL
 Obsoletes:	XFree86-OpenGL-core XFree86-OpenGL-libs
@@ -142,7 +142,7 @@ perl -pi -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g" demos/*
 	--disable-ggi-fbdev \
 	--disable-ggi-genkgi \
 	--enable-optimize \
-	%{?_without_glide:--without-glide} \
+	%{!?_with_glide:--without-glide} \
 %ifarch %{ix86} \
 	--enable-x86 \
   %ifarch i586 i686 k6 athlon \
