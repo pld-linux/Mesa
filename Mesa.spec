@@ -86,8 +86,6 @@ Programy demonstracyjne dla biblioteki Mesa.
 %patch0 -p1
 
 %build
-LDFLAGS="-s"; export LDFLAGS
-CFLAGS="$RPM_OPT_FLAGS"; export CFLAGS
 %configure \
 	--enable-static \
 	--enable-shared \
@@ -118,7 +116,6 @@ CFLAGS="$RPM_OPT_FLAGS"; export CFLAGS
 %{__make}
 	
 (cd widgets-mesa; autoconf; \
-LDFLAGS="-s"; export LDFLAGS
 %configure
 make)
 
