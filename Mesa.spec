@@ -139,7 +139,7 @@ perl -pi -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g" demos/*
 %endif
 
 %{__make}
-	
+
 cd widgets-mesa
 %{__autoconf}
 %configure \
