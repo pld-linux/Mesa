@@ -2,7 +2,7 @@ Summary:	Free OpenGL implementation. Runtime environment
 Summary(pl):	Bezp³atna implementacja standardu OpenGL
 Name:		Mesa
 Version:	3.0
-Release:	3d
+Release:	4
 Copyright:	GPL
 Group:		X11/Libraries
 Group(pl):	X11/Biblioteki
@@ -30,17 +30,29 @@ Mesa jest bibliotek± 3D bêd±c± darmowym odpowiednikiem standartu OpenGL(*).
 
 %package devel
 Summary:	Development environment for Mesa
-Summary(pl):	¦rodowisko programistyczne biblioteki MESA
+Summary(pl):	¦rodowisko programistyczne biblioteki Mesa
 Group:		Development/Libraries
 Group(pl):	Programowanie/Biblioteki
 Requires:	%{name} = %{version}
 
 %description devel
-The static version of the Mesa libraries and include files needed for
-development.
+Header files and documentation needed for development.
 
 %description -l pl devel
-Wersja biblioteki MESA linkowana statycznie oraz pliki nag³ówkowe.
+Pliki nag³owkowe i dokumentacja do Mesy.
+
+%package static
+Summary:	Mesa static libraries
+Summary(pl):	Biblioteki satyczne Mesy
+Group:		Development/Libraries
+Group(pl):	Programowanie/Biblioteki
+Requires:	%{name}-devel = %{version}
+
+%description static
+The static version of the Mesa libraries
+
+%description -l pl static
+Biblioteki satyczne Mesy.
 
 %package glut
 Summary:	GLUT library for Mesa
@@ -65,12 +77,24 @@ Requires:	%{name} = %{version}
 Obsoletes: 	glut-devel
 
 %description glut-devel
-The static version of the GLUT library and include files needed for
-development.
+Header files needed for development aplications using GLUT library.
 
 %description -l pl glut-devel
-Statycznie linkowana wersja biblioteki GLUT oraz pliki nag³ówkowe potrzebne
-do pisania programów.
+Pliki nag³owkowe do biblioteki GLUT.
+
+%package glut-static
+Summary:	GLUT static libraries
+Summary(pl):	Biblioteki statyczne do biblioteki GLUT
+Group:		Development/Libraries
+Group(pl):	Programowanie/Biblioteki
+Requires:	%{name}-glut-devel = %{version}
+Obsoletes: 	glut-devel
+
+%description glut-static
+The static version of the GLUT library.
+
+%description -l pl glut-static
+Biblioteki statyczne GLUT.
 
 %package demos
 Summary:	Mesa Demos
@@ -130,18 +154,20 @@ install */lib*.a $RPM_BUILD_ROOT/usr/X11R6/lib
 
 strip $RPM_BUILD_ROOT/usr/X11R6/lib/{lib*so.*.*,Mesa/*/*} ||
 
-gzip -9nf * $RPM_BUILD_ROOT/usr/X11R6/man/man3/*
+gzip -9nf $RPM_BUILD_ROOT/usr/X11R6/man/man3/*
 gzip -9nf FUTURE IAFA-PACKAGE LICENSE README* RELNOTES VERSIONS
-
-%clean
-rm -fr $RPM_BUILD_ROOT $RPM_BUILD_DIR/%name-%version
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
+%post   -p /sbin/ldconfig glut
+%postun -p /sbin/ldconfig glut
+
+%clean
+rm -fr $RPM_BUILD_ROOT
+
 %files
 %defattr(644,root,root,755)
-%doc FUTURE.gz IAFA-PACKAGE.gz LICENSE.gz README* RELNOTES.gz VERSIONS.gz
 
 %ifnarch ppc
 %attr(755,root,root) /usr/X11R6/lib/libMesa*.so.*.*
@@ -159,18 +185,29 @@ rm -fr $RPM_BUILD_ROOT $RPM_BUILD_DIR/%name-%version
 
 %files glut-devel
 %defattr(644,root,root,755)
+/usr/X11R6/include/GL/glut.h
 %ifnarch ppc
 %attr(755,root,root) /usr/X11R6/lib/libglut.so
-/usr/X11R6/lib/libglut.a
 %endif
-/usr/X11R6/include/GL/glut.h
+
+%ifnarch ppc
+%files glut-static
+%attr(644,root,root) /usr/X11R6/lib/libglut.a
+%endif
 
 %files devel
 %defattr(644,root,root,755)
+%doc {FUTURE,IAFA-PACKAGE,LICENSE,RELNOTES,VERSIONS,README}.gz
+%doc README.{3DFX,GGI,MGL,QUAKE,VIRGE,X11}.gz
+
 %ifnarch ppc
 %attr(755,root,root) /usr/X11R6/lib/libMesa*.so
-/usr/X11R6/lib/libMesa*.a
 %endif
+
+%ifnarch ppc
+%files static
+%endif
+%attr(644,root,root) /usr/X11R6/lib/libMesa*.a
 
 %dir /usr/X11R6/lib/Mesa
 /usr/X11R6/lib/Mesa/Make-config
@@ -178,7 +215,7 @@ rm -fr $RPM_BUILD_ROOT $RPM_BUILD_DIR/%name-%version
 
 %dir /usr/X11R6/include/GL
 /usr/X11R6/include/GL/*.h
-%attr(644,root, man) /usr/X11R6/man/man3/*
+/usr/X11R6/man/man3/*
 
 %files demos
 %defattr(644,root,root,755)
@@ -193,6 +230,13 @@ rm -fr $RPM_BUILD_ROOT $RPM_BUILD_DIR/%name-%version
 %attr(-,root,root)/usr/X11R6/lib/Mesa/xdemos/*
 
 %changelog
+* Mon Mar  8 1999 Tomasz K³oczko <kloczek@rudy.mif.pg.gda.pl>
+  [3.0-4]
+- %doc moved to devel,
+- added static subpackages,
+- removed some README files,
+- removed man group from man pages.
+
 * Tue Feb  9 1999 Micha³ Kuratczyk <kurkens@polbox.com>
   [3.0-3d]
 - added gzipping documentation
