@@ -137,7 +137,7 @@ make  linux-elf
 %endif
 
 (cd widgets-mesa; CFLAGS="$RPM_OPT_FLAGS" LDFLAGS="-s" \
-./configure \
+./configure %{_target} \
 	--prefix=/usr/X11R6/
 make)
 
