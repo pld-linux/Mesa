@@ -9,7 +9,7 @@ Summary(pl):	Bezp≥atna implementacja standardu OpenGL
 Name:		Mesa
 Version:	4.0.1
 Release:	1
-License:	MIT (core), LGPL (libGLU), SGI (libGLw) and others - see COPYRIGHT file
+License:	MIT (core), LGPL (MesaGLU), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Group(de):	X11/Libraries
 Group(es):	X11/Bibliotecas
@@ -18,8 +18,8 @@ Group(pl):	X11/Biblioteki
 Group(pt_BR):	X11/Bibliotecas
 Group(ru):	X11/‚…¬Ã…œ‘≈À…
 Group(uk):	X11/‚¶¬Ã¶œ‘≈À…
-Source0:	http://prdownloads.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-Source1:	http://prdownloads.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
+Source0:	ftp://ftp.sourceforge.net/pub/sourceforge/mesa3d/%{name}Lib-%{version}.tar.bz2
+Source1:	ftp://ftp.sourceforge.net/pub/sourceforge/mesa3d/%{name}Demos-%{version}.tar.bz2
 %{?_with_dri:Source2:	XFree86-4.0.2-GLonly.tar.gz}
 Patch0:		%{name}-am.patch
 Patch1:		%{name}-ac.patch
@@ -210,11 +210,11 @@ done
 
 gzip -9nf docs/*
 
+%clean
+rm -rf $RPM_BUILD_ROOT
+
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
-
-%clean
-rm -fr $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
