@@ -7,9 +7,9 @@
 Summary:	Free OpenGL implementation
 Summary(pl):	Bezp³atna implementacja standardu OpenGL
 Name:		Mesa
-Version:	3.4.1
+Version:	3.4.2
 Release:	1
-License:	GPL
+License:	MIT (core), LGPL (libGLU), SGI (libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Group(de):	X11/Libraries
 Group(es):	X11/Bibliotecas
@@ -21,10 +21,12 @@ Patch0:		%{name}-paths.patch
 Patch1:		%{name}-badlibtool.patch
 Patch2:		%{name}-glibc-2.2.patch
 Patch3:		%{name}-am.patch
-%{?_with_dri:Patch4:		%{name}-XF86DRI-4.0.2.patch}
-#Patch5:	%{name}-3.3-glXcontext.patch
+Patch4:		%{name}-libGLw.patch
+%{?_with_dri:Patch5:		%{name}-XF86DRI-4.0.2.patch}
+#Patch6:	%{name}-3.3-glXcontext.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	XFree86-devel
+BuildRequires:	motif-devel
 %{!?_without_glide:BuildRequires:	Glide_V3-DRI-devel}
 BuildRequires:	perl
 BuildRequires:	autoconf
@@ -90,7 +92,7 @@ Biblioteki statyczne Mesy.
 
 %package demos
 Summary:	Mesa Demos
-Summary(pl):	Demonstracje mo¿liwo¶ci biblioteki MESA
+Summary(pl):	Demonstracje mo¿liwo¶ci bibliotek Mesa
 Group:		Development/Libraries
 Group(de):	Entwicklung/Libraries
 Group(fr):	Development/Librairies
@@ -101,7 +103,7 @@ Requires:	%{name} = %{version}
 Demonstration programs for the Mesa libraries.
 
 %description -l pl demos
-Programy demonstracyjne dla biblioteki Mesa.
+Programy demonstracyjne dla bibliotek Mesa.
 
 %prep
 %setup -q -n Mesa-%{version} -b 1
@@ -117,8 +119,9 @@ Programy demonstracyjne dla biblioteki Mesa.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%{?_with_dri:%patch4 -p1}
-#%patch5 -p1
+%patch4 -p1
+%{?_with_dri:%patch5 -p1}
+#%patch6 -p1
 # fix demos
 perl -pi -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g" demos/*
 
@@ -164,8 +167,15 @@ autoconf
 %{__make}
 	
 (cd widgets-mesa
-%configure
+%configure \
+	--with-motif
 %{__make}
+)
+
+(cd widgets-sgi
+touch depend
+%{__make} dep
+%{__make} linux OPTFLAGS="%{rpmcflags}"
 )
 
 %install
@@ -174,10 +184,18 @@ rm -rf $RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT%{_mandir}/man3
 
-(cd widgets-mesa; \
+(cd widgets-mesa
 %{__make} install \
 	prefix=$RPM_BUILD_ROOT%{_prefix} \
-	mandir=$RPM_BUILD_ROOT%{_mandir}/man3)
+	mandir=$RPM_BUILD_ROOT%{_mandir}/man3
+# Mesa widgets are not binary compatible with SGI ones
+cd $RPM_BUILD_ROOT%{_includedir}/GL
+mkdir Mesa-widgets
+mv -f GLw*.h Mesa*.h Mesa-widgets
+)
+
+install widgets-sgi/libGLw* $RPM_BUILD_ROOT%{_libdir}
+install widgets-sgi/GLw*.h $RPM_BUILD_ROOT%{_includedir}/GL
 
 install -d $RPM_BUILD_ROOT/usr/src/examples/Mesa
 for l in book demos samples xdemos images ; do
@@ -185,10 +203,6 @@ for l in book demos samples xdemos images ; do
 done
 
 gzip -9nf docs/*
-
-# resolve conflict with XFree86-devel
-rm -f $RPM_BUILD_ROOT%{_mandir}/man3/GLwCreateMDrawingArea.*
-rm -f $RPM_BUILD_ROOT%{_mandir}/man3/GLwDrawingArea{,MakeCurrent,SwapBuffers}.*
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -206,18 +220,14 @@ rm -fr $RPM_BUILD_ROOT
 %doc docs/{IAFA-PACKAGE,README,RELNOTES-*,VERSIONS,CONFORM,COPYRIGHT,DEVINFO,*.spec}.gz
 %doc docs/README.{3DFX,GGI,MITS,QUAKE,X11,THREADS}.gz
 %attr(755,root,root) %{_libdir}/libGL*.so
-
+%{_libdir}/libMesaGLw*.a
+%{_libdir}/libGLw.a
 %dir %{_includedir}/GL
+%{_includedir}/GL/Mesa-widgets
 %{_includedir}/GL/GLwDrawA.h
 %{_includedir}/GL/GLwDrawAP.h
 %{_includedir}/GL/GLwMDrawA.h
 %{_includedir}/GL/GLwMDrawAP.h
-%{_includedir}/GL/MesaDrawingArea.h
-%{_includedir}/GL/MesaDrawingAreaP.h
-%{_includedir}/GL/MesaMDrawingArea.h
-%{_includedir}/GL/MesaMDrawingAreaP.h
-%{_includedir}/GL/MesaWorkstation.h
-%{_includedir}/GL/MesaWorkstationP.h
 %{_includedir}/GL/gl.h
 %{_includedir}/GL/glext.h
 %{_includedir}/GL/gl_mangle.h
@@ -233,7 +243,8 @@ rm -fr $RPM_BUILD_ROOT
 
 %files static
 %defattr(644,root,root,755)
-%{_libdir}/libGL*.a
+%{_libdir}/libGL.a
+%{_libdir}/libGLU.a
 
 %files demos
 %defattr(644,root,root,755)
