@@ -99,7 +99,7 @@ Programy demonstracyjne dla bibliotek Mesa.
 %setup -q -n Mesa-%{version} -b 1
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
+#%patch2 -p1
 %patch3 -p1
 
 # fix demos
