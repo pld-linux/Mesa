@@ -2,7 +2,7 @@ Summary:	Free OpenGL implementation. Runtime environment
 Summary(pl):	Bezp³atna implementacja standardu OpenGL
 Name:		Mesa
 Version:	3.0
-Release:	6
+Release:	7
 Copyright:	GPL
 Group:		X11/Libraries
 Group(pl):	X11/Biblioteki
@@ -136,14 +136,15 @@ make linux-386-elf
 make  linux-elf
 %endif
 
-(cd widgets-mesa; CFLAGS="$RPM_OPT_FLAGS" LDFLAGS="-s" \
-./configure %{_target} \
+(cd widgets-mesa; autoconf; \
+CFLAGS="$RPM_OPT_FLAGS" LDFLAGS="-s" \
+./configure \
 	--prefix=/usr/X11R6/
 make)
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT/usr/X11R6/{lib/Mesa,include,man/man3}
+install -d $RPM_BUILD_ROOT/usr/X11R6/{lib/Mesa,include,share/man/man3}
 install -d $RPM_BUILD_ROOT/usr/src/examples/Mesa
 
 cp -dpr lib include $RPM_BUILD_ROOT/usr/X11R6
@@ -151,13 +152,16 @@ cp -dpr util $RPM_BUILD_ROOT/usr/X11R6/lib/Mesa
 cp -dpr book demos xdemos samples $RPM_BUILD_ROOT/usr/src/examples/Mesa
 install Make-config $RPM_BUILD_ROOT/usr/X11R6/lib/Mesa
 
-(cd widgets-mesa; make prefix=$RPM_BUILD_ROOT/usr/X11R6 install )
+(cd widgets-mesa; \
+make install \
+	prefix=$RPM_BUILD_ROOT/usr/X11R6 \
+	mandir=$RPM_BUILD_ROOT/usr/X11R6/share/man/man3)
 
 install */lib*.a $RPM_BUILD_ROOT/usr/X11R6/lib
 
 strip $RPM_BUILD_ROOT/usr/X11R6/lib/{lib*so.*.*,Mesa/*/*} ||
 
-gzip -9nf $RPM_BUILD_ROOT/usr/X11R6/man/man3/* \
+gzip -9nf $RPM_BUILD_ROOT/usr/X11R6/share/man/man3/* \
 	FUTURE IAFA-PACKAGE LICENSE README* RELNOTES VERSIONS
 
 %post   -p /sbin/ldconfig
@@ -214,7 +218,7 @@ rm -fr $RPM_BUILD_ROOT
 
 %dir /usr/X11R6/include/GL
 /usr/X11R6/include/GL/*.h
-/usr/X11R6/man/man3/*
+/usr/X11R6/share/man/man3/*
 
 %ifnarch ppc
 %files static
@@ -235,6 +239,10 @@ rm -fr $RPM_BUILD_ROOT
 %attr(-,root,root)/usr/src/examples/Mesa/xdemos/*
 
 %changelog
+* Mon May 10 1999 Tomasz K³oczko <kloczek@rudy.mif.pg.gda.pl>
+  [3.0-7]
+- now package is FHS 2.0 compiliat.
+
 * Mon Mar  8 1999 Tomasz K³oczko <kloczek@rudy.mif.pg.gda.pl>
   [3.0-4]
 - updated URL to http://www.mesa3d.org/,
