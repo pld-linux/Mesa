@@ -9,7 +9,9 @@ Release:	1
 License:	MIT (core), LGPL (MesaGLU), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
+# Source0-md5:	513b4bbd7d38951f05027179063d876b
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
+# Source1-md5:	37190374a98c3c892f0698be9ca3acf0
 Patch0:		%{name}-am.patch
 Patch1:		%{name}-ac.patch
 Patch2:		%{name}-libGLw.patch
