@@ -8,7 +8,8 @@ Group:		X11/Libraries
 Group(pl):	X11/Biblioteki
 Source0:	ftp://ftp.mesa3d.org/mesa/%{name}Lib-%{version}.tar.bz2
 Source1:	ftp://ftp.mesa3d.org/mesa/%{name}Demos-%{version}.tar.bz2
-Patch:		Mesa-misc.diff
+Patch0:		Mesa-paths.patch
+Patch1:		Mesa-libname.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	XFree86-devel
 Provides:	OpenGL
@@ -77,30 +78,42 @@ Programy demonstracyjne dla biblioteki Mesa.
 
 %prep
 %setup -q -n Mesa-%{version} -b 1
-%patch -p1
+%patch0 -p1
+%patch1 -p1
 
 %build
-%ifarch alpha
-make LIBS_ONLY=YES linux-alpha
-make clean
-make linux-alpha-elf
+LDFLAGS="-s"; export LDFLAGS
+CFLAGS="$RPM_OPT_FLAGS"; export CFLAGS
+%configure \
+	--enable-static \
+	--enable-shared \
+	--with-ggi="no" \
+	--with-svga="no" \
+	--disable-ggi-fbdev \
+	--disable-ggi-genkgi \
+%ifarch %{ix86} \
+	--enable-x86 \
+  %ifarch i686 \
+	--enable-mmx \
+	--enable-3dnow \
+  %else \
+    %ifarch k6 \
+	--enable-mmx \
+	--enable-3dnow" \
+    %else \
+	--disable-mmx \
+	--disable-3dnow \
+    %endif \
+  %endif \
+%else \
+	--disable-x86 \
+	--disable-mmx \
+	--diable-3dnow \
 %endif
+	--host=%{_host}
 
-%ifarch ppc
-make linux-ppc
-%endif
-
-%ifarch %{ix86}
-make clean
-make LIBS_ONLY=YES linux-386
-make clean
-make linux-386-elf
-%endif
-
-%ifarch sparc sparc64
-make  linux-elf
-%endif
-
+make
+	
 (cd widgets-mesa; autoconf; \
 LDFLAGS="-s"; export LDFLAGS
 %configure \
@@ -109,26 +122,22 @@ make)
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_libdir}/Mesa,%{_includedir},%{_mandir}/man3} \
-	$RPM_BUILD_ROOT/usr/src/examples/Mesa
+make install DESTDIR=$RPM_BUILD_ROOT
 
-cp -dpr lib include $RPM_BUILD_ROOT%{_prefix}
-cp -dpr util $RPM_BUILD_ROOT%{_libdir}/Mesa
-cp -dpr book demos xdemos samples $RPM_BUILD_ROOT/usr/src/examples/Mesa
-install Make-config $RPM_BUILD_ROOT%{_libdir}/Mesa
+install -d $RPM_BUILD_ROOT%{_mandir}/man3
 
 (cd widgets-mesa; \
 make install \
-	prefix=$RPM_BUILD_ROOT/usr/X11R6 \
+	prefix=$RPM_BUILD_ROOT%{_prefix} \
 	mandir=$RPM_BUILD_ROOT%{_mandir}/man3)
 
-install */lib*.a $RPM_BUILD_ROOT%{_libdir}
+install -d $RPM_BUILD_ROOT/usr/src/examples/Mesa
+for l in book demos samples xdemos ; do
+	cp -R $l $RPM_BUILD_ROOT/usr/src/examples/Mesa/$l
+done
 
-strip $RPM_BUILD_ROOT%{_libdir}/{lib*so.*.*,Mesa/*/*} || :
-
-gzip -9nf $RPM_BUILD_ROOT%{_mandir}/man3/* \
-	docs/{IAFA-PACKAGE,README*,RELNOTES,VERSIONS,CONFIG,CONFORM,COPYRIGHT,DEVINFO,*.spec}
-
+gzip -9nf docs/* || :
+	
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
@@ -138,34 +147,20 @@ rm -fr $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc docs/CONFIG.gz
-
-%ifnarch ppc
 %attr(755,root,root) %{_libdir}/libGL*.so.*.*
-%else
-%{_libdir}/libGL*.a
-%endif
 
 %files devel
 %defattr(644,root,root,755)
 %doc docs/{IAFA-PACKAGE,README,RELNOTES,VERSIONS,CONFORM,COPYRIGHT,DEVINFO,*.spec}.gz
 %doc docs/README.{3DFX,GGI,MGL,QUAKE,X11,THREADS}.gz
-
-%ifnarch ppc
 %attr(755,root,root) %{_libdir}/libGL*.so
-%endif
-
-%dir %{_libdir}/Mesa
-%{_libdir}/Mesa/Make-config
-%{_libdir}/Mesa/util
 
 %dir /usr/X11R6/include/GL
 %{_includedir}/GL/*.h
 %{_mandir}/man3/*
 
-%ifnarch ppc
 %files static
 %defattr(644,root,root,755)
-%endif
 %{_libdir}/libGL*.a
 
 %files demos
@@ -175,7 +170,7 @@ rm -fr $RPM_BUILD_ROOT
 %dir /usr/src/examples/Mesa/samples
 %dir /usr/src/examples/Mesa/xdemos
 
-%attr(-,root,root)/usr/src/examples/Mesa/book/*
-%attr(-,root,root)/usr/src/examples/Mesa/demos/*
-%attr(-,root,root)/usr/src/examples/Mesa/samples/*
-%attr(-,root,root)/usr/src/examples/Mesa/xdemos/*
+%doc /usr/src/examples/Mesa/book/*
+%doc /usr/src/examples/Mesa/demos/*
+%doc /usr/src/examples/Mesa/samples/*
+%doc /usr/src/examples/Mesa/xdemos/*
