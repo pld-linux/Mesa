@@ -82,7 +82,7 @@ Requires:	%{name}-devel = %{version}
 Provides:	OpenGL-static
 
 %description static
-The static version of the Mesa libraries
+The static version of the Mesa libraries.
 
 %description -l pl static
 Biblioteki statyczne Mesy.
