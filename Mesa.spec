@@ -4,16 +4,16 @@
 %bcond_with	xlibs	# use xlibs deps
 #
 Summary:	Free OpenGL implementation
-Summary(pl):	Bezp³atna implementacja standardu OpenGL
+Summary(pl):	Wolnodostêpna implementacja standardu OpenGL
 Name:		Mesa
-Version:	6.1
+Version:	6.2
 Release:	1
 License:	MIT (core), LGPL (MesaGLU), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	5de1f53ec0709f60fc68fdfed57351f3
+# Source0-md5:	3d6a6362390b6a37d3cb2e615f3ac7db
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	89bfe0f6c69b39fd0ebd9fff481a4e9b
+# Source1-md5:	9d160009c3dfdb35fe7e4088c9ba8f85
 Patch0:		%{name}-opt.patch
 URL:		http://www.mesa3d.org/
 %ifarch %{ix86} alpha
@@ -47,23 +47,18 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
-that of OpenGL*. To the extent that Mesa utilizes the OpenGL command
+that of OpenGL(R). To the extent that Mesa utilizes the OpenGL command
 syntax or state machine, it is being used with authorization from
-Silicon Graphics, Inc. However, the author makes no claim that Mesa is
-in any way a compatible replacement for OpenGL or associated with
-Silicon Graphics, Inc. Those who want a licensed implementation of
-OpenGL should contact a licensed vendor. This software is distributed
-under the terms of the GNU Library General Public License, see the
-LICENSE file for details.
-
-- OpenGL(R) is a registered trademark of Silicon Graphics, Inc.
+Silicon Graphics, Inc. However, the author does not possess an OpenGL
+license from SGI, and makes no claim that Mesa is in any way a
+compatible replacement for OpenGL or associated with SGI.
 
 %description -l pl
-Mesa jest bibliotek± 3D bêd±c± darmowym odpowiednikiem standardu
-OpenGL(*).
-
-- OpenGL jest zastrze¿onym znakiem towarowym firmy Silicon Graphics,
-  Inc.
+Mesa jest bibliotek± grafiki 3D z API bardzo podobnym do OpenGL(R). Do
+tego stopnia, ¿e Mesa u¿ywa sk³adni i automatu OpenGL jest u¿ywana z
+autoryzacj± Silicon Graphics, Inc. Jednak autor nie posiada licencji
+OpenGL od SGI i nie twierdzi, ¿e Mesa jest kompatybilnym zamiennikiem
+OpenGL ani powi±zana z SGI.
 
 %package devel
 Summary:	Development environment for Mesa
