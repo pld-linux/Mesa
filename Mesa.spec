@@ -16,17 +16,18 @@ Patch0:		%{name}-am.patch
 Patch1:		%{name}-ac.patch
 Patch2:		%{name}-libGLw.patch
 URL:		http://www.mesa3d.org/
-BuildRequires:	XFree86-devel
-BuildRequires:	autoconf
-BuildRequires:	motif-devel
-BuildRequires:	perl
 %ifarch %{ix86} alpha
 %{?_with_glide:BuildRequires:	Glide3-DRI-devel}
 %{?_with_glide:Requires:	Glide3-DRI}
 %endif
+BuildRequires:	XFree86-devel
+BuildRequires:	autoconf
+BuildRequires:	motif-devel
+BuildRequires:	perl
 Provides:	OpenGL
-Obsoletes:	XFree86-OpenGL-core XFree86-OpenGL-libs
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+Obsoletes:	XFree86-OpenGL-core
+Obsoletes:	XFree86-OpenGL-libs
 
 # avoid XFree86-OpenGL* dependency
 # Glide3 can be provided by Glide_V3-DRI or Glide_V5-DRI
@@ -152,9 +153,10 @@ cd ..
 
 %install
 rm -rf $RPM_BUILD_ROOT
-%{__make} install DESTDIR=$RPM_BUILD_ROOT
+install -d $RPM_BUILD_ROOT{%{_mandir}/man3,/usr/src/examples/Mesa}
 
-install -d $RPM_BUILD_ROOT%{_mandir}/man3
+%{__make} install \
+	DESTDIR=$RPM_BUILD_ROOT
 
 SPWD=`pwd`
 cd widgets-mesa
@@ -170,7 +172,6 @@ cd $SPWD
 install widgets-sgi/libGLw* $RPM_BUILD_ROOT%{_libdir}
 install widgets-sgi/GLw*.h $RPM_BUILD_ROOT%{_includedir}/GL
 
-install -d $RPM_BUILD_ROOT/usr/src/examples/Mesa
 for l in book demos samples xdemos images ; do
 	cp -Rf $l $RPM_BUILD_ROOT%{_examplesdir}/Mesa/$l
 done
