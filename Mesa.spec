@@ -2,7 +2,7 @@ Summary:	Free OpenGL implementation. Runtime environment
 Summary(pl):	Bezp³atna implementacja standardu OpenGL
 Name:		Mesa
 Version:	3.2
-Release:	1
+Release:	2
 License:	GPL
 Group:		X11/Libraries
 Group(pl):	X11/Biblioteki
@@ -112,16 +112,14 @@ CFLAGS="$RPM_OPT_FLAGS"; export CFLAGS
 %else \
 	--disable-x86 \
 	--disable-mmx \
-	--diable-3dnow \
+	--disable-3dnow
 %endif
-	--host=%{_host}
 
 make
 	
 (cd widgets-mesa; autoconf; \
 LDFLAGS="-s"; export LDFLAGS
-%configure \
-	--host=%{_host}
+%configure
 make)
 
 %install
@@ -140,7 +138,7 @@ for l in book demos samples xdemos ; do
 	cp -R $l $RPM_BUILD_ROOT/usr/src/examples/Mesa/$l
 done
 
-gzip -9nf docs/* || :
+gzip -9nf docs/*
 	
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -159,7 +157,7 @@ rm -fr $RPM_BUILD_ROOT
 %doc docs/README.{3DFX,GGI,MGL,QUAKE,X11,THREADS}.gz
 %attr(755,root,root) %{_libdir}/libGL*.so
 
-%dir %{_includedor}/GL
+%dir %{_includedir}/GL
 %{_includedir}/GL/*.h
 %{_mandir}/man3/*
 
