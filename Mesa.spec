@@ -15,8 +15,11 @@ Group(de):	X11/Libraries
 Group(es):	X11/Bibliotecas
 Group(fr):	X11/Librairies
 Group(pl):	X11/Biblioteki
-Source0:	ftp://download.sourceforge.net/pub/sourceforge/mesa3d/%{name}Lib-%{version}.tar.bz2
-Source1:	ftp://download.sourceforge.net/pub/sourceforge/mesa3d/%{name}Demos-%{version}.tar.bz2
+Group(pt_BR):	X11/Bibliotecas
+Group(ru):	X11/Библиотеки
+Group(uk):	X11/Б╕бл╕отеки
+Source0:	ftp://ftp.sourceforge.net/pub/sourceforge/mesa3d/%{name}Lib-%{version}.tar.bz2
+Source1:	ftp://ftp.sourceforge.net/pub/sourceforge/mesa3d/%{name}Demos-%{version}.tar.bz2
 %{?_with_dri:Source2:	XFree86-4.0.2-GLonly.tar.gz}
 Patch0:		%{name}-paths.patch
 Patch1:		%{name}-badlibtool.patch
@@ -68,8 +71,12 @@ Summary:	Development environment for Mesa
 Summary(pl):	╕rodowisko programistyczne biblioteki Mesa
 Group:		Development/Libraries
 Group(de):	Entwicklung/Libraries
+Group(es):	Desarrollo/Bibliotecas
 Group(fr):	Development/Librairies
 Group(pl):	Programowanie/Biblioteki
+Group(pt_BR):	Desenvolvimento/Bibliotecas
+Group(ru):	Разработка/Библиотеки
+Group(uk):	Розробка/Б╕бл╕отеки
 Requires:	%{name} = %{version}
 Requires:	XFree86-devel
 Provides:	OpenGL-devel
@@ -78,7 +85,7 @@ Obsoletes:	XFree86-OpenGL-devel
 %description devel
 Header files and documentation needed for development.
 
-%description -l pl devel
+%description devel -l pl
 Pliki nagЁСwkowe i dokumentacja do Mesy.
 
 %package static
@@ -86,8 +93,12 @@ Summary:	Mesa static libraries
 Summary(pl):	Biblioteki statyczne Mesy
 Group:		Development/Libraries
 Group(de):	Entwicklung/Libraries
+Group(es):	Desarrollo/Bibliotecas
 Group(fr):	Development/Librairies
 Group(pl):	Programowanie/Biblioteki
+Group(pt_BR):	Desenvolvimento/Bibliotecas
+Group(ru):	Разработка/Библиотеки
+Group(uk):	Розробка/Б╕бл╕отеки
 Requires:	%{name}-devel = %{version}
 Provides:	OpenGL-static
 Obsoletes:	XFree86-OpenGL-static
@@ -95,7 +106,7 @@ Obsoletes:	XFree86-OpenGL-static
 %description static
 The static version of the Mesa libraries.
 
-%description -l pl static
+%description static -l pl
 Biblioteki statyczne Mesy.
 
 %package demos
@@ -103,14 +114,18 @@ Summary:	Mesa Demos
 Summary(pl):	Demonstracje mo©liwo╤ci bibliotek Mesa
 Group:		Development/Libraries
 Group(de):	Entwicklung/Libraries
+Group(es):	Desarrollo/Bibliotecas
 Group(fr):	Development/Librairies
 Group(pl):	Programowanie/Biblioteki
+Group(pt_BR):	Desenvolvimento/Bibliotecas
+Group(ru):	Разработка/Библиотеки
+Group(uk):	Розробка/Б╕бл╕отеки
 Requires:	OpenGL-devel
 
 %description demos
 Demonstration programs for the Mesa libraries.
 
-%description -l pl demos
+%description demos -l pl
 Programy demonstracyjne dla bibliotek Mesa.
 
 %prep
@@ -153,20 +168,13 @@ automake -a -c
 	%{?_without_glide:--without-glide} \
 %ifarch %{ix86} \
 	--enable-x86 \
-  %ifarch i586 i686 \
+  %ifarch i586 i686 k6 athlon \
 	--enable-mmx \
-    %ifarch i686 \
+	--enable-3dnow \
+    %ifarch i686 athlon \
 	--enable-katmai \
     %else \
 	--disable-katmai \
-    %endif \
-  %else \
-    %ifarch athlon \
-	--enable-mmx \
-	--enable-3dnow \
-    %else \
-	--disable-mmx \
-	--disable-3dnow \
     %endif \
   %endif \
 %else \
