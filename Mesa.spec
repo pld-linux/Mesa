@@ -63,6 +63,7 @@ Group(de):	Entwicklung/Libraries
 Group(fr):	Development/Librairies
 Group(pl):	Programowanie/Biblioteki
 Requires:	%{name} = %{version}
+Requires:	XFree86-devel
 Provides:	OpenGL-devel
 
 %description devel
