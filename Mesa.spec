@@ -141,7 +141,7 @@ perl -pi -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g" demos/*
 %{__make}
 	
 (cd widgets-mesa
-autoconf
+%{__autoconf}
 %configure \
 	--with-motif
 %{__make} || :
