@@ -3,11 +3,11 @@ Summary(pl):	Bezp³atna implementacja standardu OpenGL
 Name:		Mesa
 Version:	3.1
 Release:	1
-Copyright:	GPL
+License:	GPL
 Group:		X11/Libraries
 Group(pl):	X11/Biblioteki
-Source0:	ftp://iris.ssec.wisc.edu/pub/Mesa/%{name}Lib-%{version}.tar.gz
-Source1:	ftp://iris.ssec.wisc.edu/pub/Mesa/%{name}Demos-%{version}.tar.gz
+Source0:	ftp://ftp.mesa3d.org/mesa/%{name}Lib-%{version}.tar.bz2
+Source1:	ftp://ftp.mesa3d.org/mesa/%{name}Demos-%{version}.tar.bz2
 Patch:		Mesa-misc.diff
 URL:		http://www.mesa3d.org/
 BuildRequires:	XFree86-devel
@@ -17,19 +17,20 @@ BuildRoot:	/tmp/%{name}-%{version}-root
 %define		_mandir		%{_prefix}/man
 
 %description
-Mesa is a 3-D graphics library with an API which is very similar to that
-of OpenGL*.  To the extent that Mesa utilizes the OpenGL command syntax
-or state machine, it is being used with authorization from Silicon Graphics,
-Inc.  However, the author makes no claim that Mesa is in any way a
+Mesa is a 3-D graphics library with an API which is very similar to that of
+OpenGL*. To the extent that Mesa utilizes the OpenGL command syntax or
+state machine, it is being used with authorization from Silicon Graphics,
+Inc. However, the author makes no claim that Mesa is in any way a
 compatible replacement for OpenGL or associated with Silicon Graphics, Inc.
-Those who want a licensed implementation of OpenGL should contact a licensed
-vendor.  This software is distributed under the terms of the GNU Library
-General Public License, see the LICENSE file for details.
+Those who want a licensed implementation of OpenGL should contact a
+licensed vendor. This software is distributed under the terms of the GNU
+Library General Public License, see the LICENSE file for details.
 
 * OpenGL(R) is a registered trademark of Silicon Graphics, Inc.
 
 %description -l pl
 Mesa jest bibliotek± 3D bêd±c± darmowym odpowiednikiem standartu OpenGL(*).
+
 * OpenGL jest zastrze¿onym znakiem towarowym firmy Silicon Graphics, Inc.
 
 %package devel
@@ -78,7 +79,7 @@ Summary(pl):	¦rodowisko programistyczne 'GLUT' dla biblioteki MESA.
 Group:		Development/Libraries
 Group(pl):	Programowanie/Biblioteki
 Requires:	%{name} = %{version}
-Obsoletes: 	glut-devel
+Obsoletes:	glut-devel
 
 %description glut-devel
 Header files needed for development aplications using GLUT library.
@@ -92,7 +93,7 @@ Summary(pl):	Biblioteki statyczne do biblioteki GLUT
 Group:		Development/Libraries
 Group(pl):	Programowanie/Biblioteki
 Requires:	%{name}-glut-devel = %{version}
-Obsoletes: 	glut-devel
+Obsoletes:	glut-devel
 
 %description glut-static
 The static version of the GLUT library.
