@@ -1,7 +1,7 @@
 #
-# bcond_off_glide: without GLIDE
+# _without_glide: without GLIDE
 #
-# bcond_on_dri: add GLX/DRI support (taken from rawhide)
+# _with_dri: add GLX/DRI support (taken from rawhide)
 # (does it make any sense? we have XFree86-OpenGL-* packages...)
 #
 Summary:	Free OpenGL implementation
@@ -16,16 +16,16 @@ Group(es):	X11/Bibliotecas
 Group(pl):	X11/Biblioteki
 Source0:	ftp://download.sourceforge.net/pub/sourceforge/mesa3d/%{name}Lib-%{version}.tar.bz2
 Source1:	ftp://download.sourceforge.net/pub/sourceforge/mesa3d/%{name}Demos-%{version}.tar.bz2
-%{?bcond_on_dri:Source2:	XFree86-4.0.2-GLonly.tar.gz}
+%{?_with_dri:Source2:	XFree86-4.0.2-GLonly.tar.gz}
 Patch0:		%{name}-paths.patch
 Patch1:		%{name}-badlibtool.patch
 Patch2:		%{name}-glibc-2.2.patch
 Patch3:		%{name}-am.patch
-%{?bcond_on_dri:Patch4:		%{name}-XF86DRI-4.0.2.patch}
+%{?_with_dri:Patch4:		%{name}-XF86DRI-4.0.2.patch}
 #Patch5:	%{name}-3.3-glXcontext.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	XFree86-devel
-%{!?bcond_off_glide:BuildRequires:	Glide_V3-DRI-devel}
+%{!?_without_glide:BuildRequires:	Glide_V3-DRI-devel}
 BuildRequires:	perl
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -106,7 +106,7 @@ Programy demonstracyjne dla biblioteki Mesa.
 %prep
 %setup -q -n Mesa-%{version} -b 1
 
-%if %{?bcond_on_dri:1}%{!?bcond_on_dri:0}
+%if %{?_with_dri:1}%{!?_with_dri:0}
 	mkdir -p src/DRI/GL
 	tar xzf %{SOURCE2}
 	ln -f `find xc -type f` src/DRI
@@ -117,7 +117,7 @@ Programy demonstracyjne dla biblioteki Mesa.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%{?bcond_on_dri:%patch4 -p1}
+%{?_with_dri:%patch4 -p1}
 #%patch5 -p1
 # fix demos
 perl -pi -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g" demos/*
@@ -135,7 +135,7 @@ autoconf
 	--disable-ggi-fbdev \
 	--disable-ggi-genkgi \
 	--enable-optimize \
-	%{?bcond_off_glide:--without-glide} \
+	%{?_without_glide:--without-glide} \
 %ifarch %{ix86} \
 	--enable-x86 \
   %ifarch i586 i686 \
