@@ -2,7 +2,7 @@ Summary:	Free OpenGL implementation. Runtime environment
 Summary(pl):	Bezp³atna implementacja standardu OpenGL
 Name:		Mesa
 Version:	3.0
-Release:	2d
+Release:	3d
 Copyright:	GPL
 Group:		X11/Libraries
 Group(pl):	X11/Biblioteki
@@ -40,7 +40,7 @@ The static version of the Mesa libraries and include files needed for
 development.
 
 %description -l pl devel
-Wersja biblioteki MESA linkowana statycznie wraz z plikami nag³ówkowymi.
+Wersja biblioteki MESA linkowana statycznie oraz pliki nag³ówkowe.
 
 %package glut
 Summary:	GLUT library for Mesa
@@ -69,8 +69,8 @@ The static version of the GLUT library and include files needed for
 development.
 
 %description -l pl glut-devel
-Statycznie linkowana wersja biblioteki GLUT wraz z plikami naglowkowymi
-potrzebnymi do pisania programow.
+Statycznie linkowana wersja biblioteki GLUT oraz pliki nag³ówkowe potrzebne
+do pisania programów.
 
 %package demos
 Summary:	Mesa Demos
@@ -117,7 +117,7 @@ make  linux-elf
 make)
 
 %install
-rm -fr $RPM_BUILD_ROOT
+rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT/usr/X11R6/{lib/Mesa,include,man/man3}
 
 cp -dpr lib include $RPM_BUILD_ROOT/usr/X11R6
@@ -131,6 +131,7 @@ install */lib*.a $RPM_BUILD_ROOT/usr/X11R6/lib
 strip $RPM_BUILD_ROOT/usr/X11R6/lib/{lib*so.*.*,Mesa/*/*} ||
 
 gzip -9nf * $RPM_BUILD_ROOT/usr/X11R6/man/man3/*
+gzip -9nf FUTURE IAFA-PACKAGE LICENSE README* RELNOTES VERSIONS
 
 %clean
 rm -fr $RPM_BUILD_ROOT $RPM_BUILD_DIR/%name-%version
@@ -140,7 +141,7 @@ rm -fr $RPM_BUILD_ROOT $RPM_BUILD_DIR/%name-%version
 
 %files
 %defattr(644,root,root,755)
-%doc FUTURE IAFA-PACKAGE LICENSE README* RELNOTES VERSIONS
+%doc FUTURE.gz IAFA-PACKAGE.gz LICENSE.gz README* RELNOTES.gz VERSIONS.gz
 
 %ifnarch ppc
 %attr(755,root,root) /usr/X11R6/lib/libMesa*.so.*.*
@@ -173,8 +174,7 @@ rm -fr $RPM_BUILD_ROOT $RPM_BUILD_DIR/%name-%version
 
 %dir /usr/X11R6/lib/Mesa
 /usr/X11R6/lib/Mesa/Make-config
-%dir /usr/X11R6/lib/Mesa/util
-/usr/X11R6/lib/Mesa/util/*
+/usr/X11R6/lib/Mesa/util
 
 %dir /usr/X11R6/include/GL
 /usr/X11R6/include/GL/*.h
@@ -193,6 +193,12 @@ rm -fr $RPM_BUILD_ROOT $RPM_BUILD_DIR/%name-%version
 %attr(-,root,root)/usr/X11R6/lib/Mesa/xdemos/*
 
 %changelog
+* Tue Feb  9 1999 Micha³ Kuratczyk <kurkens@polbox.com>
+  [3.0-3d]
+- added gzipping documentation
+- simplification in %files
+- fixed pl translations
+
 * Sat Jan 30 1999 Tomasz K³oczko <kloczek@rudy.mif.pg.gda.pl>
   [3.0-2d]
 - added LDFLAGS="-s" to ./configure enviroment,
