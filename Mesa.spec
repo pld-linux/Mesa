@@ -24,7 +24,8 @@ Patch2:		%{name}-glibc-2.2.patch
 Patch3:		%{name}-am.patch
 Patch4:		%{name}-libGLw.patch
 %{?_with_dri:Patch5: %{name}-XF86DRI-4.0.2.patch}
-#Patch6:	%{name}-3.3-glXcontext.patch
+Patch6:		%{name}-ac.patch
+#PatchX:	%{name}-3.3-glXcontext.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	XFree86-devel
 BuildRequires:	motif-devel
@@ -32,6 +33,7 @@ BuildRequires:	motif-devel
 BuildRequires:	perl
 BuildRequires:	autoconf
 BuildRequires:	automake
+BuildRequires:	libtool
 Provides:	OpenGL
 Obsoletes:	XFree86-OpenGL-core XFree86-OpenGL-libs
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -127,16 +129,20 @@ Programy demonstracyjne dla bibliotek Mesa.
 %patch3 -p1
 %patch4 -p1
 %{?_with_dri:%patch5 -p1}
-#%patch6 -p1
+%patch6 -p1
 # fix demos
 perl -pi -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g" demos/*
 
 %build
-aclocal -I .
+rm -f missing acinclude.m4
+libtoolize --copy --force
+aclocal
 autoheader
-automake -a -c
 autoconf
+automake -a -c
 %configure \
+	CFLAGS="%{rpmcflags} -I. -I../" \
+	AS='%{__cc}' \
 	--enable-static \
 	--enable-shared \
 	--with-ggi="no" \
