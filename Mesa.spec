@@ -241,7 +241,7 @@ rm -fr $RPM_BUILD_ROOT
 %changelog
 * Mon May 10 1999 Tomasz K³oczko <kloczek@rudy.mif.pg.gda.pl>
   [3.0-7]
-- now package is FHS 2.0 compiliat.
+- now package is FHS 2.0 compliat.
 
 * Mon Mar  8 1999 Tomasz K³oczko <kloczek@rudy.mif.pg.gda.pl>
   [3.0-4]
