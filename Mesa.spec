@@ -9,7 +9,7 @@ Group(pl):	X11/Biblioteki
 Source0:	ftp://iris.ssec.wisc.edu/pub/Mesa/%{name}Lib-%{version}.tar.gz
 Source1:	ftp://iris.ssec.wisc.edu/pub/Mesa/%{name}Demos-%{version}.tar.gz
 Patch:		Mesa-misc.diff
-URL:		http://www.ssec.wisc.edu/~brianp/Mesa.html
+URL:		http://www.mesa3d.org/
 BuildRoot:	/tmp/%{name}-%{version}-root
 
 %description
@@ -232,6 +232,7 @@ rm -fr $RPM_BUILD_ROOT
 %changelog
 * Mon Mar  8 1999 Tomasz K³oczko <kloczek@rudy.mif.pg.gda.pl>
   [3.0-4]
+- updated URL to http://www.mesa3d.org/,
 - %doc moved to devel,
 - added static subpackages,
 - removed some README files,
