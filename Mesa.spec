@@ -178,8 +178,6 @@ for l in book demos samples xdemos images ; do
 done
 
 rm -f docs/*~
-gzip -9nf docs/*
-
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -188,7 +186,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc docs/CONFIG.gz
+%doc docs/CONFIG
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/mesa.conf
 %attr(755,root,root) %{_libdir}/libGL*.so.*.*
 %attr(755,root,root) %{_libdir}/libGL.so
@@ -196,8 +194,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %defattr(644,root,root,755)
-%doc docs/{IAFA-PACKAGE,README,RELNOTES-*,VERSIONS,CONFORM,COPYRIGHT,DEVINFO,*.spec}.gz
-%doc docs/README.{3DFX,GGI,MITS,QUAKE,X11,THREADS}.gz
+%doc docs/{IAFA-PACKAGE,README,RELNOTES-*,VERSIONS,CONFORM,COPYRIGHT,DEVINFO,*.spec}
+%doc docs/README.{3DFX,GGI,MITS,QUAKE,X11,THREADS}
 %attr(755,root,root) %{_libdir}/libGLU.so
 %attr(755,root,root) %{_libdir}/libOSMesa.so
 %{_libdir}/libGLw.a
