@@ -14,8 +14,8 @@ BuildRequires:	XFree86-devel
 Provides:	OpenGL
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define		_prefix		/usr/X11R6
-%define		_mandir		%{_prefix}/man
+%define		_prefix		/usr/local
+%define		_mandir		%{_prefix}/share/man
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
@@ -158,7 +158,26 @@ rm -fr $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libGL*.so
 
 %dir %{_includedir}/GL
-%{_includedir}/GL/*.h
+%{_includedir}GL/GLwDrawA.h
+%{_includedir}GL/GLwDrawAP.h
+%{_includedir}GL/GLwMDrawA.h
+%{_includedir}GL/GLwMDrawAP.h
+%{_includedir}GL/MesaDrawingArea.h
+%{_includedir}GL/MesaDrawingAreaP.h
+%{_includedir}GL/MesaMDrawingArea.h
+%{_includedir}GL/MesaMDrawingAreaP.h
+%{_includedir}GL/MesaWorkstation.h
+%{_includedir}GL/MesaWorkstationP.h
+%{_includedir}GL/gl.h
+%{_includedir}GL/gl_mangle.h
+%{_includedir}GL/glu.h
+%{_includedir}GL/glu_mangle.h
+%{_includedir}GL/glx.h
+%{_includedir}GL/glx_mangle.h
+%{_includedir}GL/osmesa.h
+%{_includedir}GL/xmesa.h
+%{_includedir}GL/xmesa_x.h
+%{_includedir}GL/xmesa_xf86.h
 %{_mandir}/man3/*
 
 %files static
