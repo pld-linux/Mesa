@@ -1,17 +1,16 @@
-Summary:   Free OpenGL implementation. Runtime environment
-Summary(pl): Bezp³atna implementacja standardu OpenGL
-Name:      Mesa
-Version:   3.0
-Release:   2
-Copyright: GPL
-Group:     X11/Libraries
-Group(pl): X11/Biblioteki
-Source0:   ftp://iris.ssec.wisc.edu/pub/Mesa/%{name}Lib-%{version}.tar.gz
-Source1:   ftp://iris.ssec.wisc.edu/pub/Mesa/%{name}Demos-%{version}.tar.gz
-URL:       http://www.ssec.wisc.edu/~brianp/Mesa.html
-BuildRoot: /tmp/%{name}-%{version}-root
-Patch:     Mesa-3.0-misc.diff
-Prefix:    /usr/X11R6
+Summary:	Free OpenGL implementation. Runtime environment
+Summary(pl):	Bezp³atna implementacja standardu OpenGL
+Name:		Mesa
+Version:	3.0
+Release:	2d
+Copyright:	GPL
+Group:		X11/Libraries
+Group(pl):	X11/Biblioteki
+Source0:	ftp://iris.ssec.wisc.edu/pub/Mesa/%{name}Lib-%{version}.tar.gz
+Source1:	ftp://iris.ssec.wisc.edu/pub/Mesa/%{name}Demos-%{version}.tar.gz
+Patch:		Mesa-misc.diff
+URL:		http://www.ssec.wisc.edu/~brianp/Mesa.html
+BuildRoot:	/tmp/%{name}-%{version}-root
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to that
@@ -30,11 +29,11 @@ Mesa jest bibliotek± 3D bêd±c± darmowym odpowiednikiem standartu OpenGL(*).
 * OpenGL jest zastrze¿onym znakiem towarowym firmy Silicon Graphics, Inc.
 
 %package devel
-Summary:   Development environment for Mesa
-Summary(pl): ¦rodowisko programistyczne biblioteki MESA
-Requires:  Mesa = %{version}
-Group:     Development/Libraries
-Group(pl): Programowanie/Biblioteki
+Summary:	Development environment for Mesa
+Summary(pl):	¦rodowisko programistyczne biblioteki MESA
+Group:		Development/Libraries
+Group(pl):	Programowanie/Biblioteki
+Requires:	%{name} = %{version}
 
 %description devel
 The static version of the Mesa libraries and include files needed for
@@ -44,12 +43,12 @@ development.
 Wersja biblioteki MESA linkowana statycznie wraz z plikami nag³ówkowymi.
 
 %package glut
-Summary:   GLUT library for Mesa
-Summary(pl): Biblioteka GLUT dla Mesy
-Group:     X11/Libraries
-Group(pl): X11/Biblioteki
-Requires:  Mesa = %{version}
-Obsoletes: glut
+Summary:	GLUT library for Mesa
+Summary(pl):	Biblioteka GLUT dla Mesy
+Group:		X11/Libraries
+Group(pl):	X11/Biblioteki
+Requires:	%{name} = %{version}
+Obsoletes:	glut
 
 %description glut
 The GLUT library.
@@ -58,12 +57,12 @@ The GLUT library.
 Biblioteka GLUT
 
 %package glut-devel
-Summary:   GLUT Development environment for Mesa
-Summary(pl): ¦rodowisko programistyczne 'GLUT' dla biblioteki MESA.
-Group:     Development/Libraries
-Group(pl): Programowanie/Biblioteki
-Requires:  Mesa = %{version}
-Obsoletes: glut-devel
+Summary:	GLUT Development environment for Mesa
+Summary(pl):	¦rodowisko programistyczne 'GLUT' dla biblioteki MESA.
+Group:		Development/Libraries
+Group(pl):	Programowanie/Biblioteki
+Requires:	%{name} = %{version}
+Obsoletes: 	glut-devel
 
 %description glut-devel
 The static version of the GLUT library and include files needed for
@@ -74,10 +73,11 @@ Statycznie linkowana wersja biblioteki GLUT wraz z plikami naglowkowymi
 potrzebnymi do pisania programow.
 
 %package demos
-Summary:   Mesa Demos
-Summary(pl): Demonstrace mo¿liwo¶ci biblioteki MESA.
-Group:     Development/Libraries
-Group(pl): Programowanie/Biblioteki
+Summary:	Mesa Demos
+Summary(pl):	Demonstrace mo¿liwo¶ci biblioteki MESA.
+Group:		Development/Libraries
+Group(pl):	Programowanie/Biblioteki
+Requires:	%{name} = %{version}
 
 %description demos
 Demonstration programs for the Mesa libraries.
@@ -91,27 +91,30 @@ Programy demonstracyjne dla biblioteki Mesa.
 
 %build
 %ifarch alpha
-make RPM_OPT_FLAGS="$RPM_OPT_FLAGS" LIBS_ONLY=YES linux-alpha
+make LIBS_ONLY=YES linux-alpha
 make clean
-make RPM_OPT_FLAGS="$RPM_OPT_FLAGS" linux-alpha-elf
+make linux-alpha-elf
 %endif
 
 %ifarch ppc
-make RPM_OPT_FLAGS="$RPM_OPT_FLAGS" linux-ppc
+make linux-ppc
 %endif
 
 %ifarch i386
 make clean
-make RPM_OPT_FLAGS="$RPM_OPT_FLAGS" LIBS_ONLY=YES linux-386
+make LIBS_ONLY=YES linux-386
 make clean
-make RPM_OPT_FLAGS="$RPM_OPT_FLAGS" linux-386-elf
+make linux-386-elf
 %endif
 
 %ifarch sparc sparc64
-make RPM_OPT_FLAGS="$RPM_OPT_FLAGS" linux-elf
+make  linux-elf
 %endif
 
-(cd widgets-mesa; CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr/X11R6/; make )
+(cd widgets-mesa; CFLAGS="$RPM_OPT_FLAGS" LDFLAGS="-s" \
+./configure \
+	--prefix=/usr/X11R6/
+make)
 
 %install
 rm -fr $RPM_BUILD_ROOT
@@ -127,46 +130,44 @@ install */lib*.a $RPM_BUILD_ROOT/usr/X11R6/lib
 
 strip $RPM_BUILD_ROOT/usr/X11R6/lib/{lib*so.*.*,Mesa/*/*} ||
 
-cd $RPM_BUILD_ROOT/usr/X11R6/man/man3
-gzip -9 *
+gzip -9nf * $RPM_BUILD_ROOT/usr/X11R6/man/man3/*
 
 %clean
 rm -fr $RPM_BUILD_ROOT $RPM_BUILD_DIR/%name-%version
 
 %post   -p /sbin/ldconfig
-
 %postun -p /sbin/ldconfig
 
 %files
-%defattr(644, root, root, 755)
+%defattr(644,root,root,755)
 %doc FUTURE IAFA-PACKAGE LICENSE README* RELNOTES VERSIONS
 
 %ifnarch ppc
-/usr/X11R6/lib/libMesa*.so.*.*
+%attr(755,root,root) /usr/X11R6/lib/libMesa*.so.*.*
 %else
 /usr/X11R6/lib/libMesa*.a
 %endif
 
 %files glut
-%defattr(644, root, root, 755)
+%defattr(644,root,root,755)
 %ifnarch ppc
-/usr/X11R6/lib/libglut.so.*
+%attr(755,root,root) /usr/X11R6/lib/libglut.so.*
 %else
 /usr/X11R6/lib/libglut.a
 %endif
 
 %files glut-devel
-%defattr(644, root, root, 755)
+%defattr(644,root,root,755)
 %ifnarch ppc
-/usr/X11R6/lib/libglut.so
+%attr(755,root,root) /usr/X11R6/lib/libglut.so
 /usr/X11R6/lib/libglut.a
 %endif
 /usr/X11R6/include/GL/glut.h
 
 %files devel
-%defattr(644, root, root, 755)
+%defattr(644,root,root,755)
 %ifnarch ppc
-/usr/X11R6/lib/libMesa*.so
+%attr(755,root,root) /usr/X11R6/lib/libMesa*.so
 /usr/X11R6/lib/libMesa*.a
 %endif
 
@@ -177,21 +178,28 @@ rm -fr $RPM_BUILD_ROOT $RPM_BUILD_DIR/%name-%version
 
 %dir /usr/X11R6/include/GL
 /usr/X11R6/include/GL/*.h
-%attr(644, root, man) /usr/X11R6/man/man3/*.gz
+%attr(644,root, man) /usr/X11R6/man/man3/*
 
 %files demos
-%defattr(644, root, root, 755)
+%defattr(644,root,root,755)
 %dir /usr/X11R6/lib/Mesa/book
 %dir /usr/X11R6/lib/Mesa/demos
 %dir /usr/X11R6/lib/Mesa/samples
 %dir /usr/X11R6/lib/Mesa/xdemos
 
-%attr(-, root, root)/usr/X11R6/lib/Mesa/book/*
-%attr(-, root, root)/usr/X11R6/lib/Mesa/demos/*
-%attr(-, root, root)/usr/X11R6/lib/Mesa/samples/*
-%attr(-, root, root)/usr/X11R6/lib/Mesa/xdemos/*
+%attr(-,root,root)/usr/X11R6/lib/Mesa/book/*
+%attr(-,root,root)/usr/X11R6/lib/Mesa/demos/*
+%attr(-,root,root)/usr/X11R6/lib/Mesa/samples/*
+%attr(-,root,root)/usr/X11R6/lib/Mesa/xdemos/*
 
 %changelog
+* Sat Jan 30 1999 Tomasz K³oczko <kloczek@rudy.mif.pg.gda.pl>
+  [3.0-2d]
+- added LDFLAGS="-s" to ./configure enviroment,
+- fixed permission on lib*so* files (must be 755),
+- removed RPM_OPT_FLAGS="$RPM_OPT_FLAGS" make parameters
+  (this is redundant).
+
 * Sat Jan 23 1999 Wojciech "Sas" Cieciwa <cieciwa@alpha.zarz.agh.edu.pl>
 - gzipped man page.
 
@@ -199,19 +207,8 @@ rm -fr $RPM_BUILD_ROOT $RPM_BUILD_DIR/%name-%version
 - fixing library location.
 
 * Thu Oct  1 1998 Wojciech "Sas" Cieciwa <cieciwa@alpha.zarz.agh.edu.pl>
+  [3.0-1]
 - fixing access permision.
-
-* Wed Sep 30 1998 Wojciech "Sas" Cieciwa <cieciwa@alpha.zarz.agh.edu.pl>
-- updated to Mesa 3.0.
-
-* Thu Aug 27 1998 Wojciech "Sas" Cieciwa <cieciwa@alpha.zarz.agh.edu.pl>
-- updated to Mesa 3.0 beta 8.
-
-* Mon Aug  3 1998 Wojciech "Sas" Cieciwa <cieciwa@alpha.zarz.agh.edu.pl>
-- uptated to Mesa 3.0 beta 7.
-
-* Thu Jul 23 1998 Wojciech "Sas" Ciêciwa <cieciwa@alpha.zarz.agh.edu.pl>
-- updated to Mesa 3.0 Beta 6.
 
 * Wed May  5 1998 Tomasz K³oczko <kloczek@rudy.mif.pg.gda.pl>
 - removed declarate %%{version}, %%{name}, %%{release} macros because
