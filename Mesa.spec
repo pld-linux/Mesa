@@ -115,7 +115,7 @@ CFLAGS="$RPM_OPT_FLAGS"; export CFLAGS
 	--disable-3dnow
 %endif
 
-make
+%{__make}
 	
 (cd widgets-mesa; autoconf; \
 LDFLAGS="-s"; export LDFLAGS
