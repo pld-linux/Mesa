@@ -2,7 +2,7 @@ Summary:	Free OpenGL implementation. Runtime environment
 Summary(pl):	Bezp³atna implementacja standardu OpenGL
 Name:		Mesa
 Version:	3.1
-Release:	1
+Release:	2
 License:	GPL
 Group:		X11/Libraries
 Group(pl):	X11/Biblioteki
@@ -11,6 +11,7 @@ Source1:	ftp://ftp.mesa3d.org/mesa/%{name}Demos-%{version}.tar.bz2
 Patch:		Mesa-misc.diff
 URL:		http://www.mesa3d.org/
 BuildRequires:	XFree86-devel
+Provides:	OpenGL
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_prefix		/usr/X11R6
@@ -39,6 +40,7 @@ Summary(pl):	¦rodowisko programistyczne biblioteki Mesa
 Group:		Development/Libraries
 Group(pl):	Programowanie/Biblioteki
 Requires:	%{name} = %{version}
+Provides:	OpenGL-devel
 
 %description devel
 Header files and documentation needed for development.
@@ -52,54 +54,13 @@ Summary(pl):	Biblioteki statyczne Mesy
 Group:		Development/Libraries
 Group(pl):	Programowanie/Biblioteki
 Requires:	%{name}-devel = %{version}
+Provides:	OpenGL-static
 
 %description static
 The static version of the Mesa libraries
 
 %description -l pl static
 Biblioteki statyczne Mesy.
-
-%package glut
-Summary:	GLUT library for Mesa
-Summary(pl):	Biblioteka GLUT dla Mesy
-Group:		X11/Libraries
-Group(pl):	X11/Biblioteki
-Requires:	%{name} = %{version}
-Obsoletes:	glut
-
-%description glut
-The GLUT library.
-
-%description -l pl glut
-Biblioteka GLUT
-
-%package glut-devel
-Summary:	GLUT Development environment for Mesa
-Summary(pl):	¦rodowisko programistyczne 'GLUT' dla biblioteki MESA.
-Group:		Development/Libraries
-Group(pl):	Programowanie/Biblioteki
-Requires:	%{name} = %{version}
-Obsoletes:	glut-devel
-
-%description glut-devel
-Header files needed for development aplications using GLUT library.
-
-%description -l pl glut-devel
-Pliki nag³ówkowe do biblioteki GLUT.
-
-%package glut-static
-Summary:	GLUT static libraries
-Summary(pl):	Biblioteki statyczne do biblioteki GLUT
-Group:		Development/Libraries
-Group(pl):	Programowanie/Biblioteki
-Requires:	%{name}-glut-devel = %{version}
-Obsoletes:	glut-devel
-
-%description glut-static
-The static version of the GLUT library.
-
-%description -l pl glut-static
-Biblioteki statyczne GLUT.
 
 %package demos
 Summary:	Mesa Demos
@@ -171,9 +132,6 @@ gzip -9nf $RPM_BUILD_ROOT%{_mandir}/man3/* \
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
-%post   -p /sbin/ldconfig glut
-%postun -p /sbin/ldconfig glut
-
 %clean
 rm -fr $RPM_BUILD_ROOT
 
@@ -185,27 +143,6 @@ rm -fr $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libGL*.so.*.*
 %else
 %{_libdir}/libGL*.a
-%endif
-
-%files glut
-%defattr(644,root,root,755)
-%ifnarch ppc
-%attr(755,root,root) %{_libdir}/libglut.so.*
-%else
-%{_libdir}/libglut.a
-%endif
-
-%files glut-devel
-%defattr(644,root,root,755)
-%{_includedir}/GL/glut.h
-%ifnarch ppc
-%attr(755,root,root) %{_libdir}/libglut.so
-%endif
-
-%ifnarch ppc
-%files glut-static
-%defattr(644,root,root,755)
-%{_libdir}/libglut.a
 %endif
 
 %files devel
