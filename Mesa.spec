@@ -141,7 +141,7 @@ autoheader
 autoconf
 automake -a -c
 %configure \
-	CFLAGS="%{rpmcflags} -I. -I../" \
+	CFLAGS="%{rpmcflags} -I%{_includedir} -I. -I../" \
 	AS='%{__cc}' \
 	--enable-static \
 	--enable-shared \
