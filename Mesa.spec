@@ -4,7 +4,7 @@
 Summary:	Free OpenGL implementation
 Summary(pl):	Bezp³atna implementacja standardu OpenGL
 Name:		Mesa
-Version:	4.0.4
+Version:	5.0
 Release:	1
 License:	MIT (core), LGPL (MesaGLU), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
@@ -12,8 +12,7 @@ Source0:	ftp://ftp.sourceforge.net/pub/sourceforge/mesa3d/%{name}Lib-%{version}.
 Source1:	ftp://ftp.sourceforge.net/pub/sourceforge/mesa3d/%{name}Demos-%{version}.tar.bz2
 Patch0:		%{name}-am.patch
 Patch1:		%{name}-ac.patch
-Patch2:		%{name}-paths.patch
-Patch3:		%{name}-libGLw.patch
+Patch2:		%{name}-libGLw.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	XFree86-devel
 BuildRequires:	autoconf
@@ -33,6 +32,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_prefix		/usr/X11R6
 %define		_mandir		%{_prefix}/man
+%define		_sysconfdir	/etc/X11
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
@@ -100,7 +100,6 @@ Programy demonstracyjne dla bibliotek Mesa.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
 
 # fix demos
 perl -pi -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g" demos/*
@@ -175,6 +174,7 @@ install -d $RPM_BUILD_ROOT/usr/src/examples/Mesa
 for l in book demos samples xdemos images ; do
 	cp -Rf $l $RPM_BUILD_ROOT%{_examplesdir}/Mesa/$l
 done
+rm -rf $RPM_BUILD_ROOT%{_examplesdir}/Mesa/*/{.deps,CVS,Makefile.{BeOS*,win,cygnus,DJ,dja}}
 
 rm -f docs/*~
 
@@ -186,7 +186,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc docs/CONFIG
+%doc docs/{CONFORM,COPYRIGHT,README,README.{3DFX,GGI,MITS,QUAKE,THREADS,X11},RELNOTES*,VERSIONS}
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/mesa.conf
 %attr(755,root,root) %{_libdir}/libGL*.so.*.*
 %attr(755,root,root) %{_libdir}/libGL.so
@@ -194,10 +194,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %defattr(644,root,root,755)
-%doc docs/{IAFA-PACKAGE,README,RELNOTES-*,VERSIONS,CONFORM,COPYRIGHT,DEVINFO,*.spec}
-%doc docs/README.{3DFX,GGI,MITS,QUAKE,X11,THREADS}
+%doc docs/{DEVINFO,*.spec}
+%attr(755,root,root) %{_libdir}/libGL.la
 %attr(755,root,root) %{_libdir}/libGLU.so
+%attr(755,root,root) %{_libdir}/libGLU.la
 %attr(755,root,root) %{_libdir}/libOSMesa.so
+%attr(755,root,root) %{_libdir}/libOSMesa.la
 %{_libdir}/libGLw.a
 %{_libdir}/libMesaGLw*.a
 %dir %{_includedir}/GL
@@ -228,13 +230,4 @@ rm -rf $RPM_BUILD_ROOT
 
 %files demos
 %defattr(644,root,root,755)
-%dir %{_examplesdir}/Mesa
-%dir %{_examplesdir}/Mesa/book
-%dir %{_examplesdir}/Mesa/demos
-%dir %{_examplesdir}/Mesa/samples
-%dir %{_examplesdir}/Mesa/xdemos
-
-%doc %{_examplesdir}/Mesa/book/*
-%doc %{_examplesdir}/Mesa/demos/*
-%doc %{_examplesdir}/Mesa/samples/*
-%doc %{_examplesdir}/Mesa/xdemos/*
+%{_examplesdir}/Mesa
