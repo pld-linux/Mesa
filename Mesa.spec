@@ -8,7 +8,7 @@ Summary:	Free OpenGL implementation
 Summary(pl):	Bezp³atna implementacja standardu OpenGL
 Name:		Mesa
 Version:	3.4.2
-Release:	1
+Release:	2
 License:	MIT (core), LGPL (libGLU), SGI (libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Group(de):	X11/Libraries
@@ -248,6 +248,7 @@ rm -fr $RPM_BUILD_ROOT
 
 %files demos
 %defattr(644,root,root,755)
+%dir /usr/src/examples/Mesa
 %dir /usr/src/examples/Mesa/book
 %dir /usr/src/examples/Mesa/demos
 %dir /usr/src/examples/Mesa/samples
