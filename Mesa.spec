@@ -241,10 +241,3 @@ rm -fr $RPM_BUILD_ROOT
 %attr(-,root,root)/usr/src/examples/Mesa/demos/*
 %attr(-,root,root)/usr/src/examples/Mesa/samples/*
 %attr(-,root,root)/usr/src/examples/Mesa/xdemos/*
-
-%changelog
-* Thu May 27 1999 Tomasz K³oczko <kloczek@rudy.mif.pg.gda.pl>
-  [3.0-8]
-- based on spec from RH contrib,
-- spec rewrited by PLD team,
-- pl translation by Wojciech "Sas" Cieciwa <cieciwa@alpha.zarz.agh.edu.pl>.
