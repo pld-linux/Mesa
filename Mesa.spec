@@ -30,7 +30,7 @@ BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
 BuildRequires:	libtool >= 2:1.4d
 BuildRequires:	motif-devel
-BuildRequires:	perl-devel
+BuildRequires:	%{__perl}
 Provides:	OpenGL = 1.5
 Provides:	OpenGL-GLU = 1.3
 # reports version 1.3, but supports glXGetProcAddress() from 1.4
