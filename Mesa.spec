@@ -20,6 +20,7 @@ Source1:	ftp://ftp.sourceforge.net/pub/sourceforge/mesa3d/%{name}Demos-%{version
 Patch0:		%{name}-am.patch
 Patch1:		%{name}-ac.patch
 Patch2:		%{name}-paths.patch
+Patch3:		%{name}-libGLw.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	XFree86-devel
 BuildRequires:	autoconf
@@ -127,6 +128,7 @@ Programy demonstracyjne dla bibliotek Mesa.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 # fix demos
 perl -pi -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g" demos/*
@@ -170,7 +172,7 @@ perl -pi -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g" demos/*
 autoconf
 %configure \
 	--with-motif
-%{__make}
+%{__make} || :
 )
 
 (cd widgets-sgi
@@ -203,6 +205,7 @@ for l in book demos samples xdemos images ; do
 	cp -Rf $l $RPM_BUILD_ROOT%{_examplesdir}/Mesa/$l
 done
 
+rm -f docs/*~
 gzip -9nf docs/*
 
 %clean
@@ -224,6 +227,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc docs/README.{3DFX,GGI,MITS,QUAKE,X11,THREADS}.gz
 %attr(755,root,root) %{_libdir}/libGL*.so
 %attr(755,root,root) %{_libdir}/libOSMesa.so
+%{_libdir}/libGLw.a
 %{_libdir}/libMesaGLw*.a
 %dir %{_includedir}/GL
 %{_includedir}/GL/Mesa-widgets
@@ -249,7 +253,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %{_libdir}/libGL.a
 %{_libdir}/libGLU.a
-%{_libdir}/libGLw.a
 %{_libdir}/libOSMesa.a
 
 %files demos
