@@ -1,24 +1,22 @@
 #
-# _with_glide: with GLIDE
+%bcond_with	glide	# with GLIDE
 #
 Summary:	Free OpenGL implementation
 Summary(pl):	Bezp³atna implementacja standardu OpenGL
 Name:		Mesa
-Version:	5.0.2
+Version:	6.0.1
 Release:	1
 License:	MIT (core), LGPL (MesaGLU), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	dc147598ebdff4312260a7f79b3c5c9c
+# Source0-md5:	b7f14088c5c2f14490d2739a91102112
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	a71afaeddd0b567423f88085576850d3
-Patch0:		%{name}-am.patch
-Patch1:		%{name}-ac.patch
-Patch2:		%{name}-libGLw.patch
+# Source1-md5:	dd6aadfd9ca8e1cfa90c6ee492bc6f43
+Patch0:		%{name}-libGLw.patch
 URL:		http://www.mesa3d.org/
 %ifarch %{ix86} alpha
-%{?_with_glide:BuildRequires:	Glide3-DRI-devel}
-%{?_with_glide:Requires:	Glide3-DRI}
+%{?with_glide:BuildRequires:	Glide3-DRI-devel}
+%{?with_glide:Requires:	Glide3-DRI}
 %endif
 BuildRequires:	XFree86-devel
 BuildRequires:	autoconf >= 2.50
@@ -27,9 +25,9 @@ BuildRequires:	libtool >= 2:1.4d
 BuildRequires:	motif-devel
 BuildRequires:	perl
 Provides:	OpenGL
-BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Obsoletes:	XFree86-OpenGL-core
 Obsoletes:	XFree86-OpenGL-libs
+BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # avoid XFree86-OpenGL* dependency
 # Glide3 can be provided by Glide_V3-DRI or Glide_V5-DRI
@@ -61,7 +59,7 @@ OpenGL(*).
 Summary:	Development environment for Mesa
 Summary(pl):	¦rodowisko programistyczne biblioteki Mesa
 Group:		Development/Libraries
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 Requires:	XFree86-devel
 Provides:	OpenGL-devel
 Obsoletes:	XFree86-OpenGL-devel
@@ -76,7 +74,7 @@ Pliki nag³ówkowe i dokumentacja do Mesy.
 Summary:	Mesa static libraries
 Summary(pl):	Biblioteki statyczne Mesy
 Group:		Development/Libraries
-Requires:	%{name}-devel = %{version}
+Requires:	%{name}-devel = %{version}-%{release}
 Provides:	OpenGL-static
 Obsoletes:	XFree86-OpenGL-static
 
@@ -101,89 +99,50 @@ Programy demonstracyjne dla bibliotek Mesa.
 %prep
 %setup -q -n Mesa-%{version} -b 1
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 # fix demos
-%{__perl} -pi -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g" demos/*
+%{__perl} -pi -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g" progs/demos/*
 
 %build
-%{__libtoolize}
-%{__aclocal}
-%{__autoconf}
-%{__autoheader}
-%{__automake}
-%configure \
-	--enable-static \
-	--enable-shared \
-	--with-ggi="no" \
-	--with-svga="no" \
-	--disable-ggi-fbdev \
-	--disable-ggi-genkgi \
-	--enable-optimize \
-	%{!?_with_glide:--without-glide} \
-%ifarch %{ix86} \
-	--enable-x86 \
-  %ifarch i586 i686 k6 athlon \
-	--enable-mmx \
-	--enable-3dnow \
-    %ifarch i686 athlon \
-	--enable-katmai \
-    %else \
-	--disable-katmai \
-    %endif \
-  %else \
-	--disable-mmx \
-	--disable-3dnow \
-  %endif \
-%else \
-%ifarch sparc \
-	--enable-sparc \
-%endif \
-	--disable-x86 \
-	--disable-mmx \
-	--disable-3dnow
-%endif
+# runtime detection, so safe to enable
+ASM=
+# asm is currently broken
+#%ifarch %{ix86}
+#ASM="$ASM -DUSE_X86_ASM"
+#%endif
+#%ifarch i586 i686 k6 athlon
+#ASM="$ASM -DUSE_MMX_ASM"
+#%endif
+#%ifarch i686 athlon
+#ASM="$ASM -DUSE_SSE_ASM"
+#%endif
+#%ifarch sparc sparc64 sparcv9
+#ASM="$ASM -DUSE_SPARC_ASM"
+#%endif
 
-%{__make}
-
-cd widgets-mesa
-%{__autoconf}
-%configure \
-	--with-motif
-%{__make} || :
-cd ../widgets-sgi
-touch depend
-%{__make} dep
-%{__make} linux OPTFLAGS="%{rpmcflags}"
+%{__make} linux-static \
+	OPTFLAGS="%{rpmcflags} $ASM"
+mv -f lib lib-static
+%{__make} clean
+%{__make} linux \
+	OPTFLAGS="%{rpmcflags} $ASM"
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_mandir}/man3,%{_examplesdir}/Mesa}
+install -d $RPM_BUILD_ROOT{%{_libdir},%{_includedir}/GL,%{_mandir}/man3,%{_examplesdir}/Mesa}
 
-%{__make} install \
-	DESTDIR=$RPM_BUILD_ROOT
+cp -df lib-static/lib[GO]* $RPM_BUILD_ROOT%{_libdir}
+cp -df lib/lib[GO]* $RPM_BUILD_ROOT%{_libdir}
+cp -rf include/GL/{gl*,osmesa.h,xmesa*} src/glw/GLw*.h $RPM_BUILD_ROOT%{_includedir}/GL
+rm -f $RPM_BUILD_ROOT%{_includedir}/GL/glut*
 
-SPWD=`pwd`
-cd widgets-mesa
-%{__make} install \
-	prefix=$RPM_BUILD_ROOT%{_prefix} \
-	mandir=$RPM_BUILD_ROOT%{_mandir}/man3
-# Mesa widgets are not binary compatible with SGI ones
-cd $RPM_BUILD_ROOT%{_includedir}/GL
-mkdir Mesa-widgets
-mv -f GLw*.h Mesa*.h Mesa-widgets
-cd $SPWD
-
-install widgets-sgi/libGLw* $RPM_BUILD_ROOT%{_libdir}
-install widgets-sgi/GLw*.h $RPM_BUILD_ROOT%{_includedir}/GL
-
-for l in book demos samples xdemos images ; do
-	cp -Rf $l $RPM_BUILD_ROOT%{_examplesdir}/Mesa/$l
+for l in demos redbook samples xdemos ; do
+	%{__make} -C progs/$l -f Makefile.X11 realclean
+done
+for l in demos redbook samples util xdemos images ; do
+	cp -Rf progs/$l $RPM_BUILD_ROOT%{_examplesdir}/Mesa/$l
 done
 rm -rf $RPM_BUILD_ROOT%{_examplesdir}/Mesa/*/{.deps,CVS,Makefile.{BeOS*,win,cygnus,DJ,dja}}
-
-rm -f docs/*~
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -193,24 +152,18 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc docs/{CONFORM,COPYRIGHT,README,README.{3DFX,GGI,MITS,QUAKE,THREADS,X11},RELNOTES*,VERSIONS}
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/mesa.conf
+%doc docs/{*.html,README.{3DFX,GGI,MITS,QUAKE,THREADS,X11},RELNOTES*,VERSIONS}
 %attr(755,root,root) %{_libdir}/libGL*.so.*.*
 %attr(755,root,root) %{_libdir}/libGL.so
 %attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
 
 %files devel
 %defattr(644,root,root,755)
-%doc docs/{DEVINFO,*.spec}
-%{_libdir}/libGL.la
+%doc docs/*.spec
 %attr(755,root,root) %{_libdir}/libGLU.so
-%{_libdir}/libGLU.la
 %attr(755,root,root) %{_libdir}/libOSMesa.so
-%{_libdir}/libOSMesa.la
 %{_libdir}/libGLw.a
-%{_libdir}/libMesaGLw*.a
 %dir %{_includedir}/GL
-%{_includedir}/GL/Mesa-widgets
 %{_includedir}/GL/GLwDrawA.h
 %{_includedir}/GL/GLwDrawAP.h
 %{_includedir}/GL/GLwMDrawA.h
@@ -227,7 +180,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/xmesa.h
 %{_includedir}/GL/xmesa_x.h
 %{_includedir}/GL/xmesa_xf86.h
-%{_mandir}/man3/*
 
 %files static
 %defattr(644,root,root,755)
