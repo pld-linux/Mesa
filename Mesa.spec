@@ -176,6 +176,9 @@ automake -a -c
     %else \
 	--disable-katmai \
     %endif \
+  %else \
+	--disable-mmx \
+	--disable-3dnow \
   %endif \
 %else \
 	--disable-x86 \
