@@ -9,7 +9,6 @@ Group(pl):	X11/Biblioteki
 Source0:	ftp://ftp.mesa3d.org/mesa/%{name}Lib-%{version}.tar.bz2
 Source1:	ftp://ftp.mesa3d.org/mesa/%{name}Demos-%{version}.tar.bz2
 Patch0:		Mesa-paths.patch
-Patch1:		Mesa-libname.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	XFree86-devel
 Provides:	OpenGL
@@ -79,7 +78,6 @@ Programy demonstracyjne dla biblioteki Mesa.
 %prep
 %setup -q -n Mesa-%{version} -b 1
 %patch0 -p1
-%patch1 -p1
 
 %build
 LDFLAGS="-s"; export LDFLAGS
@@ -151,7 +149,7 @@ rm -fr $RPM_BUILD_ROOT
 
 %files devel
 %defattr(644,root,root,755)
-%doc docs/{IAFA-PACKAGE,README,RELNOTES,VERSIONS,CONFORM,COPYRIGHT,DEVINFO,*.spec}.gz
+%doc docs/{IAFA-PACKAGE,README,RELNOTES-*,VERSIONS,CONFORM,COPYRIGHT,DEVINFO,*.spec}.gz
 %doc docs/README.{3DFX,GGI,MGL,QUAKE,X11,THREADS}.gz
 %attr(755,root,root) %{_libdir}/libGL*.so
 
