@@ -4,14 +4,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl):	Bezp³atna implementacja standardu OpenGL
 Name:		Mesa
-Version:	5.0.1
+Version:	5.0.2
 Release:	1
 License:	MIT (core), LGPL (MesaGLU), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	513b4bbd7d38951f05027179063d876b
+# Source0-md5:	dc147598ebdff4312260a7f79b3c5c9c
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	37190374a98c3c892f0698be9ca3acf0
+# Source1-md5:	a71afaeddd0b567423f88085576850d3
 Patch0:		%{name}-am.patch
 Patch1:		%{name}-ac.patch
 Patch2:		%{name}-libGLw.patch
@@ -21,7 +21,9 @@ URL:		http://www.mesa3d.org/
 %{?_with_glide:Requires:	Glide3-DRI}
 %endif
 BuildRequires:	XFree86-devel
-BuildRequires:	autoconf
+BuildRequires:	autoconf >= 2.50
+BuildRequires:	automake
+BuildRequires:	libtool >= 2:1.4d
 BuildRequires:	motif-devel
 BuildRequires:	perl
 Provides:	OpenGL
@@ -103,9 +105,14 @@ Programy demonstracyjne dla bibliotek Mesa.
 %patch2 -p1
 
 # fix demos
-perl -pi -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g" demos/*
+%{__perl} -pi -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g" demos/*
 
 %build
+%{__libtoolize}
+%{__aclocal}
+%{__autoconf}
+%{__autoheader}
+%{__automake}
 %configure \
 	--enable-static \
 	--enable-shared \
