@@ -1,18 +1,33 @@
---- Mesa-3.4.2/widgets-sgi/Makefile.X11.orig	Thu Jun 15 20:46:09 2000
-+++ Mesa-3.4.2/widgets-sgi/Makefile.X11	Sun May 27 14:37:57 2001
-@@ -16,9 +16,9 @@
- INCDIRS = -I../include -I/usr/include/Motif1.2 -I/usr/X11R6/include
+--- Mesa-4.0.1/Make-config.orig	Mon May 14 21:11:32 2001
++++ Mesa-4.0.1/Make-config	Sun May 27 14:31:38 2001
+@@ -453,9 +453,9 @@
+ 	"GLUT_LIB = libglut.so" \
+-	"GLW_LIB = libGLw.so" \
++	"GLW_LIB = libGLw.a" \
+ 	"OSMESA_LIB = libOSMesa.so" \
+ 	"CC = gcc" \
+	"CPLUSPLUS = g++" \
+-	"CFLAGS = -O3 -ansi -pedantic -fPIC -ffast-math -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE -DUSE_XSHM -DPTHREADS -I/usr/X11R6/include" \
++	"CFLAGS = $(OPTFLAGS) -ansi -pedantic -fPIC -ffast-math -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE -DUSE_XSHM -DPTHREADS -I/usr/X11R6/include" \
+ 	"CCFLAGS = $(CFLAGS)" \
+ 	"MAKELIB = ../bin/mklib.linux" \
+ 	"GL_LIB_DEPS = -L/usr/X11R6/lib -lX11 -lXext -lm -lpthread" \
+--- Mesa-5.0/widgets-sgi/Makefile.X11.orig	Sat Nov  2 00:49:47 2002
++++ Mesa-5.0/widgets-sgi/Makefile.X11	Wed Nov 20 13:41:02 2002
+@@ -13,10 +13,10 @@
  LIBDIR = ../lib
  
- # Compile GLwMDrawA.c only if you have Motif headers!
+ # Use these sources for Motif (and Xt) support.  Requires Motif header files.
 -#SOURCES = GLwDrawA.c GLwMDrawA.c
--SOURCES = GLwDrawA.c
 +SOURCES = GLwDrawA.c GLwMDrawA.c
+ 
+ # OR, use these sources for non-Motif (Xt only) build:
+-SOURCES = GLwDrawA.c
 +#SOURCES = GLwDrawA.c
  
  
  OBJECTS = $(SOURCES:.c=.o)
-@@ -40,14 +41,12 @@
+@@ -38,14 +38,12 @@
  clean:
  	-rm *.o *~
  
@@ -28,17 +43,3 @@
  
  
  message:
---- Mesa-4.0.1/Make-config.orig	Mon May 14 21:11:32 2001
-+++ Mesa-4.0.1/Make-config	Sun May 27 14:31:38 2001
-@@ -453,9 +453,9 @@
- 	"GLUT_LIB = libglut.so" \
--	"GLW_LIB = libGLw.so" \
-+	"GLW_LIB = libGLw.a" \
- 	"OSMESA_LIB = libOSMesa.so" \
- 	"CC = gcc" \
-	"CPLUSPLUS = g++" \
--	"CFLAGS = -O3 -ansi -pedantic -fPIC -ffast-math -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE -DUSE_XSHM -DPTHREADS -I/usr/X11R6/include" \
-+	"CFLAGS = $(OPTFLAGS) -ansi -pedantic -fPIC -ffast-math -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE -DUSE_XSHM -DPTHREADS -I/usr/X11R6/include" \
- 	"CCFLAGS = $(CFLAGS)" \
- 	"MAKELIB = ../bin/mklib.linux" \
- 	"GL_LIB_DEPS = -L/usr/X11R6/lib -lX11 -lXext -lm -lpthread" \
