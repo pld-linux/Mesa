@@ -1,15 +1,12 @@
 #
-# _without_glide: without GLIDE
-#
-# _with_dri: add GLX/DRI support (taken from rawhide)
-# (does it make any sense? we have XFree86-OpenGL-* packages...)
+# _with_glide: with GLIDE
 #
 Summary:	Free OpenGL implementation
 Summary(pl):	Bezp≥atna implementacja standardu OpenGL
 Name:		Mesa
-Version:	3.4.2
-Release:	4
-License:	MIT (core), LGPL (libGLU), SGI (libGLw) and others - see COPYRIGHT file
+Version:	4.0.1
+Release:	1
+License:	MIT (core), LGPL (MesaGLU), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Group(de):	X11/Libraries
 Group(es):	X11/Bibliotecas
@@ -20,28 +17,26 @@ Group(ru):	X11/‚…¬Ã…œ‘≈À…
 Group(uk):	X11/‚¶¬Ã¶œ‘≈À…
 Source0:	ftp://ftp.sourceforge.net/pub/sourceforge/mesa3d/%{name}Lib-%{version}.tar.bz2
 Source1:	ftp://ftp.sourceforge.net/pub/sourceforge/mesa3d/%{name}Demos-%{version}.tar.bz2
-%{?_with_dri:Source2:	XFree86-4.0.2-GLonly.tar.gz}
-Patch0:		%{name}-paths.patch
-Patch1:		%{name}-badlibtool.patch
-Patch2:		%{name}-glibc-2.2.patch
-Patch3:		%{name}-am.patch
-Patch4:		%{name}-libGLw.patch
-%{?_with_dri:Patch5: %{name}-XF86DRI-4.0.2.patch}
-Patch6:		%{name}-ac.patch
-#PatchX:	%{name}-3.3-glXcontext.patch
+Patch0:		%{name}-am.patch
+Patch1:		%{name}-ac.patch
+Patch2:		%{name}-paths.patch
+Patch3:		%{name}-libGLw.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	XFree86-devel
-BuildRequires:	motif-devel
-%{!?_without_glide:BuildRequires:	Glide_V3-DRI-devel}
-BuildRequires:	perl
 BuildRequires:	autoconf
-BuildRequires:	automake
-BuildRequires:	libtool
+BuildRequires:	motif-devel
+BuildRequires:	perl
+%ifarch %{ix86} alpha
+%{?_with_glide:BuildRequires:	Glide3-DRI-devel}
+%{?_with_glide:Requires:	Glide3-DRI}
+%endif
 Provides:	OpenGL
 Obsoletes:	XFree86-OpenGL-core XFree86-OpenGL-libs
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define		_noautoreqdep	libGL.so.1 libGLU.so.1
+# avoid XFree86-OpenGL* dependency
+# Glide3 can be provided by Glide_V3-DRI or Glide_V5-DRI
+%define		_noautoreqdep	libGL.so.1 libGLU.so.1 libOSMesa.so.4   libglide3.so.3
 
 %define		_prefix		/usr/X11R6
 %define		_mandir		%{_prefix}/man
@@ -130,34 +125,16 @@ Programy demonstracyjne dla bibliotek Mesa.
 
 %prep
 %setup -q -n Mesa-%{version} -b 1
-
-%if %{?_with_dri:1}%{!?_with_dri:0}
-	mkdir -p src/DRI/GL
-	tar xzf %{SOURCE2}
-	ln -f `find xc -type f` src/DRI
-	mv -f src/DRI/glxmd.h src/DRI/GL/glxmd.h
-%endif
-
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
-%{?_with_dri:%patch5 -p1}
-%patch6 -p1
+
 # fix demos
 perl -pi -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g" demos/*
 
 %build
-rm -f missing acinclude.m4
-libtoolize --copy --force
-aclocal
-autoheader
-autoconf
-automake -a -c
 %configure \
-	CFLAGS="%{rpmcflags} -I%{_includedir} -I. -I../" \
-	AS='%{__cc}' \
 	--enable-static \
 	--enable-shared \
 	--with-ggi="no" \
@@ -165,7 +142,7 @@ automake -a -c
 	--disable-ggi-fbdev \
 	--disable-ggi-genkgi \
 	--enable-optimize \
-	%{?_without_glide:--without-glide} \
+	%{!?_with_glide:--without-glide} \
 %ifarch %{ix86} \
 	--enable-x86 \
   %ifarch i586 i686 k6 athlon \
@@ -181,6 +158,9 @@ automake -a -c
 	--disable-3dnow \
   %endif \
 %else \
+%ifarch sparc \
+	--enable-sparc \
+%endif \
 	--disable-x86 \
 	--disable-mmx \
 	--disable-3dnow
@@ -189,9 +169,10 @@ automake -a -c
 %{__make}
 	
 (cd widgets-mesa
+autoconf
 %configure \
 	--with-motif
-%{__make}
+%{__make} || :
 )
 
 (cd widgets-sgi
@@ -224,26 +205,30 @@ for l in book demos samples xdemos images ; do
 	cp -Rf $l $RPM_BUILD_ROOT%{_examplesdir}/Mesa/$l
 done
 
+rm -f docs/*~
 gzip -9nf docs/*
+
+%clean
+rm -rf $RPM_BUILD_ROOT
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
-%clean
-rm -fr $RPM_BUILD_ROOT
-
 %files
 %defattr(644,root,root,755)
 %doc docs/CONFIG.gz
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/mesa.conf
 %attr(755,root,root) %{_libdir}/libGL*.so.*.*
+%attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
 
 %files devel
 %defattr(644,root,root,755)
 %doc docs/{IAFA-PACKAGE,README,RELNOTES-*,VERSIONS,CONFORM,COPYRIGHT,DEVINFO,*.spec}.gz
 %doc docs/README.{3DFX,GGI,MITS,QUAKE,X11,THREADS}.gz
 %attr(755,root,root) %{_libdir}/libGL*.so
-%{_libdir}/libMesaGLw*.a
+%attr(755,root,root) %{_libdir}/libOSMesa.so
 %{_libdir}/libGLw.a
+%{_libdir}/libMesaGLw*.a
 %dir %{_includedir}/GL
 %{_includedir}/GL/Mesa-widgets
 %{_includedir}/GL/GLwDrawA.h
@@ -256,6 +241,7 @@ rm -fr $RPM_BUILD_ROOT
 %{_includedir}/GL/glu.h
 %{_includedir}/GL/glu_mangle.h
 %{_includedir}/GL/glx.h
+%{_includedir}/GL/glxext.h
 %{_includedir}/GL/glx_mangle.h
 %{_includedir}/GL/osmesa.h
 %{_includedir}/GL/xmesa.h
@@ -267,16 +253,17 @@ rm -fr $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %{_libdir}/libGL.a
 %{_libdir}/libGLU.a
+%{_libdir}/libOSMesa.a
 
 %files demos
 %defattr(644,root,root,755)
-%dir /usr/src/examples/Mesa
-%dir /usr/src/examples/Mesa/book
-%dir /usr/src/examples/Mesa/demos
-%dir /usr/src/examples/Mesa/samples
-%dir /usr/src/examples/Mesa/xdemos
+%dir %{_examplesdir}/Mesa
+%dir %{_examplesdir}/Mesa/book
+%dir %{_examplesdir}/Mesa/demos
+%dir %{_examplesdir}/Mesa/samples
+%dir %{_examplesdir}/Mesa/xdemos
 
-%doc /usr/src/examples/Mesa/book/*
-%doc /usr/src/examples/Mesa/demos/*
-%doc /usr/src/examples/Mesa/samples/*
-%doc /usr/src/examples/Mesa/xdemos/*
+%doc %{_examplesdir}/Mesa/book/*
+%doc %{_examplesdir}/Mesa/demos/*
+%doc %{_examplesdir}/Mesa/samples/*
+%doc %{_examplesdir}/Mesa/xdemos/*
