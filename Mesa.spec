@@ -195,11 +195,11 @@ rm -rf $RPM_BUILD_ROOT
 %files devel
 %defattr(644,root,root,755)
 %doc docs/{DEVINFO,*.spec}
-%attr(755,root,root) %{_libdir}/libGL.la
+%{_libdir}/libGL.la
 %attr(755,root,root) %{_libdir}/libGLU.so
-%attr(755,root,root) %{_libdir}/libGLU.la
+%{_libdir}/libGLU.la
 %attr(755,root,root) %{_libdir}/libOSMesa.so
-%attr(755,root,root) %{_libdir}/libOSMesa.la
+%{_libdir}/libOSMesa.la
 %{_libdir}/libGLw.a
 %{_libdir}/libMesaGLw*.a
 %dir %{_includedir}/GL
