@@ -7,25 +7,23 @@
 Summary:	Free OpenGL implementation
 Summary(pl):	BezpЁatna implementacja standardu OpenGL
 Name:		Mesa
-Version:	3.4.2
-Release:	3
+Version:	4.0.1
+Release:	1
 License:	MIT (core), LGPL (libGLU), SGI (libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Group(de):	X11/Libraries
 Group(es):	X11/Bibliotecas
 Group(fr):	X11/Librairies
 Group(pl):	X11/Biblioteki
-Source0:	ftp://download.sourceforge.net/pub/sourceforge/mesa3d/%{name}Lib-%{version}.tar.bz2
-Source1:	ftp://download.sourceforge.net/pub/sourceforge/mesa3d/%{name}Demos-%{version}.tar.bz2
+Group(pt_BR):	X11/Bibliotecas
+Group(ru):	X11/Библиотеки
+Group(uk):	X11/Б╕бл╕отеки
+Source0:	http://prdownloads.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
+Source1:	http://prdownloads.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 %{?_with_dri:Source2:	XFree86-4.0.2-GLonly.tar.gz}
-Patch0:		%{name}-paths.patch
-Patch1:		%{name}-badlibtool.patch
-Patch2:		%{name}-glibc-2.2.patch
-Patch3:		%{name}-am.patch
-Patch4:		%{name}-libGLw.patch
-%{?_with_dri:Patch5: %{name}-XF86DRI-4.0.2.patch}
-Patch6:		%{name}-ac.patch
-#PatchX:	%{name}-3.3-glXcontext.patch
+Patch0:		%{name}-am.patch
+Patch1:		%{name}-ac.patch
+Patch2:		%{name}-paths.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	XFree86-devel
 BuildRequires:	motif-devel
@@ -68,8 +66,12 @@ Summary:	Development environment for Mesa
 Summary(pl):	╕rodowisko programistyczne biblioteki Mesa
 Group:		Development/Libraries
 Group(de):	Entwicklung/Libraries
+Group(es):	Desarrollo/Bibliotecas
 Group(fr):	Development/Librairies
 Group(pl):	Programowanie/Biblioteki
+Group(pt_BR):	Desenvolvimento/Bibliotecas
+Group(ru):	Разработка/Библиотеки
+Group(uk):	Розробка/Б╕бл╕отеки
 Requires:	%{name} = %{version}
 Requires:	XFree86-devel
 Provides:	OpenGL-devel
@@ -86,8 +88,12 @@ Summary:	Mesa static libraries
 Summary(pl):	Biblioteki statyczne Mesy
 Group:		Development/Libraries
 Group(de):	Entwicklung/Libraries
+Group(es):	Desarrollo/Bibliotecas
 Group(fr):	Development/Librairies
 Group(pl):	Programowanie/Biblioteki
+Group(pt_BR):	Desenvolvimento/Bibliotecas
+Group(ru):	Разработка/Библиотеки
+Group(uk):	Розробка/Б╕бл╕отеки
 Requires:	%{name}-devel = %{version}
 Provides:	OpenGL-static
 Obsoletes:	XFree86-OpenGL-static
@@ -103,8 +109,12 @@ Summary:	Mesa Demos
 Summary(pl):	Demonstracje mo©liwo╤ci bibliotek Mesa
 Group:		Development/Libraries
 Group(de):	Entwicklung/Libraries
+Group(es):	Desarrollo/Bibliotecas
 Group(fr):	Development/Librairies
 Group(pl):	Programowanie/Biblioteki
+Group(pt_BR):	Desenvolvimento/Bibliotecas
+Group(ru):	Разработка/Библиотеки
+Group(uk):	Розробка/Б╕бл╕отеки
 Requires:	OpenGL-devel
 
 %description demos
@@ -115,34 +125,15 @@ Programy demonstracyjne dla bibliotek Mesa.
 
 %prep
 %setup -q -n Mesa-%{version} -b 1
-
-%if %{?_with_dri:1}%{!?_with_dri:0}
-	mkdir -p src/DRI/GL
-	tar xzf %{SOURCE2}
-	ln -f `find xc -type f` src/DRI
-	mv -f src/DRI/glxmd.h src/DRI/GL/glxmd.h
-%endif
-
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%{?_with_dri:%patch5 -p1}
-%patch6 -p1
+
 # fix demos
 perl -pi -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g" demos/*
 
 %build
-rm -f missing acinclude.m4
-libtoolize --copy --force
-aclocal
-autoheader
-autoconf
-automake -a -c
-%configure \
-	CFLAGS="%{rpmcflags} -I%{_includedir} -I. -I../" \
-	AS='%{__cc}' \
+%configure2_13 \
 	--enable-static \
 	--enable-shared \
 	--with-ggi="no" \
@@ -170,7 +161,10 @@ automake -a -c
 	--disable-3dnow \
     %endif \
   %endif \
-%else \
+%else
+%ifarch sparc
+	--enable-sparc
+%endif
 	--disable-x86 \
 	--disable-mmx \
 	--disable-3dnow
