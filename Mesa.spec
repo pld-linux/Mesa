@@ -2,7 +2,7 @@ Summary:	Free OpenGL implementation. Runtime environment
 Summary(pl):	Bezp³atna implementacja standardu OpenGL
 Name:		Mesa
 Version:	3.2
-Release:	2
+Release:	3
 License:	GPL
 Group:		X11/Libraries
 Group(pl):	X11/Biblioteki
