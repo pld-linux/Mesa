@@ -1,14 +1,24 @@
-diff -durN Mesa-3.1.orig/configure.in Mesa-3.1/configure.in
---- Mesa-3.1.orig/configure.in	Fri Nov 19 17:04:54 1999
-+++ Mesa-3.1/configure.in	Wed Apr 19 15:22:52 2000
-@@ -280,8 +280,8 @@
-     AM_CONDITIONAL(HAVE_GGI_GENKGI, test $build_ggi_genkgi_driver = yes)
-   fi
- fi
--ggi_confdir=/usr/local/etc
--ggi_libdir=/usr/local/lib
-+ggi_confdir=/etc
-+ggi_libdir=/usr/lib
- AC_SUBST(ggi_confdir)
- AC_SUBST(ggi_libdir)
- AC_SUBST(GGI_CFLAGS)
+diff -urN Mesa-4.0.1.org/src/GGI/ggimesa.c Mesa-4.0.1/src/GGI/ggimesa.c
+--- Mesa-4.0.1.org/src/GGI/ggimesa.c	Thu Jan  3 17:34:03 2002
++++ Mesa-4.0.1/src/GGI/ggimesa.c	Thu Jan  3 18:54:42 2002
+@@ -46,7 +46,7 @@
+ static void *_ggimesaConfigHandle;
+ 
+ /* FIXME: These should really be defined in the make system using -Dxxx */
+-#define GGIMESACONFFILE "/usr/local/etc/ggi/ggimesa.conf"
++#define GGIMESACONFFILE "/etc/ggi/ggimesa.conf"
+ #define GGIMESATAGLEN 0
+ static char ggimesaconfstub[512] = GGIMESACONFFILE;
+ static char *ggimesaconffile = ggimesaconfstub + GGIMESATAGLEN;
+diff -urN Mesa-4.0.1.org/src/config.c Mesa-4.0.1/src/config.c
+--- Mesa-4.0.1.org/src/config.c	Thu Jan  3 17:34:01 2002
++++ Mesa-4.0.1/src/config.c	Thu Jan  3 18:54:51 2002
+@@ -405,7 +405,7 @@
+ #if defined(__WIN32__) || defined(__MSDOS__)
+    const char *filename = "mesa.cnf";
+ #else
+-   const char *filename = "/etc/mesa.conf";
++   const char *filename = "/etc/X11/mesa.conf"; 
+ #endif
+    FILE *file;
+    struct cnode *list;

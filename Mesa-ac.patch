@@ -1,22 +1,11 @@
-diff -urN Mesa-3.4.2.org/configure.in Mesa-3.4.2/configure.in
---- Mesa-3.4.2.org/configure.in	Mon Nov 26 17:32:19 2001
-+++ Mesa-3.4.2/configure.in	Mon Nov 26 17:32:57 2001
-@@ -8,8 +8,8 @@
- MESA_MAJOR=3
- MESA_MINOR=4
- MESA_TINY=2
--LIBGL_VERSION=1:2:0${MESA_MAJOR}0${MESA_MINOR}0${MESA_TINY}
--LIBGLU_VERSION=1:1:0${MESA_MAJOR}0${MESA_MINOR}0${MESA_TINY}
-+LIBGL_VERSION=1:2:0
-+LIBGLU_VERSION=1:1:0
- LIBGLUT_VERSION=3:7:0
- AC_SUBST(LIBGL_VERSION)
- AC_SUBST(LIBGLU_VERSION)
-@@ -25,6 +25,7 @@
- dnl Checks for programs.
- AC_PROG_CC
- AC_PROG_CPP
+diff -urN Mesa-4.0.1.org/configure.in Mesa-4.0.1/configure.in
+--- Mesa-4.0.1.org/configure.in	Thu Jan  3 17:34:01 2002
++++ Mesa-4.0.1/configure.in	Thu Jan  3 17:44:11 2002
+@@ -44,6 +44,7 @@
+ AC_DISABLE_STATIC
+ AC_DISABLE_FAST_INSTALL
+ AM_MAINTAINER_MODE
 +AM_PROG_AS
- AM_PROG_LIBTOOL
- AC_PROG_INSTALL
- AC_PROG_MAKE_SET
+ 
+ AC_CONFIG_FILES(
+   Makefile

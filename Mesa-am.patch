@@ -1,11 +1,56 @@
---- Mesa-3.4.1/ggi/ggiglut/Makefile.am.orig	Mon Jan  8 16:43:05 2001
-+++ Mesa-3.4.1/ggi/ggiglut/Makefile.am	Sun Feb 25 22:52:38 2001
-@@ -4,7 +4,7 @@
- lib_LTLIBRARIES = libglut.la
+diff -urN Mesa-4.0.1.org/si-glu/libnurbs/interface/Makefile.am Mesa-4.0.1/si-glu/libnurbs/interface/Makefile.am
+--- Mesa-4.0.1.org/si-glu/libnurbs/interface/Makefile.am	Thu Jan  3 17:34:03 2002
++++ Mesa-4.0.1/si-glu/libnurbs/interface/Makefile.am	Thu Jan  3 17:37:22 2002
+@@ -8,7 +8,7 @@
  
- libglut_la_SOURCES = ggiglut.c
--libglut_la_LDFLAGS = $(extra_libraries) -version-info 1:0 -no-undefined \
-+libglut_la_LDFLAGS = -version-info 1:0 -no-undefined \
- 	-export-symbols $(srcdir)/EXPSYMS
+ # Choose one of STANDALONE, LIBRARYBUILD, and GLBUILD. They are debugging
+ # switches. grep LIBRARYBUILD `find .. -name '*.h'` for details.
+-CXXFLAGS += -DLIBRARYBUILD
++CXXFLAGS = @CXXFLAGS@ -DLIBRARYBUILD
  
- ggiincludedir = $(includedir)/ggi
+ include libNIFac_la_SOURCES
+ 
+diff -urN Mesa-4.0.1.org/si-glu/libnurbs/internals/Makefile.am Mesa-4.0.1/si-glu/libnurbs/internals/Makefile.am
+--- Mesa-4.0.1.org/si-glu/libnurbs/internals/Makefile.am	Thu Jan  3 17:34:04 2002
++++ Mesa-4.0.1/si-glu/libnurbs/internals/Makefile.am	Thu Jan  3 17:37:40 2002
+@@ -8,7 +8,7 @@
+ 
+ # Choose one of STANDALONE, LIBRARYBUILD, and GLBUILD. They are debugging
+ # switches. grep LIBRARYBUILD `find .. -name '*.h'` for details.
+-CXXFLAGS += -DLIBRARYBUILD
++CXXFLAGS = @CXXFLAGS@ -DLIBRARYBUILD
+ 
+ include libNInt_la_SOURCES
+ 
+diff -urN Mesa-4.0.1.org/si-glu/libnurbs/nurbtess/Makefile.am Mesa-4.0.1/si-glu/libnurbs/nurbtess/Makefile.am
+--- Mesa-4.0.1.org/si-glu/libnurbs/nurbtess/Makefile.am	Thu Jan  3 17:34:04 2002
++++ Mesa-4.0.1/si-glu/libnurbs/nurbtess/Makefile.am	Thu Jan  3 17:37:54 2002
+@@ -8,7 +8,7 @@
+ 
+ # Choose one of STANDALONE, LIBRARYBUILD, and GLBUILD. They are debugging
+ # switches. grep LIBRARYBUILD `find .. -name '*.h'` for details.
+-CFLAGS += -DLIBRARYBUILD
++CFLAGS = @CXXFLAGS@ -DLIBRARYBUILD
+ 
+ include libNTess_la_SOURCES
+ 
+diff -urN Mesa-4.0.1.org/src-glut/Makefile.am Mesa-4.0.1/src-glut/Makefile.am
+--- Mesa-4.0.1.org/src-glut/Makefile.am	Wed Aug 29 05:01:27 2001
++++ Mesa-4.0.1/src-glut/Makefile.am	Thu Jan  3 17:38:46 2002
+@@ -9,7 +9,6 @@
+ EXTRA_PROGRAMS = capturexfont
+ 
+ libglut_la_LDFLAGS = -version-info @LIBGLUT_VERSION_INFO@ -L../@GLU_DIR@
+-libglut_la_LIBADD = -lGLU
+ libglut_la_SOURCES = \
+ 	glutwin32.h \
+ 	win32_glx.h \
+@@ -67,7 +66,7 @@
+ 	layerutil.h \
+ 	stroke.h
+ 
+-libglut_la_LIBADD = $(X_LIBS) $(X_PRE_LIBS) $(X_LIBADD)
++libglut_la_LIBADD = $(X_LIBS) $(X_PRE_LIBS) $(X_LIBADD) -lGLU
+ capturexfont_LDFLAGS = $(X_LIBS) $(X_PRE_LIBS) $(X_LIBADD)
+ 
+ EXTRA_DIST = descript.mms
