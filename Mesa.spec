@@ -181,9 +181,9 @@ rm -fr $RPM_BUILD_ROOT
 %doc docs/CONFIG.gz
 
 %ifnarch ppc
-%attr(755,root,root) %{_libdir}/libMesa*.so.*.*
+%attr(755,root,root) %{_libdir}/libGL*.so.*.*
 %else
-%{_libdir}/libMesa*.a
+%{_libdir}/libGL*.a
 %endif
 
 %files glut
@@ -210,10 +210,10 @@ rm -fr $RPM_BUILD_ROOT
 %files devel
 %defattr(644,root,root,755)
 %doc docs/{IAFA-PACKAGE,README,RELNOTES,VERSIONS,CONFORM,COPYRIGHT,DEVINFO,*.spec}.gz
-%doc README.{3DFX,GGI,MGL,QUAKE,X11,THREADS}.gz
+%doc docs/README.{3DFX,GGI,MGL,QUAKE,X11,THREADS}.gz
 
 %ifnarch ppc
-%attr(755,root,root) %{_libdir}/libMesa*.so
+%attr(755,root,root) %{_libdir}/libGL*.so
 %endif
 
 %dir %{_libdir}/Mesa
@@ -228,7 +228,7 @@ rm -fr $RPM_BUILD_ROOT
 %files static
 %defattr(644,root,root,755)
 %endif
-%{_libdir}/libMesa*.a
+%{_libdir}/libGL*.a
 
 %files demos
 %defattr(644,root,root,755)
