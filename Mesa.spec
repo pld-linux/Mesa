@@ -1,33 +1,41 @@
 #
-%bcond_with	glide	# with GLIDE
+# Conditional build:
+%bcond_with	glide	# with GLIDE (broken now)
+%bcond_with	xlibs	# use xlibs deps
 #
 Summary:	Free OpenGL implementation
 Summary(pl):	Bezp³atna implementacja standardu OpenGL
 Name:		Mesa
-Version:	6.0.1
+Version:	6.1
 Release:	1
 License:	MIT (core), LGPL (MesaGLU), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	b7f14088c5c2f14490d2739a91102112
+# Source0-md5:	5de1f53ec0709f60fc68fdfed57351f3
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	dd6aadfd9ca8e1cfa90c6ee492bc6f43
-Patch0:		%{name}-libGLw.patch
+# Source1-md5:	89bfe0f6c69b39fd0ebd9fff481a4e9b
+Patch0:		%{name}-opt.patch
 URL:		http://www.mesa3d.org/
 %ifarch %{ix86} alpha
 %{?with_glide:BuildRequires:	Glide3-DRI-devel}
 %{?with_glide:Requires:	Glide3-DRI}
 %endif
-#BuildRequires:	XFree86-devel
+%if %{with xlibs}
 BuildRequires:	libXmu-devel
 BuildRequires:	libXp-devel
+%else
+BuildRequires:	XFree86-devel
+%endif
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
 BuildRequires:	libtool >= 2:1.4d
 BuildRequires:	motif-devel
 BuildRequires:	perl-devel
-Provides:	OpenGL
-Obsoletes:	XFree86-OpenGL-core
+Provides:	OpenGL = 1.5
+Provides:	OpenGL-GLU = 1.3
+# reports version 1.3, but supports glXGetProcAddress() from 1.4
+Provides:	OpenGL-GLX = 1.4
+Obsoletes:	XFree86-OpenGL-libGL
 Obsoletes:	XFree86-OpenGL-libs
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -62,11 +70,17 @@ Summary:	Development environment for Mesa
 Summary(pl):	¦rodowisko programistyczne biblioteki Mesa
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-#Requires:	XFree86-devel
+%if %{with xlibs}
 Requires:	libX11-devel
 Requires:	libXp-devel
-Provides:	OpenGL-devel
+%else
+Requires:	XFree86-devel
+%endif
+Provides:	OpenGL-devel = 1.5
+Provides:	OpenGL-GLU-devel = 1.3
+Provides:	OpenGL-GLX-devel = 1.4
 Obsoletes:	XFree86-OpenGL-devel
+Obsoletes:	XFree86-OpenGL-devel-base
 
 %description devel
 Header files and documentation needed for development.
@@ -79,7 +93,8 @@ Summary:	Mesa static libraries
 Summary(pl):	Biblioteki statyczne Mesy
 Group:		Development/Libraries
 Requires:	%{name}-devel = %{version}-%{release}
-Provides:	OpenGL-static
+Provides:	OpenGL-static = 1.5
+Provides:	OpenGL-GLU-static = 1.3
 Obsoletes:	XFree86-OpenGL-static
 
 %description static
@@ -108,28 +123,25 @@ Programy demonstracyjne dla bibliotek Mesa.
 %{__perl} -pi -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g" progs/demos/*
 
 %build
-# runtime detection, so safe to enable
-ASM=
-# asm is currently broken
-#%ifarch %{ix86}
-#ASM="$ASM -DUSE_X86_ASM"
-#%endif
-#%ifarch i586 i686 k6 athlon
-#ASM="$ASM -DUSE_MMX_ASM"
-#%endif
-#%ifarch i686 athlon
-#ASM="$ASM -DUSE_SSE_ASM"
-#%endif
-#%ifarch sparc sparc64 sparcv9
-#ASM="$ASM -DUSE_SPARC_ASM"
-#%endif
+%ifarch %{ix86}
+targ=linux-x86
+%else
+targ=linux
+%endif
 
-%{__make} linux-static \
-	OPTFLAGS="%{rpmcflags} $ASM"
+%{__make} ${targ}-static \
+	CC="%{__cc}" \
+	CXX="%{__cxx}" \
+	OPT="%{rpmcflags}" \
+	XLIB_DIR=/usr/X11R6/%{_lib} \
+	GLW_SOURCES="GLwDrawA.c GLwMDrawA.c"
 mv -f lib lib-static
 %{__make} clean
-%{__make} linux \
-	OPTFLAGS="%{rpmcflags} $ASM"
+%{__make} ${targ} \
+	CC="%{__cc}" \
+	CXX="%{__cxx}" \
+	OPT="%{rpmcflags}" \
+	XLIB_DIR=/usr/X11R6/%{_lib}
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -141,7 +153,7 @@ cp -rf include/GL/{gl*,osmesa.h,xmesa*} src/glw/GLw*.h $RPM_BUILD_ROOT%{_include
 rm -f $RPM_BUILD_ROOT%{_includedir}/GL/glut*
 
 for l in demos redbook samples xdemos ; do
-	%{__make} -C progs/$l -f Makefile.X11 realclean
+	%{__make} -C progs/$l clean
 done
 for l in demos redbook samples util xdemos images ; do
 	cp -Rf progs/$l $RPM_BUILD_ROOT%{_examplesdir}/Mesa/$l
@@ -157,8 +169,9 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc docs/{*.html,README.{3DFX,GGI,MITS,QUAKE,THREADS,X11},RELNOTES*,VERSIONS}
-%attr(755,root,root) %{_libdir}/libGL*.so.*.*
+%attr(755,root,root) %{_libdir}/libGL.so.*.*
 %attr(755,root,root) %{_libdir}/libGL.so
+%attr(755,root,root) %{_libdir}/libGLU.so.*.*
 %attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
 
 %files devel
