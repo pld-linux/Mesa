@@ -8,7 +8,7 @@ Summary:	Free OpenGL implementation
 Summary(pl):	Bezp³atna implementacja standardu OpenGL
 Name:		Mesa
 Version:	3.4.2
-Release:	2
+Release:	3
 License:	MIT (core), LGPL (libGLU), SGI (libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Group(de):	X11/Libraries
@@ -35,6 +35,8 @@ BuildRequires:	automake
 Provides:	OpenGL
 Obsoletes:	XFree86-OpenGL-core XFree86-OpenGL-libs
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
+%define		_noautoreqdep	libGL.so.1 libGLU.so.1
 
 %define		_prefix		/usr/X11R6
 %define		_mandir		%{_prefix}/man
@@ -101,7 +103,7 @@ Group:		Development/Libraries
 Group(de):	Entwicklung/Libraries
 Group(fr):	Development/Librairies
 Group(pl):	Programowanie/Biblioteki
-Requires:	%{name} = %{version}
+Requires:	OpenGL-devel
 
 %description demos
 Demonstration programs for the Mesa libraries.
