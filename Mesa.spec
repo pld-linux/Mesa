@@ -2,7 +2,7 @@ Summary:	Free OpenGL implementation. Runtime environment
 Summary(pl):	Bezp³atna implementacja standardu OpenGL
 Name:		Mesa
 Version:	3.0
-Release:	4
+Release:	5
 Copyright:	GPL
 Group:		X11/Libraries
 Group(pl):	X11/Biblioteki
@@ -154,8 +154,8 @@ install */lib*.a $RPM_BUILD_ROOT/usr/X11R6/lib
 
 strip $RPM_BUILD_ROOT/usr/X11R6/lib/{lib*so.*.*,Mesa/*/*} ||
 
-gzip -9nf $RPM_BUILD_ROOT/usr/X11R6/man/man3/*
-gzip -9nf FUTURE IAFA-PACKAGE LICENSE README* RELNOTES VERSIONS
+gzip -9nf $RPM_BUILD_ROOT/usr/X11R6/man/man3/* \
+	FUTURE IAFA-PACKAGE LICENSE README* RELNOTES VERSIONS
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -204,18 +204,24 @@ rm -fr $RPM_BUILD_ROOT
 %attr(755,root,root) /usr/X11R6/lib/libMesa*.so
 %endif
 
-%ifnarch ppc
-%files static
-%endif
-%attr(644,root,root) /usr/X11R6/lib/libMesa*.a
-
 %dir /usr/X11R6/lib/Mesa
 /usr/X11R6/lib/Mesa/Make-config
 /usr/X11R6/lib/Mesa/util
 
 %dir /usr/X11R6/include/GL
-/usr/X11R6/include/GL/*.h
+/usr/X11R6/include/GL/GL*.h
+/usr/X11R6/include/GL/Mesa*.h
+/usr/X11R6/include/GL/*mesa.h
+/usr/X11R6/include/GL/*mangle.h
+/usr/X11R6/include/GL/gl.h
+/usr/X11R6/include/GL/glu.h
+/usr/X11R6/include/GL/glx.h
 /usr/X11R6/man/man3/*
+
+%ifnarch ppc
+%files static
+%endif
+%attr(644,root,root) /usr/X11R6/lib/libMesa*.a
 
 %files demos
 %defattr(644,root,root,755)
