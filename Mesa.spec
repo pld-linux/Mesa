@@ -13,6 +13,7 @@ License:	MIT (core), LGPL (libGLU), SGI (libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Group(de):	X11/Libraries
 Group(es):	X11/Bibliotecas
+Group(fr):	X11/Librairies
 Group(pl):	X11/Biblioteki
 Source0:	ftp://download.sourceforge.net/pub/sourceforge/mesa3d/%{name}Lib-%{version}.tar.bz2
 Source1:	ftp://download.sourceforge.net/pub/sourceforge/mesa3d/%{name}Demos-%{version}.tar.bz2
@@ -22,7 +23,7 @@ Patch1:		%{name}-badlibtool.patch
 Patch2:		%{name}-glibc-2.2.patch
 Patch3:		%{name}-am.patch
 Patch4:		%{name}-libGLw.patch
-%{?_with_dri:Patch5:		%{name}-XF86DRI-4.0.2.patch}
+%{?_with_dri:Patch5: %{name}-XF86DRI-4.0.2.patch}
 #Patch6:	%{name}-3.3-glXcontext.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	XFree86-devel
