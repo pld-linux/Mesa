@@ -125,7 +125,7 @@ make linux-alpha-elf
 make linux-ppc
 %endif
 
-%ifarch i386
+%ifarch %{ix86}
 make clean
 make LIBS_ONLY=YES linux-386
 make clean
@@ -139,7 +139,9 @@ make  linux-elf
 (cd widgets-mesa; autoconf; \
 CFLAGS="$RPM_OPT_FLAGS" LDFLAGS="-s" \
 ./configure \
-	--prefix=/usr/X11R6/
+	--prefix=/usr/X11R6/ \
+	--target=%{_target_platform} \
+	--host=%{_host}
 make)
 
 %install
