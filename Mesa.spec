@@ -2,7 +2,7 @@ Summary:	Free OpenGL implementation. Runtime environment
 Summary(pl):	Bezp³atna implementacja standardu OpenGL
 Name:		Mesa
 Version:	3.0
-Release:	8
+Release:	9
 Copyright:	GPL
 Group:		X11/Libraries
 Group(pl):	X11/Biblioteki
@@ -13,7 +13,8 @@ URL:		http://www.mesa3d.org/
 BuildRequires:	XFree86-devel
 BuildRoot:	/tmp/%{name}-%{version}-root
 
-%define _prefix /usr/X11R6
+%define		_prefix		/usr/X11R6
+%define		_mandir		%{_prefix}/man
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to that
@@ -139,10 +140,8 @@ make  linux-elf
 %endif
 
 (cd widgets-mesa; autoconf; \
-CFLAGS="$RPM_OPT_FLAGS" LDFLAGS="-s" \
-./configure \
-	--prefix=%{_prefix} \
-	--target=%{_target_platform} \
+LDFLAGS="-s"; export LDFLAGS
+%configure \
 	--host=%{_host}
 make)
 
