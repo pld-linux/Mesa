@@ -28,15 +28,17 @@
  
  
  message:
---- Mesa-3.4.2/Make-config.orig	Mon May 14 21:11:32 2001
-+++ Mesa-3.4.2/Make-config	Sun May 27 14:31:38 2001
-@@ -453,7 +453,7 @@
+--- Mesa-4.0.1/Make-config.orig	Mon May 14 21:11:32 2001
++++ Mesa-4.0.1/Make-config	Sun May 27 14:31:38 2001
+@@ -453,9 +453,9 @@
  	"GLUT_LIB = libglut.so" \
 -	"GLW_LIB = libGLw.so" \
 +	"GLW_LIB = libGLw.a" \
+ 	"OSMESA_LIB = libOSMesa.so" \
  	"CC = gcc" \
--	"CFLAGS = -O3 -ansi -pedantic -fPIC -ffast-math -D_SVID_SOURCE -D_BSD_SOURCE -DUSE_XSHM -DPTHREADS -I/usr/X11R6/include" \
-+	"CFLAGS = $(OPTFLAGS) -ansi -pedantic -fPIC -ffast-math -D_SVID_SOURCE -D_BSD_SOURCE -DUSE_XSHM -DPTHREADS -I/usr/X11R6/include" \
+	"CPLUSPLUS = g++" \
+-	"CFLAGS = -O3 -ansi -pedantic -fPIC -ffast-math -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE -DUSE_XSHM -DPTHREADS -I/usr/X11R6/include" \
++	"CFLAGS = $(OPTFLAGS) -ansi -pedantic -fPIC -ffast-math -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE -DUSE_XSHM -DPTHREADS -I/usr/X11R6/include" \
+ 	"CCFLAGS = $(CFLAGS)" \
  	"MAKELIB = ../bin/mklib.linux" \
  	"GL_LIB_DEPS = -L/usr/X11R6/lib -lX11 -lXext -lm -lpthread" \
- 	"GLU_LIB_DEPS = -L../lib -lGL -lm" \
