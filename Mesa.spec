@@ -18,7 +18,9 @@ URL:		http://www.mesa3d.org/
 %{?with_glide:BuildRequires:	Glide3-DRI-devel}
 %{?with_glide:Requires:	Glide3-DRI}
 %endif
-BuildRequires:	XFree86-devel
+#BuildRequires:	XFree86-devel
+BuildRequires:	libXmu-devel
+BuildRequires:	libXp-devel
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
 BuildRequires:	libtool >= 2:1.4d
@@ -60,7 +62,9 @@ Summary:	Development environment for Mesa
 Summary(pl):	¦rodowisko programistyczne biblioteki Mesa
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	XFree86-devel
+#Requires:	XFree86-devel
+Requires:	libX11-devel
+Requires:	libXp-devel
 Provides:	OpenGL-devel
 Obsoletes:	XFree86-OpenGL-devel
 
