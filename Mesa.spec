@@ -18,26 +18,30 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		_mandir		%{_prefix}/man
 
 %description
-Mesa is a 3-D graphics library with an API which is very similar to that of
-OpenGL*. To the extent that Mesa utilizes the OpenGL command syntax or
-state machine, it is being used with authorization from Silicon Graphics,
-Inc. However, the author makes no claim that Mesa is in any way a
-compatible replacement for OpenGL or associated with Silicon Graphics, Inc.
-Those who want a licensed implementation of OpenGL should contact a
-licensed vendor. This software is distributed under the terms of the GNU
-Library General Public License, see the LICENSE file for details.
+Mesa is a 3-D graphics library with an API which is very similar to
+that of OpenGL*. To the extent that Mesa utilizes the OpenGL command
+syntax or state machine, it is being used with authorization from
+Silicon Graphics, Inc. However, the author makes no claim that Mesa is
+in any way a compatible replacement for OpenGL or associated with
+Silicon Graphics, Inc. Those who want a licensed implementation of
+OpenGL should contact a licensed vendor. This software is distributed
+under the terms of the GNU Library General Public License, see the
+LICENSE file for details.
 
-* OpenGL(R) is a registered trademark of Silicon Graphics, Inc.
+- OpenGL(R) is a registered trademark of Silicon Graphics, Inc.
 
 %description -l pl
-Mesa jest bibliotek± 3D bêd±c± darmowym odpowiednikiem standartu OpenGL(*).
+Mesa jest bibliotek± 3D bêd±c± darmowym odpowiednikiem standartu
+OpenGL(*).
 
-* OpenGL jest zastrze¿onym znakiem towarowym firmy Silicon Graphics, Inc.
+- OpenGL jest zastrze¿onym znakiem towarowym firmy Silicon Graphics,
+  Inc.
 
 %package devel
 Summary:	Development environment for Mesa
 Summary(pl):	¦rodowisko programistyczne biblioteki Mesa
 Group:		Development/Libraries
+Group(fr):	Development/Librairies
 Group(pl):	Programowanie/Biblioteki
 Requires:	%{name} = %{version}
 Provides:	OpenGL-devel
@@ -52,6 +56,7 @@ Pliki nag³ówkowe i dokumentacja do Mesy.
 Summary:	Mesa static libraries
 Summary(pl):	Biblioteki statyczne Mesy
 Group:		Development/Libraries
+Group(fr):	Development/Librairies
 Group(pl):	Programowanie/Biblioteki
 Requires:	%{name}-devel = %{version}
 Provides:	OpenGL-static
@@ -66,6 +71,7 @@ Biblioteki statyczne Mesy.
 Summary:	Mesa Demos
 Summary(pl):	Demonstracje mo¿liwo¶ci biblioteki MESA.
 Group:		Development/Libraries
+Group(fr):	Development/Librairies
 Group(pl):	Programowanie/Biblioteki
 Requires:	%{name} = %{version}
 
@@ -153,7 +159,7 @@ rm -fr $RPM_BUILD_ROOT
 %doc docs/README.{3DFX,GGI,MGL,QUAKE,X11,THREADS}.gz
 %attr(755,root,root) %{_libdir}/libGL*.so
 
-%dir /usr/X11R6/include/GL
+%dir %{_includedor}/GL
 %{_includedir}/GL/*.h
 %{_mandir}/man3/*
 
