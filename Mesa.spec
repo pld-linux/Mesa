@@ -5,7 +5,7 @@ Summary:	Free OpenGL implementation
 Summary(pl):	Bezp³atna implementacja standardu OpenGL
 Name:		Mesa
 Version:	4.0.1
-Release:	1
+Release:	2
 License:	MIT (core), LGPL (MesaGLU), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	ftp://ftp.sourceforge.net/pub/sourceforge/mesa3d/%{name}Lib-%{version}.tar.bz2
@@ -191,13 +191,14 @@ rm -rf $RPM_BUILD_ROOT
 %doc docs/CONFIG.gz
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/mesa.conf
 %attr(755,root,root) %{_libdir}/libGL*.so.*.*
+%attr(755,root,root) %{_libdir}/libGL.so
 %attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
 
 %files devel
 %defattr(644,root,root,755)
 %doc docs/{IAFA-PACKAGE,README,RELNOTES-*,VERSIONS,CONFORM,COPYRIGHT,DEVINFO,*.spec}.gz
 %doc docs/README.{3DFX,GGI,MITS,QUAKE,X11,THREADS}.gz
-%attr(755,root,root) %{_libdir}/libGL*.so
+%attr(755,root,root) %{_libdir}/libGLU.so
 %attr(755,root,root) %{_libdir}/libOSMesa.so
 %{_libdir}/libGLw.a
 %{_libdir}/libMesaGLw*.a
