@@ -1,16 +1,34 @@
-Summary:	Free OpenGL implementation. Runtime environment
+#
+# bcond_off_glide: without GLIDE
+#
+# bcond_on_dri: add GLX/DRI support (taken from rawhide)
+# (does it make any sense? we have XFree86-OpenGL-* packages...)
+#
+Summary:	Free OpenGL implementation
 Summary(pl):	Bezp³atna implementacja standardu OpenGL
 Name:		Mesa
-Version:	3.2
-Release:	3
+Version:	3.4.1
+Release:	1
 License:	GPL
 Group:		X11/Libraries
+Group(de):	X11/Libraries
+Group(es):	X11/Bibliotecas
 Group(pl):	X11/Biblioteki
-Source0:	ftp://ftp.mesa3d.org/mesa/%{name}Lib-%{version}.tar.bz2
-Source1:	ftp://ftp.mesa3d.org/mesa/%{name}Demos-%{version}.tar.bz2
-Patch0:		Mesa-paths.patch
+Source0:	ftp://download.sourceforge.net/pub/sourceforge/mesa3d/%{name}Lib-%{version}.tar.bz2
+Source1:	ftp://download.sourceforge.net/pub/sourceforge/mesa3d/%{name}Demos-%{version}.tar.bz2
+%{?bcond_on_dri:Source2:	XFree86-4.0.2-GLonly.tar.gz}
+Patch0:		%{name}-paths.patch
+Patch1:		%{name}-badlibtool.patch
+Patch2:		%{name}-glibc-2.2.patch
+Patch3:		%{name}-am.patch
+%{?bcond_on_dri:Patch4:		%{name}-XF86DRI-4.0.2.patch}
+#Patch5:	%{name}-3.3-glXcontext.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	XFree86-devel
+%{!?bcond_off_glide:BuildRequires:	Glide_V3-DRI-devel}
+BuildRequires:	perl
+BuildRequires:	autoconf
+BuildRequires:	automake
 Provides:	OpenGL
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -31,7 +49,7 @@ LICENSE file for details.
 - OpenGL(R) is a registered trademark of Silicon Graphics, Inc.
 
 %description -l pl
-Mesa jest bibliotek± 3D bêd±c± darmowym odpowiednikiem standartu
+Mesa jest bibliotek± 3D bêd±c± darmowym odpowiednikiem standardu
 OpenGL(*).
 
 - OpenGL jest zastrze¿onym znakiem towarowym firmy Silicon Graphics,
@@ -41,6 +59,7 @@ OpenGL(*).
 Summary:	Development environment for Mesa
 Summary(pl):	¦rodowisko programistyczne biblioteki Mesa
 Group:		Development/Libraries
+Group(de):	Entwicklung/Libraries
 Group(fr):	Development/Librairies
 Group(pl):	Programowanie/Biblioteki
 Requires:	%{name} = %{version}
@@ -56,6 +75,7 @@ Pliki nag³ówkowe i dokumentacja do Mesy.
 Summary:	Mesa static libraries
 Summary(pl):	Biblioteki statyczne Mesy
 Group:		Development/Libraries
+Group(de):	Entwicklung/Libraries
 Group(fr):	Development/Librairies
 Group(pl):	Programowanie/Biblioteki
 Requires:	%{name}-devel = %{version}
@@ -69,8 +89,9 @@ Biblioteki statyczne Mesy.
 
 %package demos
 Summary:	Mesa Demos
-Summary(pl):	Demonstracje mo¿liwo¶ci biblioteki MESA.
+Summary(pl):	Demonstracje mo¿liwo¶ci biblioteki MESA
 Group:		Development/Libraries
+Group(de):	Entwicklung/Libraries
 Group(fr):	Development/Librairies
 Group(pl):	Programowanie/Biblioteki
 Requires:	%{name} = %{version}
@@ -83,9 +104,28 @@ Programy demonstracyjne dla biblioteki Mesa.
 
 %prep
 %setup -q -n Mesa-%{version} -b 1
+
+%if %{?bcond_on_dri:1}%{!?bcond_on_dri:0}
+	mkdir -p src/DRI/GL
+	tar xzf %{SOURCE2}
+	ln -f `find xc -type f` src/DRI
+	mv -f src/DRI/glxmd.h src/DRI/GL/glxmd.h
+%endif
+
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%{?bcond_on_dri:%patch4 -p1}
+#%patch5 -p1
+# fix demos
+perl -pi -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g" demos/*
 
 %build
+aclocal -I .
+autoheader
+automake -a -c
+autoconf
 %configure \
 	--enable-static \
 	--enable-shared \
@@ -93,15 +133,22 @@ Programy demonstracyjne dla biblioteki Mesa.
 	--with-svga="no" \
 	--disable-ggi-fbdev \
 	--disable-ggi-genkgi \
+	--enable-optimize \
+	%{?bcond_off_glide:--without-glide} \
 %ifarch %{ix86} \
 	--enable-x86 \
   %ifarch i586 i686 \
 	--enable-mmx \
 	--enable-3dnow \
+    %ifarch i686 \
+	--enable-katmai \
+    %else \
+	--disable-katmai \
+    %endif \
   %else \
     %ifarch k6 \
 	--enable-mmx \
-	--enable-3dnow" \
+	--enable-3dnow \
     %else \
 	--disable-mmx \
 	--disable-3dnow \
@@ -115,9 +162,10 @@ Programy demonstracyjne dla biblioteki Mesa.
 
 %{__make}
 	
-(cd widgets-mesa; autoconf; \
+(cd widgets-mesa
 %configure
-make)
+%{__make}
+)
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -131,12 +179,16 @@ install -d $RPM_BUILD_ROOT%{_mandir}/man3
 	mandir=$RPM_BUILD_ROOT%{_mandir}/man3)
 
 install -d $RPM_BUILD_ROOT/usr/src/examples/Mesa
-for l in book demos samples xdemos ; do
-	cp -R $l $RPM_BUILD_ROOT/usr/src/examples/Mesa/$l
+for l in book demos samples xdemos images ; do
+	cp -Rf $l $RPM_BUILD_ROOT%{_examplesdir}/Mesa/$l
 done
 
 gzip -9nf docs/*
-	
+
+# resolve conflict with XFree86-devel
+rm -f $RPM_BUILD_ROOT%{_mandir}/man3/GLwCreateMDrawingArea.*
+rm -f $RPM_BUILD_ROOT%{_mandir}/man3/GLwDrawingArea{,MakeCurrent,SwapBuffers}.*
+
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
@@ -151,7 +203,7 @@ rm -fr $RPM_BUILD_ROOT
 %files devel
 %defattr(644,root,root,755)
 %doc docs/{IAFA-PACKAGE,README,RELNOTES-*,VERSIONS,CONFORM,COPYRIGHT,DEVINFO,*.spec}.gz
-%doc docs/README.{3DFX,GGI,MGL,QUAKE,X11,THREADS}.gz
+%doc docs/README.{3DFX,GGI,MITS,QUAKE,X11,THREADS}.gz
 %attr(755,root,root) %{_libdir}/libGL*.so
 
 %dir %{_includedir}/GL
@@ -166,6 +218,7 @@ rm -fr $RPM_BUILD_ROOT
 %{_includedir}/GL/MesaWorkstation.h
 %{_includedir}/GL/MesaWorkstationP.h
 %{_includedir}/GL/gl.h
+%{_includedir}/GL/glext.h
 %{_includedir}/GL/gl_mangle.h
 %{_includedir}/GL/glu.h
 %{_includedir}/GL/glu_mangle.h

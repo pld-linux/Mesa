@@ -1,0 +1,29 @@
+--- Mesa/include/GL/glut.h.glibc22	Wed Oct 11 13:14:31 2000
++++ Mesa/include/GL/glut.h	Wed Oct 11 13:19:47 2000
+@@ -13,6 +13,7 @@
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
++#include <stdlib.h> /* for exit() */
+ 
+ #if defined(_WIN32)
+ 
+@@ -94,9 +95,6 @@
+ #  endif
+ #  define GLUT_DEFINED__CRTIMP
+ # endif
+-# ifndef GLUT_BUILDING_LIB
+-extern _CRTIMP void __cdecl exit(int);
+-# endif
+ 
+ /* GLUT callback calling convention for Win32. */
+ # define GLUTCALLBACK __cdecl
+@@ -198,8 +196,6 @@
+ #  define GLUT_APIENTRY_DEFINED
+ #  define GLUTCALLBACK
+ #  define GLUTAPI extern
+-/* Prototype exit for the non-Win32 case (see above). */
+-/*extern void exit(int);  this screws up gcc -ansi -pedantic! */
+ #endif
+ 
+ 
