@@ -32,6 +32,7 @@ BuildRequires:	perl
 BuildRequires:	autoconf
 BuildRequires:	automake
 Provides:	OpenGL
+Obsoletes:	XFree86-OpenGL-core XFree86-OpenGL-libs
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_prefix		/usr/X11R6
@@ -67,6 +68,7 @@ Group(pl):	Programowanie/Biblioteki
 Requires:	%{name} = %{version}
 Requires:	XFree86-devel
 Provides:	OpenGL-devel
+Obsoletes:	XFree86-OpenGL-devel
 
 %description devel
 Header files and documentation needed for development.
@@ -83,6 +85,7 @@ Group(fr):	Development/Librairies
 Group(pl):	Programowanie/Biblioteki
 Requires:	%{name}-devel = %{version}
 Provides:	OpenGL-static
+Obsoletes:	XFree86-OpenGL-static
 
 %description static
 The static version of the Mesa libraries.
