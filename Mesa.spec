@@ -8,7 +8,7 @@ Summary:	Free OpenGL implementation
 Summary(pl):	Bezp³atna implementacja standardu OpenGL
 Name:		Mesa
 Version:	3.4.2
-Release:	3
+Release:	4
 License:	MIT (core), LGPL (libGLU), SGI (libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Group(de):	X11/Libraries
@@ -155,14 +155,13 @@ automake -a -c
 	--enable-x86 \
   %ifarch i586 i686 \
 	--enable-mmx \
-	--enable-3dnow \
     %ifarch i686 \
 	--enable-katmai \
     %else \
 	--disable-katmai \
     %endif \
   %else \
-    %ifarch k6 \
+    %ifarch athlon \
 	--enable-mmx \
 	--enable-3dnow \
     %else \
