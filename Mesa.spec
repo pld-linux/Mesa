@@ -22,7 +22,7 @@ BuildRequires:	XFree86-devel
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
 BuildRequires:	libtool >= 2:1.4d
-BuildRequires:	motif-devel
+BuildRequires:	openmotif-devel
 BuildRequires:	perl-devel
 Provides:	OpenGL
 Obsoletes:	XFree86-OpenGL-core
