@@ -14,8 +14,8 @@ BuildRequires:	XFree86-devel
 Provides:	OpenGL
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define		_prefix		/usr/local
-%define		_mandir		%{_prefix}/share/man
+%define		_prefix		/usr/X11R6
+%define		_mandir		%{_prefix}/man
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
