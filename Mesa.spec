@@ -149,11 +149,10 @@ cd ../widgets-sgi
 touch depend
 %{__make} dep
 %{__make} linux OPTFLAGS="%{rpmcflags}"
-cd ..
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_mandir}/man3,/usr/src/examples/Mesa}
+install -d $RPM_BUILD_ROOT{%{_mandir}/man3,%{_examplesdir}/Mesa}
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
