@@ -162,10 +162,10 @@ make install \
 
 install */lib*.a $RPM_BUILD_ROOT%{_libdir}
 
-strip $RPM_BUILD_ROOT%{_libdir}/{lib*so.*.*,Mesa/*/*} ||
+strip $RPM_BUILD_ROOT%{_libdir}/{lib*so.*.*,Mesa/*/*} || :
 
 gzip -9nf $RPM_BUILD_ROOT%{_mandir}/man3/* \
-	FUTURE IAFA-PACKAGE LICENSE README* RELNOTES VERSIONS
+	docs/{IAFA-PACKAGE,README*,RELNOTES,VERSIONS,CONFIG,CONFORM,COPYRIGHT,DEVINFO,*.spec}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -178,6 +178,7 @@ rm -fr $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
+%doc docs/CONFIG.gz
 
 %ifnarch ppc
 %attr(755,root,root) %{_libdir}/libMesa*.so.*.*
@@ -208,8 +209,8 @@ rm -fr $RPM_BUILD_ROOT
 
 %files devel
 %defattr(644,root,root,755)
-%doc {FUTURE,IAFA-PACKAGE,LICENSE,RELNOTES,VERSIONS,README}.gz
-%doc README.{3DFX,GGI,MGL,QUAKE,VIRGE,X11}.gz
+%doc docs/{IAFA-PACKAGE,README,RELNOTES,VERSIONS,CONFORM,COPYRIGHT,DEVINFO,*.spec}.gz
+%doc README.{3DFX,GGI,MGL,QUAKE,X11,THREADS}.gz
 
 %ifnarch ppc
 %attr(755,root,root) %{_libdir}/libMesa*.so
