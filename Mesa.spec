@@ -39,11 +39,11 @@ Requires:	%{name} = %{version}
 Header files and documentation needed for development.
 
 %description -l pl devel
-Pliki nag³owkowe i dokumentacja do Mesy.
+Pliki nag³ówkowe i dokumentacja do Mesy.
 
 %package static
 Summary:	Mesa static libraries
-Summary(pl):	Biblioteki satyczne Mesy
+Summary(pl):	Biblioteki statyczne Mesy
 Group:		Development/Libraries
 Group(pl):	Programowanie/Biblioteki
 Requires:	%{name}-devel = %{version}
@@ -52,7 +52,7 @@ Requires:	%{name}-devel = %{version}
 The static version of the Mesa libraries
 
 %description -l pl static
-Biblioteki satyczne Mesy.
+Biblioteki statyczne Mesy.
 
 %package glut
 Summary:	GLUT library for Mesa
@@ -80,7 +80,7 @@ Obsoletes: 	glut-devel
 Header files needed for development aplications using GLUT library.
 
 %description -l pl glut-devel
-Pliki nag³owkowe do biblioteki GLUT.
+Pliki nag³ówkowe do biblioteki GLUT.
 
 %package glut-static
 Summary:	GLUT static libraries
@@ -98,7 +98,7 @@ Biblioteki statyczne GLUT.
 
 %package demos
 Summary:	Mesa Demos
-Summary(pl):	Demonstrace mo¿liwo¶ci biblioteki MESA.
+Summary(pl):	Demonstracje mo¿liwo¶ci biblioteki MESA.
 Group:		Development/Libraries
 Group(pl):	Programowanie/Biblioteki
 Requires:	%{name} = %{version}
