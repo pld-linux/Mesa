@@ -1,0 +1,79 @@
+--- Mesa-6.1/configs/linux.orig	2004-08-13 22:56:15.000000000 +0200
++++ Mesa-6.1/configs/linux	2004-08-28 02:19:17.246128472 +0200
+@@ -8,15 +8,16 @@
+ CC = gcc
+ CXX = g++
+ 
+-CFLAGS = -O3 -ansi -pedantic -fPIC -ffast-math -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE -DUSE_XSHM -DPTHREADS -I/usr/X11R6/include
+-CXXFLAGS = -O3 -ansi -pedantic -fPIC -ffast-math -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE
++CFLAGS = $(OPT) -ansi -pedantic -fPIC -ffast-math -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE -DUSE_XSHM -DPTHREADS -I/usr/X11R6/include
++CXXFLAGS = $(OPT) -ansi -pedantic -fPIC -ffast-math -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE
+ GLUT_CFLAGS = -fexceptions
+ 
++XLIB_DIR=/usr/X11R6/lib
+ 
+ # Library/program dependencies
+-GL_LIB_DEPS = -L/usr/X11R6/lib -lX11 -lXext -lm -lpthread
++GL_LIB_DEPS = -L$(XLIB_DIR) -lX11 -lXext -lm -lpthread
+ OSMESA_LIB_DEPS = -L$(LIB_DIR) -lGL
+ GLU_LIB_DEPS = -L$(LIB_DIR) -lGL -lm
+-GLUT_LIB_DEPS = -L$(LIB_DIR) -lGLU -lGL -L/usr/X11R6/lib -lX11 -lXmu -lXt -lXi -lm
+-GLW_LIB_DEPS = -L$(LIB_DIR) -lGL -L/usr/X11R6/lib -lXt -lX11
++GLUT_LIB_DEPS = -L$(LIB_DIR) -lGLU -lGL -L$(XLIB_DIR) -lX11 -lXmu -lXt -lXi -lm
++GLW_LIB_DEPS = -L$(LIB_DIR) -lGL -L$(XLIB_DIR) -lXt -lX11
+ APP_LIB_DEPS = -L$(LIB_DIR) -lglut -lGLU -lGL -lm
+--- Mesa-6.1/configs/linux-static.orig	2004-03-26 16:16:35.000000000 +0100
++++ Mesa-6.1/configs/linux-static	2004-08-28 02:20:28.756257280 +0200
+@@ -8,8 +8,8 @@
+ CC = gcc
+ CXX = g++
+ 
+-CFLAGS = -O3 -ansi -pedantic -ffast-math -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE -DUSE_XSHM -DPTHREADS -I/usr/X11R6/include
+-CXXFLAGS = -O3 -ansi -pedantic -ffast-math -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE
++CFLAGS = $(OPT) -ansi -pedantic -ffast-math -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE -DUSE_XSHM -DPTHREADS -I/usr/X11R6/include
++CXXFLAGS = $(OPT) -ansi -pedantic -ffast-math -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE
+ GLUT_CFLAGS = -fexceptions
+ 
+ MKLIB_OPTIONS = -static
+@@ -21,10 +21,12 @@
+ GLW_LIB_NAME = libGLw.a
+ OSMESA_LIB_NAME = libOSMesa.a
+ 
++XLIB_DIR=/usr/X11R6/lib
++
+ # Library/program dependencies (static libs don't have dependencies)
+ GL_LIB_DEPS = 
+ OSMESA_LIB_DEPS = 
+ GLU_LIB_DEPS = 
+ GLUT_LIB_DEPS = 
+ GLW_LIB_DEPS = 
+-APP_LIB_DEPS = -L$(LIB_DIR) -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lXext -lXmu -lXt -lXi -lpthread -lm -lstdc++
++APP_LIB_DEPS = -L$(LIB_DIR) -lglut -lGLU -lGL -L$(XLIB_DIR) -lX11 -lXext -lXmu -lXt -lXi -lpthread -lm -lstdc++
+--- Mesa-6.1/configs/linux-x86.orig	2004-08-18 01:03:10.000000000 +0200
++++ Mesa-6.1/configs/linux-x86	2004-08-28 02:20:42.196214096 +0200
+@@ -8,9 +8,9 @@
+ CC = gcc
+ CXX = g++
+ 
+-CFLAGS = -Wall -O3 -ansi -pedantic -fPIC -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE -DUSE_XSHM -DUSE_X86_ASM -DUSE_MMX_ASM -DUSE_3DNOW_ASM -DUSE_SSE_ASM -DPTHREADS -I/usr/X11R6/include
++CFLAGS = -Wall $(OPT) -ansi -pedantic -fPIC -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE -DUSE_XSHM -DUSE_X86_ASM -DUSE_MMX_ASM -DUSE_3DNOW_ASM -DUSE_SSE_ASM -DPTHREADS -I/usr/X11R6/include
+ 
+-CXXFLAGS = -Wall -O3 -ansi -pedantic -fPIC -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE
++CXXFLAGS = -Wall $(OPT) -ansi -pedantic -fPIC -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE
+ 
+ GLUT_CFLAGS = -fexceptions
+ 
+--- Mesa-6.1/configs/linux-x86-static.orig	2004-06-30 01:47:27.000000000 +0200
++++ Mesa-6.1/configs/linux-x86-static	2004-08-28 02:20:56.339064056 +0200
+@@ -8,9 +8,9 @@
+ CC = gcc
+ CXX = g++
+ 
+-CFLAGS = -Wall -O3 -ansi -pedantic -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE -DUSE_XSHM -DUSE_X86_ASM -DUSE_MMX_ASM -DUSE_3DNOW_ASM -DUSE_SSE_ASM -DPTHREADS -I/usr/X11R6/include
++CFLAGS = -Wall $(OPT) -ansi -pedantic -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE -DUSE_XSHM -DUSE_X86_ASM -DUSE_MMX_ASM -DUSE_3DNOW_ASM -DUSE_SSE_ASM -DPTHREADS -I/usr/X11R6/include
+ 
+-CXXFLAGS = -Wall -O3 -ansi -pedantic -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE
++CXXFLAGS = -Wall $(OPT) -ansi -pedantic -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE
+ 
+ GLUT_CFLAGS = -fexceptions
+ 
