@@ -1,0 +1,11 @@
+diff -urN Mesa-3.4.2.org/configure.in Mesa-3.4.2/configure.in
+--- Mesa-3.4.2.org/configure.in	Mon Nov 26 16:02:17 2001
++++ Mesa-3.4.2/configure.in	Mon Nov 26 16:02:42 2001
+@@ -25,6 +25,7 @@
+ dnl Checks for programs.
+ AC_PROG_CC
+ AC_PROG_CPP
++AM_PROG_AS
+ AM_PROG_LIBTOOL
+ AC_PROG_INSTALL
+ AC_PROG_MAKE_SET
