@@ -11,7 +11,7 @@ Source1:	ftp://ftp.mesa3d.org/mesa/%{name}Demos-%{version}.tar.bz2
 Patch:		Mesa-misc.diff
 URL:		http://www.mesa3d.org/
 BuildRequires:	XFree86-devel
-BuildRoot:	/tmp/%{name}-%{version}-root
+BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_prefix		/usr/X11R6
 %define		_mandir		%{_prefix}/man
