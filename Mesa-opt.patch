@@ -1,6 +1,6 @@
---- Mesa-6.1/configs/linux.orig	2004-08-13 22:56:15.000000000 +0200
-+++ Mesa-6.1/configs/linux	2004-08-28 02:19:17.246128472 +0200
-@@ -8,15 +8,16 @@
+--- Mesa-6.2/configs/linux.orig	2004-09-13 23:00:35.000000000 +0200
++++ Mesa-6.2/configs/linux	2004-10-17 22:39:21.499035400 +0200
+@@ -8,13 +8,14 @@
  CC = gcc
  CXX = g++
  
@@ -13,17 +13,15 @@
 +XLIB_DIR=/usr/X11R6/lib
  
  # Library/program dependencies
+ # Need to have -L/usr/X11R6/lib in these:
 -GL_LIB_DEPS = -L/usr/X11R6/lib -lX11 -lXext -lm -lpthread
+-GLUT_LIB_DEPS = -L$(LIB_DIR) -l$(GLU_LIB) -l$(GL_LIB) -L/usr/X11R6/lib -lX11 -lXmu -lXt -lXi -lm
+-GLW_LIB_DEPS = -L$(LIB_DIR) -l$(GL_LIB) -L/usr/X11R6/lib -lXt -lX11
 +GL_LIB_DEPS = -L$(XLIB_DIR) -lX11 -lXext -lm -lpthread
- OSMESA_LIB_DEPS = -L$(LIB_DIR) -lGL
- GLU_LIB_DEPS = -L$(LIB_DIR) -lGL -lm
--GLUT_LIB_DEPS = -L$(LIB_DIR) -lGLU -lGL -L/usr/X11R6/lib -lX11 -lXmu -lXt -lXi -lm
--GLW_LIB_DEPS = -L$(LIB_DIR) -lGL -L/usr/X11R6/lib -lXt -lX11
-+GLUT_LIB_DEPS = -L$(LIB_DIR) -lGLU -lGL -L$(XLIB_DIR) -lX11 -lXmu -lXt -lXi -lm
-+GLW_LIB_DEPS = -L$(LIB_DIR) -lGL -L$(XLIB_DIR) -lXt -lX11
- APP_LIB_DEPS = -L$(LIB_DIR) -lglut -lGLU -lGL -lm
---- Mesa-6.1/configs/linux-static.orig	2004-03-26 16:16:35.000000000 +0100
-+++ Mesa-6.1/configs/linux-static	2004-08-28 02:20:28.756257280 +0200
++GLUT_LIB_DEPS = -L$(LIB_DIR) -l$(GLU_LIB) -l$(GL_LIB) -L$(XLIB_DIR) -lX11 -lXmu -lXt -lXi -lm
++GLW_LIB_DEPS = -L$(LIB_DIR) -l$(GL_LIB) -L$(XLIB_DIR) -lXt -lX11
+--- Mesa-6.2/configs/linux-static.orig	2004-09-13 23:00:36.000000000 +0200
++++ Mesa-6.2/configs/linux-static	2004-10-17 22:40:04.359519616 +0200
 @@ -8,8 +8,8 @@
  CC = gcc
  CXX = g++
@@ -47,8 +45,8 @@
  GLU_LIB_DEPS = 
  GLUT_LIB_DEPS = 
  GLW_LIB_DEPS = 
--APP_LIB_DEPS = -L$(LIB_DIR) -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lXext -lXmu -lXt -lXi -lpthread -lm -lstdc++
-+APP_LIB_DEPS = -L$(LIB_DIR) -lglut -lGLU -lGL -L$(XLIB_DIR) -lX11 -lXext -lXmu -lXt -lXi -lpthread -lm -lstdc++
+-APP_LIB_DEPS = -L$(LIB_DIR) -l$(GLUT_LIB) -l$(GLU_LIB) -l$(GL_LIB) -L/usr/X11R6/lib -lX11 -lXext -lXmu -lXt -lXi -lpthread -lm -lstdc++
++APP_LIB_DEPS = -L$(LIB_DIR) -l$(GLUT_LIB) -l$(GLU_LIB) -l$(GL_LIB) -L$(XLIB_DIR) -lX11 -lXext -lXmu -lXt -lXi -lpthread -lm -lstdc++
 --- Mesa-6.1/configs/linux-x86.orig	2004-08-18 01:03:10.000000000 +0200
 +++ Mesa-6.1/configs/linux-x86	2004-08-28 02:20:42.196214096 +0200
 @@ -8,9 +8,9 @@
