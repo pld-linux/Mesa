@@ -2,7 +2,7 @@ Summary:	Free OpenGL implementation. Runtime environment
 Summary(pl):	Bezp³atna implementacja standardu OpenGL
 Name:		Mesa
 Version:	3.0
-Release:	4
+Release:	6
 Copyright:	GPL
 Group:		X11/Libraries
 Group(pl):	X11/Biblioteki
@@ -143,9 +143,11 @@ make)
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT/usr/X11R6/{lib/Mesa,include,man/man3}
+install -d $RPM_BUILD_ROOT/usr/src/examples/Mesa
 
 cp -dpr lib include $RPM_BUILD_ROOT/usr/X11R6
-cp -dpr book demos xdemos samples util $RPM_BUILD_ROOT/usr/X11R6/lib/Mesa
+cp -dpr util $RPM_BUILD_ROOT/usr/X11R6/lib/Mesa
+cp -dpr book demos xdemos samples $RPM_BUILD_ROOT/usr/src/examples/Mesa
 install Make-config $RPM_BUILD_ROOT/usr/X11R6/lib/Mesa
 
 (cd widgets-mesa; make prefix=$RPM_BUILD_ROOT/usr/X11R6 install )
@@ -154,8 +156,8 @@ install */lib*.a $RPM_BUILD_ROOT/usr/X11R6/lib
 
 strip $RPM_BUILD_ROOT/usr/X11R6/lib/{lib*so.*.*,Mesa/*/*} ||
 
-gzip -9nf $RPM_BUILD_ROOT/usr/X11R6/man/man3/*
-gzip -9nf FUTURE IAFA-PACKAGE LICENSE README* RELNOTES VERSIONS
+gzip -9nf $RPM_BUILD_ROOT/usr/X11R6/man/man3/* \
+	FUTURE IAFA-PACKAGE LICENSE README* RELNOTES VERSIONS
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -192,7 +194,8 @@ rm -fr $RPM_BUILD_ROOT
 
 %ifnarch ppc
 %files glut-static
-%attr(644,root,root) /usr/X11R6/lib/libglut.a
+%defattr(644,root,root,755)
+/usr/X11R6/lib/libglut.a
 %endif
 
 %files devel
@@ -204,11 +207,6 @@ rm -fr $RPM_BUILD_ROOT
 %attr(755,root,root) /usr/X11R6/lib/libMesa*.so
 %endif
 
-%ifnarch ppc
-%files static
-%endif
-%attr(644,root,root) /usr/X11R6/lib/libMesa*.a
-
 %dir /usr/X11R6/lib/Mesa
 /usr/X11R6/lib/Mesa/Make-config
 /usr/X11R6/lib/Mesa/util
@@ -217,17 +215,23 @@ rm -fr $RPM_BUILD_ROOT
 /usr/X11R6/include/GL/*.h
 /usr/X11R6/man/man3/*
 
+%ifnarch ppc
+%files static
+%defattr(644,root,root,755)
+%endif
+/usr/X11R6/lib/libMesa*.a
+
 %files demos
 %defattr(644,root,root,755)
-%dir /usr/X11R6/lib/Mesa/book
-%dir /usr/X11R6/lib/Mesa/demos
-%dir /usr/X11R6/lib/Mesa/samples
-%dir /usr/X11R6/lib/Mesa/xdemos
+%dir /usr/src/examples/Mesa/book
+%dir /usr/src/examples/Mesa/demos
+%dir /usr/src/examples/Mesa/samples
+%dir /usr/src/examples/Mesa/xdemos
 
-%attr(-,root,root)/usr/X11R6/lib/Mesa/book/*
-%attr(-,root,root)/usr/X11R6/lib/Mesa/demos/*
-%attr(-,root,root)/usr/X11R6/lib/Mesa/samples/*
-%attr(-,root,root)/usr/X11R6/lib/Mesa/xdemos/*
+%attr(-,root,root)/usr/src/examples/Mesa/book/*
+%attr(-,root,root)/usr/src/examples/Mesa/demos/*
+%attr(-,root,root)/usr/src/examples/Mesa/samples/*
+%attr(-,root,root)/usr/src/examples/Mesa/xdemos/*
 
 %changelog
 * Mon Mar  8 1999 Tomasz K³oczko <kloczek@rudy.mif.pg.gda.pl>
