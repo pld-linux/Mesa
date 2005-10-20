@@ -13,18 +13,22 @@ Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
 # Source0-md5:	0df27701df0924d17ddf41185efa8ce1
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 # Source1-md5:	96708868450c188205e42229b5d813c4
+# from Gentoo:
+# http://www.gentoo.org/cgi-bin/viewcvs.cgi/media-libs/mesa/files/mesa-add-dri-asm-files.patch?rev=1.1&content-type=text/vnd.viewcvs-markup
+Patch0:		%{name}-dri-asm.patch
 URL:		http://www.mesa3d.org/
+BuildRequires:	autoconf >= 2.50
+BuildRequires:	automake
 %ifarch %{ix86} alpha
 %{?with_glide:BuildRequires:	Glide3-DRI-devel}
 %{?with_glide:Requires:	Glide3-DRI}
 %endif
-BuildRequires:	xorg-lib-libXmu-devel
-BuildRequires:	xorg-lib-libXp-devel
-BuildRequires:	autoconf >= 2.50
-BuildRequires:	automake
 BuildRequires:	libtool >= 2:1.4d
 BuildRequires:	motif-devel
 BuildRequires:	sed >= 4.0
+BuildRequires:	xorg-lib-libXi-devel
+BuildRequires:	xorg-lib-libXmu-devel
+BuildRequires:	xorg-lib-libXp-devel
 Provides:	OpenGL = 1.5
 Provides:	OpenGL-GLU = 1.3
 # reports version 1.3, but supports glXGetProcAddress() from 1.4
@@ -59,12 +63,8 @@ Summary:	Development environment for Mesa
 Summary(pl):	¦rodowisko programistyczne biblioteki Mesa
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-%if %{with xlibs}
-Requires:	libX11-devel
-Requires:	libXp-devel
-%else
-Requires:	XFree86-devel
-%endif
+Requires:	xorg-lib-libX11-devel
+Requires:	xorg-lib-libXp-devel
 Provides:	OpenGL-devel = 1.5
 Provides:	OpenGL-GLU-devel = 1.3
 Provides:	OpenGL-GLX-devel = 1.4
@@ -104,41 +104,65 @@ Demonstration programs for the Mesa libraries.
 %description demos -l pl
 Programy demonstracyjne dla bibliotek Mesa.
 
+%package dri
+Summary:	X.org DRI drivers
+Summary(pl):	Sterowniki DRI dla X.org
+Group:		Development/Libraries
+Requires:	OpenGL
+
+%description dri
+X.org DRI drivers.
+
+%description dri -l pl
+Sterowniki DRI dla X.org.
+
 %prep
 %setup -q -n Mesa-%{version} -b 1
+%patch0 -p1
 
 # fix demos
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g"
 
 %build
 %ifarch %{ix86}
-targ=linux-x86
+targ=-x86
 %else
-targ=linux
+targ=""
 %endif
 
-%{__make} ${targ}-static \
+%{__make} linux${targ}-static \
 	CC="%{__cc}" \
 	CXX="%{__cxx}" \
 	OPT_FLAGS="%{rpmcflags}" \
-	XLIB_DIR=/usr/X11R6/%{_lib} \
-	GLW_SOURCES="GLwDrawA.c GLwMDrawA.c"
+	XLIB_DIR=%{_libdir} \
+	GLW_SOURCES="GLwDrawA.c GLwMDrawA.c" \
+	PROGRAM_DIRS=""
 mv -f lib lib-static
 %{__make} clean
-%{__make} ${targ} \
+%{__make} linux-dri${targ} \
 	CC="%{__cc}" \
 	CXX="%{__cxx}" \
 	OPT_FLAGS="%{rpmcflags}" \
-	XLIB_DIR=/usr/X11R6/%{_lib}
+	XLIB_DIR=%{_libdir} \
+	PROGRAM_DIRS=""
+mv -f lib lib-dri
+%{__make} clean
+%{__make} linux${targ} \
+	CC="%{__cc}" \
+	CXX="%{__cxx}" \
+	OPT_FLAGS="%{rpmcflags}" \
+	XLIB_DIR=%{_libdir}
 
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_libdir},%{_includedir}/GL,%{_mandir}/man3,%{_examplesdir}/Mesa}
+install -d $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
 cp -df lib-static/lib[GO]* $RPM_BUILD_ROOT%{_libdir}
 cp -df lib/lib[GO]* $RPM_BUILD_ROOT%{_libdir}
 cp -rf include/GL/{gl*,osmesa.h,xmesa*} src/glw/GLw*.h $RPM_BUILD_ROOT%{_includedir}/GL
 rm -f $RPM_BUILD_ROOT%{_includedir}/GL/glut*
+cp -df lib-dri/*_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
 for l in demos redbook samples xdemos ; do
 	%{__make} -C progs/$l clean
@@ -195,3 +219,8 @@ rm -rf $RPM_BUILD_ROOT
 %files demos
 %defattr(644,root,root,755)
 %{_examplesdir}/Mesa
+
+%files dri
+%defattr(644,root,root,755)
+%dir %{_libdir}/xorg/modules/dri/
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/*_dri.so
