@@ -1,36 +1,30 @@
 #
 # Conditional build:
 %bcond_with	glide	# with GLIDE (broken now)
-%bcond_with	xlibs	# use xlibs deps
 #
 Summary:	Free OpenGL implementation
 Summary(pl):	Wolnodostêpna implementacja standardu OpenGL
 Name:		Mesa
-Version:	6.2.1
+Version:	6.3.2
 Release:	1
 License:	MIT (core), LGPL (MesaGLU), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	f43228cd2bf70f583ef3275c1c545421
+# Source0-md5:	0df27701df0924d17ddf41185efa8ce1
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	3cac74667b50bcbd4f67f594fb4224a2
-Patch0:		%{name}-opt.patch
+# Source1-md5:	96708868450c188205e42229b5d813c4
 URL:		http://www.mesa3d.org/
 %ifarch %{ix86} alpha
 %{?with_glide:BuildRequires:	Glide3-DRI-devel}
 %{?with_glide:Requires:	Glide3-DRI}
 %endif
-%if %{with xlibs}
-BuildRequires:	libXmu-devel
-BuildRequires:	libXp-devel
-%else
-BuildRequires:	XFree86-devel
-%endif
+BuildRequires:	xorg-lib-libXmu-devel
+BuildRequires:	xorg-lib-libXp-devel
 BuildRequires:	autoconf >= 2.50
 BuildRequires:	automake
 BuildRequires:	libtool >= 2:1.4d
 BuildRequires:	motif-devel
-BuildRequires:	%{__perl}
+BuildRequires:	sed >= 4.0
 Provides:	OpenGL = 1.5
 Provides:	OpenGL-GLU = 1.3
 # reports version 1.3, but supports glXGetProcAddress() from 1.4
@@ -112,10 +106,9 @@ Programy demonstracyjne dla bibliotek Mesa.
 
 %prep
 %setup -q -n Mesa-%{version} -b 1
-%patch0 -p1
 
 # fix demos
-%{__perl} -pi -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g" progs/demos/*
+find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g"
 
 %build
 %ifarch %{ix86}
@@ -127,7 +120,7 @@ targ=linux
 %{__make} ${targ}-static \
 	CC="%{__cc}" \
 	CXX="%{__cxx}" \
-	OPT="%{rpmcflags}" \
+	OPT_FLAGS="%{rpmcflags}" \
 	XLIB_DIR=/usr/X11R6/%{_lib} \
 	GLW_SOURCES="GLwDrawA.c GLwMDrawA.c"
 mv -f lib lib-static
@@ -135,7 +128,7 @@ mv -f lib lib-static
 %{__make} ${targ} \
 	CC="%{__cc}" \
 	CXX="%{__cxx}" \
-	OPT="%{rpmcflags}" \
+	OPT_FLAGS="%{rpmcflags}" \
 	XLIB_DIR=/usr/X11R6/%{_lib}
 
 %install
