@@ -18,10 +18,6 @@ Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 # http://www.gentoo.org/cgi-bin/viewcvs.cgi/media-libs/mesa/files/mesa-add-dri-asm-files.patch?rev=1.1&content-type=text/vnd.viewcvs-markup
 Patch0:		%{name}-dri-asm.patch
 URL:		http://www.mesa3d.org/
-%ifarch %{ix86} alpha
-%{?with_glide:BuildRequires:	Glide3-DRI-devel}
-%{?with_glide:Requires:	Glide3-DRI}
-%endif
 BuildRequires:	libdrm-devel
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
@@ -30,6 +26,13 @@ BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libXi-devel
 BuildRequires:	xorg-lib-libXmu-devel
 BuildRequires:	xorg-lib-libXp-devel
+BuildRequires:	xorg-lib-libXxf86vm-devel
+BuildRequires:	xorg-proto-glproto-devel
+BuildRequires:	xorg-util-makedepend
+%if %{with glide}
+BuildRequires:	Glide3-DRI-devel
+Requires:	Glide3-DRI
+%endif
 Provides:	OpenGL = 1.5
 Provides:	OpenGL-GLU = 1.3
 # reports version 1.3, but supports glXGetProcAddress() from 1.4
@@ -143,6 +146,7 @@ mv -f lib lib-static
 %{__make} linux-dri${targ} \
 	CC="%{__cc}" \
 	CXX="%{__cxx}" \
+	MKDEP=makedepend \
 	OPT_FLAGS="%{rpmcflags}" \
 	XLIB_DIR=%{_libdir} \
 	PROGRAM_DIRS=""
