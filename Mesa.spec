@@ -152,16 +152,17 @@ mv -f lib lib-dri
 	CXX="%{__cxx}" \
 	OPT_FLAGS="%{rpmcflags}" \
 	XLIB_DIR=%{_libdir}
+	PROGRAM_DIRS=""
 
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_libdir},%{_includedir}/GL,%{_mandir}/man3,%{_examplesdir}/Mesa}
 install -d $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
-cp -df lib-static/lib[GO]* $RPM_BUILD_ROOT%{_libdir}
-cp -df lib/lib[GO]* $RPM_BUILD_ROOT%{_libdir}
+cp -df lib-static/lib* $RPM_BUILD_ROOT%{_libdir}
+cp -df lib-dri/lib* $RPM_BUILD_ROOT%{_libdir}
+cp -df lib/libOS* $RPM_BUILD_ROOT%{_libdir}
 cp -rf include/GL/{gl*,osmesa.h,xmesa*} src/glw/GLw*.h $RPM_BUILD_ROOT%{_includedir}/GL
-rm -f $RPM_BUILD_ROOT%{_includedir}/GL/glut*
 cp -df lib-dri/*_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
 for l in demos redbook samples xdemos ; do
@@ -181,15 +182,17 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc docs/{*.html,README.{3DFX,GGI,MITS,QUAKE,THREADS,X11},RELNOTES*,VERSIONS}
-%attr(755,root,root) %{_libdir}/libGL.so.*.*
 %attr(755,root,root) %{_libdir}/libGL.so
+%attr(755,root,root) %{_libdir}/libGL.so.*.*
 %attr(755,root,root) %{_libdir}/libGLU.so.*.*
+%attr(755,root,root) %{_libdir}/libglut.so.*.*
 %attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
 
 %files devel
 %defattr(644,root,root,755)
 %doc docs/*.spec
 %attr(755,root,root) %{_libdir}/libGLU.so
+%attr(755,root,root) %{_libdir}/libglut.so
 %attr(755,root,root) %{_libdir}/libOSMesa.so
 %{_libdir}/libGLw.a
 %dir %{_includedir}/GL
@@ -214,6 +217,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %{_libdir}/libGL.a
 %{_libdir}/libGLU.a
+%{_libdir}/libglut.a
 %{_libdir}/libOSMesa.a
 
 %files demos
