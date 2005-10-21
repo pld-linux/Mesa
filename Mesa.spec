@@ -1,6 +1,7 @@
 #
 # Conditional build:
 %bcond_with	glide	# with GLIDE (broken now)
+%bcond_without	motif	# without libGLw Motif interface
 #
 Summary:	Free OpenGL implementation
 Summary(pl):	Wolnodostêpna implementacja standardu OpenGL
@@ -17,14 +18,14 @@ Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 # http://www.gentoo.org/cgi-bin/viewcvs.cgi/media-libs/mesa/files/mesa-add-dri-asm-files.patch?rev=1.1&content-type=text/vnd.viewcvs-markup
 Patch0:		%{name}-dri-asm.patch
 URL:		http://www.mesa3d.org/
-BuildRequires:	autoconf >= 2.50
-BuildRequires:	automake
 %ifarch %{ix86} alpha
 %{?with_glide:BuildRequires:	Glide3-DRI-devel}
 %{?with_glide:Requires:	Glide3-DRI}
 %endif
+BuildRequires:	libdrm-devel
+BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
-BuildRequires:	motif-devel
+%{?with_motif:BuildRequires:	motif-devel}
 BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libXi-devel
 BuildRequires:	xorg-lib-libXmu-devel
@@ -135,7 +136,7 @@ targ=""
 	CXX="%{__cxx}" \
 	OPT_FLAGS="%{rpmcflags}" \
 	XLIB_DIR=%{_libdir} \
-	GLW_SOURCES="GLwDrawA.c GLwMDrawA.c" \
+	GLW_SOURCES="GLwDrawA.c%{?with_motif: GLwMDrawA.c}" \
 	PROGRAM_DIRS=""
 mv -f lib lib-static
 %{__make} clean
@@ -226,5 +227,5 @@ rm -rf $RPM_BUILD_ROOT
 
 %files dri
 %defattr(644,root,root,755)
-%dir %{_libdir}/xorg/modules/dri/
+%dir %{_libdir}/xorg/modules/dri
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/*_dri.so
