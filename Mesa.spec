@@ -1,7 +1,10 @@
 #
+# TODO:
+# - separate libGL/libGLU/libGLw,progs?
+#
 # Conditional build:
 %bcond_with	glide	# with GLIDE (broken now)
-%bcond_without	motif	# without libGLw Motif interface
+%bcond_without	motif	# build static libGLw without Motif interface
 #
 Summary:	Free OpenGL implementation
 Summary(pl):	Wolnodostêpna implementacja standardu OpenGL
@@ -18,6 +21,7 @@ Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 # http://www.gentoo.org/cgi-bin/viewcvs.cgi/media-libs/mesa/files/mesa-add-dri-asm-files.patch?rev=1.1&content-type=text/vnd.viewcvs-markup
 Patch0:		%{name}-dri-asm.patch
 URL:		http://www.mesa3d.org/
+BuildRequires:	expat-devel
 BuildRequires:	libdrm-devel
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
@@ -125,7 +129,7 @@ Sterowniki DRI dla X.org.
 %patch0 -p1
 
 # fix demos
-find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/Mesa/images/,g"
+find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
 
 %build
 %ifarch %{ix86}
@@ -140,43 +144,66 @@ targ=""
 	OPT_FLAGS="%{rpmcflags}" \
 	XLIB_DIR=%{_libdir} \
 	GLW_SOURCES="GLwDrawA.c%{?with_motif: GLwMDrawA.c}" \
-	PROGRAM_DIRS=""
+	SRC_DIRS="mesa glu glw" \
+	PROGRAM_DIRS=
 mv -f lib lib-static
 %{__make} clean
+
 %{__make} linux-dri${targ} \
 	CC="%{__cc}" \
 	CXX="%{__cxx}" \
 	MKDEP=makedepend \
 	OPT_FLAGS="%{rpmcflags}" \
 	XLIB_DIR=%{_libdir} \
-	PROGRAM_DIRS=""
+	SRC_DIRS="glx/x11 mesa glu glw" \
+	PROGRAM_DIRS=
 mv -f lib lib-dri
-%{__make} clean
+%{__make} clean \
+	MKDEP=makedepend
+
 %{__make} linux${targ} \
 	CC="%{__cc}" \
 	CXX="%{__cxx}" \
 	OPT_FLAGS="%{rpmcflags}" \
-	XLIB_DIR=%{_libdir}
-	PROGRAM_DIRS=""
+	XLIB_DIR=%{_libdir} \
+	SRC_DIRS="mesa glu glw" \
+	PROGRAM_DIRS=
+
+%{__make} -C progs/xdemos \
+	CC="%{__cc}" \
+	CXX="%{__cxx}" \
+	OPT_FLAGS="%{rpmcflags}" \
+	XLIB_DIR=%{_libdir} \
+	PROGS="glxgears" \
+	APP_LIB_DEPS="-L\$(LIB_DIR) -lGL"
+
+%{__make} -C progs/xdemos \
+	CC="%{__cc}" \
+	CXX="%{__cxx}" \
+	OPT_FLAGS="%{rpmcflags}" \
+	XLIB_DIR=%{_libdir} \
+	PROGS="glxinfo" \
+	APP_LIB_DEPS="-L\$(LIB_DIR) -lGLU -lGL"
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_libdir},%{_includedir}/GL,%{_mandir}/man3,%{_examplesdir}/Mesa}
+install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_includedir}/GL,%{_examplesdir}/%{name}-%{version}}
 install -d $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
 cp -df lib-static/lib* $RPM_BUILD_ROOT%{_libdir}
 cp -df lib-dri/lib* $RPM_BUILD_ROOT%{_libdir}
 cp -df lib/libOS* $RPM_BUILD_ROOT%{_libdir}
-cp -rf include/GL/{gl*,osmesa.h,xmesa*} src/glw/GLw*.h $RPM_BUILD_ROOT%{_includedir}/GL
+cp -rf include/GL/{gl[!u]*,glu.h,glu_*,osmesa.h,xmesa*} src/glw/GLw*.h $RPM_BUILD_ROOT%{_includedir}/GL
 cp -df lib-dri/*_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
+install progs/xdemos/{glxgears,glxinfo} $RPM_BUILD_ROOT%{_bindir}
 for l in demos redbook samples xdemos ; do
 	%{__make} -C progs/$l clean
 done
 for l in demos redbook samples util xdemos images ; do
-	cp -Rf progs/$l $RPM_BUILD_ROOT%{_examplesdir}/Mesa/$l
+	cp -Rf progs/$l $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/$l
 done
-rm -rf $RPM_BUILD_ROOT%{_examplesdir}/Mesa/*/{.deps,CVS,Makefile.{BeOS*,win,cygnus,DJ,dja}}
+rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{BeOS*,win,cygnus,DJ,dja}}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -187,19 +214,21 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc docs/{*.html,README.{3DFX,GGI,MITS,QUAKE,THREADS,X11},RELNOTES*,VERSIONS}
-%attr(755,root,root) %{_libdir}/libGL.so
+%attr(755,root,root) %{_bindir}/glx*
 %attr(755,root,root) %{_libdir}/libGL.so.*.*
 %attr(755,root,root) %{_libdir}/libGLU.so.*.*
-%attr(755,root,root) %{_libdir}/libglut.so.*.*
+%attr(755,root,root) %{_libdir}/libGLw.so.*.*
 %attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
+# symlink for binary apps which fail to conform Linux OpenGL ABI
+# (and dlopen libGL.so instead of libGL.so.1)
+%attr(755,root,root) %{_libdir}/libGL.so
 
 %files devel
 %defattr(644,root,root,755)
 %doc docs/*.spec
 %attr(755,root,root) %{_libdir}/libGLU.so
-%attr(755,root,root) %{_libdir}/libglut.so
+%attr(755,root,root) %{_libdir}/libGLw.so
 %attr(755,root,root) %{_libdir}/libOSMesa.so
-%{_libdir}/libGLw.a
 %dir %{_includedir}/GL
 %{_includedir}/GL/GLwDrawA.h
 %{_includedir}/GL/GLwDrawAP.h
@@ -222,12 +251,12 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %{_libdir}/libGL.a
 %{_libdir}/libGLU.a
-%{_libdir}/libglut.a
+%{_libdir}/libGLw.a
 %{_libdir}/libOSMesa.a
 
 %files demos
 %defattr(644,root,root,755)
-%{_examplesdir}/Mesa
+%{_examplesdir}/%{name}-%{version}
 
 %files dri
 %defattr(644,root,root,755)
