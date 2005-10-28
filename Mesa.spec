@@ -9,20 +9,17 @@
 Summary:	Free OpenGL implementation
 Summary(pl):	Wolnodostêpna implementacja standardu OpenGL
 Name:		Mesa
-Version:	6.3.2
+Version:	6.4
 Release:	1
 License:	MIT (core), LGPL (MesaGLU), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	0df27701df0924d17ddf41185efa8ce1
+# Source0-md5:	85a84e47a3f718f752f306b9e0954ef6
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	96708868450c188205e42229b5d813c4
-# from Gentoo:
-# http://www.gentoo.org/cgi-bin/viewcvs.cgi/media-libs/mesa/files/mesa-add-dri-asm-files.patch?rev=1.1&content-type=text/vnd.viewcvs-markup
-Patch0:		%{name}-dri-asm.patch
+# Source1-md5:	1a8c4d4fc699233f5fdb902b8753099e
 URL:		http://www.mesa3d.org/
 BuildRequires:	expat-devel
-BuildRequires:	libdrm-devel
+BuildRequires:	libdrm-devel >= 1.0.4-1.20051022
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
@@ -126,7 +123,6 @@ Sterowniki DRI dla X.org.
 
 %prep
 %setup -q -n Mesa-%{version} -b 1
-%patch0 -p1
 
 # fix demos
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
