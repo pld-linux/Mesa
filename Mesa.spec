@@ -10,36 +10,24 @@ Summary:	Free OpenGL implementation
 Summary(pl):	Wolnodostêpna implementacja standardu OpenGL
 Name:		Mesa
 Version:	6.4
-Release:	1
-License:	MIT (core), LGPL (MesaGLU), SGI (GLU,libGLw) and others - see COPYRIGHT file
+Release:	1.1
+License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
 # Source0-md5:	85a84e47a3f718f752f306b9e0954ef6
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 # Source1-md5:	1a8c4d4fc699233f5fdb902b8753099e
 URL:		http://www.mesa3d.org/
+%{?with_glide:BuildRequires:	Glide3-DRI-devel}
 BuildRequires:	expat-devel
 BuildRequires:	libdrm-devel >= 1.0.4-1.20051022
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
 BuildRequires:	sed >= 4.0
-BuildRequires:	xorg-lib-libXi-devel
-BuildRequires:	xorg-lib-libXmu-devel
-BuildRequires:	xorg-lib-libXp-devel
 BuildRequires:	xorg-lib-libXxf86vm-devel
 BuildRequires:	xorg-proto-glproto-devel
 BuildRequires:	xorg-util-makedepend
-%if %{with glide}
-BuildRequires:	Glide3-DRI-devel
-Requires:	Glide3-DRI
-%endif
-Provides:	OpenGL = 1.5
-Provides:	OpenGL-GLU = 1.3
-# reports version 1.3, but supports glXGetProcAddress() from 1.4
-Provides:	OpenGL-GLX = 1.4
-Obsoletes:	XFree86-OpenGL-libGL
-Obsoletes:	XFree86-OpenGL-libs
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # avoid XFree86-OpenGL* dependency
@@ -63,43 +51,182 @@ autoryzacj± Silicon Graphics, Inc. Jednak autor nie posiada licencji
 OpenGL od SGI i nie twierdzi, ¿e Mesa jest kompatybilnym zamiennikiem
 OpenGL ani powi±zana z SGI.
 
-%package devel
-Summary:	Development environment for Mesa
-Summary(pl):	¦rodowisko programistyczne biblioteki Mesa
-Group:		Development/Libraries
-Requires:	%{name} = %{version}-%{release}
+%package libGL
+Summary:	Free Mesa3D implementation of libGL OpenGL library
+Summary(pl):	Wolnodostêpna implementacja Mesa3D biblioteki libGL ze standardu OpenGL
+License:	MIT
+Group:		X11/Libraries
+%{?with_glide:Requires:	Glide3-DRI}
+Provides:	OpenGL = 1.5
+# reports version 1.3, but supports glXGetProcAddress() from 1.4
+Provides:	OpenGL-GLX = 1.4
+Obsoletes:	XFree86-OpenGL-libGL
+
+%description libGL
+Mesa is a 3-D graphics library with an API which is very similar to
+that of OpenGL(R). To the extent that Mesa utilizes the OpenGL command
+syntax or state machine, it is being used with authorization from
+Silicon Graphics, Inc. However, the author does not possess an OpenGL
+license from SGI, and makes no claim that Mesa is in any way a
+compatible replacement for OpenGL or associated with SGI.
+
+This package contains libGL which implements OpenGL 1.5 and GLX 1.4
+specifications. It uses DRI for rendering.
+
+%description libGL -l pl
+Mesa jest bibliotek± grafiki 3D z API bardzo podobnym do OpenGL(R). Do
+tego stopnia, ¿e Mesa u¿ywa sk³adni i automatu OpenGL jest u¿ywana z
+autoryzacj± Silicon Graphics, Inc. Jednak autor nie posiada licencji
+OpenGL od SGI i nie twierdzi, ¿e Mesa jest kompatybilnym zamiennikiem
+OpenGL ani powi±zana z SGI.
+
+Ten pakiet zawiera libGL implementuj±c± specyfikacje OpenGL 1.5 oraz
+GLX 1.4. U¿ywa DRI do renderowania.
+
+%package libGL-devel
+Summary:	Header files for Mesa3D libGL library
+Summary(pl):	Pliki nag³ówkowe biblioteki libGL z projektu Mesa3D
+License:	MIT
+Group:		X11/Development/Libraries
+# loose dependency on libGL to use with other libGL binaries
+Requires:	OpenGL >= 1.5
 Requires:	xorg-lib-libX11-devel
-Requires:	xorg-lib-libXp-devel
 Provides:	OpenGL-devel = 1.5
-Provides:	OpenGL-GLU-devel = 1.3
 Provides:	OpenGL-GLX-devel = 1.4
+Obsoletes:	Mesa-devel
 Obsoletes:	XFree86-OpenGL-devel
 Obsoletes:	XFree86-OpenGL-devel-base
 
-%description devel
-Header files and documentation needed for development.
+%description libGL-devel
+Header files for Mesa3D libGL library.
 
-%description devel -l pl
-Pliki nag³ówkowe i dokumentacja do Mesy.
+%description libGL-devel -l pl
+Pliki nag³ówkowe biblioteki libGL z projektu Mesa3D.
 
-%package static
-Summary:	Mesa static libraries
-Summary(pl):	Biblioteki statyczne Mesy
-Group:		Development/Libraries
-Requires:	%{name}-devel = %{version}-%{release}
+%package libGL-static
+Summary:	Static Mesa3D libGL library
+Summary(pl):	Statyczna biblioteka libGL z projektu Mesa3D
+License:	MIT
+Group:		X11/Development/Libraries
+Requires:	%{name}-libGL-devel = %{version}-%{release}
 Provides:	OpenGL-static = 1.5
+Obsoletes:	Mesa-static
+
+%description libGL-static
+Static Mesa3D libGL library. It uses software renderer.
+
+%description libGL-static -l pl
+Statyczna biblioteka libGL z projektu Mesa3D. U¿ywa programowego
+renderingu.
+
+%package libGLU
+Summary:	SGI implementation of libGLU OpenGL library
+Summary(pl):	Implementacja SGI biblioteki libGLU ze standardu OpenGL
+License:	SGI Free Software License B v1.1
+Group:		Libraries
+# loose dependency on libGL.so.1 to use with other libGL binaries
+Requires:	OpenGL >= 1.2
+Provides:	OpenGL-GLU = 1.3
+Obsoletes:	Mesa-devel
+Obsoletes:	XFree86-OpenGL-libs
+
+%description libGLU
+SGI implementation of libGLU OpenGL library. It implements OpenGL GLU
+1.3 specifications.
+
+%description libGLU -l pl
+Implementacja SGI biblioteki libGLU ze standardu OpenGL. Implementuje
+specyfikacjê OpenGL GLU 1.3.
+
+%package libGLU-devel
+Summary:	Header files for SGI libGLU library
+Summary(pl):	Pliki nag³ówkowe biblioteki SGI libGLU
+License:	SGI Free Software License B v1.1
+Group:		Development/Libraries
+Requires:	%{name}-libGLU = %{version}-%{release}
+Requires:	OpenGL-devel >= 1.2
+Requires:	libstdc++-devel
+Provides:	OpenGL-GLU-devel = 1.3
+
+%description libGLU-devel
+Header files for SGI libGLU library.
+
+%description libGLU-devel -l pl
+Pliki nag³ówkowe biblioteki SGI libGLU.
+
+%package libGLU-static
+Summary:	Static SGI libGLU library
+Summary(pl):	Statyczna biblioteka SGI libGLU
+License:	SGI Free Software License B v1.1
+Group:		Development/Libraries
+Requires:	%{name}-libGLU-devel = %{version}-%{release}
 Provides:	OpenGL-GLU-static = 1.3
-Obsoletes:	XFree86-OpenGL-static
 
-%description static
-The static version of the Mesa libraries.
+%description libGLU-static
+Static SGI libGLU library.
 
-%description static -l pl
-Biblioteki statyczne Mesy.
+%description libGLU-static -l pl
+Statyczna biblioteka SGI libGLU.
+
+%package libGLw
+Summary:	SGI OpenGL Xt widgets library
+Summary(pl):	Biblioteka SGI widgetów Xt dla OpenGL-a
+License:	SGI MIT-like
+Group:		Libraries
+# loose dependency on libGL.so.1 to use with other libGL binaries
+Requires:	OpenGL >= 1.1
+Provides:	OpenGL-GLw
+
+%description libGLw
+SGI OpenGL Xt widgets library.
+
+%description libGLU -l pl
+Biblioteka SGI widgetów Xt dla OpenGL-a.
+
+%package libGLw-devel
+Summary:	Header files for SGI libGLw library
+Summary(pl):	Pliki nag³ówkowe biblioteki SGI libGLw
+License:	SGI Free Software License B v1.1
+Group:		Development/Libraries
+Requires:	%{name}-libGLw = %{version}-%{release}
+Requires:	OpenGL-devel >= 1.2
+Provides:	OpenGL-GLw-devel
+
+%description libGLw-devel
+Header files for SGI libGLw library.
+
+%description libGLw-devel -l pl
+Pliki nag³ówkowe biblioteki SGI libGLw.
+
+%package libGLw-static
+Summary:	Static SGI libGLw library
+Summary(pl):	Statyczna biblioteka SGI libGLw
+License:	SGI Free Software License B v1.1
+Group:		Development/Libraries
+Requires:	%{name}-libGLw-devel = %{version}-%{release}
+Provides:	OpenGL-GLw-static
+
+%description libGLw-static
+Static SGI libGLw library.
+
+%description libGLw-static -l pl
+Statyczna biblioteka SGI libGLw.
+
+%package utils
+Summary:	OpenGL utilities from Mesa3D
+Summary(pl):	Programy narzêdziowe OpenGL z projektu Mesa3D
+Group:		X11/Applications/Graphisc
+# loose deps on libGL/libGLU
+
+%description utils
+OpenGL utilities from Mesa3D: glxgears and glxinfo.
+
+%description utils -l pl
+Programy narzêdziowe OpenGL z projektu Mesa3D: glxgears i glxinfo.
 
 %package demos
 Summary:	Mesa Demos
-Summary(pl):	Demonstracje mo¿liwo¶ci bibliotek Mesa
+Summary(pl):	Programy demonstruj±ce mo¿liwo¶ci bibliotek Mesa
 Group:		Development/Libraries
 Requires:	OpenGL-devel
 
@@ -113,7 +240,7 @@ Programy demonstracyjne dla bibliotek Mesa.
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		Development/Libraries
-Requires:	OpenGL
+Requires:	xorg-xserver-server
 
 %description dri
 X.org DRI drivers.
@@ -121,11 +248,18 @@ X.org DRI drivers.
 %description dri -l pl
 Sterowniki DRI dla X.org.
 
+#%package dri-driver-ffb ...
+
 %prep
 %setup -q -n Mesa-%{version} -b 1
 
 # fix demos
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
+
+%ifnarch sparc sparcv9 sparc64
+# for sunffb driver - useful on sparc only
+sed -i -e 's/ ffb$//' configs/linux-dri
+%endif
 
 %build
 %ifarch %{ix86}
@@ -162,7 +296,7 @@ mv -f lib lib-dri
 	CXX="%{__cxx}" \
 	OPT_FLAGS="%{rpmcflags}" \
 	XLIB_DIR=%{_libdir} \
-	SRC_DIRS="mesa glu glw" \
+	SRC_DIRS="mesa" \
 	PROGRAM_DIRS=
 
 %{__make} -C progs/xdemos \
@@ -188,7 +322,7 @@ install -d $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
 cp -df lib-static/lib* $RPM_BUILD_ROOT%{_libdir}
 cp -df lib-dri/lib* $RPM_BUILD_ROOT%{_libdir}
-cp -df lib/libOS* $RPM_BUILD_ROOT%{_libdir}
+cp -df lib/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
 cp -rf include/GL/{gl[!u]*,glu.h,glu_*,osmesa.h,xmesa*} src/glw/GLw*.h $RPM_BUILD_ROOT%{_includedir}/GL
 cp -df lib-dri/*_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
@@ -204,37 +338,32 @@ rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%post	libGL -p /sbin/ldconfig
+%postun	libGL -p /sbin/ldconfig
 
-%files
+%post	libGLU -p /sbin/ldconfig
+%postun	libGLU -p /sbin/ldconfig
+
+%post	libGLw -p /sbin/ldconfig
+%postun	libGLw -p /sbin/ldconfig
+
+%files libGL
 %defattr(644,root,root,755)
 %doc docs/{*.html,README.{3DFX,GGI,MITS,QUAKE,THREADS,X11},RELNOTES*,VERSIONS}
-%attr(755,root,root) %{_bindir}/glx*
 %attr(755,root,root) %{_libdir}/libGL.so.*.*
-%attr(755,root,root) %{_libdir}/libGLU.so.*.*
-%attr(755,root,root) %{_libdir}/libGLw.so.*.*
 %attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
 # symlink for binary apps which fail to conform Linux OpenGL ABI
 # (and dlopen libGL.so instead of libGL.so.1)
 %attr(755,root,root) %{_libdir}/libGL.so
 
-%files devel
+%files libGL-devel
 %defattr(644,root,root,755)
 %doc docs/*.spec
-%attr(755,root,root) %{_libdir}/libGLU.so
-%attr(755,root,root) %{_libdir}/libGLw.so
 %attr(755,root,root) %{_libdir}/libOSMesa.so
 %dir %{_includedir}/GL
-%{_includedir}/GL/GLwDrawA.h
-%{_includedir}/GL/GLwDrawAP.h
-%{_includedir}/GL/GLwMDrawA.h
-%{_includedir}/GL/GLwMDrawAP.h
 %{_includedir}/GL/gl.h
 %{_includedir}/GL/glext.h
 %{_includedir}/GL/gl_mangle.h
-%{_includedir}/GL/glu.h
-%{_includedir}/GL/glu_mangle.h
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glxext.h
 %{_includedir}/GL/glx_mangle.h
@@ -243,18 +372,81 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/xmesa_x.h
 %{_includedir}/GL/xmesa_xf86.h
 
-%files static
+%files libGL-static
 %defattr(644,root,root,755)
 %{_libdir}/libGL.a
-%{_libdir}/libGLU.a
-%{_libdir}/libGLw.a
 %{_libdir}/libOSMesa.a
 
-%files demos
+%files libGLU
 %defattr(644,root,root,755)
-%{_examplesdir}/%{name}-%{version}
+%attr(755,root,root) %{_libdir}/libGLU.so.*.*
+
+%files libGLU-devel
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libGLU.so
+%{_includedir}/GL/glu.h
+%{_includedir}/GL/glu_mangle.h
+
+%files libGLU-static
+%defattr(644,root,root,755)
+%{_libdir}/libGLU.a
+
+%files libGLw
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libGLw.so.*.*
+
+%files libGLw-devel
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libGLw.so
+%{_includedir}/GL/GLwDrawA.h
+%{_includedir}/GL/GLwDrawAP.h
+%{_includedir}/GL/GLwMDrawA.h
+%{_includedir}/GL/GLwMDrawAP.h
+
+%files libGLw-static
+%defattr(644,root,root,755)
+%{_libdir}/libGLw.a
+
+%files utils
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/glxgears
+%attr(755,root,root) %{_bindir}/glxinfo
 
 %files dri
 %defattr(644,root,root,755)
 %dir %{_libdir}/xorg/modules/dri
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/*_dri.so
+# XXX: split
+%ifarch sparc sparcv9 sparc64
+# sunffb (sparc only)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/ffb_dri.so
+%endif
+# i810
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/i810_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/i830_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
+# ati
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/mach64_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/r128_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/r200_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/r300_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/radeon_dri.so
+# glint (requires update)
+#%attr(755,root,root) %{_libdir}/xorg/modules/dri/gamma_dri.so
+# mga
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/mga_dri.so
+# s3virge (but driver not ready?)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/s3v_dri.so
+# savage
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/savage_dri.so
+# sis
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/sis_dri.so
+# tdfx
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/tdfx_dri.so
+# trident
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/trident_dri.so
+# via
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/unichrome_dri.so
+
+%files demos
+%defattr(644,root,root,755)
+%{_examplesdir}/%{name}-%{version}
