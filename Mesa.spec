@@ -271,7 +271,7 @@ targ=""
 %{__make} linux${targ}-static \
 	CC="%{__cc}" \
 	CXX="%{__cxx}" \
-	OPT_FLAGS="%{rpmcflags}" \
+	OPT_FLAGS="%{rpmcflags} -fno-strict-aliasing" \
 	XLIB_DIR=%{_libdir} \
 	GLW_SOURCES="GLwDrawA.c%{?with_motif: GLwMDrawA.c}" \
 	SRC_DIRS="mesa glu glw" \
@@ -283,7 +283,7 @@ mv -f lib lib-static
 	CC="%{__cc}" \
 	CXX="%{__cxx}" \
 	MKDEP=makedepend \
-	OPT_FLAGS="%{rpmcflags}" \
+	OPT_FLAGS="%{rpmcflags} -fno-strict-aliasing" \
 	XLIB_DIR=%{_libdir} \
 	SRC_DIRS="glx/x11 mesa glu glw" \
 	PROGRAM_DIRS=
@@ -294,7 +294,7 @@ mv -f lib lib-dri
 %{__make} linux${targ} \
 	CC="%{__cc}" \
 	CXX="%{__cxx}" \
-	OPT_FLAGS="%{rpmcflags}" \
+	OPT_FLAGS="%{rpmcflags} -fno-strict-aliasing" \
 	XLIB_DIR=%{_libdir} \
 	SRC_DIRS="mesa" \
 	PROGRAM_DIRS=
