@@ -1,6 +1,6 @@
 #
 # TODO:
-# - separate libGL/libGLU/libGLw,progs?
+# - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
 #
 # Conditional build:
 %bcond_with	glide	# with GLIDE (broken now)
@@ -288,17 +288,6 @@ mv -f lib lib-static
 	XLIB_DIR=%{_libdir} \
 	SRC_DIRS="glx/x11 mesa glu glw" \
 	PROGRAM_DIRS=
-mv -f lib lib-dri
-%{__make} clean \
-	MKDEP=makedepend
-
-%{__make} linux${targ} \
-	CC="%{__cc}" \
-	CXX="%{__cxx}" \
-	OPT_FLAGS="%{rpmcflags} -fno-strict-aliasing" \
-	XLIB_DIR=%{_libdir} \
-	SRC_DIRS="mesa" \
-	PROGRAM_DIRS=
 
 %{__make} -C progs/xdemos \
 	CC="%{__cc}" \
@@ -315,6 +304,18 @@ mv -f lib lib-dri
 	XLIB_DIR=%{_libdir} \
 	PROGS="glxinfo" \
 	APP_LIB_DEPS="-L\$(LIB_DIR) -lGLU -lGL"
+
+mv -f lib lib-dri
+%{__make} clean \
+	MKDEP=makedepend
+
+%{__make} linux${targ} \
+	CC="%{__cc}" \
+	CXX="%{__cxx}" \
+	OPT_FLAGS="%{rpmcflags} -fno-strict-aliasing" \
+	XLIB_DIR=%{_libdir} \
+	SRC_DIRS="mesa" \
+	PROGRAM_DIRS=
 
 %install
 rm -rf $RPM_BUILD_ROOT
