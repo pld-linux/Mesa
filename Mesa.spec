@@ -61,6 +61,7 @@ Group:		X11/Libraries
 Provides:	OpenGL = 1.5
 # reports version 1.3, but supports glXGetProcAddress() from 1.4
 Provides:	OpenGL-GLX = 1.4
+Obsoletes:	Mesa
 Obsoletes:	XFree86-OpenGL-libGL
 
 %description libGL
