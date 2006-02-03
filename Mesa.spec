@@ -10,7 +10,7 @@ Summary:	Free OpenGL implementation
 Summary(pl):	Wolnodostêpna implementacja standardu OpenGL
 Name:		Mesa
 Version:	6.4.1
-Release:	2
+Release:	2.0
 License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
@@ -306,7 +306,7 @@ mv -f lib lib-static
 	OPT_FLAGS="%{rpmcflags}" \
 	XLIB_DIR=%{_libdir} \
 	PROGS="glxinfo" \
-	APP_LIB_DEPS="-L\$(LIB_DIR) -lGLU -lGL"
+	APP_LIB_DEPS="-L\$(LIB_DIR) -lGL -L../../lib-dri -lGLU"
 
 mv -f lib lib-dri
 %{__make} clean \
