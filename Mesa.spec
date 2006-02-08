@@ -219,8 +219,7 @@ Statyczna biblioteka SGI libGLw.
 %package utils
 Summary:	OpenGL utilities from Mesa3D
 Summary(pl):	Programy narzêdziowe OpenGL z projektu Mesa3D
-Group:		X11/Applications/Graphisc
-######		Unknown group!
+Group:		X11/Applications/Graphics
 # loose deps on libGL/libGLU
 
 %description utils
@@ -471,7 +470,7 @@ targ=""
 	CXX="%{__cxx}" \
 	OPT_FLAGS="%{rpmcflags} -fno-strict-aliasing" \
 	XLIB_DIR=%{_libdir} \
-	GLW_SOURCES="GLwDrawA.c%{?with_motif:GLwMDrawA.c}" \
+	GLW_SOURCES="GLwDrawA.c%{?with_motif: GLwMDrawA.c}" \
 	SRC_DIRS="mesa glu glw" \
 	PROGRAM_DIRS=
 mv -f lib lib-static
