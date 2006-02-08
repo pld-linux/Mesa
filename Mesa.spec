@@ -243,7 +243,7 @@ Programy demonstracyjne dla bibliotek Mesa.
 %package dri-driver-ati-mach64
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
-Group:		Development/Libraries
+Group:		X11/Libraries
 Requires:	xorg-xserver-server
 
 %description dri-driver-ati-mach64
@@ -255,7 +255,7 @@ Sterowniki X.org DRI dla rodziny kart ATI mach64.
 %package dri-driver-ati-radeon-R100
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
-Group:		Development/Libraries
+Group:		X11/Libraries
 Requires:	xorg-xserver-server
 
 %description dri-driver-ati-radeon-R100
@@ -267,7 +267,7 @@ Sterowniki X.org DRI dla rodziny kart ATI R100 (Radeon 7000-7500).
 %package dri-driver-ati-radeon-R200
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
-Group:		Development/Libraries
+Group:		X11/Libraries
 Requires:	xorg-xserver-server
 
 %description dri-driver-ati-radeon-R200
@@ -279,7 +279,7 @@ Sterowniki X.org DRI dla rodziny kart ATI R200 (Radeon 8500-92xx).
 %package dri-driver-ati-radeon-R300
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
-Group:		Development/Libraries
+Group:		X11/Libraries
 Requires:	xorg-xserver-server
 
 %description dri-driver-ati-radeon-R300
@@ -291,7 +291,7 @@ Sterowniki X.org DRI dla rodziny kart ATI R300.
 %package dri-driver-ati-rage128
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
-Group:		Development/Libraries
+Group:		X11/Libraries
 Requires:	xorg-xserver-server
 
 %description dri-driver-ati-rage128
@@ -303,7 +303,7 @@ Sterowniki X.org DRI dla rodziny kart ATI rage128.
 %package dri-driver-ffb
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
-Group:		Development/Libraries
+Group:		X11/Libraries
 Requires:	xorg-xserver-server
 
 %description dri-driver-ffb
@@ -315,7 +315,7 @@ Sterowniki X.org DRI dla rodziny kart SUN Creator3D and Elite3D.
 %package dri-driver-glint
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
-Group:		Development/Libraries
+Group:		X11/Libraries
 Requires:	xorg-xserver-server
 
 %description dri-driver-glint
@@ -327,7 +327,7 @@ Sterowniki X.org DRI dla rodziny kart GLINT/Permedia.
 %package dri-driver-intel-i810
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
-Group:		Development/Libraries
+Group:		X11/Libraries
 Requires:	xorg-xserver-server
 
 %description dri-driver-intel-i810
@@ -339,7 +339,7 @@ Sterowniki X.org DRI dla rodziny kart i810.
 %package dri-driver-intel-i830
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
-Group:		Development/Libraries
+Group:		X11/Libraries
 Requires:	xorg-xserver-server
 
 %description dri-driver-intel-i830
@@ -351,7 +351,7 @@ Sterowniki X.org DRI dla rodziny kart i830.
 %package dri-driver-intel-i915
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
-Group:		Development/Libraries
+Group:		X11/Libraries
 Requires:	xorg-xserver-server
 
 %description dri-driver-intel-i915
@@ -363,7 +363,7 @@ Sterowniki X.org DRI dla rodziny kart i915.
 %package dri-driver-matrox
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
-Group:		Development/Libraries
+Group:		X11/Libraries
 Requires:	xorg-xserver-server
 
 %description dri-driver-matrox
@@ -375,7 +375,7 @@ Sterowniki X.org DRI dla rodziny kart Matrox G.
 %package dri-driver-s3virge
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
-Group:		Development/Libraries
+Group:		X11/Libraries
 Requires:	xorg-xserver-server
 
 %description dri-driver-s3virge
@@ -387,7 +387,7 @@ Sterowniki X.org DRI dla rodziny kart S3 Virge.
 %package dri-driver-savage
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
-Group:		Development/Libraries
+Group:		X11/Libraries
 Requires:	xorg-xserver-server
 
 %description dri-driver-savage
@@ -399,7 +399,7 @@ Sterowniki X.org DRI dla rodziny kart S3 Savage.
 %package dri-driver-sis
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
-Group:		Development/Libraries
+Group:		X11/Libraries
 Requires:	xorg-xserver-server
 
 %description dri-driver-sis
@@ -411,7 +411,7 @@ Sterowniki X.org DRI dla rodziny kart SiS.
 %package dri-driver-tdfx
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
-Group:		Development/Libraries
+Group:		X11/Libraries
 Requires:	xorg-xserver-server
 
 %description dri-driver-tdfx
@@ -425,7 +425,7 @@ Banshee and Velocity 100/200).
 %package dri-driver-trident
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
-Group:		Development/Libraries
+Group:		X11/Libraries
 Requires:	xorg-xserver-server
 
 %description dri-driver-trident
@@ -437,7 +437,7 @@ Sterowniki X.org DRI dla rodziny kart Trident.
 %package dri-driver-via-unichrome
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
-Group:		Development/Libraries
+Group:		X11/Libraries
 Requires:	xorg-xserver-server
 
 %description dri-driver-via-unichrome
