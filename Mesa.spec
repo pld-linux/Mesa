@@ -10,7 +10,7 @@ Summary:	Free OpenGL implementation
 Summary(pl):	Wolnodostêpna implementacja standardu OpenGL
 Name:		Mesa
 Version:	6.4.1
-Release:	2.0
+Release:	2.1
 License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
@@ -30,6 +30,7 @@ BuildRequires:	xorg-lib-libXt-devel
 BuildRequires:	xorg-lib-libXxf86vm-devel
 BuildRequires:	xorg-proto-glproto-devel
 BuildRequires:	xorg-util-makedepend
+Obsoletes:	Mesa-dri
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # avoid XFree86-OpenGL* dependency
@@ -219,6 +220,7 @@ Statyczna biblioteka SGI libGLw.
 Summary:	OpenGL utilities from Mesa3D
 Summary(pl):	Programy narzêdziowe OpenGL z projektu Mesa3D
 Group:		X11/Applications/Graphisc
+######		Unknown group!
 # loose deps on libGL/libGLU
 
 %description utils
@@ -239,19 +241,211 @@ Demonstration programs for the Mesa libraries.
 %description demos -l pl
 Programy demonstracyjne dla bibliotek Mesa.
 
-%package dri
+%package dri-driver-ati-mach64
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		Development/Libraries
 Requires:	xorg-xserver-server
 
-%description dri
-X.org DRI drivers.
+%description dri-driver-ati-mach64
+X.org DRI drivers for ATI mach64 card family.
 
-%description dri -l pl
-Sterowniki DRI dla X.org.
+%description dri-driver-ati-mach64 -l pl
+Sterowniki X.org DRI dla rodziny kart ATI mach64.
 
-#%package dri-driver-ffb ...
+%package dri-driver-ati-radeon-R100
+Summary:	X.org DRI drivers
+Summary(pl):	Sterowniki DRI dla X.org
+Group:		Development/Libraries
+Requires:	xorg-xserver-server
+
+%description dri-driver-ati-radeon-R100
+X.org DRI drivers for ATI R100 card family (Radeon 7000-7500).
+
+%description dri-driver-ati-radeon-R100 -l pl
+Sterowniki X.org DRI dla rodziny kart ATI R100 (Radeon 7000-7500).
+
+%package dri-driver-ati-radeon-R200
+Summary:	X.org DRI drivers
+Summary(pl):	Sterowniki DRI dla X.org
+Group:		Development/Libraries
+Requires:	xorg-xserver-server
+
+%description dri-driver-ati-radeon-R200
+X.org DRI drivers for ATI R200 card family (Radeon 8500-92xx)
+
+%description dri-driver-ati-radeon-R200 -l pl
+Sterowniki X.org DRI dla rodziny kart ATI R200 (Radeon 8500-92xx).
+
+%package dri-driver-ati-radeon-R300
+Summary:	X.org DRI drivers
+Summary(pl):	Sterowniki DRI dla X.org
+Group:		Development/Libraries
+Requires:	xorg-xserver-server
+
+%description dri-driver-ati-radeon-R300
+X.org DRI drivers for ATI R300 card family.
+
+%description dri-driver-ati-radeon-R300 -l pl
+Sterowniki X.org DRI dla rodziny kart ATI R300.
+
+%package dri-driver-ati-rage128
+Summary:	X.org DRI drivers
+Summary(pl):	Sterowniki DRI dla X.org
+Group:		Development/Libraries
+Requires:	xorg-xserver-server
+
+%description dri-driver-ati-rage128
+X.org DRI drivers for ATI rage128 card family.
+
+%description dri-driver-ati-rage128 -l pl
+Sterowniki X.org DRI dla rodziny kart ATI rage128.
+
+%package dri-driver-ffb
+Summary:	X.org DRI drivers
+Summary(pl):	Sterowniki DRI dla X.org
+Group:		Development/Libraries
+Requires:	xorg-xserver-server
+
+%description dri-driver-ffb
+X.org DRI drivers for SUN Creator3D and Elite3D card family.
+
+%description dri-driver-ffb -l pl
+Sterowniki X.org DRI dla rodziny kart SUN Creator3D and Elite3D.
+
+%package dri-driver-glint
+Summary:	X.org DRI drivers
+Summary(pl):	Sterowniki DRI dla X.org
+Group:		Development/Libraries
+Requires:	xorg-xserver-server
+
+%description dri-driver-glint
+X.org DRI drivers for GLINT/Permedia card family.
+
+%description dri-driver-glint -l pl
+Sterowniki X.org DRI dla rodziny kart GLINT/Permedia.
+
+%package dri-driver-intel-i810
+Summary:	X.org DRI drivers
+Summary(pl):	Sterowniki DRI dla X.org
+Group:		Development/Libraries
+Requires:	xorg-xserver-server
+
+%description dri-driver-intel-i810
+X.org DRI drivers for Intel i810 card family.
+
+%description dri-driver-intel-i810 -l pl
+Sterowniki X.org DRI dla rodziny kart i810.
+
+%package dri-driver-intel-i830
+Summary:	X.org DRI drivers
+Summary(pl):	Sterowniki DRI dla X.org
+Group:		Development/Libraries
+Requires:	xorg-xserver-server
+
+%description dri-driver-intel-i830
+X.org DRI drivers for Intel i830 card family.
+
+%description dri-driver-intel-i830 -l pl
+Sterowniki X.org DRI dla rodziny kart i830.
+
+%package dri-driver-intel-i915
+Summary:	X.org DRI drivers
+Summary(pl):	Sterowniki DRI dla X.org
+Group:		Development/Libraries
+Requires:	xorg-xserver-server
+
+%description dri-driver-intel-i915
+X.org DRI drivers for Intel i915 card family.
+
+%description dri-driver-intel-i915 -l pl
+Sterowniki X.org DRI dla rodziny kart i915.
+
+%package dri-driver-matrox
+Summary:	X.org DRI drivers
+Summary(pl):	Sterowniki DRI dla X.org
+Group:		Development/Libraries
+Requires:	xorg-xserver-server
+
+%description dri-driver-matrox
+X.org DRI drivers for Matrox G card family.
+
+%description dri-driver-matrox -l pl
+Sterowniki X.org DRI dla rodziny kart Matrox G.
+
+%package dri-driver-s3virge
+Summary:	X.org DRI drivers
+Summary(pl):	Sterowniki DRI dla X.org
+Group:		Development/Libraries
+Requires:	xorg-xserver-server
+
+%description dri-driver-s3virge
+X.org DRI drivers for S3 Virge card family.
+
+%description dri-driver-s3virge -l pl
+Sterowniki X.org DRI dla rodziny kart S3 Virge.
+
+%package dri-driver-savage
+Summary:	X.org DRI drivers
+Summary(pl):	Sterowniki DRI dla X.org
+Group:		Development/Libraries
+Requires:	xorg-xserver-server
+
+%description dri-driver-savage
+X.org DRI drivers for S3 Savage card family.
+
+%description dri-driver-savage -l pl
+Sterowniki X.org DRI dla rodziny kart S3 Savage.
+
+%package dri-driver-sis
+Summary:	X.org DRI drivers
+Summary(pl):	Sterowniki DRI dla X.org
+Group:		Development/Libraries
+Requires:	xorg-xserver-server
+
+%description dri-driver-sis
+X.org DRI drivers for SiS card family.
+
+%description dri-driver-sis -l pl
+Sterowniki X.org DRI dla rodziny kart SiS.
+
+%package dri-driver-tdfx
+Summary:	X.org DRI drivers
+Summary(pl):	Sterowniki DRI dla X.org
+Group:		Development/Libraries
+Requires:	xorg-xserver-server
+
+%description dri-driver-tdfx
+X.org DRI drivers for 3DFX Voodoo card family (Voodoo 3,4,5, Banshee
+and Velocity 100/200).
+
+%description dri-driver-tdfx -l pl
+Sterowniki X.org DRI dla rodziny kart 3DFX Voodoo. (Voodoo 3,4,5,
+Banshee and Velocity 100/200).
+
+%package dri-driver-trident
+Summary:	X.org DRI drivers
+Summary(pl):	Sterowniki DRI dla X.org
+Group:		Development/Libraries
+Requires:	xorg-xserver-server
+
+%description dri-driver-trident
+X.org DRI drivers for Trident card family.
+
+%description dri-driver-trident -l pl
+Sterowniki X.org DRI dla rodziny kart Trident.
+
+%package dri-driver-via-unichrome
+Summary:	X.org DRI drivers
+Summary(pl):	Sterowniki DRI dla X.org
+Group:		Development/Libraries
+Requires:	xorg-xserver-server
+
+%description dri-driver-via-unichrome
+X.org DRI drivers for VIA Unichrome card family.
+
+%description dri-driver-via-unichrome -l pl
+Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
 
 %prep
 %setup -q -n Mesa-%{version} -b 1
@@ -277,7 +471,7 @@ targ=""
 	CXX="%{__cxx}" \
 	OPT_FLAGS="%{rpmcflags} -fno-strict-aliasing" \
 	XLIB_DIR=%{_libdir} \
-	GLW_SOURCES="GLwDrawA.c%{?with_motif: GLwMDrawA.c}" \
+	GLW_SOURCES="GLwDrawA.c%{?with_motif:GLwMDrawA.c}" \
 	SRC_DIRS="mesa glu glw" \
 	PROGRAM_DIRS=
 mv -f lib lib-static
@@ -417,39 +611,78 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/glxgears
 %attr(755,root,root) %{_bindir}/glxinfo
 
-%files dri
+%files dri-driver-ati-mach64
 %defattr(644,root,root,755)
-%dir %{_libdir}/xorg/modules/dri
-# XXX: split
-%ifarch sparc sparcv9 sparc64
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/mach64_dri.so
+
+%files dri-driver-ati-radeon-R100
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/radeon_dri.so
+
+%files dri-driver-ati-radeon-R200
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/r200_dri.so
+
+%files dri-driver-ati-radeon-R300
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/r300_dri.so
+
+%files dri-driver-ati-rage128
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/r128_dri.so
+
 # sunffb (sparc only)
+%ifarch sparc sparcv9 sparc64
+%files dri-driver-ffb
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/ffb_dri.so
 %endif
-# i810
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/i810_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/i830_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
-# ati
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/mach64_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/r128_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/r200_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/r300_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/radeon_dri.so
+
 # glint (requires update)
-#%attr(755,root,root) %{_libdir}/xorg/modules/dri/gamma_dri.so
-# mga
+%if 0
+%files dri-driver-glint
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/gamma_dri.so
+%endif
+
+%files dri-driver-intel-i810
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/i810_dri.so
+
+%files dri-driver-intel-i830
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/i830_dri.so
+
+%files dri-driver-intel-i915
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
+
+%files dri-driver-matrox
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mga_dri.so
-# s3virge (but driver not ready?)
+
+%files dri-driver-s3virge
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/s3v_dri.so
-# savage
+
+%files dri-driver-savage
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/savage_dri.so
-# sis
+
+%files dri-driver-sis
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/sis_dri.so
-# tdfx
+
+%files dri-driver-tdfx
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/tdfx_dri.so
-# trident
+
+%files dri-driver-trident
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/trident_dri.so
-# via
+
+%files dri-driver-via-unichrome
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/unichrome_dri.so
 
 %files demos
