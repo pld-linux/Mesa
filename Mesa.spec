@@ -1,6 +1,7 @@
 #
 # TODO:
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
+# - package OpenGL man pages (from monolith or SGI) somewhere
 #
 # Conditional build:
 %bcond_with	glide	# with GLIDE (broken now)
@@ -64,6 +65,7 @@ Provides:	OpenGL = 1.5
 # reports version 1.3, but supports glXGetProcAddress() from 1.4
 Provides:	OpenGL-GLX = 1.4
 Obsoletes:	Mesa
+Obsoletes:	X11-OpenGL-libGL
 Obsoletes:	XFree86-OpenGL-libGL
 
 %description libGL
@@ -98,6 +100,8 @@ Requires:	xorg-lib-libX11-devel
 Provides:	OpenGL-devel = 1.5
 Provides:	OpenGL-GLX-devel = 1.4
 Obsoletes:	Mesa-devel
+Obsoletes:	X11-OpenGL-devel
+Obsoletes:	X11-OpenGL-devel-base
 Obsoletes:	XFree86-OpenGL-devel
 Obsoletes:	XFree86-OpenGL-devel-base
 
@@ -115,6 +119,8 @@ Group:		X11/Development/Libraries
 Requires:	%{name}-libGL-devel = %{version}-%{release}
 Provides:	OpenGL-static = 1.5
 Obsoletes:	Mesa-static
+Obsoletes:	X11-OpenGL-static
+Obsoletes:	XFree86-OpenGL-static
 
 %description libGL-static
 Static Mesa3D libGL library. It uses software renderer.
@@ -132,6 +138,7 @@ Group:		Libraries
 Requires:	OpenGL >= 1.2
 Provides:	OpenGL-GLU = 1.3
 Obsoletes:	Mesa-devel
+Obsoletes:	X11-OpenGL-libs
 Obsoletes:	XFree86-OpenGL-libs
 
 %description libGLU
