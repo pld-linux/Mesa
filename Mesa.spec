@@ -457,7 +457,7 @@ Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
 %prep
 %setup -q -n Mesa-%{version} -b 1
 %patch0 -p1
-%patch0 -p0
+%patch1 -p0
 
 # fix demos
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
