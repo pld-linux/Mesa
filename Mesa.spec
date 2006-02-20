@@ -19,6 +19,7 @@ Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 # Source1-md5:	9cae1ab874af533ce356bd7dfe2e0bb0
 Patch0:		%{name}-modules_dir.patch
+Patch1:		%{name}-glx-x11-render-texture.diff
 URL:		http://www.mesa3d.org/
 %{?with_glide:BuildRequires:	Glide3-DRI-devel}
 BuildRequires:	expat-devel
@@ -456,6 +457,7 @@ Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
 %prep
 %setup -q -n Mesa-%{version} -b 1
 %patch0 -p1
+%patch0 -p0
 
 # fix demos
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
