@@ -1,0 +1,139 @@
+Index: src/glx/x11/glxcmds.c
+===================================================================
+RCS file: /cvs/mesa/Mesa/src/glx/x11/glxcmds.c,v
+retrieving revision 1.8
+diff -u -r1.8 glxcmds.c
+--- src/glx/x11/glxcmds.c	26 Jul 2005 22:53:38 -0000	1.8
++++ src/glx/x11/glxcmds.c	28 Jul 2005 00:40:40 -0000
+@@ -2589,7 +2589,88 @@
+ }
+ /*@}*/
+ 
++PUBLIC Bool glXBindTexImageMESA(Display *dpy,
++				GLXDrawable drawable,
++				int buffer)
++{
++    xGLXVendorPrivateReq *req;
++    GLXContext gc = __glXGetCurrentContext();
++    GLXDrawable *drawable_ptr;
++    int *buffer_ptr;
++    CARD8 opcode;
++
++    if (gc == NULL)
++	return False;
++
++#ifdef GLX_DIRECT_RENDERING
++    if (gc->isDirect)
++	return False;
++#endif
++
++    opcode = __glXSetupForCommand(dpy);
++    if (!opcode)
++	return False;
++
++    LockDisplay(dpy);
++    GetReqExtra(GLXVendorPrivate, sizeof(GLXDrawable)+sizeof(int),req);
++    req->reqType = opcode;
++    req->glxCode = X_GLXVendorPrivate;
++    req->vendorCode = X_GLXvop_BindTexImageMESA;
++    req->contextTag = gc->currentContextTag;
++
++    drawable_ptr = (GLXDrawable *) (req + 1);
++    buffer_ptr = (int *) (drawable_ptr + 1);
+ 
++    *drawable_ptr = drawable;
++    *buffer_ptr = buffer;
++
++    UnlockDisplay(dpy);
++    SyncHandle();
++
++    return True;
++}
++
++PUBLIC Bool glXReleaseTexImageMESA(Display *dpy,
++				   GLXDrawable drawable,
++				   int buffer)
++{
++    xGLXVendorPrivateReq *req;
++    GLXContext gc = __glXGetCurrentContext();
++    GLXDrawable *drawable_ptr;
++    int *buffer_ptr;
++    xGLXVendorPrivReply reply;
++    CARD8 opcode;
++
++    if (gc == NULL)
++	return False;
++
++#ifdef GLX_DIRECT_RENDERING
++    if (gc->isDirect)
++	return False;
++#endif
++
++    opcode = __glXSetupForCommand(dpy);
++    if (!opcode)
++	return False;
++
++    LockDisplay(dpy);
++    GetReqExtra(GLXVendorPrivate, sizeof(GLXDrawable)+sizeof(int),req);
++    req->reqType = opcode;
++    req->glxCode = X_GLXVendorPrivate;
++    req->vendorCode = X_GLXvop_ReleaseTexImageMESA;
++    req->contextTag = gc->currentContextTag;
++
++    drawable_ptr = (GLXDrawable *) (req + 1);
++    buffer_ptr = (int *) (drawable_ptr + 1);
++
++    *drawable_ptr = drawable;
++    *buffer_ptr = buffer;
++
++    UnlockDisplay(dpy);
++    SyncHandle();
++
++    return True;
++}
+ 
+ /**
+  * \c strdup is actually not a standard ANSI C or POSIX routine.
+@@ -2771,6 +2852,10 @@
+    GLX_FUNCTION( glXGetMscRateOML ),
+    GLX_FUNCTION( glXGetSyncValuesOML ),
+ 
++   /*** GLX_MESA_render_texture ***/
++   GLX_FUNCTION( glXBindTexImageMESA ),
++   GLX_FUNCTION( glXReleaseTexImageMESA ),
++
+ #ifdef GLX_DIRECT_RENDERING
+    /*** DRI configuration ***/
+    GLX_FUNCTION( glXGetScreenDriver ),
+Index: src/glx/x11/glxextensions.c
+===================================================================
+RCS file: /cvs/mesa/Mesa/src/glx/x11/glxextensions.c,v
+retrieving revision 1.10
+diff -u -r1.10 glxextensions.c
+--- src/glx/x11/glxextensions.c	24 Jul 2005 06:29:14 -0000	1.10
++++ src/glx/x11/glxextensions.c	28 Jul 2005 00:40:41 -0000
+@@ -107,6 +107,7 @@
+    { GLX(SGIX_video_source),           VER(0,0), N, N, N, N },
+    { GLX(SGIX_visual_select_group),    VER(0,0), Y, Y, N, N },
+    { GLX(SUN_get_transparent_index),   VER(0,0), N, N, N, N },
++   { GLX(MESA_render_texture),         VER(0,0), Y, N, N, N },
+    { NULL }
+ };
+ 
+Index: src/glx/x11/glxextensions.h
+===================================================================
+RCS file: /cvs/mesa/Mesa/src/glx/x11/glxextensions.h,v
+retrieving revision 1.8
+diff -u -r1.8 glxextensions.h
+--- src/glx/x11/glxextensions.h	26 Jul 2005 22:53:38 -0000	1.8
++++ src/glx/x11/glxextensions.h	28 Jul 2005 00:40:41 -0000
+@@ -69,7 +69,8 @@
+    SGIX_video_resize_bit,
+    SGIX_video_source_bit,
+    SGIX_visual_select_group_bit,
+-   SUN_get_transparent_index_bit
++   SUN_get_transparent_index_bit,
++   MESA_render_texture_bit
+ };
+ 
+ enum {
