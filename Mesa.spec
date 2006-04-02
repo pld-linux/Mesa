@@ -459,6 +459,9 @@ Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
 %patch0 -p1
 %patch1 -p1
 
+# fix dri path
+sed -i -e 's#/usr/lib/xorg/modules/dri#%{_libdir}/xorg/modules/dri#g' src/glx/x11/dri_glx.c
+
 # fix demos
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
 
