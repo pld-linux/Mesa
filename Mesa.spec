@@ -688,7 +688,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/savage_dri.so
 
-%ifnarch %{ix86} %{x8664}
+%ifarch %{ix86} %{x8664}
 %files dri-driver-sis
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/sis_dri.so
