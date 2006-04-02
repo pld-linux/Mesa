@@ -10,16 +10,16 @@
 Summary:	Free OpenGL implementation
 Summary(pl):	Wolnodostêpna implementacja standardu OpenGL
 Name:		Mesa
-Version:	6.4.2
+Version:	6.5
 Release:	1
 License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	7674d2c603b5834259e4e5a820cefd5b
+# Source0-md5:	61beda590bfc5b4a12e979d5f2d70d7a
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	9cae1ab874af533ce356bd7dfe2e0bb0
+# Source1-md5:	ab95b590dcd640726a2d89e62068c66e
 Patch0:		%{name}-modules_dir.patch
-Patch1:		%{name}-glx-x11-render-texture.diff
+Patch1:		%{name}-build.patch
 URL:		http://www.mesa3d.org/
 %{?with_glide:BuildRequires:	Glide3-DRI-devel}
 BuildRequires:	expat-devel
@@ -457,7 +457,7 @@ Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
 %prep
 %setup -q -n Mesa-%{version} -b 1
 %patch0 -p1
-%patch1 -p0
+%patch1 -p1
 
 # fix demos
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
@@ -533,6 +533,8 @@ cp -df lib/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
 cp -rf include/GL/{gl[!u]*,glu.h,glu_*,osmesa.h,xmesa*} src/glw/GLw*.h $RPM_BUILD_ROOT%{_includedir}/GL
 cp -df lib-dri/*_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
+# keep for -bi --short-circuit
+cp -a progs progs.org
 install progs/xdemos/{glxgears,glxinfo} $RPM_BUILD_ROOT%{_bindir}
 for l in demos redbook samples xdemos ; do
 	%{__make} -C progs/$l clean
@@ -540,6 +542,7 @@ done
 for l in demos redbook samples util xdemos images ; do
 	cp -Rf progs/$l $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/$l
 done
+rm -rf progs && mv -f progs.org progs
 rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{BeOS*,win,cygnus,DJ,dja}}
 
 %clean
@@ -570,6 +573,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_includedir}/GL
 %{_includedir}/GL/gl.h
 %{_includedir}/GL/glext.h
+%{_includedir}/GL/glfbdev.h
 %{_includedir}/GL/gl_mangle.h
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glxext.h
@@ -657,9 +661,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i810_dri.so
 
+%if 0
 %files dri-driver-intel-i830
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i830_dri.so
+%endif
 
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
