@@ -1,0 +1,12 @@
+diff -urN Mesa-6.5.org/src/mesa/drivers/dri/Makefile.template Mesa-6.5/src/mesa/drivers/dri/Makefile.template
+--- Mesa-6.5.org/src/mesa/drivers/dri/Makefile.template	2006-03-26 01:00:53.000000000 +0100
++++ Mesa-6.5/src/mesa/drivers/dri/Makefile.template	2006-04-02 11:46:15.633426000 +0200
+@@ -89,7 +89,7 @@
+ depend: $(C_SOURCES) $(ASM_SOURCES) $(SYMLINKS)
+ 	touch depend
+ 	$(MKDEP) $(MKDEP_OPTIONS) $(DEFINES) $(INCLUDES) $(C_SOURCES) $(ASM_SOURCES) \
+-		>& /dev/null 
++		> /dev/null 2>&1
+ 
+ 
+ # Emacs tags
