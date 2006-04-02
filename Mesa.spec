@@ -468,7 +468,7 @@ sed -i -e 's/ ffb$//' configs/linux-dri
 %endif
 
 %ifnarch %{ix86} %{x8664}
-# sis needs write-memory barier
+# sis needs write-memory barrier
 sed -i -e 's/ sis / /' configs/linux-dri
 %endif
 
