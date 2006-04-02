@@ -361,6 +361,7 @@ Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
 Requires:	xorg-xserver-server
+Obsoletes:	Mesa-dri-driver-intel-i830
 
 %description dri-driver-intel-i915
 X.org DRI drivers for Intel i915 card family.
