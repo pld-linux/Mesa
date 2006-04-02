@@ -467,6 +467,11 @@ find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{ver
 sed -i -e 's/ ffb$//' configs/linux-dri
 %endif
 
+%ifnarch %{ix86} %{x8664}
+# sis needs write-memory barier
+sed -i -e 's/ sis / /' configs/linux-dri
+%endif
+
 %build
 %ifarch %{ix86}
 targ=-x86
