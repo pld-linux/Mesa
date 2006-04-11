@@ -1,12 +1,13 @@
-diff -urN Mesa-6.5.org/src/mesa/drivers/dri/Makefile.template Mesa-6.5/src/mesa/drivers/dri/Makefile.template
---- Mesa-6.5.org/src/mesa/drivers/dri/Makefile.template	2006-03-26 01:00:53.000000000 +0100
-+++ Mesa-6.5/src/mesa/drivers/dri/Makefile.template	2006-04-02 11:46:15.633426000 +0200
-@@ -89,7 +89,7 @@
- depend: $(C_SOURCES) $(ASM_SOURCES) $(SYMLINKS)
- 	touch depend
- 	$(MKDEP) $(MKDEP_OPTIONS) $(DEFINES) $(INCLUDES) $(C_SOURCES) $(ASM_SOURCES) \
--		>& /dev/null 
-+		> /dev/null 2>&1
+diff -urN Mesa.org/src/mesa/drivers/dri/r300/r300_state.c Mesa/src/mesa/drivers/dri/r300/r300_state.c
+--- Mesa.org/src/mesa/drivers/dri/r300/r300_state.c	2006-04-11 13:41:11.000000000 +0200
++++ Mesa/src/mesa/drivers/dri/r300/r300_state.c	2006-04-11 23:12:50.622594500 +0200
+@@ -1275,7 +1275,7 @@
+ 	DECLARE_RENDERINPUTS(index_bitset);      /* !hw_tcl_on */
+ };
  
- 
- # Emacs tags
+-static GLboolean r300_outputs_written_test (r300_outputs_written *ow, GLuint vp_result,
++static GLboolean r300_outputs_written_test (union r300_outputs_written *ow, GLuint vp_result,
+                                             GLuint tnl_attrib)
+ {
+ 	if (hw_tcl_on)
+
