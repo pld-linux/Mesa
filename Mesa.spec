@@ -16,10 +16,9 @@ Release:	1.%{snap}.1
 License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	%{name}-%{snap}.tar.gz
+# Source0-md5:	247ed3daac8440e3a38d573afb0e1f23
 #Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-## Source0-md5:	61beda590bfc5b4a12e979d5f2d70d7a
 #Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-## Source1-md5:	ab95b590dcd640726a2d89e62068c66e
 Patch0:		%{name}-modules_dir.patch
 Patch1:		%{name}-build.patch
 URL:		http://www.mesa3d.org/
