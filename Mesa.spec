@@ -12,7 +12,7 @@ Summary(pl):	Wolnodostêpna implementacja standardu OpenGL
 Name:		Mesa
 Version:	6.5
 %define	snap	20060411
-Release:	1.%{snap}.1
+Release:	1.%{snap}.2
 License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	%{name}-%{snap}.tar.gz
@@ -21,6 +21,7 @@ Source0:	%{name}-%{snap}.tar.gz
 #Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 Patch0:		%{name}-modules_dir.patch
 Patch1:		%{name}-build.patch
+Patch2:		%{name}-glx-h-tfp.diff
 URL:		http://www.mesa3d.org/
 %{?with_glide:BuildRequires:	Glide3-DRI-devel}
 BuildRequires:	expat-devel
@@ -461,6 +462,7 @@ Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
 #setup -q -n Mesa-%{version} -b 1
 %patch0 -p1
 %patch1 -p1
+%patch2 -p0
 
 # fix dri path
 sed -i -e 's#/usr/lib/xorg/modules/dri#%{_libdir}/xorg/modules/dri#g' src/glx/x11/dri_glx.c
