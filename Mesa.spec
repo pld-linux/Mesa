@@ -11,21 +11,19 @@ Summary:	Free OpenGL implementation
 Summary(pl):	Wolnodostêpna implementacja standardu OpenGL
 Name:		Mesa
 Version:	6.5
-%define	snap	20060411
-Release:	1.%{snap}.2
+%define	snap	20060701
+Release:	1.%{snap}.1
 License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	%{name}-%{snap}.tar.gz
-# Source0-md5:	247ed3daac8440e3a38d573afb0e1f23
+# Source0-md5:	f0ac5dadac7ecba3672c2906f79dd62f
 #Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
 #Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 Patch0:		%{name}-modules_dir.patch
-Patch1:		%{name}-build.patch
-Patch2:		%{name}-glx-h-tfp.diff
 URL:		http://www.mesa3d.org/
 %{?with_glide:BuildRequires:	Glide3-DRI-devel}
 BuildRequires:	expat-devel
-BuildRequires:	libdrm-devel >= 1.0.4-1.20051022
+BuildRequires:	libdrm-devel >= 2.0.2
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
@@ -461,8 +459,6 @@ Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
 %setup -q -n Mesa
 #setup -q -n Mesa-%{version} -b 1
 %patch0 -p1
-%patch1 -p1
-%patch2 -p0
 
 # fix dri path
 sed -i -e 's#/usr/lib/xorg/modules/dri#%{_libdir}/xorg/modules/dri#g' src/glx/x11/dri_glx.c
@@ -572,7 +568,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files libGL
 %defattr(644,root,root,755)
-%doc docs/{*.html,README.{3DFX,GGI,MITS,QUAKE,THREADS,X11},RELNOTES*,VERSIONS}
+%doc docs/{*.html,README.{3DFX,GGI,MITS,QUAKE,THREADS},RELNOTES*,VERSIONS}
 %attr(755,root,root) %{_libdir}/libGL.so.*.*
 %attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
 # symlink for binary apps which fail to conform Linux OpenGL ABI
