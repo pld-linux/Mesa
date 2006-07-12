@@ -12,7 +12,7 @@ Summary(pl):	Wolnodostêpna implementacja standardu OpenGL
 Name:		Mesa
 Version:	6.5
 %define	snap	20060711
-Release:	1.%{snap}.1
+Release:	1.%{snap}.2
 License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	%{name}-%{snap}.tar.gz
@@ -456,7 +456,7 @@ X.org DRI drivers for VIA Unichrome card family.
 Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
 
 %prep
-%setup -q -n Mesa
+%setup -q -n Mesa-%{snap}
 #setup -q -n Mesa-%{version} -b 1
 %patch0 -p1
 
