@@ -3,9 +3,10 @@
 @@ -58,7 +58,7 @@
  
  #ifndef DEFAULT_DRIVER_DIR
- /* this is normally defined in the Imakefile */
+ /* this is normally defined in Mesa/configs/default with DRI_DRIVER_SEARCH_PATH */
 -#define DEFAULT_DRIVER_DIR "/usr/X11R6/lib/modules/dri"
 +#define DEFAULT_DRIVER_DIR "/usr/lib/xorg/modules/dri"
  #endif
  
  static __DRIdriver *Drivers = NULL;
+
