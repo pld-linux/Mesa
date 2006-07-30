@@ -11,12 +11,12 @@ Summary:	Free OpenGL implementation
 Summary(pl):	Wolnodostêpna implementacja standardu OpenGL
 Name:		Mesa
 Version:	6.5
-%define	snap	20060711
-Release:	1.%{snap}.2
+%define	snap	20060730
+Release:	1.%{snap}.1
 License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	%{name}-%{snap}.tar.gz
-# Source0-md5:	dc3603c48142a3245d0cb2cabb6a1236
+# Source0-md5:	848144f960c309a79bf29ddcaf2cd2d7
 #Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
 #Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 Patch0:		%{name}-modules_dir.patch
