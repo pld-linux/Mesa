@@ -11,15 +11,16 @@ Summary:	Free OpenGL implementation
 Summary(pl):	Wolnodostêpna implementacja standardu OpenGL
 Name:		Mesa
 Version:	6.5
-%define	snap	20060730
+%define	snap	20060810
 Release:	1.%{snap}.1
 License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
-Source0:	%{name}-%{snap}.tar.gz
-# Source0-md5:	848144f960c309a79bf29ddcaf2cd2d7
+Source0:	http://intellinuxgraphics.org/%{name}-%{snap}.tar.bz2
+# Source0-md5:	4f471c08cf1872a3e21e2cc458c257b6
 #Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
 #Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 Patch0:		%{name}-modules_dir.patch
+Patch1:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
 %{?with_glide:BuildRequires:	Glide3-DRI-devel}
 BuildRequires:	expat-devel
@@ -369,6 +370,20 @@ X.org DRI drivers for Intel i915 card family.
 %description dri-driver-intel-i915 -l pl
 Sterowniki X.org DRI dla rodziny kart i915.
 
+%package dri-driver-intel-i965
+Summary:	X.org DRI drivers
+Summary(pl):	Sterowniki DRI dla X.org
+Group:		X11/Libraries
+Requires:	xorg-xserver-server
+Obsoletes:	Mesa-dri-driver-intel-i830
+Obsoletes:	Mesa-dri-driver-intel-i915
+
+%description dri-driver-intel-i965
+X.org DRI drivers for Intel i965 card family.
+
+%description dri-driver-intel-i965 -l pl
+Sterowniki X.org DRI dla rodziny kart i965.
+
 %package dri-driver-matrox
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
@@ -456,9 +471,10 @@ X.org DRI drivers for VIA Unichrome card family.
 Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
 
 %prep
-%setup -q -n Mesa-%{snap}
+%setup -q -n %{name}
 #setup -q -n Mesa-%{version} -b 1
 %patch0 -p1
+%patch1 -p0
 
 # fix dri path
 sed -i -e 's#/usr/lib/xorg/modules/dri#%{_libdir}/xorg/modules/dri#g' src/glx/x11/dri_glx.c
@@ -492,7 +508,7 @@ targ=""
 	SRC_DIRS="mesa glu glw" \
 	PROGRAM_DIRS=
 mv -f lib lib-static
-%{__make} clean
+%{__make} realclean
 
 %{__make} linux-dri${targ} \
 	CC="%{__cc}" \
@@ -522,6 +538,7 @@ mv -f lib lib-static
 mv -f lib lib-dri
 %{__make} clean \
 	MKDEP=makedepend
+%{__make} realclean
 
 %{__make} linux${targ} \
 	CC="%{__cc}" \
@@ -679,6 +696,10 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
+
+%files dri-driver-intel-i965
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/i965_dri.so
 
 %files dri-driver-matrox
 %defattr(644,root,root,755)
