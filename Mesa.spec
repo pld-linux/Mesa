@@ -11,12 +11,13 @@ Summary:	Free OpenGL implementation
 Summary(pl):	Wolnodostêpna implementacja standardu OpenGL
 Name:		Mesa
 Version:	6.5
-%define	snap	20060810
+%define	snap	20060911
 Release:	1.%{snap}.1
 License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
-Source0:	http://intellinuxgraphics.org/%{name}-%{snap}.tar.bz2
-# Source0-md5:	4f471c08cf1872a3e21e2cc458c257b6
+#Source0:	http://intellinuxgraphics.org/%{name}-%{snap}.tar.bz2
+Source0:	%{name}-%{snap}.tar.bz2
+# Source0-md5:	6ac9df961dddb42e11355d763a53fdbe
 #Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
 #Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 Patch0:		%{name}-modules_dir.patch
@@ -471,8 +472,8 @@ X.org DRI drivers for VIA Unichrome card family.
 Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
 
 %prep
-%setup -q -n %{name}
-#setup -q -n Mesa-%{version} -b 1
+#%setup -q -n %{name}
+%setup -q -n %{name}-%{snap}
 %patch0 -p1
 %patch1 -p0
 
@@ -585,7 +586,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files libGL
 %defattr(644,root,root,755)
-%doc docs/{*.html,README.{3DFX,GGI,MITS,QUAKE,THREADS},RELNOTES*,VERSIONS}
+%doc docs/{*.html,README.{3DFX,GGI,MITS,QUAKE,THREADS},RELNOTES*}
 %attr(755,root,root) %{_libdir}/libGL.so.*.*
 %attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
 # symlink for binary apps which fail to conform Linux OpenGL ABI
