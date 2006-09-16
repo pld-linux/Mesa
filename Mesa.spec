@@ -10,18 +10,15 @@
 Summary:	Free OpenGL implementation
 Summary(pl):	Wolnodostêpna implementacja standardu OpenGL
 Name:		Mesa
-Version:	6.5
-%define	snap	20060911
-Release:	1.%{snap}.1
+Version:	6.5.1
+Release:	1
 License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
-#Source0:	http://intellinuxgraphics.org/%{name}-%{snap}.tar.bz2
-Source0:	%{name}-%{snap}.tar.bz2
-# Source0-md5:	6ac9df961dddb42e11355d763a53fdbe
-#Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-#Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-Patch0:		%{name}-modules_dir.patch
-Patch1:		%{name}-realclean.patch
+Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
+# Source0-md5:	c46f2c6646a270911b791dd8e1c2d977
+Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
+# Source1-md5:	0f2794baf7a9d98b22caea9f78c6942d
+Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
 %{?with_glide:BuildRequires:	Glide3-DRI-devel}
 BuildRequires:	expat-devel
@@ -472,13 +469,8 @@ X.org DRI drivers for VIA Unichrome card family.
 Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
 
 %prep
-#%setup -q -n %{name}
-%setup -q -n %{name}-%{snap}
-%patch0 -p1
-%patch1 -p0
-
-# fix dri path
-sed -i -e 's#/usr/lib/xorg/modules/dri#%{_libdir}/xorg/modules/dri#g' src/glx/x11/dri_glx.c
+%setup -q -b1
+%patch0 -p0
 
 # fix demos
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
@@ -517,6 +509,7 @@ mv -f lib lib-static
 	MKDEP=makedepend \
 	OPT_FLAGS="%{rpmcflags} -fno-strict-aliasing" \
 	XLIB_DIR=%{_libdir} \
+	DRI_DRIVER_SEARCH_DIR=%{_libdir}/xorg/modules/dri \
 	SRC_DIRS="glx/x11 mesa glu glw" \
 	PROGRAM_DIRS=
 
