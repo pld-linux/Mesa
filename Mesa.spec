@@ -7,16 +7,19 @@
 %bcond_with	glide	# with GLIDE (broken now)
 %bcond_without	motif	# build static libGLw without Motif interface
 #
+%define	snap	20061103
+#
 Summary:	Free OpenGL implementation
 Summary(pl):	Wolnodostêpna implementacja standardu OpenGL
 Name:		Mesa
-Version:	6.5.1
-Release:	1
+Version:	6.5.2
+Release:	0.%{snap}.1
 License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
-Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	c46f2c6646a270911b791dd8e1c2d977
-Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
+# Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
+Source0:	%{name}-%{snap}.tar.gz
+# Source0-md5:	fa53549d83dc5a03b0c955e03a8764e4
+# Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 # Source1-md5:	0f2794baf7a9d98b22caea9f78c6942d
 Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
@@ -469,7 +472,8 @@ X.org DRI drivers for VIA Unichrome card family.
 Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
 
 %prep
-%setup -q -b1
+#%setup -q -b1
+%setup -q -n %{name}
 %patch0 -p0
 
 # fix demos
@@ -690,6 +694,7 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/i915tex_dri.so
 
 %files dri-driver-intel-i965
 %defattr(644,root,root,755)
