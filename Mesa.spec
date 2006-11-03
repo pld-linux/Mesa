@@ -523,7 +523,7 @@ mv -f lib lib-static
 	OPT_FLAGS="%{rpmcflags}" \
 	XLIB_DIR=%{_libdir} \
 	PROGS="glxgears" \
-	APP_LIB_DEPS="-L\$(LIB_DIR) -lGL"
+	APP_LIB_DEPS="-L../../lib -lGL"
 
 %{__make} -C progs/xdemos \
 	CC="%{__cc}" \
@@ -531,7 +531,7 @@ mv -f lib lib-static
 	OPT_FLAGS="%{rpmcflags}" \
 	XLIB_DIR=%{_libdir} \
 	PROGS="glxinfo" \
-	APP_LIB_DEPS="-L\$(LIB_DIR) -lGL -L../../lib-dri -lGLU"
+	APP_LIB_DEPS="-L../../lib -lGL -L../../lib-dri -lGLU"
 
 mv -f lib lib-dri
 %{__make} clean \
