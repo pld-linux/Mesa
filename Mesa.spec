@@ -251,7 +251,7 @@ Programy demonstracyjne dla bibliotek Mesa.
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	%{name}-libGL = %{version}-%{release}
+Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 
 %description dri-driver-ati-mach64
@@ -264,7 +264,7 @@ Sterowniki X.org DRI dla rodziny kart ATI mach64.
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	%{name}-libGL = %{version}-%{release}
+Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 
 %description dri-driver-ati-radeon-R100
@@ -277,7 +277,7 @@ Sterowniki X.org DRI dla rodziny kart ATI R100 (Radeon 7000-7500).
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	%{name}-libGL = %{version}-%{release}
+Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 
 %description dri-driver-ati-radeon-R200
@@ -290,7 +290,7 @@ Sterowniki X.org DRI dla rodziny kart ATI R200 (Radeon 8500-92xx).
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	%{name}-libGL = %{version}-%{release}
+Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 
 %description dri-driver-ati-radeon-R300
@@ -303,7 +303,7 @@ Sterowniki X.org DRI dla rodziny kart ATI R300.
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	%{name}-libGL = %{version}-%{release}
+Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 
 %description dri-driver-ati-rage128
@@ -316,7 +316,7 @@ Sterowniki X.org DRI dla rodziny kart ATI rage128.
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	%{name}-libGL = %{version}-%{release}
+Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 
 %description dri-driver-ffb
@@ -329,7 +329,7 @@ Sterowniki X.org DRI dla rodziny kart SUN Creator3D and Elite3D.
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	%{name}-libGL = %{version}-%{release}
+Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 
 %description dri-driver-glint
@@ -342,7 +342,7 @@ Sterowniki X.org DRI dla rodziny kart GLINT/Permedia.
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	%{name}-libGL = %{version}-%{release}
+Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 
 %description dri-driver-intel-i810
@@ -355,7 +355,7 @@ Sterowniki X.org DRI dla rodziny kart i810.
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	%{name}-libGL = %{version}-%{release}
+Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 
 %description dri-driver-intel-i830
@@ -368,7 +368,7 @@ Sterowniki X.org DRI dla rodziny kart i830.
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	%{name}-libGL = %{version}-%{release}
+Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 Obsoletes:	Mesa-dri-driver-intel-i830
 
@@ -382,7 +382,7 @@ Sterowniki X.org DRI dla rodziny kart i915.
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	%{name}-libGL = %{version}-%{release}
+Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 Obsoletes:	Mesa-dri-driver-intel-i830
 Obsoletes:	Mesa-dri-driver-intel-i915
@@ -397,7 +397,7 @@ Sterowniki X.org DRI dla rodziny kart i965.
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	%{name}-libGL = %{version}-%{release}
+Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 
 %description dri-driver-matrox
@@ -410,7 +410,7 @@ Sterowniki X.org DRI dla rodziny kart Matrox G.
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	%{name}-libGL = %{version}-%{release}
+Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 
 %description dri-driver-s3virge
@@ -423,7 +423,7 @@ Sterowniki X.org DRI dla rodziny kart S3 Virge.
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	%{name}-libGL = %{version}-%{release}
+Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 
 %description dri-driver-savage
@@ -436,7 +436,7 @@ Sterowniki X.org DRI dla rodziny kart S3 Savage.
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	%{name}-libGL = %{version}-%{release}
+Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 
 %description dri-driver-sis
@@ -449,8 +449,8 @@ Sterowniki X.org DRI dla rodziny kart SiS.
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	%{name}-libGL = %{version}-%{release}
 Requires:	Glide3-DRI
+Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 
 %description dri-driver-tdfx
@@ -465,7 +465,7 @@ Banshee and Velocity 100/200).
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	%{name}-libGL = %{version}-%{release}
+Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 
 %description dri-driver-trident
@@ -478,7 +478,7 @@ Sterowniki X.org DRI dla rodziny kart Trident.
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	%{name}-libGL = %{version}-%{release}
+Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 
 %description dri-driver-via-unichrome
