@@ -472,8 +472,8 @@ X.org DRI drivers for VIA Unichrome card family.
 Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
 
 %prep
-#%setup -q -b1
-%setup -q -n %{name}
+%setup -q -b1
+#%setup -q -n %{name}
 %patch0 -p0
 
 # fix demos
