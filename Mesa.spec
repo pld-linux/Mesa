@@ -13,14 +13,14 @@ Summary:	Free OpenGL implementation
 Summary(pl):	Wolnodostêpna implementacja standardu OpenGL
 Name:		Mesa
 Version:	6.5.2
-Release:	0.%{snap}.2
+Release:	0.1
 License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
-# Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-Source0:	%{name}-%{snap}.tar.gz
-# Source0-md5:	1ef25af748d4c2a808ee4521a75c2579
-# Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	0f2794baf7a9d98b22caea9f78c6942d
+Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
+# Source0-md5:	e4d894181f1859651658b3704633e10d
+# Source0:	%{name}-%{snap}.tar.gz
+Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
+# Source1-md5:	e870efe98d3a50be01ab211b9b2e25d9
 Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
 %{?with_glide:BuildRequires:	Glide3-DRI-devel}
