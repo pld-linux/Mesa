@@ -25,7 +25,7 @@ Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
 %{?with_glide:BuildRequires:	Glide3-DRI-devel}
 BuildRequires:	expat-devel
-BuildRequires:	libdrm-devel >= 2.0.2
+BuildRequires:	libdrm-devel >= 2.2.0
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
@@ -34,7 +34,6 @@ BuildRequires:	xorg-lib-libXt-devel
 BuildRequires:	xorg-lib-libXxf86vm-devel
 BuildRequires:	xorg-proto-glproto-devel
 BuildRequires:	xorg-util-makedepend
-Obsoletes:	Mesa-dri
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # avoid XFree86-OpenGL* dependency
@@ -64,10 +63,12 @@ Summary(pl):	Wolnodostêpna implementacja Mesa3D biblioteki libGL ze standardu Op
 License:	MIT
 Group:		X11/Libraries
 %{?with_glide:Requires:	Glide3-DRI}
+Requires:	libdrm >= 2.2.0
 Provides:	OpenGL = 1.5
 # reports version 1.3, but supports glXGetProcAddress() from 1.4
 Provides:	OpenGL-GLX = 1.4
 Obsoletes:	Mesa
+Obsoletes:	Mesa-dri
 Obsoletes:	X11-OpenGL-libGL
 Obsoletes:	XFree86-OpenGL-libGL
 
