@@ -4,7 +4,6 @@
 # - package OpenGL man pages (from monolith or SGI) somewhere
 #
 # Conditional build:
-%bcond_with	glide	# with GLIDE (broken now)
 %bcond_without	motif	# build static libGLw without Motif interface
 #
 %define	snap	20061103
@@ -23,7 +22,6 @@ Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 # Source1-md5:	e870efe98d3a50be01ab211b9b2e25d9
 Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
-%{?with_glide:BuildRequires:	Glide3-DRI-devel}
 BuildRequires:	expat-devel
 BuildRequires:	libdrm-devel >= 2.2.0
 BuildRequires:	libstdc++-devel
@@ -37,8 +35,7 @@ BuildRequires:	xorg-util-makedepend
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # avoid XFree86-OpenGL* dependency
-# Glide3 can be provided by Glide_V3-DRI or Glide_V5-DRI
-%define		_noautoreqdep	libGL.so.1 libGLU.so.1 libOSMesa.so.4   libglide3.so.3
+%define		_noautoreqdep	libGL.so.1 libGLU.so.1 libOSMesa.so.4
 
 %define		_sysconfdir	/etc/X11
 
@@ -62,7 +59,6 @@ Summary:	Free Mesa3D implementation of libGL OpenGL library
 Summary(pl):	Wolnodostêpna implementacja Mesa3D biblioteki libGL ze standardu OpenGL
 License:	MIT
 Group:		X11/Libraries
-%{?with_glide:Requires:	Glide3-DRI}
 Requires:	libdrm >= 2.2.0
 Provides:	OpenGL = 1.5
 # reports version 1.3, but supports glXGetProcAddress() from 1.4
@@ -439,6 +435,7 @@ Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
 Requires:	xorg-xserver-server
+Requires:	Glide3-DRI
 
 %description dri-driver-tdfx
 X.org DRI drivers for 3DFX Voodoo card family (Voodoo 3,4,5, Banshee
