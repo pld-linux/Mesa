@@ -31,6 +31,7 @@ BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libXt-devel
 BuildRequires:	xorg-lib-libXxf86vm-devel
 BuildRequires:	xorg-proto-glproto-devel
+BuildRequires:	xorg-proto-printproto-devel
 BuildRequires:	xorg-util-makedepend
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
