@@ -350,7 +350,7 @@ Sterowniki X.org DRI dla rodziny kart GLINT/Permedia.
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	xorg-driver-video-810
+Requires:	xorg-driver-video-i810
 Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 
@@ -364,7 +364,7 @@ Sterowniki X.org DRI dla rodziny kart i810.
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	xorg-driver-video-810
+Requires:	xorg-driver-video-i810
 Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 
@@ -378,7 +378,7 @@ Sterowniki X.org DRI dla rodziny kart i830.
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	xorg-driver-video-810
+Requires:	xorg-driver-video-i810
 Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 Obsoletes:	Mesa-dri-driver-intel-i830
@@ -393,7 +393,7 @@ Sterowniki X.org DRI dla rodziny kart i915.
 Summary:	X.org DRI drivers
 Summary(pl):	Sterowniki DRI dla X.org
 Group:		X11/Libraries
-Requires:	xorg-driver-video-810
+Requires:	xorg-driver-video-i810
 Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 Obsoletes:	Mesa-dri-driver-intel-i830
