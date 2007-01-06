@@ -12,7 +12,7 @@ Summary:	Free OpenGL implementation
 Summary(pl):	Wolnodostêpna implementacja standardu OpenGL
 Name:		Mesa
 Version:	6.5.2
-Release:	2
+Release:	3
 License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
@@ -66,8 +66,8 @@ Provides:	OpenGL = 1.5
 Provides:	OpenGL-GLX = 1.4
 Obsoletes:	Mesa
 Obsoletes:	Mesa-dri
-Obsoletes:	X11-OpenGL-libGL
-Obsoletes:	XFree86-OpenGL-libGL
+Obsoletes:	X11-OpenGL-libGL < 1:7.0.0
+Obsoletes:	XFree86-OpenGL-libGL < 1:7.0.0
 
 %description libGL
 Mesa is a 3-D graphics library with an API which is very similar to
@@ -101,10 +101,10 @@ Requires:	xorg-lib-libX11-devel
 Provides:	OpenGL-devel = 1.5
 Provides:	OpenGL-GLX-devel = 1.4
 Obsoletes:	Mesa-devel
-Obsoletes:	X11-OpenGL-devel
-Obsoletes:	X11-OpenGL-devel-base
-Obsoletes:	XFree86-OpenGL-devel
-Obsoletes:	XFree86-OpenGL-devel-base
+Obsoletes:	X11-OpenGL-devel < 1:7.0.0
+Obsoletes:	X11-OpenGL-devel-base < 1:7.0.0
+Obsoletes:	XFree86-OpenGL-devel < 1:7.0.0
+Obsoletes:	XFree86-OpenGL-devel-base < 1:7.0.0
 
 %description libGL-devel
 Header files for Mesa3D libGL library.
@@ -120,8 +120,8 @@ Group:		X11/Development/Libraries
 Requires:	%{name}-libGL-devel = %{version}-%{release}
 Provides:	OpenGL-static = 1.5
 Obsoletes:	Mesa-static
-Obsoletes:	X11-OpenGL-static
-Obsoletes:	XFree86-OpenGL-static
+Obsoletes:	X11-OpenGL-static < 1:7.0.0
+Obsoletes:	XFree86-OpenGL-static < 1:7.0.0
 
 %description libGL-static
 Static Mesa3D libGL library. It uses software renderer.
@@ -139,8 +139,8 @@ Group:		Libraries
 Requires:	OpenGL >= 1.2
 Provides:	OpenGL-GLU = 1.3
 Obsoletes:	Mesa-devel
-Obsoletes:	X11-OpenGL-libs
-Obsoletes:	XFree86-OpenGL-libs
+Obsoletes:	X11-OpenGL-libs < 1:7.0.0
+Obsoletes:	XFree86-OpenGL-libs < 1:7.0.0
 
 %description libGLU
 SGI implementation of libGLU OpenGL library. It implements OpenGL GLU
