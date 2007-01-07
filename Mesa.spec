@@ -12,7 +12,7 @@ Summary:	Free OpenGL implementation
 Summary(pl):	Wolnodostêpna implementacja standardu OpenGL
 Name:		Mesa
 Version:	6.5.2
-Release:	3
+Release:	4
 License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
@@ -34,9 +34,6 @@ BuildRequires:	xorg-proto-glproto-devel
 BuildRequires:	xorg-proto-printproto-devel
 BuildRequires:	xorg-util-makedepend
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
-
-# avoid XFree86-OpenGL* dependency
-%define		_noautoreqdep	libGL.so.1 libGLU.so.1 libOSMesa.so.4
 
 %define		_sysconfdir	/etc/X11
 
@@ -619,8 +616,8 @@ rm -rf $RPM_BUILD_ROOT
 %files libGL
 %defattr(644,root,root,755)
 %doc docs/{*.html,README.{3DFX,GGI,MITS,QUAKE,THREADS},RELNOTES*}
-%attr(755,root,root) %{_libdir}/libGL.so.*.*
-%attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
+%attr(755,root,root) %{_libdir}/libGL.so.*
+%attr(755,root,root) %{_libdir}/libOSMesa.so.*
 # symlink for binary apps which fail to conform Linux OpenGL ABI
 # (and dlopen libGL.so instead of libGL.so.1)
 %attr(755,root,root) %{_libdir}/libGL.so
@@ -649,7 +646,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files libGLU
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libGLU.so.*.*
+%attr(755,root,root) %{_libdir}/libGLU.so.*
 
 %files libGLU-devel
 %defattr(644,root,root,755)
@@ -663,7 +660,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files libGLw
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libGLw.so.*.*
+%attr(755,root,root) %{_libdir}/libGLw.so.*
 
 %files libGLw-devel
 %defattr(644,root,root,755)
