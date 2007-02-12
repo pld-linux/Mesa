@@ -9,7 +9,7 @@
 #%define	snap	20061103
 #
 Summary:	Free OpenGL implementation
-Summary(pl):	Wolnodostêpna implementacja standardu OpenGL
+Summary(pl.UTF-8):   WolnodostÄ™pna implementacja standardu OpenGL
 Name:		Mesa
 Version:	6.5.2
 Release:	4
@@ -45,16 +45,16 @@ Silicon Graphics, Inc. However, the author does not possess an OpenGL
 license from SGI, and makes no claim that Mesa is in any way a
 compatible replacement for OpenGL or associated with SGI.
 
-%description -l pl
-Mesa jest bibliotek± grafiki 3D z API bardzo podobnym do OpenGL(R). Do
-tego stopnia, ¿e Mesa u¿ywa sk³adni i automatu OpenGL jest u¿ywana z
-autoryzacj± Silicon Graphics, Inc. Jednak autor nie posiada licencji
-OpenGL od SGI i nie twierdzi, ¿e Mesa jest kompatybilnym zamiennikiem
-OpenGL ani powi±zana z SGI.
+%description -l pl.UTF-8
+Mesa jest bibliotekÄ… grafiki 3D z API bardzo podobnym do OpenGL(R). Do
+tego stopnia, Å¼e Mesa uÅ¼ywa skÅ‚adni i automatu OpenGL jest uÅ¼ywana z
+autoryzacjÄ… Silicon Graphics, Inc. Jednak autor nie posiada licencji
+OpenGL od SGI i nie twierdzi, Å¼e Mesa jest kompatybilnym zamiennikiem
+OpenGL ani powiÄ…zana z SGI.
 
 %package libGL
 Summary:	Free Mesa3D implementation of libGL OpenGL library
-Summary(pl):	Wolnodostêpna implementacja Mesa3D biblioteki libGL ze standardu OpenGL
+Summary(pl.UTF-8):   WolnodostÄ™pna implementacja Mesa3D biblioteki libGL ze standardu OpenGL
 License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm >= 2.2.0
@@ -77,19 +77,19 @@ compatible replacement for OpenGL or associated with SGI.
 This package contains libGL which implements OpenGL 1.5 and GLX 1.4
 specifications. It uses DRI for rendering.
 
-%description libGL -l pl
-Mesa jest bibliotek± grafiki 3D z API bardzo podobnym do OpenGL(R). Do
-tego stopnia, ¿e Mesa u¿ywa sk³adni i automatu OpenGL jest u¿ywana z
-autoryzacj± Silicon Graphics, Inc. Jednak autor nie posiada licencji
-OpenGL od SGI i nie twierdzi, ¿e Mesa jest kompatybilnym zamiennikiem
-OpenGL ani powi±zana z SGI.
+%description libGL -l pl.UTF-8
+Mesa jest bibliotekÄ… grafiki 3D z API bardzo podobnym do OpenGL(R). Do
+tego stopnia, Å¼e Mesa uÅ¼ywa skÅ‚adni i automatu OpenGL jest uÅ¼ywana z
+autoryzacjÄ… Silicon Graphics, Inc. Jednak autor nie posiada licencji
+OpenGL od SGI i nie twierdzi, Å¼e Mesa jest kompatybilnym zamiennikiem
+OpenGL ani powiÄ…zana z SGI.
 
-Ten pakiet zawiera libGL implementuj±c± specyfikacje OpenGL 1.5 oraz
-GLX 1.4. U¿ywa DRI do renderowania.
+Ten pakiet zawiera libGL implementujÄ…cÄ… specyfikacje OpenGL 1.5 oraz
+GLX 1.4. UÅ¼ywa DRI do renderowania.
 
 %package libGL-devel
 Summary:	Header files for Mesa3D libGL library
-Summary(pl):	Pliki nag³ówkowe biblioteki libGL z projektu Mesa3D
+Summary(pl.UTF-8):   Pliki nagÅ‚Ã³wkowe biblioteki libGL z projektu Mesa3D
 License:	MIT
 Group:		X11/Development/Libraries
 # loose dependency on libGL to use with other libGL binaries
@@ -106,12 +106,12 @@ Obsoletes:	XFree86-OpenGL-devel-base < 1:7.0.0
 %description libGL-devel
 Header files for Mesa3D libGL library.
 
-%description libGL-devel -l pl
-Pliki nag³ówkowe biblioteki libGL z projektu Mesa3D.
+%description libGL-devel -l pl.UTF-8
+Pliki nagÅ‚Ã³wkowe biblioteki libGL z projektu Mesa3D.
 
 %package libGL-static
 Summary:	Static Mesa3D libGL library
-Summary(pl):	Statyczna biblioteka libGL z projektu Mesa3D
+Summary(pl.UTF-8):   Statyczna biblioteka libGL z projektu Mesa3D
 License:	MIT
 Group:		X11/Development/Libraries
 Requires:	%{name}-libGL-devel = %{version}-%{release}
@@ -123,13 +123,13 @@ Obsoletes:	XFree86-OpenGL-static < 1:7.0.0
 %description libGL-static
 Static Mesa3D libGL library. It uses software renderer.
 
-%description libGL-static -l pl
-Statyczna biblioteka libGL z projektu Mesa3D. U¿ywa programowego
+%description libGL-static -l pl.UTF-8
+Statyczna biblioteka libGL z projektu Mesa3D. UÅ¼ywa programowego
 renderingu.
 
 %package libGLU
 Summary:	SGI implementation of libGLU OpenGL library
-Summary(pl):	Implementacja SGI biblioteki libGLU ze standardu OpenGL
+Summary(pl.UTF-8):   Implementacja SGI biblioteki libGLU ze standardu OpenGL
 License:	SGI Free Software License B v1.1
 Group:		Libraries
 # loose dependency on libGL.so.1 to use with other libGL binaries
@@ -143,13 +143,13 @@ Obsoletes:	XFree86-OpenGL-libs < 1:7.0.0
 SGI implementation of libGLU OpenGL library. It implements OpenGL GLU
 1.3 specifications.
 
-%description libGLU -l pl
+%description libGLU -l pl.UTF-8
 Implementacja SGI biblioteki libGLU ze standardu OpenGL. Implementuje
-specyfikacjê OpenGL GLU 1.3.
+specyfikacjÄ™ OpenGL GLU 1.3.
 
 %package libGLU-devel
 Summary:	Header files for SGI libGLU library
-Summary(pl):	Pliki nag³ówkowe biblioteki SGI libGLU
+Summary(pl.UTF-8):   Pliki nagÅ‚Ã³wkowe biblioteki SGI libGLU
 License:	SGI Free Software License B v1.1
 Group:		Development/Libraries
 Requires:	%{name}-libGLU = %{version}-%{release}
@@ -160,12 +160,12 @@ Provides:	OpenGL-GLU-devel = 1.3
 %description libGLU-devel
 Header files for SGI libGLU library.
 
-%description libGLU-devel -l pl
-Pliki nag³ówkowe biblioteki SGI libGLU.
+%description libGLU-devel -l pl.UTF-8
+Pliki nagÅ‚Ã³wkowe biblioteki SGI libGLU.
 
 %package libGLU-static
 Summary:	Static SGI libGLU library
-Summary(pl):	Statyczna biblioteka SGI libGLU
+Summary(pl.UTF-8):   Statyczna biblioteka SGI libGLU
 License:	SGI Free Software License B v1.1
 Group:		Development/Libraries
 Requires:	%{name}-libGLU-devel = %{version}-%{release}
@@ -174,12 +174,12 @@ Provides:	OpenGL-GLU-static = 1.3
 %description libGLU-static
 Static SGI libGLU library.
 
-%description libGLU-static -l pl
+%description libGLU-static -l pl.UTF-8
 Statyczna biblioteka SGI libGLU.
 
 %package libGLw
 Summary:	SGI OpenGL Xt widgets library
-Summary(pl):	Biblioteka SGI widgetów Xt dla OpenGL-a
+Summary(pl.UTF-8):   Biblioteka SGI widgetÃ³w Xt dla OpenGL-a
 License:	SGI MIT-like
 Group:		Libraries
 # loose dependency on libGL.so.1 to use with other libGL binaries
@@ -189,12 +189,12 @@ Provides:	OpenGL-GLw
 %description libGLw
 SGI OpenGL Xt widgets library.
 
-%description libGLU -l pl
-Biblioteka SGI widgetów Xt dla OpenGL-a.
+%description libGLU -l pl.UTF-8
+Biblioteka SGI widgetÃ³w Xt dla OpenGL-a.
 
 %package libGLw-devel
 Summary:	Header files for SGI libGLw library
-Summary(pl):	Pliki nag³ówkowe biblioteki SGI libGLw
+Summary(pl.UTF-8):   Pliki nagÅ‚Ã³wkowe biblioteki SGI libGLw
 License:	SGI Free Software License B v1.1
 Group:		Development/Libraries
 Requires:	%{name}-libGLw = %{version}-%{release}
@@ -204,12 +204,12 @@ Provides:	OpenGL-GLw-devel
 %description libGLw-devel
 Header files for SGI libGLw library.
 
-%description libGLw-devel -l pl
-Pliki nag³ówkowe biblioteki SGI libGLw.
+%description libGLw-devel -l pl.UTF-8
+Pliki nagÅ‚Ã³wkowe biblioteki SGI libGLw.
 
 %package libGLw-static
 Summary:	Static SGI libGLw library
-Summary(pl):	Statyczna biblioteka SGI libGLw
+Summary(pl.UTF-8):   Statyczna biblioteka SGI libGLw
 License:	SGI Free Software License B v1.1
 Group:		Development/Libraries
 Requires:	%{name}-libGLw-devel = %{version}-%{release}
@@ -218,36 +218,36 @@ Provides:	OpenGL-GLw-static
 %description libGLw-static
 Static SGI libGLw library.
 
-%description libGLw-static -l pl
+%description libGLw-static -l pl.UTF-8
 Statyczna biblioteka SGI libGLw.
 
 %package utils
 Summary:	OpenGL utilities from Mesa3D
-Summary(pl):	Programy narzêdziowe OpenGL z projektu Mesa3D
+Summary(pl.UTF-8):   Programy narzÄ™dziowe OpenGL z projektu Mesa3D
 Group:		X11/Applications/Graphics
 # loose deps on libGL/libGLU
 
 %description utils
 OpenGL utilities from Mesa3D: glxgears and glxinfo.
 
-%description utils -l pl
-Programy narzêdziowe OpenGL z projektu Mesa3D: glxgears i glxinfo.
+%description utils -l pl.UTF-8
+Programy narzÄ™dziowe OpenGL z projektu Mesa3D: glxgears i glxinfo.
 
 %package demos
 Summary:	Mesa Demos
-Summary(pl):	Programy demonstruj±ce mo¿liwo¶ci bibliotek Mesa
+Summary(pl.UTF-8):   Programy demonstrujÄ…ce moÅ¼liwoÅ›ci bibliotek Mesa
 Group:		Development/Libraries
 Requires:	OpenGL-devel
 
 %description demos
 Demonstration programs for the Mesa libraries.
 
-%description demos -l pl
+%description demos -l pl.UTF-8
 Programy demonstracyjne dla bibliotek Mesa.
 
 %package dri-driver-ati-mach64
 Summary:	X.org DRI drivers
-Summary(pl):	Sterowniki DRI dla X.org
+Summary(pl.UTF-8):   Sterowniki DRI dla X.org
 Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -256,12 +256,12 @@ Requires:	xorg-xserver-server
 %description dri-driver-ati-mach64
 X.org DRI drivers for ATI mach64 card family.
 
-%description dri-driver-ati-mach64 -l pl
+%description dri-driver-ati-mach64 -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart ATI mach64.
 
 %package dri-driver-ati-radeon-R100
 Summary:	X.org DRI drivers
-Summary(pl):	Sterowniki DRI dla X.org
+Summary(pl.UTF-8):   Sterowniki DRI dla X.org
 Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -270,12 +270,12 @@ Requires:	xorg-xserver-server
 %description dri-driver-ati-radeon-R100
 X.org DRI drivers for ATI R100 card family (Radeon 7000-7500).
 
-%description dri-driver-ati-radeon-R100 -l pl
+%description dri-driver-ati-radeon-R100 -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart ATI R100 (Radeon 7000-7500).
 
 %package dri-driver-ati-radeon-R200
 Summary:	X.org DRI drivers
-Summary(pl):	Sterowniki DRI dla X.org
+Summary(pl.UTF-8):   Sterowniki DRI dla X.org
 Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -284,12 +284,12 @@ Requires:	xorg-xserver-server
 %description dri-driver-ati-radeon-R200
 X.org DRI drivers for ATI R200 card family (Radeon 8500-92xx)
 
-%description dri-driver-ati-radeon-R200 -l pl
+%description dri-driver-ati-radeon-R200 -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart ATI R200 (Radeon 8500-92xx).
 
 %package dri-driver-ati-radeon-R300
 Summary:	X.org DRI drivers
-Summary(pl):	Sterowniki DRI dla X.org
+Summary(pl.UTF-8):   Sterowniki DRI dla X.org
 Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -298,12 +298,12 @@ Requires:	xorg-xserver-server
 %description dri-driver-ati-radeon-R300
 X.org DRI drivers for ATI R300 card family.
 
-%description dri-driver-ati-radeon-R300 -l pl
+%description dri-driver-ati-radeon-R300 -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart ATI R300.
 
 %package dri-driver-ati-rage128
 Summary:	X.org DRI drivers
-Summary(pl):	Sterowniki DRI dla X.org
+Summary(pl.UTF-8):   Sterowniki DRI dla X.org
 Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -312,12 +312,12 @@ Requires:	xorg-xserver-server
 %description dri-driver-ati-rage128
 X.org DRI drivers for ATI rage128 card family.
 
-%description dri-driver-ati-rage128 -l pl
+%description dri-driver-ati-rage128 -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart ATI rage128.
 
 %package dri-driver-ffb
 Summary:	X.org DRI drivers
-Summary(pl):	Sterowniki DRI dla X.org
+Summary(pl.UTF-8):   Sterowniki DRI dla X.org
 Group:		X11/Libraries
 Requires:	xorg-driver-video-sunffb
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -326,12 +326,12 @@ Requires:	xorg-xserver-server
 %description dri-driver-ffb
 X.org DRI drivers for SUN Creator3D and Elite3D card family.
 
-%description dri-driver-ffb -l pl
+%description dri-driver-ffb -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart SUN Creator3D and Elite3D.
 
 %package dri-driver-glint
 Summary:	X.org DRI drivers
-Summary(pl):	Sterowniki DRI dla X.org
+Summary(pl.UTF-8):   Sterowniki DRI dla X.org
 Group:		X11/Libraries
 Requires:	xorg-driver-video-glint
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -340,12 +340,12 @@ Requires:	xorg-xserver-server
 %description dri-driver-glint
 X.org DRI drivers for GLINT/Permedia card family.
 
-%description dri-driver-glint -l pl
+%description dri-driver-glint -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart GLINT/Permedia.
 
 %package dri-driver-intel-i810
 Summary:	X.org DRI drivers
-Summary(pl):	Sterowniki DRI dla X.org
+Summary(pl.UTF-8):   Sterowniki DRI dla X.org
 Group:		X11/Libraries
 Requires:	xorg-driver-video-i810
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -354,12 +354,12 @@ Requires:	xorg-xserver-server
 %description dri-driver-intel-i810
 X.org DRI drivers for Intel i810 card family.
 
-%description dri-driver-intel-i810 -l pl
+%description dri-driver-intel-i810 -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart i810.
 
 %package dri-driver-intel-i830
 Summary:	X.org DRI drivers
-Summary(pl):	Sterowniki DRI dla X.org
+Summary(pl.UTF-8):   Sterowniki DRI dla X.org
 Group:		X11/Libraries
 Requires:	xorg-driver-video-i810
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -368,12 +368,12 @@ Requires:	xorg-xserver-server
 %description dri-driver-intel-i830
 X.org DRI drivers for Intel i830 card family.
 
-%description dri-driver-intel-i830 -l pl
+%description dri-driver-intel-i830 -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart i830.
 
 %package dri-driver-intel-i915
 Summary:	X.org DRI drivers
-Summary(pl):	Sterowniki DRI dla X.org
+Summary(pl.UTF-8):   Sterowniki DRI dla X.org
 Group:		X11/Libraries
 Requires:	xorg-driver-video-i810
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -383,12 +383,12 @@ Obsoletes:	Mesa-dri-driver-intel-i830
 %description dri-driver-intel-i915
 X.org DRI drivers for Intel i915 card family.
 
-%description dri-driver-intel-i915 -l pl
+%description dri-driver-intel-i915 -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart i915.
 
 %package dri-driver-intel-i965
 Summary:	X.org DRI drivers
-Summary(pl):	Sterowniki DRI dla X.org
+Summary(pl.UTF-8):   Sterowniki DRI dla X.org
 Group:		X11/Libraries
 Requires:	xorg-driver-video-i810
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -399,12 +399,12 @@ Obsoletes:	Mesa-dri-driver-intel-i915
 %description dri-driver-intel-i965
 X.org DRI drivers for Intel i965 card family.
 
-%description dri-driver-intel-i965 -l pl
+%description dri-driver-intel-i965 -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart i965.
 
 %package dri-driver-matrox
 Summary:	X.org DRI drivers
-Summary(pl):	Sterowniki DRI dla X.org
+Summary(pl.UTF-8):   Sterowniki DRI dla X.org
 Group:		X11/Libraries
 Requires:	xorg-driver-video-mga
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -413,12 +413,12 @@ Requires:	xorg-xserver-server
 %description dri-driver-matrox
 X.org DRI drivers for Matrox G card family.
 
-%description dri-driver-matrox -l pl
+%description dri-driver-matrox -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart Matrox G.
 
 %package dri-driver-s3virge
 Summary:	X.org DRI drivers
-Summary(pl):	Sterowniki DRI dla X.org
+Summary(pl.UTF-8):   Sterowniki DRI dla X.org
 Group:		X11/Libraries
 Requires:	xorg-driver-video-s3virge
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -427,12 +427,12 @@ Requires:	xorg-xserver-server
 %description dri-driver-s3virge
 X.org DRI drivers for S3 Virge card family.
 
-%description dri-driver-s3virge -l pl
+%description dri-driver-s3virge -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart S3 Virge.
 
 %package dri-driver-savage
 Summary:	X.org DRI drivers
-Summary(pl):	Sterowniki DRI dla X.org
+Summary(pl.UTF-8):   Sterowniki DRI dla X.org
 Group:		X11/Libraries
 Requires:	xorg-driver-video-savage
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -441,12 +441,12 @@ Requires:	xorg-xserver-server
 %description dri-driver-savage
 X.org DRI drivers for S3 Savage card family.
 
-%description dri-driver-savage -l pl
+%description dri-driver-savage -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart S3 Savage.
 
 %package dri-driver-sis
 Summary:	X.org DRI drivers
-Summary(pl):	Sterowniki DRI dla X.org
+Summary(pl.UTF-8):   Sterowniki DRI dla X.org
 Group:		X11/Libraries
 Requires:	xorg-driver-video-sis
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -455,12 +455,12 @@ Requires:	xorg-xserver-server
 %description dri-driver-sis
 X.org DRI drivers for SiS card family.
 
-%description dri-driver-sis -l pl
+%description dri-driver-sis -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart SiS.
 
 %package dri-driver-tdfx
 Summary:	X.org DRI drivers
-Summary(pl):	Sterowniki DRI dla X.org
+Summary(pl.UTF-8):   Sterowniki DRI dla X.org
 Group:		X11/Libraries
 Requires:	Glide3-DRI
 Requires:	xorg-driver-video-tdfx
@@ -471,13 +471,13 @@ Requires:	xorg-xserver-server
 X.org DRI drivers for 3DFX Voodoo card family (Voodoo 3,4,5, Banshee
 and Velocity 100/200).
 
-%description dri-driver-tdfx -l pl
+%description dri-driver-tdfx -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart 3DFX Voodoo. (Voodoo 3,4,5,
 Banshee and Velocity 100/200).
 
 %package dri-driver-trident
 Summary:	X.org DRI drivers
-Summary(pl):	Sterowniki DRI dla X.org
+Summary(pl.UTF-8):   Sterowniki DRI dla X.org
 Group:		X11/Libraries
 Requires:	xorg-driver-video-trident
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -486,12 +486,12 @@ Requires:	xorg-xserver-server
 %description dri-driver-trident
 X.org DRI drivers for Trident card family.
 
-%description dri-driver-trident -l pl
+%description dri-driver-trident -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart Trident.
 
 %package dri-driver-via-unichrome
 Summary:	X.org DRI drivers
-Summary(pl):	Sterowniki DRI dla X.org
+Summary(pl.UTF-8):   Sterowniki DRI dla X.org
 Group:		X11/Libraries
 Requires:	xorg-driver-video-via
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -500,7 +500,7 @@ Requires:	xorg-xserver-server
 %description dri-driver-via-unichrome
 X.org DRI drivers for VIA Unichrome card family.
 
-%description dri-driver-via-unichrome -l pl
+%description dri-driver-via-unichrome -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
 
 %prep
