@@ -517,7 +517,7 @@ find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{ver
 
 %ifnarch sparc sparcv9 sparc64
 # for sunffb driver - useful on sparc only
-sed -i -e 's/ ffb$//' configs/linux-dri
+sed -i -e 's/ ffb / /' configs/linux-dri
 %endif
 
 %ifnarch %{ix86} %{x8664}
