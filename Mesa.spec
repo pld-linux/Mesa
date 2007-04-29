@@ -11,15 +11,16 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	6.5.2
-Release:	5
+Version:	6.5.3
+Release:	1
 License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	e4d894181f1859651658b3704633e10d
+# Source0-md5:	46359457147c469745f24b5074a186f0
 # Source0:	%{name}-%{snap}.tar.gz
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	e870efe98d3a50be01ab211b9b2e25d9
+# Source1-md5:	8af91773ab2653fe537499676b05f2e8
+Source2:	nouveau_drm.h
 Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	expat-devel
@@ -58,7 +59,7 @@ Summary(pl.UTF-8):	Wolnodostępna implementacja Mesa3D biblioteki libGL ze stand
 License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm >= 2.2.0
-Provides:	OpenGL = 1.5
+Provides:	OpenGL = 2.1
 # reports version 1.3, but supports glXGetProcAddress() from 1.4
 Provides:	OpenGL-GLX = 1.4
 Obsoletes:	Mesa
@@ -95,7 +96,7 @@ Group:		X11/Development/Libraries
 # loose dependency on libGL to use with other libGL binaries
 Requires:	OpenGL >= 1.5
 Requires:	xorg-lib-libX11-devel
-Provides:	OpenGL-devel = 1.5
+Provides:	OpenGL-devel = 2.1
 Provides:	OpenGL-GLX-devel = 1.4
 Obsoletes:	Mesa-devel
 Obsoletes:	X11-OpenGL-devel < 1:7.0.0
@@ -115,7 +116,7 @@ Summary(pl.UTF-8):	Statyczna biblioteka libGL z projektu Mesa3D
 License:	MIT
 Group:		X11/Development/Libraries
 Requires:	%{name}-libGL-devel = %{version}-%{release}
-Provides:	OpenGL-static = 1.5
+Provides:	OpenGL-static = 2.1
 Obsoletes:	Mesa-static
 Obsoletes:	X11-OpenGL-static < 1:7.0.0
 Obsoletes:	XFree86-OpenGL-static < 1:7.0.0
@@ -357,20 +358,6 @@ X.org DRI drivers for Intel i810 card family.
 %description dri-driver-intel-i810 -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart i810.
 
-%package dri-driver-intel-i830
-Summary:	X.org DRI drivers
-Summary(pl.UTF-8):	Sterowniki DRI dla X.org
-Group:		X11/Libraries
-Requires:	xorg-driver-video-i810
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
-
-%description dri-driver-intel-i830
-X.org DRI drivers for Intel i830 card family.
-
-%description dri-driver-intel-i830 -l pl.UTF-8
-Sterowniki X.org DRI dla rodziny kart i830.
-
 %package dri-driver-intel-i915
 Summary:	X.org DRI drivers
 Summary(pl.UTF-8):	Sterowniki DRI dla X.org
@@ -415,6 +402,20 @@ X.org DRI drivers for Matrox G card family.
 
 %description dri-driver-matrox -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart Matrox G.
+
+%package dri-driver-nouveau
+Summary:	X.org DRI drivers
+Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+Group:		X11/Libraries
+Requires:	xorg-driver-video-nouveau
+Requires:	xorg-xserver-libglx(glapi) = %{version}
+Requires:	xorg-xserver-server
+
+%description dri-driver-nouveau
+X.org DRI drivers for NVidia adapters.
+
+%description dri-driver-nouveau -l pl.UTF-8
+Sterowniki X.org DRI dla kart NVidia.
 
 %package dri-driver-s3virge
 Summary:	X.org DRI drivers
@@ -507,6 +508,9 @@ Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
 %setup -q -b1
 #%setup -q -n %{name}
 %patch0 -p0
+
+# until new libdrm release
+cp %{SOURCE2} src/mesa/drivers/dri/nouveau
 
 # fix demos
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
@@ -717,12 +721,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i810_dri.so
 
-%if 0
-%files dri-driver-intel-i830
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/i830_dri.so
-%endif
-
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
@@ -735,6 +733,10 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-matrox
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mga_dri.so
+
+%files dri-driver-nouveau
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
 
 %files dri-driver-s3virge
 %defattr(644,root,root,755)
