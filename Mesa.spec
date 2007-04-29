@@ -6,8 +6,6 @@
 # Conditional build:
 %bcond_without	motif	# build static libGLw without Motif interface
 #
-#%define	snap	20061103
-#
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
@@ -17,7 +15,6 @@ License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
 # Source0-md5:	46359457147c469745f24b5074a186f0
-# Source0:	%{name}-%{snap}.tar.gz
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 # Source1-md5:	8af91773ab2653fe537499676b05f2e8
 Source2:	nouveau_drm.h
