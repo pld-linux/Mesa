@@ -264,7 +264,7 @@ Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
-Obsoletes:	X11-driver-radeon-dri
+Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 
 %description dri-driver-ati-radeon-R100
 X.org DRI drivers for ATI R100 card family (Radeon 7000-7500).
@@ -279,7 +279,7 @@ Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
-Obsoletes:	X11-driver-radeon-dri
+Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 
 %description dri-driver-ati-radeon-R200
 X.org DRI drivers for ATI R200 card family (Radeon 8500-92xx)
@@ -294,7 +294,7 @@ Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
-Obsoletes:	X11-driver-radeon-dri
+Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 
 %description dri-driver-ati-radeon-R300
 X.org DRI drivers for ATI R300 card family.
@@ -309,7 +309,7 @@ Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
-Obsoletes:	X11-driver-r128-dri
+Obsoletes:	X11-driver-r128-dri < 1:7.0.0
 
 %description dri-driver-ati-rage128
 X.org DRI drivers for ATI rage128 card family.
@@ -338,7 +338,7 @@ Group:		X11/Libraries
 Requires:	xorg-driver-video-glint
 Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
-Obsoletes:	X11-driver-glint-dri
+Obsoletes:	X11-driver-glint-dri < 1:7.0.0
 
 %description dri-driver-glint
 X.org DRI drivers for GLINT/Permedia card family.
@@ -353,7 +353,7 @@ Group:		X11/Libraries
 Requires:	xorg-driver-video-i810
 Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
-Obsoletes:	X11-driver-i810-dri
+Obsoletes:	X11-driver-i810-dri < 1:7.0.0
 
 %description dri-driver-intel-i810
 X.org DRI drivers for Intel i810 card family.
@@ -369,7 +369,7 @@ Requires:	xorg-driver-video-i810
 Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 Obsoletes:	Mesa-dri-driver-intel-i830
-Obsoletes:	X11-driver-i810-dri
+Obsoletes:	X11-driver-i810-dri < 1:7.0.0
 
 %description dri-driver-intel-i915
 X.org DRI drivers for Intel i915 card family.
@@ -386,7 +386,7 @@ Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 Obsoletes:	Mesa-dri-driver-intel-i830
 Obsoletes:	Mesa-dri-driver-intel-i915
-Obsoletes:	X11-driver-i810-dri
+Obsoletes:	X11-driver-i810-dri < 1:7.0.0
 
 %description dri-driver-intel-i965
 X.org DRI drivers for Intel i965 card family.
@@ -401,7 +401,7 @@ Group:		X11/Libraries
 Requires:	xorg-driver-video-mga
 Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
-Obsoletes:	X11-driver-mga-dri
+Obsoletes:	X11-driver-mga-dri < 1:7.0.0
 
 %description dri-driver-matrox
 X.org DRI drivers for Matrox G card family.
@@ -458,7 +458,7 @@ Group:		X11/Libraries
 Requires:	xorg-driver-video-sis
 Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
-Obsoletes:	X11-driver-sis-dri
+Obsoletes:	X11-driver-sis-dri < 1:7.0.0
 
 %description dri-driver-sis
 X.org DRI drivers for SiS card family.
@@ -474,7 +474,7 @@ Requires:	Glide3-DRI
 Requires:	xorg-driver-video-tdfx
 Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
-Obsoletes:	X11-driver-tdfx-dri
+Obsoletes:	X11-driver-tdfx-dri < 1:7.0.0
 
 %description dri-driver-tdfx
 X.org DRI drivers for 3DFX Voodoo card family (Voodoo 3,4,5, Banshee
