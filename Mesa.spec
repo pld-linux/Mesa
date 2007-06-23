@@ -9,17 +9,16 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	6.5.3
-Release:	2
+Version:	7.0
+Release:	1
 License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	46359457147c469745f24b5074a186f0
+# Source0-md5:	50c371455fa7532c04aa0a970f9bc51f
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	8af91773ab2653fe537499676b05f2e8
+# Source1-md5:	fada2bc1f29da513e015fda1e3abd0c0
 Source2:	nouveau_drm.h
 Patch0:		%{name}-realclean.patch
-Patch1:		%{name}-git-fixes.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	expat-devel
 BuildRequires:	libdrm-devel >= 2.2.0
@@ -516,9 +515,7 @@ Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
 
 %prep
 %setup -q -b1
-#%setup -q -n %{name}
 %patch0 -p0
-%patch1 -p1
 
 # until new libdrm release
 cp %{SOURCE2} src/mesa/drivers/dri/nouveau
@@ -745,9 +742,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mga_dri.so
 
+%if 0
 %files dri-driver-nouveau
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
+%endif
 
 %files dri-driver-s3virge
 %defattr(644,root,root,755)
