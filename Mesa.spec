@@ -523,6 +523,8 @@ cp %{SOURCE2} src/mesa/drivers/dri/nouveau
 # fix demos
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
 
+sed -i -e 's/ ffb$/ ffb nouveau/' configs/linux-dri
+
 %ifnarch sparc sparcv9 sparc64
 # for sunffb driver - useful on sparc only
 sed -i -e 's/ ffb / /' configs/linux-dri
@@ -742,11 +744,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mga_dri.so
 
-%if 0
 %files dri-driver-nouveau
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
-%endif
 
 %files dri-driver-s3virge
 %defattr(644,root,root,755)
