@@ -630,8 +630,10 @@ rm -rf $RPM_BUILD_ROOT
 %files libGL
 %defattr(644,root,root,755)
 %doc docs/{*.html,README.{3DFX,GGI,MITS,QUAKE,THREADS},RELNOTES*}
-%attr(755,root,root) %{_libdir}/libGL.so.*
-%attr(755,root,root) %{_libdir}/libOSMesa.so.*
+%attr(755,root,root) %{_libdir}/libGL.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libGL.so.1
+%attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libOSMesa.so.?
 # symlink for binary apps which fail to conform Linux OpenGL ABI
 # (and dlopen libGL.so instead of libGL.so.1)
 %attr(755,root,root) %{_libdir}/libGL.so
@@ -660,7 +662,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files libGLU
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libGLU.so.*
+%attr(755,root,root) %{_libdir}/libGLU.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libGLU.so.1
 
 %files libGLU-devel
 %defattr(644,root,root,755)
@@ -674,7 +677,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files libGLw
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libGLw.so.*
+%attr(755,root,root) %{_libdir}/libGLw.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libGLw.so.1
 
 %files libGLw-devel
 %defattr(644,root,root,755)
