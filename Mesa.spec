@@ -1,6 +1,7 @@
 #
 # TODO:
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
+# - usable libOSMesa (see monolithic X how to build it? currently needs non-dri libGL)
 # - package OpenGL man pages (from monolith or SGI) somewhere
 #
 # Conditional build:
@@ -580,17 +581,19 @@ mv -f lib lib-static
 	APP_LIB_DEPS="-L../../lib -lGL -L../../lib-dri -lGLU"
 
 mv -f lib lib-dri
-%{__make} clean \
-	MKDEP=makedepend
-%{__make} realclean
 
-%{__make} linux${targ} \
-	CC="%{__cc}" \
-	CXX="%{__cxx}" \
-	OPT_FLAGS="%{rpmcflags} -fno-strict-aliasing" \
-	XLIB_DIR=%{_libdir} \
-	SRC_DIRS="mesa" \
-	PROGRAM_DIRS=
+# non-dri libGL and libOSMesa
+#%{__make} clean \
+#	MKDEP=makedepend
+#%{__make} realclean
+#
+#%{__make} linux${targ} \
+#	CC="%{__cc}" \
+#	CXX="%{__cxx}" \
+#	OPT_FLAGS="%{rpmcflags} -fno-strict-aliasing" \
+#	XLIB_DIR=%{_libdir} \
+#	SRC_DIRS="mesa" \
+#	PROGRAM_DIRS=
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -599,7 +602,7 @@ install -d $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
 cp -df lib-static/lib* $RPM_BUILD_ROOT%{_libdir}
 cp -df lib-dri/lib* $RPM_BUILD_ROOT%{_libdir}
-cp -df lib/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
+#cp -df lib/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
 cp -rf include/GL/{gl[!u]*,glu.h,glu_*,osmesa.h,xmesa*} src/glw/GLw*.h $RPM_BUILD_ROOT%{_includedir}/GL
 cp -df lib-dri/*_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
@@ -632,8 +635,6 @@ rm -rf $RPM_BUILD_ROOT
 %doc docs/{*.html,README.{3DFX,GGI,MITS,QUAKE,THREADS},RELNOTES*}
 %attr(755,root,root) %{_libdir}/libGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libGL.so.1
-%attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libOSMesa.so.?
 # symlink for binary apps which fail to conform Linux OpenGL ABI
 # (and dlopen libGL.so instead of libGL.so.1)
 %attr(755,root,root) %{_libdir}/libGL.so
@@ -641,7 +642,6 @@ rm -rf $RPM_BUILD_ROOT
 %files libGL-devel
 %defattr(644,root,root,755)
 %doc docs/*.spec
-%attr(755,root,root) %{_libdir}/libOSMesa.so
 %dir %{_includedir}/GL
 %{_includedir}/GL/gl.h
 %{_includedir}/GL/glext.h
@@ -658,7 +658,14 @@ rm -rf $RPM_BUILD_ROOT
 %files libGL-static
 %defattr(644,root,root,755)
 %{_libdir}/libGL.a
-%{_libdir}/libOSMesa.a
+
+# libOSMesa (currently unusable with DRI libGL)
+#%attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
+#%attr(755,root,root) %ghost %{_libdir}/libOSMesa.so.?
+# -devel
+#%attr(755,root,root) %{_libdir}/libOSMesa.so
+# -static
+#%{_libdir}/libOSMesa.a
 
 %files libGLU
 %defattr(644,root,root,755)
