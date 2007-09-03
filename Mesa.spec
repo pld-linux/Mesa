@@ -11,7 +11,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.0.1
-Release:	1
+Release:	2
 License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
@@ -387,7 +387,6 @@ Requires:	xorg-driver-video-i810
 Requires:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 Obsoletes:	Mesa-dri-driver-intel-i830
-Obsoletes:	Mesa-dri-driver-intel-i915
 Obsoletes:	X11-driver-i810-dri < 1:7.0.0
 
 %description dri-driver-intel-i965
