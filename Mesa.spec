@@ -598,6 +598,7 @@ mv -f lib lib-dri
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_includedir}/GL,%{_examplesdir}/%{name}-%{version}}
 install -d $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
+install -d $RPM_BUILD_ROOT%{_sysconfdir}/ld.so.conf.d
 
 cp -df lib-static/lib* $RPM_BUILD_ROOT%{_libdir}
 cp -df lib-dri/lib* $RPM_BUILD_ROOT%{_libdir}
@@ -617,6 +618,8 @@ done
 rm -rf progs && mv -f progs.org progs
 rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{BeOS*,win,cygnus,DJ,dja}}
 
+echo %{_libdir}/Mesa >$RPM_BUILD_ROOT%{_sysconfdir}/ld.so.conf.d/Mesa.conf
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -632,15 +635,14 @@ rm -rf $RPM_BUILD_ROOT
 %files libGL
 %defattr(644,root,root,755)
 %doc docs/{*.html,README.{3DFX,GGI,MITS,QUAKE,THREADS},RELNOTES*}
-%attr(755,root,root) %{_libdir}/libGL.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libGL.so.1
-# symlink for binary apps which fail to conform Linux OpenGL ABI
-# (and dlopen libGL.so instead of libGL.so.1)
-%attr(755,root,root) %{_libdir}/libGL.so
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/ld.so.conf.d/Mesa.conf
+%attr(755,root,root) %{_libdir}/Mesa/libGL.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/Mesa/libGL.so.1
 
 %files libGL-devel
 %defattr(644,root,root,755)
 %doc docs/*.spec
+%attr(755,root,root) %{_libdir}/libGL.so
 %dir %{_includedir}/GL
 %{_includedir}/GL/gl.h
 %{_includedir}/GL/glext.h
