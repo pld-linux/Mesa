@@ -11,7 +11,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.0.1
-Release:	2
+Release:	3
 License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
@@ -34,8 +34,6 @@ BuildRequires:	xorg-proto-glproto-devel
 BuildRequires:	xorg-proto-printproto-devel
 BuildRequires:	xorg-util-makedepend
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
-
-%define		_sysconfdir	/etc/X11
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
@@ -596,12 +594,14 @@ mv -f lib lib-dri
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_includedir}/GL,%{_examplesdir}/%{name}-%{version}}
+install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir}/Mesa,%{_includedir}/GL,%{_examplesdir}/%{name}-%{version}}
 install -d $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/ld.so.conf.d
 
 cp -df lib-static/lib* $RPM_BUILD_ROOT%{_libdir}
 cp -df lib-dri/lib* $RPM_BUILD_ROOT%{_libdir}
+mv -f $RPM_BUILD_ROOT%{_libdir}/libGL.so.* $RPM_BUILD_ROOT%{_libdir}/Mesa
+ln -sf Mesa/libGL.so.1 $RPM_BUILD_ROOT%{_libdir}/libGL.so
 #cp -df lib/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
 cp -rf include/GL/{gl[!u]*,glu.h,glu_*,osmesa.h,xmesa*} src/glw/GLw*.h $RPM_BUILD_ROOT%{_includedir}/GL
 cp -df lib-dri/*_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
@@ -636,6 +636,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc docs/{*.html,README.{3DFX,GGI,MITS,QUAKE,THREADS},RELNOTES*}
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/ld.so.conf.d/Mesa.conf
+%dir %{_libdir}/Mesa
 %attr(755,root,root) %{_libdir}/Mesa/libGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/Mesa/libGL.so.1
 
