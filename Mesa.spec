@@ -11,14 +11,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	7.0.1
-Release:	2%{?with_multigl:.mgl}
+Version:	7.0.2
+Release:	1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	c056abd763e899114bf745c9eedbf9ad
+# Source0-md5:	93e6ed7924ff069a4f883b4fce5349dc
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	3b66b3268df12ca8a6c4e0c4c457912c
+# Source1-md5:	11a10410bae7be85cf25bc7119966468
 Source2:	nouveau_drm.h
 Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
@@ -600,7 +600,6 @@ install -d $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
 cp -df lib-static/lib* $RPM_BUILD_ROOT%{_libdir}
 cp -df lib-dri/lib* $RPM_BUILD_ROOT%{_libdir}
-#cp -df lib/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
 cp -rf include/GL/{gl[!u]*,glu.h,glu_*,osmesa.h,xmesa*} src/glw/GLw*.h $RPM_BUILD_ROOT%{_includedir}/GL
 cp -df lib-dri/*_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
@@ -671,12 +670,13 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with multigl}
 %attr(755,root,root) %{_libdir}/libGL.so
 %endif
+%{_libdir}/libOSMesa.a
 
 %files libGL-static
 %defattr(644,root,root,755)
 %{_libdir}/libGL.a
 
-# libOSMesa (currently unusable with DRI libGL)
+# libOSMesa (currently unusable with DRI libGL; only static version provided)
 #%attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
 #%attr(755,root,root) %ghost %{_libdir}/libOSMesa.so.?
 # -devel
