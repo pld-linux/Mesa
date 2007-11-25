@@ -7,23 +7,27 @@
 # Conditional build:
 %bcond_without	motif	# build static libGLw without Motif interface
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
+%bcond_without	nouveau
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.0.2
-Release:	1%{?with_multigl:.mgl}
+Release:	2%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
 # Source0-md5:	93e6ed7924ff069a4f883b4fce5349dc
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 # Source1-md5:	11a10410bae7be85cf25bc7119966468
-Source2:	nouveau_drm.h
 Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	expat-devel
+%if %{with nouveau}
 BuildRequires:	libdrm-devel >= 2.2.0
+%else
+BuildRequires:	libdrm-devel >= 2.3.0
+%endif
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
@@ -516,13 +520,12 @@ Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
 %setup -q -b1
 %patch0 -p0
 
-# until new libdrm release
-cp %{SOURCE2} src/mesa/drivers/dri/nouveau
-
 # fix demos
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
 
+%if %{with nouveau}
 sed -i -e 's/ ffb$/ ffb nouveau/' configs/linux-dri
+%endif
 
 %ifnarch sparc sparcv9 sparc64
 # for sunffb driver - useful on sparc only
@@ -772,9 +775,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mga_dri.so
 
+%if %{with nouveau}
 %files dri-driver-nouveau
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
+%endif
 
 %files dri-driver-s3virge
 %defattr(644,root,root,755)
