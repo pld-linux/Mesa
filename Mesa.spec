@@ -12,7 +12,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.0.2
-Release:	3.1%{?with_multigl:.mgl}
+Release:	4%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
@@ -608,10 +608,17 @@ sed -i -e 's/ sis / /' configs/linux-dri
 %endif
 
 %build
+# use $lib, not %{_lib} as Mesa uses lib64 only for *-x86-64* targets
+%ifarch %{x8664}
+targ=-x86-64
+lib=lib64
+%else
+lib=lib
 %ifarch %{ix86}
 targ=-x86
 %else
 targ=""
+%endif
 %endif
 
 %{__make} linux${targ}-static \
@@ -622,7 +629,7 @@ targ=""
 	GLW_SOURCES="GLwDrawA.c%{?with_motif: GLwMDrawA.c}" \
 	SRC_DIRS="mesa glu glw" \
 	PROGRAM_DIRS=
-mv -f lib lib-static
+mv -f ${lib} lib-static
 %{__make} realclean
 
 %{__make} linux-osmesa \
@@ -651,7 +658,7 @@ mv -f lib lib-osmesa
 	OPT_FLAGS="%{rpmcflags}" \
 	XLIB_DIR=%{_libdir} \
 	PROGS="glxgears" \
-	APP_LIB_DEPS="-L../../lib -lGL"
+	APP_LIB_DEPS="-L../../${lib} -lGL"
 
 %{__make} -C progs/xdemos \
 	CC="%{__cc}" \
@@ -659,9 +666,9 @@ mv -f lib lib-osmesa
 	OPT_FLAGS="%{rpmcflags}" \
 	XLIB_DIR=%{_libdir} \
 	PROGS="glxinfo" \
-	APP_LIB_DEPS="-L../../lib -lGL -L../../lib-dri -lGLU"
+	APP_LIB_DEPS="-L../../${lib} -lGL -lGLU"
 
-mv -f lib lib-dri
+mv -f ${lib} lib-dri
 
 # TODO: glw.pc (missing in 7.0.2 tarball)
 for d in mesa glu ; do
