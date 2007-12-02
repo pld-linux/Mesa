@@ -1,33 +1,34 @@
 #
 # TODO:
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
-# - usable libOSMesa (see monolithic X how to build it? currently needs non-dri libGL)
 # - package OpenGL man pages (from monolith or SGI) somewhere
 #
 # Conditional build:
 %bcond_without	motif	# build static libGLw without Motif interface
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
-%bcond_with	nouveau
+%bcond_with	nouveau	# build nouveau DRI driver
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.0.2
-Release:	3%{?with_multigl:.mgl}
-License:	MIT (core), SGI (GLU,libGLw) and others - see COPYRIGHT file
+Release:	3.1%{?with_multigl:.mgl}
+License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
 # Source0-md5:	93e6ed7924ff069a4f883b4fce5349dc
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 # Source1-md5:	11a10410bae7be85cf25bc7119966468
+Source2:	nouveau_drm.h
 Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	expat-devel
-%if %{with nouveau}
-BuildRequires:	libdrm-devel >= 2.2.0
-%else
+#%if %{with nouveau}
+# needs nouveau_drm.h patchlevel=6 and matching kernel driver
+#BuildRequires:	libdrm-devel = 2.3.1.xxxxxxxx
+#%else
 BuildRequires:	libdrm-devel >= 2.3.0
-%endif
+#%endif
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
@@ -198,7 +199,7 @@ Biblioteka SGI widgetów Xt dla OpenGL-a.
 %package libGLw-devel
 Summary:	Header files for SGI libGLw library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki SGI libGLw
-License:	SGI Free Software License B v1.1
+License:	SGI MIT-like
 Group:		Development/Libraries
 Requires:	%{name}-libGLw = %{version}-%{release}
 Requires:	OpenGL-devel >= 1.2
@@ -213,7 +214,7 @@ Pliki nagłówkowe biblioteki SGI libGLw.
 %package libGLw-static
 Summary:	Static SGI libGLw library
 Summary(pl.UTF-8):	Statyczna biblioteka SGI libGLw
-License:	SGI Free Software License B v1.1
+License:	SGI MIT-like
 Group:		Development/Libraries
 Requires:	%{name}-libGLw-devel = %{version}-%{release}
 Provides:	OpenGL-GLw-static
@@ -224,9 +225,53 @@ Static SGI libGLw library.
 %description libGLw-static -l pl.UTF-8
 Statyczna biblioteka SGI libGLw.
 
+%package libOSMesa
+Summary:	OSMesa (off-screen renderer) library
+Summary(pl.UTF-8):	Biblioteka OSMesa (renderująca bitmapy w pamięci)
+License:	MIT
+Group:		Libraries
+# doesn't require base
+
+%description libOSMesa
+OSMesa (off-screen renderer) library.
+
+%description libOSMesa -l pl.UTF-8
+Biblioteka OSMesa (renderująca bitmapy w pamięci).
+
+%package libOSMesa-devel
+Summary:	Header file for OSMesa (off-screen renderer) library
+Summary(pl.UTF-8):	Plik nagłówkowy biblioteki OSMesa (renderującej bitmapy w pamięci)
+License:	MIT
+Group:		Development/Libraries
+Requires:	%{name}-libOSMesa = %{version}-%{release}
+# for <GL/gl.h> only
+Requires:	OpenGL-devel
+
+%description libOSMesa-devel
+Header file for OSMesa (off-screen renderer) library.
+
+%description libOSMesa-devel -l pl.UTF-8
+Plik nagłówkowy biblioteki OSMesa (renderującej bitmapy w pamięci).
+
+%package libOSMesa-static
+Summary:	Static OSMesa (off-screen renderer) library
+Summary(pl.UTF-8):	Biblioteka statyczna OSMesa (renderująca bitmapy w pamięci)
+License:	MIT
+Group:		Development/Libraries
+Requires:	%{name}-libOSMesa-devel = %{version}-%{release}
+# this static build of OSMesa needs static non-dri Mesa implementation
+Requires:	%{name}-libGL-static = %{version}-%{release}
+
+%description libOSMesa-static
+Static OSMesa (off-screen renderer) library.
+
+%description libOSMesa-static -l pl.UTF-8
+Biblioteka statyczna OSMesa (renderująca bitmapy w pamięci).
+
 %package utils
 Summary:	OpenGL utilities from Mesa3D
 Summary(pl.UTF-8):	Programy narzędziowe OpenGL z projektu Mesa3D
+License:	MIT
 Group:		X11/Applications/Graphics
 # loose deps on libGL/libGLU
 
@@ -237,20 +282,22 @@ OpenGL utilities from Mesa3D: glxgears and glxinfo.
 Programy narzędziowe OpenGL z projektu Mesa3D: glxgears i glxinfo.
 
 %package demos
-Summary:	Mesa Demos
-Summary(pl.UTF-8):	Programy demonstrujące możliwości bibliotek Mesa
+Summary:	Mesa Demos source code
+Summary(pl.UTF-8):	Kod źródłowy programów demonstrujących dla bibliotek Mesa
+License:	various (MIT, SGI, GPL - see copyright notes in sources)
 Group:		Development/Libraries
 Requires:	OpenGL-devel
 
 %description demos
-Demonstration programs for the Mesa libraries.
+Demonstration programs for the Mesa libraries in source code form.
 
 %description demos -l pl.UTF-8
-Programy demonstracyjne dla bibliotek Mesa.
+Kod źródłowy programów demonstracyjnych dla bibliotek Mesa.
 
 %package dri-driver-ati-mach64
 Summary:	X.org DRI drivers
 Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -265,6 +312,7 @@ Sterowniki X.org DRI dla rodziny kart ATI mach64.
 %package dri-driver-ati-radeon-R100
 Summary:	X.org DRI drivers
 Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -280,6 +328,7 @@ Sterowniki X.org DRI dla rodziny kart ATI R100 (Radeon 7000-7500).
 %package dri-driver-ati-radeon-R200
 Summary:	X.org DRI drivers
 Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -295,6 +344,7 @@ Sterowniki X.org DRI dla rodziny kart ATI R200 (Radeon 8500-92xx).
 %package dri-driver-ati-radeon-R300
 Summary:	X.org DRI drivers
 Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -310,6 +360,7 @@ Sterowniki X.org DRI dla rodziny kart ATI R300.
 %package dri-driver-ati-rage128
 Summary:	X.org DRI drivers
 Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -325,6 +376,7 @@ Sterowniki X.org DRI dla rodziny kart ATI rage128.
 %package dri-driver-ffb
 Summary:	X.org DRI drivers
 Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-sunffb
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -339,6 +391,7 @@ Sterowniki X.org DRI dla rodziny kart SUN Creator3D and Elite3D.
 %package dri-driver-glint
 Summary:	X.org DRI drivers
 Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-glint
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -354,6 +407,7 @@ Sterowniki X.org DRI dla rodziny kart GLINT/Permedia.
 %package dri-driver-intel-i810
 Summary:	X.org DRI drivers
 Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-i810
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -369,6 +423,7 @@ Sterowniki X.org DRI dla rodziny kart i810.
 %package dri-driver-intel-i915
 Summary:	X.org DRI drivers
 Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-i810
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -385,6 +440,7 @@ Sterowniki X.org DRI dla rodziny kart i915.
 %package dri-driver-intel-i965
 Summary:	X.org DRI drivers
 Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-i810
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -401,6 +457,7 @@ Sterowniki X.org DRI dla rodziny kart i965.
 %package dri-driver-matrox
 Summary:	X.org DRI drivers
 Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-mga
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -416,6 +473,7 @@ Sterowniki X.org DRI dla rodziny kart Matrox G.
 %package dri-driver-nouveau
 Summary:	X.org DRI drivers
 Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-nouveau
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -430,6 +488,7 @@ Sterowniki X.org DRI dla kart NVidia.
 %package dri-driver-s3virge
 Summary:	X.org DRI drivers
 Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-s3virge
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -444,6 +503,7 @@ Sterowniki X.org DRI dla rodziny kart S3 Virge.
 %package dri-driver-savage
 Summary:	X.org DRI drivers
 Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-savage
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -458,6 +518,7 @@ Sterowniki X.org DRI dla rodziny kart S3 Savage.
 %package dri-driver-sis
 Summary:	X.org DRI drivers
 Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-sis
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -473,6 +534,7 @@ Sterowniki X.org DRI dla rodziny kart SiS.
 %package dri-driver-tdfx
 Summary:	X.org DRI drivers
 Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+License:	MIT
 Group:		X11/Libraries
 Requires:	Glide3-DRI
 Requires:	xorg-driver-video-tdfx
@@ -491,6 +553,7 @@ Banshee and Velocity 100/200).
 %package dri-driver-trident
 Summary:	X.org DRI drivers
 Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-trident
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -505,6 +568,7 @@ Sterowniki X.org DRI dla rodziny kart Trident.
 %package dri-driver-via-unichrome
 Summary:	X.org DRI drivers
 Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-via
 Requires:	xorg-xserver-libglx(glapi) = %{version}
@@ -520,8 +584,14 @@ Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
 %setup -q -b1
 %patch0 -p0
 
+# until new libdrm release and Mesa update for nouveau_drm patchlevel
+cp %{SOURCE2} src/mesa/drivers/dri/nouveau
+
 # fix demos
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
+
+# s3v, sis, trident missing there - don't override list from linux-dri
+sed -i -e '/^DRI_DIRS/d' configs/linux-dri-x86-64
 
 %if %{with nouveau}
 sed -i -e 's/ ffb$/ ffb nouveau/' configs/linux-dri
@@ -529,7 +599,7 @@ sed -i -e 's/ ffb$/ ffb nouveau/' configs/linux-dri
 
 %ifnarch sparc sparcv9 sparc64
 # for sunffb driver - useful on sparc only
-sed -i -e 's/ ffb / /' configs/linux-dri
+sed -i -e 's/ ffb\>//' configs/linux-dri
 %endif
 
 %ifnarch %{ix86} %{x8664}
@@ -553,6 +623,16 @@ targ=""
 	SRC_DIRS="mesa glu glw" \
 	PROGRAM_DIRS=
 mv -f lib lib-static
+%{__make} realclean
+
+%{__make} linux-osmesa \
+	CC="%{__cc}" \
+	CXX="%{__cxx}" \
+	OPT_FLAGS="%{rpmcflags} -fno-strict-aliasing" \
+	XLIB_DIR=%{_libdir} \
+	SRC_DIRS="mesa" \
+	PROGRAM_DIRS=
+mv -f lib lib-osmesa
 %{__make} realclean
 
 %{__make} linux-dri${targ} \
@@ -583,39 +663,41 @@ mv -f lib lib-static
 
 mv -f lib lib-dri
 
-# non-dri libGL and libOSMesa
-#%{__make} clean \
-#	MKDEP=makedepend
-#%{__make} realclean
-#
-#%{__make} linux${targ} \
-#	CC="%{__cc}" \
-#	CXX="%{__cxx}" \
-#	OPT_FLAGS="%{rpmcflags} -fno-strict-aliasing" \
-#	XLIB_DIR=%{_libdir} \
-#	SRC_DIRS="mesa" \
-#	PROGRAM_DIRS=
+# TODO: glw.pc (missing in 7.0.2 tarball)
+for d in mesa glu ; do
+	%{__make} -C src/$d `basename src/$d/*.pc.in .in` \
+		INSTALL_DIR=%{_prefix} \
+		LIB_DIR=%{_lib}
+done
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_includedir}/GL,%{_examplesdir}/%{name}-%{version}}
+install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_includedir}/GL,%{_pkgconfigdir},%{_examplesdir}/%{name}-%{version}}
 install -d $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
 cp -df lib-static/lib* $RPM_BUILD_ROOT%{_libdir}
+cp -df lib-osmesa/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
 cp -df lib-dri/lib* $RPM_BUILD_ROOT%{_libdir}
-cp -rf include/GL/{gl[!u]*,glu.h,glu_*,osmesa.h,xmesa*} src/glw/GLw*.h $RPM_BUILD_ROOT%{_includedir}/GL
+cp -rf include/GL/{gl[!f]*,osmesa.h,xmesa*} src/glw/GLw*.h $RPM_BUILD_ROOT%{_includedir}/GL
 cp -df lib-dri/*_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
-# keep for -bi --short-circuit
-cp -a progs progs.org
+install src/mesa/gl.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
+install src/glu/glu.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
+#install src/glw/glw.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
+
 install progs/xdemos/{glxgears,glxinfo} $RPM_BUILD_ROOT%{_bindir}
-for l in demos redbook samples xdemos ; do
-	%{__make} -C progs/$l clean
+# work on copy to keep -bi --short-circuit working
+rm -rf progs-clean
+install -d progs-clean
+for l in demos glsl osdemos redbook samples xdemos ; do
+	cp -a progs/$l progs-clean/$l
+	%{__make} -C progs-clean/$l clean
+	cp -Rf progs-clean/$l $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/$l
 done
-for l in demos redbook samples util xdemos images ; do
+rm -rf progs-clean
+for l in util images ; do
 	cp -Rf progs/$l $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/$l
 done
-rm -rf progs && mv -f progs.org progs
 rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{BeOS*,win,cygnus,DJ,dja}}
 
 %if %{with multigl}
@@ -658,34 +740,25 @@ rm -rf $RPM_BUILD_ROOT
 %files libGL-devel
 %defattr(644,root,root,755)
 %doc docs/*.spec
+%if %{with multigl}
+%attr(755,root,root) %{_libdir}/libGL.so
+%endif
 %dir %{_includedir}/GL
 %{_includedir}/GL/gl.h
 %{_includedir}/GL/glext.h
-%{_includedir}/GL/glfbdev.h
 %{_includedir}/GL/gl_mangle.h
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glxext.h
 %{_includedir}/GL/glx_mangle.h
-%{_includedir}/GL/osmesa.h
-%{_includedir}/GL/xmesa.h
-%{_includedir}/GL/xmesa_x.h
-%{_includedir}/GL/xmesa_xf86.h
-%if %{with multigl}
-%attr(755,root,root) %{_libdir}/libGL.so
-%endif
-%{_libdir}/libOSMesa.a
+%{_pkgconfigdir}/gl.pc
 
 %files libGL-static
 %defattr(644,root,root,755)
 %{_libdir}/libGL.a
-
-# libOSMesa (currently unusable with DRI libGL; only static version provided)
-#%attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
-#%attr(755,root,root) %ghost %{_libdir}/libOSMesa.so.?
-# -devel
-#%attr(755,root,root) %{_libdir}/libOSMesa.so
-# -static
-#%{_libdir}/libOSMesa.a
+# x11 (non-dri) Mesa API
+%{_includedir}/GL/xmesa.h
+%{_includedir}/GL/xmesa_x.h
+%{_includedir}/GL/xmesa_xf86.h
 
 %files libGLU
 %defattr(644,root,root,755)
@@ -697,6 +770,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libGLU.so
 %{_includedir}/GL/glu.h
 %{_includedir}/GL/glu_mangle.h
+%{_pkgconfigdir}/glu.pc
 
 %files libGLU-static
 %defattr(644,root,root,755)
@@ -714,10 +788,25 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/GLwDrawAP.h
 %{_includedir}/GL/GLwMDrawA.h
 %{_includedir}/GL/GLwMDrawAP.h
+#%{_pkgconfigdir}/glw.pc
 
 %files libGLw-static
 %defattr(644,root,root,755)
 %{_libdir}/libGLw.a
+
+%files libOSMesa
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libOSMesa.so.6
+
+%files libOSMesa-devel
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libOSMesa.so
+%{_includedir}/GL/osmesa.h
+
+%files libOSMesa-static
+%defattr(644,root,root,755)
+%{_libdir}/libOSMesa.a
 
 %files utils
 %defattr(644,root,root,755)
