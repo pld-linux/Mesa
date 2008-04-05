@@ -12,7 +12,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.0.3
-Release:	1%{?with_multigl:.mgl}
+Release:	2%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
@@ -670,8 +670,7 @@ mv -f lib lib-osmesa
 
 mv -f ${lib} lib-dri
 
-# TODO: glw.pc (missing in 7.0.2 tarball)
-for d in mesa glu ; do
+for d in mesa glu glw ; do
 	%{__make} -C src/$d `basename src/$d/*.pc.in .in` \
 		INSTALL_DIR=%{_prefix} \
 		LIB_DIR=%{_lib}
@@ -690,7 +689,7 @@ cp -df lib-dri/*_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
 install src/mesa/gl.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
 install src/glu/glu.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
-#install src/glw/glw.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
+install src/glw/glw.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
 
 install progs/xdemos/{glxgears,glxinfo} $RPM_BUILD_ROOT%{_bindir}
 # work on copy to keep -bi --short-circuit working
@@ -795,7 +794,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/GLwDrawAP.h
 %{_includedir}/GL/GLwMDrawA.h
 %{_includedir}/GL/GLwMDrawAP.h
-#%{_pkgconfigdir}/glw.pc
+%{_pkgconfigdir}/glw.pc
 
 %files libGLw-static
 %defattr(644,root,root,755)
