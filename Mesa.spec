@@ -2,33 +2,30 @@
 # TODO:
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
 # - package OpenGL man pages (from monolith or SGI) somewhere
+# - handle static bcond
 #
 # Conditional build:
-%bcond_without	motif	# build static libGLw without Motif interface
+%bcond_without	motif	# build libGLw without Motif interface
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
-%bcond_with	nouveau	# build nouveau DRI driver
+%bcond_with	static
 #
+%define	snap	20080417
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	7.0.3
-Release:	2%{?with_multigl:.mgl}
+Version:	7.1.0
+Release:	0.%{snap}.1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
-Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
+# Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
+Source0:	mesa-%{snap}.tar.bz2
 # Source0-md5:	e6e6379d7793af40a6bc3ce1bace572e
-Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
+# Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 # Source1-md5:	47fd6863621d3c9c7dbb870ab7f0c303
-Source2:	nouveau_drm.h
-Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	expat-devel
-#%if %{with nouveau}
-# needs nouveau_drm.h patchlevel=6 and matching kernel driver
-#BuildRequires:	libdrm-devel = 2.3.1.xxxxxxxx
-#%else
-BuildRequires:	libdrm-devel >= 2.3.0
-#%endif
+BuildRequires:	libdrm-devel >= 2.3.1
+BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
@@ -36,6 +33,7 @@ BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libXdamage-devel
 BuildRequires:	xorg-lib-libXt-devel
 BuildRequires:	xorg-lib-libXxf86vm-devel
+BuildRequires:	xorg-proto-dri2proto-devel
 BuildRequires:	xorg-proto-glproto-devel
 BuildRequires:	xorg-proto-printproto-devel
 BuildRequires:	xorg-util-makedepend
@@ -581,130 +579,50 @@ X.org DRI drivers for VIA Unichrome card family.
 Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
 
 %prep
-%setup -q -b1
-%patch0 -p0
-
-# until new libdrm release and Mesa update for nouveau_drm patchlevel
-cp %{SOURCE2} src/mesa/drivers/dri/nouveau
-
-# fix demos
-find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
-
-# s3v, sis, trident missing there - don't override list from linux-dri
-sed -i -e '/^DRI_DIRS/d' configs/linux-dri-x86-64
-
-%if %{with nouveau}
-sed -i -e 's/ ffb$/ ffb nouveau/' configs/linux-dri
-%endif
-
-%ifnarch sparc sparcv9 sparc64
-# for sunffb driver - useful on sparc only
-sed -i -e 's/ ffb\>//' configs/linux-dri
-%endif
-
-%ifnarch %{ix86} %{x8664}
-# sis needs write-memory barrier
-sed -i -e 's/ sis / /' configs/linux-dri
-%endif
+#%%setup -q -b1
+%setup -q -n mesa
 
 %build
-# use $lib, not %{_lib} as Mesa uses lib64 only for *-x86-64* targets
-%ifarch %{x8664}
-targ=-x86-64
-lib=lib64
-%else
-lib=lib
-%ifarch %{ix86}
-targ=-x86
-%else
-targ=""
+[ ! -f ./configure ] && ./autogen.sh
+
+DRIVERS="\
+%ifarch sparc sparcv9 sparc64
+ffb \
 %endif
+i810 i915 i965 mach64 mga 
+%if %{with nouveau}
+nouveau \
 %endif
+r128 r200 r300 radeon s3v savage \
+%ifarch %{ix86} %{x8664}
+sis \
+%endif
+tdfx trident unichrome"
 
-%{__make} linux${targ}-static \
-	CC="%{__cc}" \
-	CXX="%{__cxx}" \
-	OPT_FLAGS="%{rpmcflags} -fno-strict-aliasing" \
-	XLIB_DIR=%{_libdir} \
-	GLW_SOURCES="GLwDrawA.c%{?with_motif: GLwMDrawA.c}" \
-	SRC_DIRS="mesa glu glw" \
-	PROGRAM_DIRS=
-mv -f ${lib} lib-static
-%{__make} realclean
 
-%{__make} linux-osmesa \
-	CC="%{__cc}" \
-	CXX="%{__cxx}" \
-	OPT_FLAGS="%{rpmcflags} -fno-strict-aliasing" \
-	XLIB_DIR=%{_libdir} \
-	SRC_DIRS="mesa" \
-	PROGRAM_DIRS=
-mv -f lib lib-osmesa
-%{__make} realclean
+%configure \
+	--enable-shared \
+	--enable-selinux \
+	--enable-glx-tls \
+	%{?!with_motif:--disable-glw} \
+	--with-driver=dri \
+	--with-demos \
+	--with-dri-driverdir=%{_libdir}/xorg/modules/dri \
+	--with-expat \
+	--with-dri-drivers="$(echo ${DRIVERS} | xargs | tr ' ' ',')" \
+	--disable-glut
 
-%{__make} linux-dri${targ} \
-	CC="%{__cc}" \
-	CXX="%{__cxx}" \
-	MKDEP=makedepend \
-	OPT_FLAGS="%{rpmcflags} -fno-strict-aliasing" \
-	XLIB_DIR=%{_libdir} \
-	DRI_DRIVER_SEARCH_DIR=%{_libdir}/xorg/modules/dri \
-	SRC_DIRS="glx/x11 mesa glu glw" \
-	PROGRAM_DIRS=
-
-%{__make} -C progs/xdemos \
-	CC="%{__cc}" \
-	CXX="%{__cxx}" \
-	OPT_FLAGS="%{rpmcflags}" \
-	XLIB_DIR=%{_libdir} \
-	PROGS="glxgears" \
-	APP_LIB_DEPS="-L../../${lib} -lGL"
-
-%{__make} -C progs/xdemos \
-	CC="%{__cc}" \
-	CXX="%{__cxx}" \
-	OPT_FLAGS="%{rpmcflags}" \
-	XLIB_DIR=%{_libdir} \
-	PROGS="glxinfo" \
-	APP_LIB_DEPS="-L../../${lib} -lGL -lGLU"
-
-mv -f ${lib} lib-dri
-
-for d in mesa glu glw ; do
-	%{__make} -C src/$d `basename src/$d/*.pc.in .in` \
-		INSTALL_DIR=%{_prefix} \
-		LIB_DIR=%{_lib}
-done
+%{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_includedir}/GL,%{_pkgconfigdir},%{_examplesdir}/%{name}-%{version}}
-install -d $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
-cp -df lib-static/lib* $RPM_BUILD_ROOT%{_libdir}
-cp -df lib-osmesa/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
-cp -df lib-dri/lib* $RPM_BUILD_ROOT%{_libdir}
-cp -rf include/GL/{gl[!f]*,osmesa.h,xmesa*} src/glw/GLw*.h $RPM_BUILD_ROOT%{_includedir}/GL
-cp -df lib-dri/*_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
+install -d $RPM_BUILD_ROOT%{_bindir}
 
-install src/mesa/gl.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
-install src/glu/glu.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
-install src/glw/glw.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
+%{__make} install \
+	DESTDIR=$RPM_BUILD_ROOT
 
 install progs/xdemos/{glxgears,glxinfo} $RPM_BUILD_ROOT%{_bindir}
-# work on copy to keep -bi --short-circuit working
-rm -rf progs-clean
-install -d progs-clean
-for l in demos glsl osdemos redbook samples xdemos ; do
-	cp -a progs/$l progs-clean/$l
-	%{__make} -C progs-clean/$l clean
-	cp -Rf progs-clean/$l $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/$l
-done
-rm -rf progs-clean
-for l in util images ; do
-	cp -Rf progs/$l $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/$l
-done
-rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{BeOS*,win,cygnus,DJ,dja}}
 
 %if %{with multigl}
 install -d $RPM_BUILD_ROOT{%{_libdir}/Mesa,%{_sysconfdir}/ld.so.conf.d}
@@ -758,6 +676,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/glx_mangle.h
 %{_pkgconfigdir}/gl.pc
 
+%if %{with static}
 %files libGL-static
 %defattr(644,root,root,755)
 %{_libdir}/libGL.a
@@ -765,6 +684,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/xmesa.h
 %{_includedir}/GL/xmesa_x.h
 %{_includedir}/GL/xmesa_xf86.h
+%endif
 
 %files libGLU
 %defattr(644,root,root,755)
@@ -778,9 +698,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/glu_mangle.h
 %{_pkgconfigdir}/glu.pc
 
+%if %{with static}
 %files libGLU-static
 %defattr(644,root,root,755)
 %{_libdir}/libGLU.a
+%endif
 
 %files libGLw
 %defattr(644,root,root,755)
@@ -796,23 +718,27 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/GLwMDrawAP.h
 %{_pkgconfigdir}/glw.pc
 
+%if %{with static}
 %files libGLw-static
 %defattr(644,root,root,755)
 %{_libdir}/libGLw.a
+%endif
 
 %files libOSMesa
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libOSMesa.so.6
+#%attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
+#%attr(755,root,root) %ghost %{_libdir}/libOSMesa.so.6
 
 %files libOSMesa-devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libOSMesa.so
+#%attr(755,root,root) %{_libdir}/libOSMesa.so
 %{_includedir}/GL/osmesa.h
 
+%if %{with static}
 %files libOSMesa-static
 %defattr(644,root,root,755)
 %{_libdir}/libOSMesa.a
+%endif
 
 %files utils
 %defattr(644,root,root,755)
@@ -860,7 +786,6 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/i915tex_dri.so
 
 %files dri-driver-intel-i965
 %defattr(644,root,root,755)
@@ -870,11 +795,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mga_dri.so
 
-%if %{with nouveau}
 %files dri-driver-nouveau
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
-%endif
+#%attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
 
 %files dri-driver-s3virge
 %defattr(644,root,root,755)
@@ -904,4 +827,4 @@ rm -rf $RPM_BUILD_ROOT
 
 %files demos
 %defattr(644,root,root,755)
-%{_examplesdir}/%{name}-%{version}
+#%{_examplesdir}/%{name}-%{version}
