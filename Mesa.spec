@@ -19,7 +19,7 @@ License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 # Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
 Source0:	mesa-%{snap}.tar.bz2
-# Source0-md5:	e6e6379d7793af40a6bc3ce1bace572e
+# Source0-md5:	c00a8fec549e2aebd4cdb2cd76225420
 # Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 # Source1-md5:	47fd6863621d3c9c7dbb870ab7f0c303
 URL:		http://www.mesa3d.org/
