@@ -1,14 +1,16 @@
 --- Makefile	2006-08-11 03:07:17.000000000 +0200
 +++ Makefile-new	2006-08-15 23:24:30.648596784 +0200
-@@ -23,11 +23,7 @@
- realclean:
- 	touch $(TOP)/configs/current
- 	$(MAKE) clean
+@@ -27,12 +27,10 @@
+ 
+ 
+ realclean: clean
 -	-rm -rf lib*
  	-rm -f $(TOP)/configs/current
--	-rm -f `find . -name \*.o`
--	-rm -f `find . -name \*.a`
--	-rm -f `find . -name \*.so`
- 	-rm -f `find . -name depend`
+ 	-rm -f $(TOP)/configs/autoconf
+ 	-rm -rf autom4te.cache
+-	-find . '(' -name '*.o' -o -name '*.a' -o -name '*.so' -o \
+-	  -name depend -o -name depend.bak ')' -exec rm -f '{}' ';'
++	-find . '(' -name depend -o -name depend.bak ')' -exec rm -f '{}' ';'
+ 
  
  
