@@ -8,17 +8,21 @@
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
 %bcond_with	nouveau	# build nouveau DRI driver
 #
+%define	snap	rc1
+#
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	7.0.3
-Release:	2%{?with_multigl:.mgl}
+Version:	7.1
+Release:	0.%{?with_multigl:.mgl}.%{snap}.1
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
-Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	e6e6379d7793af40a6bc3ce1bace572e
-Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	47fd6863621d3c9c7dbb870ab7f0c303
+# Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
+Source0:	http://www.mesa3d.org/beta/%{name}Lib-%{version}-%{snap}.tar.gz
+# Source0-md5:	94afea4c826badcb5e69e38935a56212
+# Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
+Source1:	http://www.mesa3d.org/beta/%{name}Demos-%{version}-%{snap}.tar.gz
+# Source1-md5:	e3df10e4efa3ff3fc3b2572f8af06f12
 Source2:	nouveau_drm.h
 Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
@@ -581,10 +585,11 @@ X.org DRI drivers for VIA Unichrome card family.
 Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
 
 %prep
-%setup -q -b1
+%setup -q -b1 -n %{name}-%{version}-%{snap}
 %patch0 -p0
 
 # until new libdrm release and Mesa update for nouveau_drm patchlevel
+[ -f src/mesa/drivers/dri/nouveau/nouveau_drm.h  ] && exit 1
 cp %{SOURCE2} src/mesa/drivers/dri/nouveau
 
 # fix demos
@@ -803,7 +808,7 @@ rm -rf $RPM_BUILD_ROOT
 %files libOSMesa
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libOSMesa.so.6
+%attr(755,root,root) %ghost %{_libdir}/libOSMesa.so.[0-9]
 
 %files libOSMesa-devel
 %defattr(644,root,root,755)
@@ -860,7 +865,6 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/i915tex_dri.so
 
 %files dri-driver-intel-i965
 %defattr(644,root,root,755)
