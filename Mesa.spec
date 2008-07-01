@@ -14,7 +14,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.1
-Release:	0.%{?with_multigl:.mgl}.%{snap}.1
+Release:	0.%{?with_multigl:mgl.}%{snap}.1
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 # Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
@@ -25,6 +25,7 @@ Source1:	http://www.mesa3d.org/beta/%{name}Demos-%{version}-%{snap}.tar.gz
 # Source1-md5:	e3df10e4efa3ff3fc3b2572f8af06f12
 Source2:	nouveau_drm.h
 Patch0:		%{name}-realclean.patch
+Patch1:		%{name}-libdrm.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	expat-devel
 #%if %{with nouveau}
@@ -535,6 +536,20 @@ X.org DRI drivers for SiS card family.
 %description dri-driver-sis -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart SiS.
 
+%package dri-driver-swrast
+Summary:	X.org DRI drivers
+Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+License:	MIT
+Group:		X11/Libraries
+Requires:	xorg-xserver-libglx(glapi) = %{version}
+Requires:	xorg-xserver-server
+
+%description dri-driver-swrast
+DRI software rasterizer driver for X.org.
+
+%description dri-driver-swrast -l pl.UTF-8
+DRI software rasterizer driver for X.org.
+
 %package dri-driver-tdfx
 Summary:	X.org DRI drivers
 Summary(pl.UTF-8):	Sterowniki DRI dla X.org
@@ -587,6 +602,7 @@ Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
 %prep
 %setup -q -b1 -n %{name}-%{version}-%{snap}
 %patch0 -p0
+%patch1 -p1
 
 # until new libdrm release and Mesa update for nouveau_drm patchlevel
 [ -f src/mesa/drivers/dri/nouveau/nouveau_drm.h  ] && exit 1
@@ -597,6 +613,8 @@ find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{ver
 
 # s3v, sis, trident missing there - don't override list from linux-dri
 sed -i -e '/^DRI_DIRS/d' configs/linux-dri-x86-64
+
+sed -i -e 's/ i810 / swrast i810 /' configs/linux-dri
 
 %if %{with nouveau}
 sed -i -e 's/ ffb$/ ffb nouveau/' configs/linux-dri
@@ -893,6 +911,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/sis_dri.so
 %endif
+
+%files dri-driver-swrast
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
 
 %files dri-driver-tdfx
 %defattr(644,root,root,755)
