@@ -541,7 +541,7 @@ Summary:	X.org DRI drivers
 Summary(pl.UTF-8):	Sterowniki DRI dla X.org
 License:	MIT
 Group:		X11/Libraries
-Requires:	xorg-xserver-libglx(glapi) = %{version}
+Provides:	xorg-xserver-libglx(glapi) = %{version}
 Requires:	xorg-xserver-server
 
 %description dri-driver-swrast
