@@ -7,7 +7,7 @@
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
 %bcond_with	nouveau	# build nouveau DRI driver
 #
-%define	snap	rc1
+%define	snap	rc3
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
@@ -18,13 +18,12 @@ License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 # Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
 Source0:	http://www.mesa3d.org/beta/%{name}Lib-%{version}-%{snap}.tar.gz
-# Source0-md5:	94afea4c826badcb5e69e38935a56212
+# Source0-md5:	3a3cb6e3f09bf28650483b0d43ab8d88
 # Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 Source1:	http://www.mesa3d.org/beta/%{name}Demos-%{version}-%{snap}.tar.gz
-# Source1-md5:	e3df10e4efa3ff3fc3b2572f8af06f12
+# Source1-md5:	b4ec33e6167eec33c6857569dedb20a6
 Source2:	nouveau_drm.h
 Patch0:		%{name}-realclean.patch
-Patch1:		%{name}-libdrm.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	expat-devel
 #%if %{with nouveau}
@@ -601,7 +600,6 @@ Sterownik X.org DRI dla rodziny kart VIA Unichrome.
 %prep
 %setup -q -b1 -n %{name}-%{version}-%{snap}
 %patch0 -p0
-%patch1 -p1
 
 # until new libdrm release and Mesa update for nouveau_drm patchlevel
 [ -f src/mesa/drivers/dri/nouveau/nouveau_drm.h  ] && exit 1
@@ -700,13 +698,14 @@ done
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_includedir}/GL,%{_pkgconfigdir},%{_examplesdir}/%{name}-%{version}}
+install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_includedir}/GL/internal,%{_pkgconfigdir},%{_examplesdir}/%{name}-%{version}}
 install -d $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
 cp -df lib-static/lib* $RPM_BUILD_ROOT%{_libdir}
 cp -df lib-osmesa/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
 cp -df lib-dri/lib* $RPM_BUILD_ROOT%{_libdir}
 cp -rf include/GL/{gl[!f]*,osmesa.h,xmesa*} src/glw/GLw*.h $RPM_BUILD_ROOT%{_includedir}/GL
+cp -rf include/GL/internal/dri_interface.h $RPM_BUILD_ROOT%{_includedir}/GL/internal
 cp -df lib-dri/*_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
 install src/mesa/gl.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
@@ -778,6 +777,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glxext.h
 %{_includedir}/GL/glx_mangle.h
+%dir %{_includedir}/GL/internal
+%{_includedir}/GL/internal/dri_interface.h
 %{_pkgconfigdir}/gl.pc
 
 %files libGL-static
