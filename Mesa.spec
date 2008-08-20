@@ -11,14 +11,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	7.0.3
-Release:	2%{?with_multigl:.mgl}
+Version:	7.0.4
+Release:	1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	e6e6379d7793af40a6bc3ce1bace572e
+# Source0-md5:	8d7bacbe0234742a5d08c8088c4619e9
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	47fd6863621d3c9c7dbb870ab7f0c303
+# Source1-md5:	c1215b31c5f7b85f81eed3bfba07d556
 Source2:	nouveau_drm.h
 Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
@@ -607,6 +607,9 @@ sed -i -e 's/ ffb\>//' configs/linux-dri
 sed -i -e 's/ sis / /' configs/linux-dri
 %endif
 
+# uses TTM api which was removed from libdrm
+sed -i -e 's/ i915tex / /' configs/linux-dri
+
 %build
 # use $lib, not %{_lib} as Mesa uses lib64 only for *-x86-64* targets
 %ifarch %{x8664}
@@ -860,7 +863,7 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/i915tex_dri.so
+#%attr(755,root,root) %{_libdir}/xorg/modules/dri/i915tex_dri.so
 
 %files dri-driver-intel-i965
 %defattr(644,root,root,755)
