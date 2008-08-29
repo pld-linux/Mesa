@@ -7,21 +7,17 @@
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
 %bcond_with	nouveau	# build nouveau DRI driver
 #
-%define	snap	rc3
-#
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.1
-Release:	0.%{?with_multigl:mgl.}%{snap}.1
+Release:	1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
-# Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-Source0:	http://www.mesa3d.org/beta/%{name}Lib-%{version}-%{snap}.tar.gz
-# Source0-md5:	3a3cb6e3f09bf28650483b0d43ab8d88
-# Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-Source1:	http://www.mesa3d.org/beta/%{name}Demos-%{version}-%{snap}.tar.gz
-# Source1-md5:	b4ec33e6167eec33c6857569dedb20a6
+Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
+# Source0-md5:	6bff7f532d16f90f944a400c8bd7074d
+Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
+# Source1-md5:	abfc9775e1462363af8ec160d1feb01f
 Source2:	nouveau_drm.h
 Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
@@ -598,7 +594,7 @@ X.org DRI driver for VIA Unichrome card family.
 Sterownik X.org DRI dla rodziny kart VIA Unichrome.
 
 %prep
-%setup -q -b1 -n %{name}-%{version}-%{snap}
+%setup -q -b1
 %patch0 -p0
 
 # until new libdrm release and Mesa update for nouveau_drm patchlevel
@@ -626,6 +622,9 @@ sed -i -e 's/ ffb\>//' configs/linux-dri
 # sis needs write-memory barrier
 sed -i -e 's/ sis / /' configs/linux-dri
 %endif
+ 
+# uses TTM api which was removed from libdrm
+sed -i -e 's/ i915tex / /' configs/linux-dri
 
 %build
 # use $lib, not %{_lib} as Mesa uses lib64 only for *-x86-64* targets
