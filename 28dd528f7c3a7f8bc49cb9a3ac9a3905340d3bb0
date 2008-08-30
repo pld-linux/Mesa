@@ -1,0 +1,1 @@
+- dri-swrast replaces libGLcore so add appropriate provides
