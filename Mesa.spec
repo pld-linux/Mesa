@@ -26,7 +26,7 @@ BuildRequires:	expat-devel
 # needs nouveau_drm.h patchlevel=6 and matching kernel driver
 #BuildRequires:	libdrm-devel = 2.3.1.xxxxxxxx
 #%else
-BuildRequires:	libdrm-devel >= 2.3.0
+BuildRequires:	libdrm-devel >= 2.3.1
 #%endif
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
