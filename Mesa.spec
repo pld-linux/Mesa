@@ -5,8 +5,6 @@
 # Conditional build:
 %bcond_without	motif	# build static libGLw without Motif interface
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
-%bcond_with	nouveau	# build nouveau DRI driver
-#
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
@@ -18,16 +16,10 @@ Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
 # Source0-md5:	6bff7f532d16f90f944a400c8bd7074d
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 # Source1-md5:	abfc9775e1462363af8ec160d1feb01f
-Source2:	nouveau_drm.h
 Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	expat-devel
-#%if %{with nouveau}
-# needs nouveau_drm.h patchlevel=6 and matching kernel driver
-#BuildRequires:	libdrm-devel = 2.3.1.xxxxxxxx
-#%else
 BuildRequires:	libdrm-devel >= 2.3.1
-#%endif
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
@@ -470,21 +462,6 @@ X.org DRI drivers for Matrox G card family.
 %description dri-driver-matrox -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart Matrox G.
 
-%package dri-driver-nouveau
-Summary:	X.org DRI driver for NVidia adapters
-Summary(pl.UTF-8):	Sterownik X.org DRI dla kart NVidia
-License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-driver-video-nouveau
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
-
-%description dri-driver-nouveau
-X.org DRI driver for NVidia adapters.
-
-%description dri-driver-nouveau -l pl.UTF-8
-Sterownik X.org DRI dla kart NVidia.
-
 %package dri-driver-s3virge
 Summary:	X.org DRI driver for S3 Virge card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart S3 Virge
@@ -598,21 +575,14 @@ Sterownik X.org DRI dla rodziny kart VIA Unichrome.
 %setup -q -b1
 %patch0 -p0
 
-# until new libdrm release and Mesa update for nouveau_drm patchlevel
-[ -f src/mesa/drivers/dri/nouveau/nouveau_drm.h  ] && exit 1
-cp %{SOURCE2} src/mesa/drivers/dri/nouveau
-
 # fix demos
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
 
 # s3v, sis, trident missing there - don't override list from linux-dri
 sed -i -e '/^DRI_DIRS/d' configs/linux-dri-x86-64
 
+# add swrast driver
 sed -i -e 's/ i810 / swrast i810 /' configs/linux-dri
-
-%if %{with nouveau}
-sed -i -e 's/ ffb$/ ffb nouveau/' configs/linux-dri
-%endif
 
 %ifnarch sparc sparcv9 sparc64
 # for sunffb driver - useful on sparc only
@@ -624,9 +594,6 @@ sed -i -e 's/ ffb\>//' configs/linux-dri
 sed -i -e 's/ sis / /' configs/linux-dri
 %endif
  
-# uses TTM api which was removed from libdrm
-sed -i -e 's/ i915tex / /' configs/linux-dri
-
 %build
 # use $lib, not %{_lib} as Mesa uses lib64 only for *-x86-64* targets
 %ifarch %{x8664}
@@ -891,12 +858,6 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-matrox
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mga_dri.so
-
-%if %{with nouveau}
-%files dri-driver-nouveau
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
-%endif
 
 %files dri-driver-s3virge
 %defattr(644,root,root,755)
