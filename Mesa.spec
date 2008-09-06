@@ -5,6 +5,7 @@
 # Conditional build:
 %bcond_without	motif	# build static libGLw without Motif interface
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
+%bcond_with	ttm	# enable TTM API
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
@@ -17,9 +18,11 @@ Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 # Source1-md5:	abfc9775e1462363af8ec160d1feb01f
 Patch0:		%{name}-realclean.patch
+Patch1:		%{name}-dri_mm.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	expat-devel
 BuildRequires:	libdrm-devel >= 2.3.1
+%{?with_ttm:BuildRequires:	libdrm-devel >= 2.4.0}
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
@@ -574,6 +577,7 @@ Sterownik X.org DRI dla rodziny kart VIA Unichrome.
 %prep
 %setup -q -b1
 %patch0 -p0
+%patch1 -p1
 
 # fix demos
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
@@ -593,7 +597,7 @@ sed -i -e 's/ ffb\>//' configs/linux-dri
 # sis needs write-memory barrier
 sed -i -e 's/ sis / /' configs/linux-dri
 %endif
- 
+
 %build
 # use $lib, not %{_lib} as Mesa uses lib64 only for *-x86-64* targets
 %ifarch %{x8664}
@@ -607,6 +611,11 @@ targ=-x86
 targ=""
 %endif
 %endif
+
+# required for -bc --short-circuit
+%{__make} realclean
+# as above - existing directory makes mv move into instead of rename
+rm -rf lib-{dri,osmesa,static}
 
 %{__make} linux${targ}-static \
 	CC="%{__cc}" \
@@ -622,7 +631,7 @@ mv -f ${lib} lib-static
 %{__make} linux-osmesa \
 	CC="%{__cc}" \
 	CXX="%{__cxx}" \
-	OPT_FLAGS="%{rpmcflags} -fno-strict-aliasing" \
+	CFLAGS="%{rpmcflags} -fno-strict-aliasing" \
 	XLIB_DIR=%{_libdir} \
 	SRC_DIRS="mesa" \
 	PROGRAM_DIRS=
@@ -633,7 +642,7 @@ mv -f lib lib-osmesa
 	CC="%{__cc}" \
 	CXX="%{__cxx}" \
 	MKDEP=makedepend \
-	OPT_FLAGS="%{rpmcflags} -fno-strict-aliasing" \
+	OPT_FLAGS="%{rpmcflags} -fno-strict-aliasing %{?with_ttm:-DTTM_API}" \
 	XLIB_DIR=%{_libdir} \
 	DRI_DRIVER_SEARCH_DIR=%{_libdir}/xorg/modules/dri \
 	SRC_DIRS="glx/x11 mesa glu glw" \
