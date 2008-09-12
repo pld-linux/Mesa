@@ -6,6 +6,13 @@
 %bcond_without	motif	# build static libGLw without Motif interface
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
 %bcond_with	ttm	# enable TTM API
+#
+# minimal supported xserver version
+%define		xserver_ver	1.5.0
+# glapi version (glapi tables in dri drivers and libglx must be in sync);
+# set to current Mesa version on ABI break, when xserver tables get regenerated
+# (until they start to be somehow versioned themselves)
+%define		glapi_ver	7.1.0
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
@@ -294,9 +301,9 @@ Summary:	X.org DRI driver for ATI Mach64 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI Mach64
 License:	MIT
 Group:		X11/Libraries
-Requires:	xorg-driver-video-ati
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-driver-video-mach64
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 
 %description dri-driver-ati-mach64
 X.org DRI driver for ATI Mach64 card family.
@@ -310,8 +317,8 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R100
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 
 %description dri-driver-ati-radeon-R100
@@ -326,8 +333,8 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R200
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 
 %description dri-driver-ati-radeon-R200
@@ -342,8 +349,8 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R300
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 
 %description dri-driver-ati-radeon-R300
@@ -357,9 +364,9 @@ Summary:	X.org DRI driver for ATI Rage128 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI Rage128
 License:	MIT
 Group:		X11/Libraries
-Requires:	xorg-driver-video-ati
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-driver-video-r128
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-r128-dri < 1:7.0.0
 
 %description dri-driver-ati-rage128
@@ -374,8 +381,8 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Sun FFB
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-sunffb
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 
 %description dri-driver-ffb
 X.org DRI driver for SUN Creator3D and Elite3D card family.
@@ -389,8 +396,8 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart GLINT/Permedia
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-glint
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-glint-dri < 1:7.0.0
 
 %description dri-driver-glint
@@ -404,9 +411,9 @@ Summary:	X.org DRI driver for Intel i810 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i810
 License:	MIT
 Group:		X11/Libraries
-Requires:	xorg-driver-video-i810
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-driver-video-intel
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-i810-dri < 1:7.0.0
 
 %description dri-driver-intel-i810
@@ -420,9 +427,9 @@ Summary:	X.org DRI driver for Intel i915 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i915
 License:	MIT
 Group:		X11/Libraries
-Requires:	xorg-driver-video-i810
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-driver-video-intel
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	Mesa-dri-driver-intel-i830
 Obsoletes:	X11-driver-i810-dri < 1:7.0.0
 
@@ -437,9 +444,9 @@ Summary:	X.org DRI driver for Intel i965 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i965
 License:	MIT
 Group:		X11/Libraries
-Requires:	xorg-driver-video-i810
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-driver-video-intel
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	Mesa-dri-driver-intel-i830
 Obsoletes:	X11-driver-i810-dri < 1:7.0.0
 
@@ -455,8 +462,8 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Matrox G
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-mga
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-mga-dri < 1:7.0.0
 
 %description dri-driver-matrox
@@ -471,8 +478,8 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart S3 Virge
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-s3virge
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 
 %description dri-driver-s3virge
 X.org DRI driver for S3 Virge card family.
@@ -486,8 +493,8 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart S3 Savage
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-savage
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 
 %description dri-driver-savage
 X.org DRI driver for S3 Savage card family.
@@ -501,8 +508,8 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart SiS
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-sis
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-sis-dri < 1:7.0.0
 
 %description dri-driver-sis
@@ -516,8 +523,8 @@ Summary:	X.org DRI software rasterizer driver
 Summary(pl.UTF-8):	Sterownik X.org DRI obsługujący rysowanie programowe
 License:	MIT
 Group:		X11/Libraries
-Provides:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 
 %description dri-driver-swrast
 X.org DRI software rasterizer driver.
@@ -532,8 +539,8 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	Glide3-DRI
 Requires:	xorg-driver-video-tdfx
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-tdfx-dri < 1:7.0.0
 
 %description dri-driver-tdfx
@@ -550,8 +557,8 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Trident
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-trident
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 
 %description dri-driver-trident
 X.org DRI drivers for Trident card family.
@@ -565,8 +572,8 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart VIA Unichrome
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-via
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 
 %description dri-driver-via-unichrome
 X.org DRI driver for VIA Unichrome card family.
