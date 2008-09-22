@@ -638,7 +638,7 @@ mv -f ${lib} lib-static
 %{__make} linux-osmesa \
 	CC="%{__cc}" \
 	CXX="%{__cxx}" \
-	CFLAGS="%{rpmcflags} -fno-strict-aliasing" \
+	CFLAGS="%{rpmcflags} -fno-strict-aliasing -fPIC" \
 	XLIB_DIR=%{_libdir} \
 	SRC_DIRS="mesa" \
 	PROGRAM_DIRS=
