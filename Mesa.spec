@@ -12,7 +12,7 @@
 # glapi version (glapi tables in dri drivers and libglx must be in sync);
 # set to current Mesa version on ABI break, when xserver tables get regenerated
 # (until they start to be somehow versioned themselves)
-%define		glapi_ver	7.2.0
+%define		glapi_ver	7.1.0
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
