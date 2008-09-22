@@ -136,7 +136,7 @@ renderingu.
 %package libGLU
 Summary:	SGI implementation of libGLU OpenGL library
 Summary(pl.UTF-8):	Implementacja SGI biblioteki libGLU ze standardu OpenGL
-License:	SGI Free Software License B v1.1
+License:	SGI Free Software License B v2.0 (MIT-like)
 Group:		Libraries
 # loose dependency on libGL.so.1 to use with other libGL binaries
 Requires:	OpenGL >= 1.2
@@ -156,7 +156,7 @@ specyfikację OpenGL GLU 1.3.
 %package libGLU-devel
 Summary:	Header files for SGI libGLU library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki SGI libGLU
-License:	SGI Free Software License B v1.1
+License:	SGI Free Software License B v2.0 (MIT-like)
 Group:		Development/Libraries
 Requires:	%{name}-libGLU = %{version}-%{release}
 Requires:	OpenGL-devel >= 1.2
@@ -172,7 +172,7 @@ Pliki nagłówkowe biblioteki SGI libGLU.
 %package libGLU-static
 Summary:	Static SGI libGLU library
 Summary(pl.UTF-8):	Statyczna biblioteka SGI libGLU
-License:	SGI Free Software License B v1.1
+License:	SGI Free Software License B v2.0 (MIT-like)
 Group:		Development/Libraries
 Requires:	%{name}-libGLU-devel = %{version}-%{release}
 Provides:	OpenGL-GLU-static = 1.3
