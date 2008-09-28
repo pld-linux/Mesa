@@ -17,7 +17,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.2
-Release:	0.1%{?with_multigl:.mgl}
+Release:	1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
@@ -627,7 +627,7 @@ rm -rf lib-{dri,osmesa,static}
 %{__make} linux${targ}-static \
 	CC="%{__cc}" \
 	CXX="%{__cxx}" \
-	OPT_FLAGS="%{rpmcflags} -fno-strict-aliasing" \
+	OPT_FLAGS="%{rpmcppflags} %{rpmcflags} -fno-strict-aliasing" \
 	XLIB_DIR=%{_libdir} \
 	GLW_SOURCES="GLwDrawA.c%{?with_motif: GLwMDrawA.c}" \
 	SRC_DIRS="mesa glu glw" \
@@ -638,7 +638,7 @@ mv -f ${lib} lib-static
 %{__make} linux-osmesa \
 	CC="%{__cc}" \
 	CXX="%{__cxx}" \
-	CFLAGS="%{rpmcflags} -fno-strict-aliasing -fPIC" \
+	CFLAGS="%{rpmcppflags} %{rpmcflags} -fno-strict-aliasing -fPIC" \
 	XLIB_DIR=%{_libdir} \
 	SRC_DIRS="mesa" \
 	PROGRAM_DIRS=
@@ -649,7 +649,7 @@ mv -f lib lib-osmesa
 	CC="%{__cc}" \
 	CXX="%{__cxx}" \
 	MKDEP=makedepend \
-	OPT_FLAGS="%{rpmcflags} -fno-strict-aliasing %{?with_ttm:-DTTM_API}" \
+	OPT_FLAGS="%{rpmcppflags} %{rpmcflags} -fno-strict-aliasing %{?with_ttm:-DTTM_API}" \
 	XLIB_DIR=%{_libdir} \
 	DRI_DRIVER_SEARCH_DIR=%{_libdir}/xorg/modules/dri \
 	SRC_DIRS="glx/x11 mesa glu glw" \
@@ -658,7 +658,7 @@ mv -f lib lib-osmesa
 %{__make} -C progs/xdemos \
 	CC="%{__cc}" \
 	CXX="%{__cxx}" \
-	OPT_FLAGS="%{rpmcflags}" \
+	OPT_FLAGS="%{rpmcppflags} %{rpmcflags}" \
 	XLIB_DIR=%{_libdir} \
 	PROGS="glxgears" \
 	APP_LIB_DEPS="-L../../${lib} -lGL"
@@ -666,7 +666,7 @@ mv -f lib lib-osmesa
 %{__make} -C progs/xdemos \
 	CC="%{__cc}" \
 	CXX="%{__cxx}" \
-	OPT_FLAGS="%{rpmcflags}" \
+	OPT_FLAGS="%{rpmcppflags} %{rpmcflags}" \
 	XLIB_DIR=%{_libdir} \
 	PROGS="glxinfo" \
 	APP_LIB_DEPS="-L../../${lib} -lGL -lGLU"
