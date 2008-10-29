@@ -566,6 +566,21 @@ X.org DRI drivers for Trident card family.
 %description dri-driver-trident -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart Trident.
 
+%package dri-driver-via-unichrome
+Summary:	X.org DRI driver for VIA Unichrome card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart VIA Unichrome
+License:	MIT
+Group:		X11/Libraries
+Requires:	xorg-driver-video-openchrome
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
+
+%description dri-driver-via-unichrome
+X.org DRI driver for VIA Unichrome card family.
+
+%description dri-driver-via-unichrome -l pl.UTF-8
+Sterownik X.org DRI dla rodziny kart VIA Unichrome.
+
 %prep
 %setup -q -b1
 %patch0 -p0
@@ -885,6 +900,10 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-trident
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/trident_dri.so
+
+%files dri-driver-via-unichrome
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/unichrome_dri.so
 
 %files demos
 %defattr(644,root,root,755)
