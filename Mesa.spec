@@ -5,7 +5,6 @@
 # Conditional build:
 %bcond_without	motif	# build static libGLw without Motif interface
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
-%bcond_with	ttm	# enable TTM API
 #
 # minimal supported xserver version
 %define		xserver_ver	1.5.0
@@ -13,23 +12,25 @@
 # set to current Mesa version on ABI break, when xserver tables get regenerated
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver	7.1.0
+#
+%define		snap	rc1
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	7.2
-Release:	3%{?with_multigl:.mgl}
+Version:	7.3
+Release:	0.1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
-Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	04d379292e023df0b0266825cb0dbde5
-Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	22e03dc4038cd63f32c21eb60994892b
+# Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
+Source0:	http://www.mesa3d.org/beta/MesaLib-%{version}-%{snap}.tar.gz
+# Source0-md5:	507af8dbb33306d7cfe2374630bac328
+# Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
+Source1:	http://www.mesa3d.org/beta/MesaDemos-%{version}-%{snap}.tar.gz
+# Source1-md5:	b86b3bc398e5cfe4eff9b2a6cec3d7a7
 Patch0:		%{name}-realclean.patch
-Patch1:		%{name}-dri_mm.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	expat-devel
-BuildRequires:	libdrm-devel >= 2.3.1
-%{?with_ttm:BuildRequires:	libdrm-devel >= 2.4.0}
+BuildRequires:	libdrm-devel >= 2.4.3
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
@@ -37,7 +38,7 @@ BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libXdamage-devel
 BuildRequires:	xorg-lib-libXt-devel
 BuildRequires:	xorg-lib-libXxf86vm-devel
-BuildRequires:	xorg-proto-dri2proto-devel
+BuildRequires:	xorg-proto-dri2proto-devel >= 1.99.3
 BuildRequires:	xorg-proto-glproto-devel
 BuildRequires:	xorg-proto-printproto-devel
 BuildRequires:	xorg-util-makedepend
@@ -582,9 +583,8 @@ X.org DRI driver for VIA Unichrome card family.
 Sterownik X.org DRI dla rodziny kart VIA Unichrome.
 
 %prep
-%setup -q -b1
+%setup -q -b1 -n %{name}-%{version}-%{snap}
 %patch0 -p0
-%patch1 -p1
 
 # fix demos
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
@@ -649,7 +649,7 @@ mv -f lib lib-osmesa
 	CC="%{__cc}" \
 	CXX="%{__cxx}" \
 	MKDEP=makedepend \
-	OPT_FLAGS="%{rpmcppflags} %{rpmcflags} -fno-strict-aliasing %{?with_ttm:-DTTM_API}" \
+	OPT_FLAGS="%{rpmcppflags} %{rpmcflags} -fno-strict-aliasing" \
 	XLIB_DIR=%{_libdir} \
 	DRI_DRIVER_SEARCH_DIR=%{_libdir}/xorg/modules/dri \
 	SRC_DIRS="glx/x11 mesa glu glw" \
@@ -687,7 +687,7 @@ install -d $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 cp -df lib-static/lib* $RPM_BUILD_ROOT%{_libdir}
 cp -df lib-osmesa/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
 cp -df lib-dri/lib* $RPM_BUILD_ROOT%{_libdir}
-cp -rf include/GL/{gl[!f]*,osmesa.h,xmesa*} src/glw/GLw*.h $RPM_BUILD_ROOT%{_includedir}/GL
+cp -rf include/GL/{gl[!f]*,osmesa.h*} src/glw/GLw*.h src/mesa/drivers/x11/xmesa*.h $RPM_BUILD_ROOT%{_includedir}/GL
 cp -rf include/GL/internal/dri_interface.h $RPM_BUILD_ROOT%{_includedir}/GL/internal
 cp -df lib-dri/*_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
