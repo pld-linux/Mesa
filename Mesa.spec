@@ -13,7 +13,7 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver	7.1.0
 #
-%define		snap	rc1
+%define		snap	rc2
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
@@ -23,10 +23,10 @@ License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 # Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
 Source0:	http://www.mesa3d.org/beta/MesaLib-%{version}-%{snap}.tar.gz
-# Source0-md5:	507af8dbb33306d7cfe2374630bac328
+# Source0-md5:	510fbb088d60cb08cd79314129b26c14
 # Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 Source1:	http://www.mesa3d.org/beta/MesaDemos-%{version}-%{snap}.tar.gz
-# Source1-md5:	b86b3bc398e5cfe4eff9b2a6cec3d7a7
+# Source1-md5:	46ddb982e9d673b9852bb58a327388b9
 Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	expat-devel
@@ -674,9 +674,11 @@ mv -f lib lib-osmesa
 mv -f ${lib} lib-dri
 
 for d in mesa glu glw ; do
-	%{__make} -C src/$d `basename src/$d/*.pc.in .in` \
-		INSTALL_DIR=%{_prefix} \
-		LIB_DIR=%{_lib}
+	for f in src/$d/*.pc.in; do
+		%{__make} -C src/$d `basename $f .in` \
+			INSTALL_DIR=%{_prefix} \
+			LIB_DIR=%{_lib}
+	done
 done
 
 %install
@@ -692,6 +694,7 @@ cp -rf include/GL/internal/dri_interface.h $RPM_BUILD_ROOT%{_includedir}/GL/inte
 cp -df lib-dri/*_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
 install src/mesa/gl.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
+install src/mesa/osmesa.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
 install src/glu/glu.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
 install src/glw/glw.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
 
@@ -815,6 +818,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libOSMesa.so
 %{_includedir}/GL/osmesa.h
+%{_pkgconfigdir}/osmesa.pc
 
 %files libOSMesa-static
 %defattr(644,root,root,755)
