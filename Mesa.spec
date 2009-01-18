@@ -34,6 +34,7 @@ BuildRequires:	libdrm-devel >= 2.4.3
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
+BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libXdamage-devel
 BuildRequires:	xorg-lib-libXt-devel
