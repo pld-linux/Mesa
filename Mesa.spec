@@ -13,20 +13,17 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver	7.1.0
 #
-%define		snap	rc2
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.3
-Release:	0.2%{?with_multigl:.mgl}
+Release:	1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
-# Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-Source0:	http://www.mesa3d.org/beta/MesaLib-%{version}-%{snap}.tar.gz
-# Source0-md5:	510fbb088d60cb08cd79314129b26c14
-# Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-Source1:	http://www.mesa3d.org/beta/MesaDemos-%{version}-%{snap}.tar.gz
-# Source1-md5:	46ddb982e9d673b9852bb58a327388b9
+Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
+# Source0-md5:	781e7811a6ed5c97b2b8defefc8ffbc9
+Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
+# Source1-md5:	3f0741394069bdf2329565a387396cda
 Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	expat-devel
@@ -584,7 +581,7 @@ X.org DRI driver for VIA Unichrome card family.
 Sterownik X.org DRI dla rodziny kart VIA Unichrome.
 
 %prep
-%setup -q -b1 -n %{name}-%{version}-%{snap}
+%setup -q -b1
 %patch0 -p0
 
 # fix demos
