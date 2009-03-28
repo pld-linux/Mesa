@@ -16,18 +16,18 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	7.3
+Version:	7.4
 Release:	1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	781e7811a6ed5c97b2b8defefc8ffbc9
+# Source0-md5:	7ecddb341a2691e0dfdb02f697109834
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	3f0741394069bdf2329565a387396cda
+# Source1-md5:	02816f10f30b1dc5e069e0f68c177c98
 Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	expat-devel
-BuildRequires:	libdrm-devel >= 2.4.3
+BuildRequires:	libdrm-devel >= 2.4.5
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
@@ -62,7 +62,7 @@ Summary:	Free Mesa3D implementation of libGL OpenGL library
 Summary(pl.UTF-8):	Wolnodostępna implementacja Mesa3D biblioteki libGL ze standardu OpenGL
 License:	MIT
 Group:		X11/Libraries
-Requires:	libdrm >= 2.2.0
+Requires:	libdrm >= 2.4.5
 Provides:	OpenGL = 2.1
 # reports version 1.3, but supports glXGetProcAddress() from 1.4
 Provides:	OpenGL-GLX = 1.4
