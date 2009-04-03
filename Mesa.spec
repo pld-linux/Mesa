@@ -1,11 +1,14 @@
 #
 # TODO:
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
+# - resurrect static if it's useful
 #
 # Conditional build:
 %bcond_without	motif	# build static libGLw without Motif interface
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
+%bcond_with	static
 #
+%define		snap		20090403
 # minimal supported xserver version
 %define		xserver_ver	1.5.0
 # glapi version (glapi tables in dri drivers and libglx must be in sync);
@@ -16,18 +19,22 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	7.4
-Release:	1%{?with_multigl:.mgl}
+Version:	7.5
+Release:	0.%{snap}.1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
-Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	7ecddb341a2691e0dfdb02f697109834
-Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
+# Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
+# Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 # Source1-md5:	02816f10f30b1dc5e069e0f68c177c98
+Source0:	%{name}-%{snap}.tar.bz2
+# Source0-md5:	d680f5dc934c669727e46d854400eb80
+Source2:	http://www.archlinux.org/~jgc/gl-manpages-1.0.1.tar.bz2
+# Source2-md5:	6ae05158e678f4594343f32c2ca50515
 Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	expat-devel
 BuildRequires:	libdrm-devel >= 2.4.5
+BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
@@ -581,120 +588,92 @@ X.org DRI driver for VIA Unichrome card family.
 Sterownik X.org DRI dla rodziny kart VIA Unichrome.
 
 %prep
-%setup -q -b1
+# %setup -q -b1 -a2
+%setup -q -a2 -n %{name}
 %patch0 -p0
 
 # fix demos
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
 
-# s3v, sis, trident missing there - don't override list from linux-dri
-sed -i -e '/^DRI_DIRS/d' configs/linux-dri-x86-64
-
-# add swrast driver
-sed -i -e 's/ i810 / swrast i810 /' configs/linux-dri
-
-%ifnarch sparc sparcv9 sparc64
-# for sunffb driver - useful on sparc only
-sed -i -e 's/ ffb\>//' configs/linux-dri
-%endif
-
-%ifnarch %{ix86} %{x8664}
-# sis needs write-memory barrier
-sed -i -e 's/ sis / /' configs/linux-dri
-%endif
-
 %build
-# use $lib, not %{_lib} as Mesa uses lib64 only for *-x86-64* targets
-%ifarch %{x8664}
-targ=-x86-64
-lib=lib64
-%else
-lib=lib
-%ifarch %{ix86}
-targ=-x86
-%else
-targ=""
+[ ! -f configure ] && ./autogen.sh
+
+dri_drivers="i810 i915 i965 mach64 mga r128 r200 r300 radeon savage s3v trident \
+%ifarch sparc sparcv9 sparc64
+ffb \
 %endif
+%ifarch %{ix86} %{x8664}
+sis \
 %endif
+swrast tdfx unichrome"
 
-# required for -bc --short-circuit
-%{__make} realclean
-# as above - existing directory makes mv move into instead of rename
-rm -rf lib-{dri,osmesa,static}
+dri_drivers=$(echo $dri_drivers | xargs | tr ' ' ',')
 
-%{__make} linux${targ}-static \
-	CC="%{__cc}" \
-	CXX="%{__cxx}" \
-	OPT_FLAGS="%{rpmcppflags} %{rpmcflags} -fno-strict-aliasing" \
-	XLIB_DIR=%{_libdir} \
-	GLW_SOURCES="GLwDrawA.c%{?with_motif: GLwMDrawA.c}" \
-	SRC_DIRS="mesa glu glw" \
-	PROGRAM_DIRS=
-mv -f ${lib} lib-static
-%{__make} realclean
+common_flags="\
+	--enable-shared \
+	--enable-selinux \
+	--enable-pic"
 
-%{__make} linux-osmesa \
-	CC="%{__cc}" \
-	CXX="%{__cxx}" \
-	CFLAGS="%{rpmcppflags} %{rpmcflags} -fno-strict-aliasing -fPIC" \
-	XLIB_DIR=%{_libdir} \
-	SRC_DIRS="mesa" \
-	PROGRAM_DIRS=
-mv -f lib lib-osmesa
-%{__make} realclean
+# osmesa variants
+%configure $common_flags \
+	--with-driver=osmesa \
+	--disable-asm \
+	--with-osmesa-bits=8
+%{__make} \
+	SRC_DIRS=mesa
+mv %{_lib} osmesa8
+%{__make} clean
 
-%{__make} linux-dri${targ} \
-	CC="%{__cc}" \
-	CXX="%{__cxx}" \
-	MKDEP=makedepend \
-	OPT_FLAGS="%{rpmcppflags} %{rpmcflags} -fno-strict-aliasing" \
-	XLIB_DIR=%{_libdir} \
-	DRI_DRIVER_SEARCH_DIR=%{_libdir}/xorg/modules/dri \
-	SRC_DIRS="glx/x11 mesa glu glw" \
-	PROGRAM_DIRS=
+%configure $common_flags \
+	--with-driver=osmesa \
+	--disable-asm \
+	--with-osmesa-bits=16
+%{__make} \
+	SRC_DIRS=mesa
+mv %{_lib} osmesa16
+%{__make} clean
 
-%{__make} -C progs/xdemos \
-	CC="%{__cc}" \
-	CXX="%{__cxx}" \
-	OPT_FLAGS="%{rpmcppflags} %{rpmcflags}" \
-	XLIB_DIR=%{_libdir} \
-	PROGS="glxgears" \
-	APP_LIB_DEPS="-L../../${lib} -lGL"
+%configure $common_flags \
+	--with-driver=osmesa \
+	--disable-asm \
+	--with-osmesa-bits=32
+%{__make} \
+	SRC_DIRS=mesa
+mv %{_lib} osmesa32
+%{__make} clean
 
-%{__make} -C progs/xdemos \
-	CC="%{__cc}" \
-	CXX="%{__cxx}" \
-	OPT_FLAGS="%{rpmcppflags} %{rpmcflags}" \
-	XLIB_DIR=%{_libdir} \
-	PROGS="glxinfo" \
-	APP_LIB_DEPS="-L../../${lib} -lGL -lGLU"
+%configure $common_flags \
+	--enable-glu \
+	--enable-glw \
+	--disable-gallium \
+	--disable-glut \
+	--with-driver=dri \
+	--with-dri-drivers=${dri_drivers} \
+	--with-dri-driverdir=%{_libdir}/xorg/modules/dri
 
-mv -f ${lib} lib-dri
+%{__make}
+%{__make} -C progs/xdemos glxgears glxinfo
+%{__make} -C progs/demos
 
-for d in mesa glu glw ; do
-	for f in src/$d/*.pc.in; do
-		%{__make} -C src/$d `basename $f .in` \
-			INSTALL_DIR=%{_prefix} \
-			LIB_DIR=%{_lib}
-	done
-done
+cd gl-manpages-*
+%configure
+%{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_includedir}/GL/internal,%{_pkgconfigdir},%{_examplesdir}/%{name}-%{version}}
-install -d $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
-cp -df lib-static/lib* $RPM_BUILD_ROOT%{_libdir}
-cp -df lib-osmesa/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
-cp -df lib-dri/lib* $RPM_BUILD_ROOT%{_libdir}
-cp -rf include/GL/{gl[!f]*,osmesa.h*} src/glw/GLw*.h src/mesa/drivers/x11/xmesa*.h $RPM_BUILD_ROOT%{_includedir}/GL
-cp -rf include/GL/internal/dri_interface.h $RPM_BUILD_ROOT%{_includedir}/GL/internal
-cp -df lib-dri/*_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
+install -d $RPM_BUILD_ROOT{%{_bindir},%{_examplesdir}/%{name}-%{version}}
 
-install src/mesa/gl.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
-install src/mesa/osmesa.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
-install src/glu/glu.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
-install src/glw/glw.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
+# libs without drivers
+%{__make} install \
+	DESTDIR=$RPM_BUILD_ROOT
+
+cd gl-manpages-*
+%{__make} install \
+	DESTDIR=$RPM_BUILD_ROOT
+cd ..
+
+install osmesa*/* $RPM_BUILD_ROOT%{_libdir}
 
 install progs/xdemos/{glxgears,glxinfo} $RPM_BUILD_ROOT%{_bindir}
 # work on copy to keep -bi --short-circuit working
@@ -710,6 +689,15 @@ for l in util images ; do
 	cp -Rf progs/$l $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/$l
 done
 rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{BeOS*,win,cygnus,DJ,dja}}
+
+# strip out undesirable headers
+olddir=$(pwd)
+cd $RPM_BUILD_ROOT%{_includedir}/GL 
+rm [a-fh-np-wyz]*.h gg*.h glf*.h
+# unneeded (yet) libraries
+cd $RPM_BUILD_ROOT%{_libdir}
+rm libEGL* demodriver.so
+cd $olddir
 
 %if %{with multigl}
 install -d $RPM_BUILD_ROOT{%{_libdir}/Mesa,%{_sysconfdir}/ld.so.conf.d}
@@ -763,15 +751,16 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/glx_mangle.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
+%{_pkgconfigdir}/dri.pc
 %{_pkgconfigdir}/gl.pc
+%{_datadir}/man/man3/gl[^uX]*.3gl*
+%{_datadir}/man/man3/glX*.3gl*
 
+%if %{with static}
 %files libGL-static
 %defattr(644,root,root,755)
 %{_libdir}/libGL.a
-# x11 (non-dri) Mesa API
-%{_includedir}/GL/xmesa.h
-%{_includedir}/GL/xmesa_x.h
-%{_includedir}/GL/xmesa_xf86.h
+%endif
 
 %files libGLU
 %defattr(644,root,root,755)
@@ -784,10 +773,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/glu.h
 %{_includedir}/GL/glu_mangle.h
 %{_pkgconfigdir}/glu.pc
+%{_datadir}/man/man3/glu*.3gl*
 
+%if %{with static}
 %files libGLU-static
 %defattr(644,root,root,755)
 %{_libdir}/libGLU.a
+%endif
 
 %files libGLw
 %defattr(644,root,root,755)
@@ -803,24 +795,27 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/GLwMDrawAP.h
 %{_pkgconfigdir}/glw.pc
 
+%if %{with static}
 %files libGLw-static
 %defattr(644,root,root,755)
 %{_libdir}/libGLw.a
+%endif
 
 %files libOSMesa
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libOSMesa.so.[0-9]
+%attr(755,root,root) %{_libdir}/libOSMesa*.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libOSMesa*.so.[0-9]
 
 %files libOSMesa-devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libOSMesa.so
+%attr(755,root,root) %{_libdir}/libOSMesa*.so
 %{_includedir}/GL/osmesa.h
-%{_pkgconfigdir}/osmesa.pc
 
+%if %{with static}
 %files libOSMesa-static
 %defattr(644,root,root,755)
-%{_libdir}/libOSMesa.a
+%{_libdir}/libOSMesa*.a
+%endif
 
 %files utils
 %defattr(644,root,root,755)
