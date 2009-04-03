@@ -693,7 +693,7 @@ rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{
 # strip out undesirable headers
 olddir=$(pwd)
 cd $RPM_BUILD_ROOT%{_includedir}/GL 
-rm [a-fh-np-wyz]*.h gg*.h glf*.h
+rm [a-fh-np-wyz]*.h gg*.h glf*.h glew.h glut*.h glxew.h
 # unneeded (yet) libraries
 cd $RPM_BUILD_ROOT%{_libdir}
 rm libEGL* demodriver.so
