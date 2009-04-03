@@ -1,39 +1,42 @@
 #
 # TODO:
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
-# - package OpenGL man pages (from monolith or SGI) somewhere
-# - handle static bcond
 #
 # Conditional build:
-%bcond_without	motif	# build libGLw without Motif interface
+%bcond_without	motif	# build static libGLw without Motif interface
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
-%bcond_with	static
 #
-%define	snap	20080417
+# minimal supported xserver version
+%define		xserver_ver	1.5.0
+# glapi version (glapi tables in dri drivers and libglx must be in sync);
+# set to current Mesa version on ABI break, when xserver tables get regenerated
+# (until they start to be somehow versioned themselves)
+%define		glapi_ver	7.1.0
+#
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	7.1.0
-Release:	0.%{snap}.1%{?with_multigl:.mgl}
+Version:	7.4
+Release:	1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
-# Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-Source0:	mesa-%{snap}.tar.bz2
-# Source0-md5:	c00a8fec549e2aebd4cdb2cd76225420
-# Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	47fd6863621d3c9c7dbb870ab7f0c303
+Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
+# Source0-md5:	7ecddb341a2691e0dfdb02f697109834
+Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
+# Source1-md5:	02816f10f30b1dc5e069e0f68c177c98
+Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	expat-devel
-BuildRequires:	libdrm-devel >= 2.3.1
-BuildRequires:	libselinux-devel
+BuildRequires:	libdrm-devel >= 2.4.5
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
+BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libXdamage-devel
 BuildRequires:	xorg-lib-libXt-devel
 BuildRequires:	xorg-lib-libXxf86vm-devel
-BuildRequires:	xorg-proto-dri2proto-devel
+BuildRequires:	xorg-proto-dri2proto-devel >= 1.99.3
 BuildRequires:	xorg-proto-glproto-devel
 BuildRequires:	xorg-proto-printproto-devel
 BuildRequires:	xorg-util-makedepend
@@ -59,7 +62,7 @@ Summary:	Free Mesa3D implementation of libGL OpenGL library
 Summary(pl.UTF-8):	Wolnodostępna implementacja Mesa3D biblioteki libGL ze standardu OpenGL
 License:	MIT
 Group:		X11/Libraries
-Requires:	libdrm >= 2.2.0
+Requires:	libdrm >= 2.4.5
 Provides:	OpenGL = 2.1
 # reports version 1.3, but supports glXGetProcAddress() from 1.4
 Provides:	OpenGL-GLX = 1.4
@@ -132,7 +135,7 @@ renderingu.
 %package libGLU
 Summary:	SGI implementation of libGLU OpenGL library
 Summary(pl.UTF-8):	Implementacja SGI biblioteki libGLU ze standardu OpenGL
-License:	SGI Free Software License B v1.1
+License:	SGI Free Software License B v2.0 (MIT-like)
 Group:		Libraries
 # loose dependency on libGL.so.1 to use with other libGL binaries
 Requires:	OpenGL >= 1.2
@@ -152,7 +155,7 @@ specyfikację OpenGL GLU 1.3.
 %package libGLU-devel
 Summary:	Header files for SGI libGLU library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki SGI libGLU
-License:	SGI Free Software License B v1.1
+License:	SGI Free Software License B v2.0 (MIT-like)
 Group:		Development/Libraries
 Requires:	%{name}-libGLU = %{version}-%{release}
 Requires:	OpenGL-devel >= 1.2
@@ -168,7 +171,7 @@ Pliki nagłówkowe biblioteki SGI libGLU.
 %package libGLU-static
 Summary:	Static SGI libGLU library
 Summary(pl.UTF-8):	Statyczna biblioteka SGI libGLU
-License:	SGI Free Software License B v1.1
+License:	SGI Free Software License B v2.0 (MIT-like)
 Group:		Development/Libraries
 Requires:	%{name}-libGLU-devel = %{version}-%{release}
 Provides:	OpenGL-GLU-static = 1.3
@@ -293,173 +296,173 @@ Demonstration programs for the Mesa libraries in source code form.
 Kod źródłowy programów demonstracyjnych dla bibliotek Mesa.
 
 %package dri-driver-ati-mach64
-Summary:	X.org DRI drivers
-Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+Summary:	X.org DRI driver for ATI Mach64 card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI Mach64
 License:	MIT
 Group:		X11/Libraries
-Requires:	xorg-driver-video-ati
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-driver-video-mach64
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 
 %description dri-driver-ati-mach64
-X.org DRI drivers for ATI mach64 card family.
+X.org DRI driver for ATI Mach64 card family.
 
 %description dri-driver-ati-mach64 -l pl.UTF-8
-Sterowniki X.org DRI dla rodziny kart ATI mach64.
+Sterownik X.org DRI dla rodziny kart ATI Mach64.
 
 %package dri-driver-ati-radeon-R100
-Summary:	X.org DRI drivers
-Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+Summary:	X.org DRI driver for ATI R100 card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R100
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 
 %description dri-driver-ati-radeon-R100
-X.org DRI drivers for ATI R100 card family (Radeon 7000-7500).
+X.org DRI driver for ATI R100 card family (Radeon 7000-7500).
 
 %description dri-driver-ati-radeon-R100 -l pl.UTF-8
-Sterowniki X.org DRI dla rodziny kart ATI R100 (Radeon 7000-7500).
+Sterownik X.org DRI dla rodziny kart ATI R100 (Radeon 7000-7500).
 
 %package dri-driver-ati-radeon-R200
-Summary:	X.org DRI drivers
-Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+Summary:	X.org DRI driver for ATI R200 card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R200
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 
 %description dri-driver-ati-radeon-R200
-X.org DRI drivers for ATI R200 card family (Radeon 8500-92xx)
+X.org DRI driver for ATI R200 card family (Radeon 8500-92xx)
 
 %description dri-driver-ati-radeon-R200 -l pl.UTF-8
-Sterowniki X.org DRI dla rodziny kart ATI R200 (Radeon 8500-92xx).
+Sterownik X.org DRI dla rodziny kart ATI R200 (Radeon 8500-92xx).
 
 %package dri-driver-ati-radeon-R300
-Summary:	X.org DRI drivers
-Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+Summary:	X.org DRI driver for ATI R300 card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R300
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 
 %description dri-driver-ati-radeon-R300
-X.org DRI drivers for ATI R300 card family.
+X.org DRI driver for ATI R300 card family.
 
 %description dri-driver-ati-radeon-R300 -l pl.UTF-8
-Sterowniki X.org DRI dla rodziny kart ATI R300.
+Sterownik X.org DRI dla rodziny kart ATI R300.
 
 %package dri-driver-ati-rage128
-Summary:	X.org DRI drivers
-Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+Summary:	X.org DRI driver for ATI Rage128 card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI Rage128
 License:	MIT
 Group:		X11/Libraries
-Requires:	xorg-driver-video-ati
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-driver-video-r128
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-r128-dri < 1:7.0.0
 
 %description dri-driver-ati-rage128
-X.org DRI drivers for ATI rage128 card family.
+X.org DRI driver for ATI Rage128 card family.
 
 %description dri-driver-ati-rage128 -l pl.UTF-8
-Sterowniki X.org DRI dla rodziny kart ATI rage128.
+Sterownik X.org DRI dla rodziny kart ATI Rage128.
 
 %package dri-driver-ffb
-Summary:	X.org DRI drivers
-Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+Summary:	X.org DRI driver for Sun FFB card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Sun FFB
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-sunffb
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 
 %description dri-driver-ffb
-X.org DRI drivers for SUN Creator3D and Elite3D card family.
+X.org DRI driver for SUN Creator3D and Elite3D card family.
 
 %description dri-driver-ffb -l pl.UTF-8
-Sterowniki X.org DRI dla rodziny kart SUN Creator3D and Elite3D.
+Sterownik X.org DRI dla rodziny kart SUN Creator3D i Elite3D.
 
 %package dri-driver-glint
-Summary:	X.org DRI drivers
-Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+Summary:	X.org DRI driver for GLINT/Permedia card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart GLINT/Permedia
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-glint
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-glint-dri < 1:7.0.0
 
 %description dri-driver-glint
-X.org DRI drivers for GLINT/Permedia card family.
+X.org DRI driver for GLINT/Permedia card family.
 
 %description dri-driver-glint -l pl.UTF-8
-Sterowniki X.org DRI dla rodziny kart GLINT/Permedia.
+Sterownik X.org DRI dla rodziny kart GLINT/Permedia.
 
 %package dri-driver-intel-i810
-Summary:	X.org DRI drivers
-Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+Summary:	X.org DRI driver for Intel i810 card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i810
 License:	MIT
 Group:		X11/Libraries
-Requires:	xorg-driver-video-i810
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-driver-video-intel
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-i810-dri < 1:7.0.0
 
 %description dri-driver-intel-i810
-X.org DRI drivers for Intel i810 card family.
+X.org DRI driver for Intel i810 card family.
 
 %description dri-driver-intel-i810 -l pl.UTF-8
-Sterowniki X.org DRI dla rodziny kart i810.
+Sterownik X.org DRI dla rodziny kart Intel i810.
 
 %package dri-driver-intel-i915
-Summary:	X.org DRI drivers
-Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+Summary:	X.org DRI driver for Intel i915 card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i915
 License:	MIT
 Group:		X11/Libraries
-Requires:	xorg-driver-video-i810
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-driver-video-intel
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	Mesa-dri-driver-intel-i830
 Obsoletes:	X11-driver-i810-dri < 1:7.0.0
 
 %description dri-driver-intel-i915
-X.org DRI drivers for Intel i915 card family.
+X.org DRI driver for Intel i915 card family.
 
 %description dri-driver-intel-i915 -l pl.UTF-8
-Sterowniki X.org DRI dla rodziny kart i915.
+Sterownik X.org DRI dla rodziny kart Intel i915.
 
 %package dri-driver-intel-i965
-Summary:	X.org DRI drivers
-Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+Summary:	X.org DRI driver for Intel i965 card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i965
 License:	MIT
 Group:		X11/Libraries
-Requires:	xorg-driver-video-i810
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-driver-video-intel
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	Mesa-dri-driver-intel-i830
 Obsoletes:	X11-driver-i810-dri < 1:7.0.0
 
 %description dri-driver-intel-i965
-X.org DRI drivers for Intel i965 card family.
+X.org DRI driver for Intel i965 card family.
 
 %description dri-driver-intel-i965 -l pl.UTF-8
-Sterowniki X.org DRI dla rodziny kart i965.
+Sterownik X.org DRI dla rodziny kart Intel i965.
 
 %package dri-driver-matrox
-Summary:	X.org DRI drivers
-Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+Summary:	X.org DRI driver for Matrox G card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Matrox G
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-mga
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-mga-dri < 1:7.0.0
 
 %description dri-driver-matrox
@@ -468,94 +471,93 @@ X.org DRI drivers for Matrox G card family.
 %description dri-driver-matrox -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart Matrox G.
 
-%package dri-driver-nouveau
-Summary:	X.org DRI drivers
-Summary(pl.UTF-8):	Sterowniki DRI dla X.org
-License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-driver-video-nouveau
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
-
-%description dri-driver-nouveau
-X.org DRI drivers for NVidia adapters.
-
-%description dri-driver-nouveau -l pl.UTF-8
-Sterowniki X.org DRI dla kart NVidia.
-
 %package dri-driver-s3virge
-Summary:	X.org DRI drivers
-Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+Summary:	X.org DRI driver for S3 Virge card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart S3 Virge
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-s3virge
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 
 %description dri-driver-s3virge
-X.org DRI drivers for S3 Virge card family.
+X.org DRI driver for S3 Virge card family.
 
 %description dri-driver-s3virge -l pl.UTF-8
-Sterowniki X.org DRI dla rodziny kart S3 Virge.
+Sterownik X.org DRI dla rodziny kart S3 Virge.
 
 %package dri-driver-savage
-Summary:	X.org DRI drivers
-Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+Summary:	X.org DRI driver for S3 Savage card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart S3 Savage
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-savage
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 
 %description dri-driver-savage
-X.org DRI drivers for S3 Savage card family.
+X.org DRI driver for S3 Savage card family.
 
 %description dri-driver-savage -l pl.UTF-8
-Sterowniki X.org DRI dla rodziny kart S3 Savage.
+Sterownik X.org DRI dla rodziny kart S3 Savage.
 
 %package dri-driver-sis
-Summary:	X.org DRI drivers
-Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+Summary:	X.org DRI driver for SiS card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart SiS
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-sis
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-sis-dri < 1:7.0.0
 
 %description dri-driver-sis
-X.org DRI drivers for SiS card family.
+X.org DRI driver for SiS card family.
 
 %description dri-driver-sis -l pl.UTF-8
-Sterowniki X.org DRI dla rodziny kart SiS.
+Sterownik X.org DRI dla rodziny kart SiS.
+
+%package dri-driver-swrast
+Summary:	X.org DRI software rasterizer driver
+Summary(pl.UTF-8):	Sterownik X.org DRI obsługujący rysowanie programowe
+License:	MIT
+Group:		X11/Libraries
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
+
+%description dri-driver-swrast
+X.org DRI software rasterizer driver.
+
+%description dri-driver-swrast -l pl.UTF-8
+Sterownik X.org DRI obsługujący rysowanie programowe.
 
 %package dri-driver-tdfx
-Summary:	X.org DRI drivers
-Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+Summary:	X.org DRI driver for 3DFX Voodoo card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart 3DFX Voodoo
 License:	MIT
 Group:		X11/Libraries
 Requires:	Glide3-DRI
 Requires:	xorg-driver-video-tdfx
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-tdfx-dri < 1:7.0.0
 
 %description dri-driver-tdfx
-X.org DRI drivers for 3DFX Voodoo card family (Voodoo 3,4,5, Banshee
+X.org DRI driver for 3DFX Voodoo card family (Voodoo 3,4,5, Banshee
 and Velocity 100/200).
 
 %description dri-driver-tdfx -l pl.UTF-8
-Sterowniki X.org DRI dla rodziny kart 3DFX Voodoo. (Voodoo 3,4,5,
-Banshee and Velocity 100/200).
+Sterownik X.org DRI dla rodziny kart 3DFX Voodoo. (Voodoo 3,4,5,
+Banshee i Velocity 100/200).
 
 %package dri-driver-trident
-Summary:	X.org DRI drivers
-Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+Summary:	X.org DRI driver for Trident card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Trident
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-trident
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 
 %description dri-driver-trident
 X.org DRI drivers for Trident card family.
@@ -564,65 +566,150 @@ X.org DRI drivers for Trident card family.
 Sterowniki X.org DRI dla rodziny kart Trident.
 
 %package dri-driver-via-unichrome
-Summary:	X.org DRI drivers
-Summary(pl.UTF-8):	Sterowniki DRI dla X.org
+Summary:	X.org DRI driver for VIA Unichrome card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart VIA Unichrome
 License:	MIT
 Group:		X11/Libraries
-Requires:	xorg-driver-video-via
-Requires:	xorg-xserver-libglx(glapi) = %{version}
-Requires:	xorg-xserver-server
+Requires:	xorg-driver-video-openchrome
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
 
 %description dri-driver-via-unichrome
-X.org DRI drivers for VIA Unichrome card family.
+X.org DRI driver for VIA Unichrome card family.
 
 %description dri-driver-via-unichrome -l pl.UTF-8
-Sterowniki X.org DRI dla rodziny kart VIA Unichrome.
+Sterownik X.org DRI dla rodziny kart VIA Unichrome.
 
 %prep
-#%%setup -q -b1
-%setup -q -n mesa
+%setup -q -b1
+%patch0 -p0
+
+# fix demos
+find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
+
+# s3v, sis, trident missing there - don't override list from linux-dri
+sed -i -e '/^DRI_DIRS/d' configs/linux-dri-x86-64
+
+# add swrast driver
+sed -i -e 's/ i810 / swrast i810 /' configs/linux-dri
+
+%ifnarch sparc sparcv9 sparc64
+# for sunffb driver - useful on sparc only
+sed -i -e 's/ ffb\>//' configs/linux-dri
+%endif
+
+%ifnarch %{ix86} %{x8664}
+# sis needs write-memory barrier
+sed -i -e 's/ sis / /' configs/linux-dri
+%endif
 
 %build
-[ ! -f ./configure ] && ./autogen.sh
-
-DRIVERS="\
-%ifarch sparc sparcv9 sparc64
-ffb \
+# use $lib, not %{_lib} as Mesa uses lib64 only for *-x86-64* targets
+%ifarch %{x8664}
+targ=-x86-64
+lib=lib64
+%else
+lib=lib
+%ifarch %{ix86}
+targ=-x86
+%else
+targ=""
 %endif
-i810 i915 i965 mach64 mga 
-%if %{with nouveau}
-nouveau \
 %endif
-r128 r200 r300 radeon s3v savage \
-%ifarch %{ix86} %{x8664}
-sis \
-%endif
-tdfx trident unichrome"
 
+# required for -bc --short-circuit
+%{__make} realclean
+# as above - existing directory makes mv move into instead of rename
+rm -rf lib-{dri,osmesa,static}
 
-%configure \
-	--enable-shared \
-	--enable-selinux \
-	--enable-glx-tls \
-	%{?!with_motif:--disable-glw} \
-	--with-driver=dri \
-	--with-demos \
-	--with-dri-driverdir=%{_libdir}/xorg/modules/dri \
-	--with-expat \
-	--with-dri-drivers="$(echo ${DRIVERS} | xargs | tr ' ' ',')" \
-	--disable-glut
+%{__make} linux${targ}-static \
+	CC="%{__cc}" \
+	CXX="%{__cxx}" \
+	OPT_FLAGS="%{rpmcppflags} %{rpmcflags} -fno-strict-aliasing" \
+	XLIB_DIR=%{_libdir} \
+	GLW_SOURCES="GLwDrawA.c%{?with_motif: GLwMDrawA.c}" \
+	SRC_DIRS="mesa glu glw" \
+	PROGRAM_DIRS=
+mv -f ${lib} lib-static
+%{__make} realclean
 
-%{__make}
+%{__make} linux-osmesa \
+	CC="%{__cc}" \
+	CXX="%{__cxx}" \
+	CFLAGS="%{rpmcppflags} %{rpmcflags} -fno-strict-aliasing -fPIC" \
+	XLIB_DIR=%{_libdir} \
+	SRC_DIRS="mesa" \
+	PROGRAM_DIRS=
+mv -f lib lib-osmesa
+%{__make} realclean
+
+%{__make} linux-dri${targ} \
+	CC="%{__cc}" \
+	CXX="%{__cxx}" \
+	MKDEP=makedepend \
+	OPT_FLAGS="%{rpmcppflags} %{rpmcflags} -fno-strict-aliasing" \
+	XLIB_DIR=%{_libdir} \
+	DRI_DRIVER_SEARCH_DIR=%{_libdir}/xorg/modules/dri \
+	SRC_DIRS="glx/x11 mesa glu glw" \
+	PROGRAM_DIRS=
+
+%{__make} -C progs/xdemos \
+	CC="%{__cc}" \
+	CXX="%{__cxx}" \
+	OPT_FLAGS="%{rpmcppflags} %{rpmcflags}" \
+	XLIB_DIR=%{_libdir} \
+	PROGS="glxgears" \
+	APP_LIB_DEPS="-L../../${lib} -lGL"
+
+%{__make} -C progs/xdemos \
+	CC="%{__cc}" \
+	CXX="%{__cxx}" \
+	OPT_FLAGS="%{rpmcppflags} %{rpmcflags}" \
+	XLIB_DIR=%{_libdir} \
+	PROGS="glxinfo" \
+	APP_LIB_DEPS="-L../../${lib} -lGL -lGLU"
+
+mv -f ${lib} lib-dri
+
+for d in mesa glu glw ; do
+	for f in src/$d/*.pc.in; do
+		%{__make} -C src/$d `basename $f .in` \
+			INSTALL_DIR=%{_prefix} \
+			LIB_DIR=%{_lib}
+	done
+done
 
 %install
 rm -rf $RPM_BUILD_ROOT
+install -d $RPM_BUILD_ROOT{%{_bindir},%{_libdir},%{_includedir}/GL/internal,%{_pkgconfigdir},%{_examplesdir}/%{name}-%{version}}
+install -d $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
-install -d $RPM_BUILD_ROOT%{_bindir}
+cp -df lib-static/lib* $RPM_BUILD_ROOT%{_libdir}
+cp -df lib-osmesa/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
+cp -df lib-dri/lib* $RPM_BUILD_ROOT%{_libdir}
+cp -rf include/GL/{gl[!f]*,osmesa.h*} src/glw/GLw*.h src/mesa/drivers/x11/xmesa*.h $RPM_BUILD_ROOT%{_includedir}/GL
+cp -rf include/GL/internal/dri_interface.h $RPM_BUILD_ROOT%{_includedir}/GL/internal
+cp -df lib-dri/*_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri
 
-%{__make} install \
-	DESTDIR=$RPM_BUILD_ROOT
+install src/mesa/gl.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
+install src/mesa/osmesa.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
+install src/glu/glu.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
+install src/glw/glw.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
 
 install progs/xdemos/{glxgears,glxinfo} $RPM_BUILD_ROOT%{_bindir}
+# work on copy to keep -bi --short-circuit working
+rm -rf progs-clean
+install -d progs-clean
+for l in demos glsl osdemos redbook samples xdemos ; do
+	cp -a progs/$l progs-clean/$l
+	%{__make} -C progs-clean/$l clean
+	cp -Rf progs-clean/$l $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/$l
+done
+rm -rf progs-clean
+for l in util images ; do
+	cp -Rf progs/$l $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/$l
+done
+rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{BeOS*,win,cygnus,DJ,dja}}
 
 %if %{with multigl}
 install -d $RPM_BUILD_ROOT{%{_libdir}/Mesa,%{_sysconfdir}/ld.so.conf.d}
@@ -674,9 +761,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glxext.h
 %{_includedir}/GL/glx_mangle.h
+%dir %{_includedir}/GL/internal
+%{_includedir}/GL/internal/dri_interface.h
 %{_pkgconfigdir}/gl.pc
 
-%if %{with static}
 %files libGL-static
 %defattr(644,root,root,755)
 %{_libdir}/libGL.a
@@ -684,7 +772,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/xmesa.h
 %{_includedir}/GL/xmesa_x.h
 %{_includedir}/GL/xmesa_xf86.h
-%endif
 
 %files libGLU
 %defattr(644,root,root,755)
@@ -698,11 +785,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/glu_mangle.h
 %{_pkgconfigdir}/glu.pc
 
-%if %{with static}
 %files libGLU-static
 %defattr(644,root,root,755)
 %{_libdir}/libGLU.a
-%endif
 
 %files libGLw
 %defattr(644,root,root,755)
@@ -718,27 +803,24 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/GLwMDrawAP.h
 %{_pkgconfigdir}/glw.pc
 
-%if %{with static}
 %files libGLw-static
 %defattr(644,root,root,755)
 %{_libdir}/libGLw.a
-%endif
 
 %files libOSMesa
 %defattr(644,root,root,755)
-#%attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
-#%attr(755,root,root) %ghost %{_libdir}/libOSMesa.so.6
+%attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libOSMesa.so.[0-9]
 
 %files libOSMesa-devel
 %defattr(644,root,root,755)
-#%attr(755,root,root) %{_libdir}/libOSMesa.so
+%attr(755,root,root) %{_libdir}/libOSMesa.so
 %{_includedir}/GL/osmesa.h
+%{_pkgconfigdir}/osmesa.pc
 
-%if %{with static}
 %files libOSMesa-static
 %defattr(644,root,root,755)
 %{_libdir}/libOSMesa.a
-%endif
 
 %files utils
 %defattr(644,root,root,755)
@@ -795,10 +877,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mga_dri.so
 
-%files dri-driver-nouveau
-%defattr(644,root,root,755)
-#%attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
-
 %files dri-driver-s3virge
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/s3v_dri.so
@@ -812,6 +890,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/sis_dri.so
 %endif
+
+%files dri-driver-swrast
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
 
 %files dri-driver-tdfx
 %defattr(644,root,root,755)
@@ -827,4 +909,4 @@ rm -rf $RPM_BUILD_ROOT
 
 %files demos
 %defattr(644,root,root,755)
-#%{_examplesdir}/%{name}-%{version}
+%{_examplesdir}/%{name}-%{version}
