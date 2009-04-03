@@ -642,6 +642,7 @@ mv %{_lib} osmesa32
 %configure $common_flags \
 	--enable-glu \
 	--enable-glw \
+	--disable-glut \
 	--with-driver=dri \
 	--with-dri-drivers=${dri_drivers} \
 	--with-dri-driverdir=%{_libdir}/xorg/modules/dri
