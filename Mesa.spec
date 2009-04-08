@@ -2,13 +2,15 @@
 # TODO:
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
 # - resurrect static if it's useful
+# - what's libEGL?
 #
 # Conditional build:
 %bcond_without	motif	# build static libGLw without Motif interface
+%bcond_without	gallium
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
 %bcond_with	static
 #
-%define		snap		20090403
+%define		snap		20090408
 # minimal supported xserver version
 %define		xserver_ver	1.5.0
 # glapi version (glapi tables in dri drivers and libglx must be in sync);
@@ -27,7 +29,7 @@ Group:		X11/Libraries
 # Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 # Source1-md5:	02816f10f30b1dc5e069e0f68c177c98
 Source0:	%{name}-%{snap}.tar.bz2
-# Source0-md5:	d680f5dc934c669727e46d854400eb80
+# Source0-md5:	058f7db7c7c2b3adb83a6b1666c25b5d
 Source2:	http://www.archlinux.org/~jgc/gl-manpages-1.0.1.tar.bz2
 # Source2-md5:	6ae05158e678f4594343f32c2ca50515
 Patch0:		%{name}-realclean.patch
@@ -598,7 +600,10 @@ find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{ver
 %build
 [ ! -f configure ] && ./autogen.sh
 
-dri_drivers="i810 i915 i965 mach64 mga r128 r200 r300 radeon savage s3v trident \
+dri_drivers="i810 i965 mach64 mga r128 r200 r300 radeon savage s3v trident \
+%if %{without gallium}
+i915 \
+%endif
 %ifarch sparc sparcv9 sparc64
 ffb \
 %endif
@@ -645,8 +650,12 @@ mv %{_lib} osmesa32
 %configure $common_flags \
 	--enable-glu \
 	--enable-glw \
-	--disable-gallium \
 	--disable-glut \
+%if %{with gallium}
+	--with-state-trackers="dri2" \
+%else
+	--disable-gallium \
+%endif
 	--with-driver=dri \
 	--with-dri-drivers=${dri_drivers} \
 	--with-dri-driverdir=%{_libdir}/xorg/modules/dri
@@ -694,9 +703,11 @@ rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{
 olddir=$(pwd)
 cd $RPM_BUILD_ROOT%{_includedir}/GL 
 rm [a-fh-np-wyz]*.h gg*.h glf*.h glew.h glut*.h glxew.h
-# unneeded (yet) libraries
 cd $RPM_BUILD_ROOT%{_libdir}
-rm libEGL* demodriver.so
+%if %{without gallium}
+rm libEGL*
+%endif
+rm demodriver.so
 cd $olddir
 
 %if %{with multigl}
@@ -730,10 +741,13 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %ghost %{_libdir}/Mesa/libGL.so.1
 %else
 %attr(755,root,root) %{_libdir}/libGL.so.*.*
+%attr(755,root,root) %{_libdir}/libEGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libGL.so.1
+%attr(755,root,root) %ghost %{_libdir}/libEGL.so.1
 # symlink for binary apps which fail to conform Linux OpenGL ABI
 # (and dlopen libGL.so instead of libGL.so.1)
 %attr(755,root,root) %{_libdir}/libGL.so
+%attr(755,root,root) %{_libdir}/libEGL.so
 %endif
 
 %files libGL-devel
