@@ -10,7 +10,7 @@
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
 %bcond_with	static
 #
-%define		snap		20090408
+%define		snap		20090418
 # minimal supported xserver version
 %define		xserver_ver	1.5.0
 # glapi version (glapi tables in dri drivers and libglx must be in sync);
@@ -29,7 +29,7 @@ Group:		X11/Libraries
 # Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 # Source1-md5:	02816f10f30b1dc5e069e0f68c177c98
 Source0:	%{name}-%{snap}.tar.bz2
-# Source0-md5:	058f7db7c7c2b3adb83a6b1666c25b5d
+# Source0-md5:	7aa345492afc769cf91a3446c4fcb4d8
 Source2:	http://www.archlinux.org/~jgc/gl-manpages-1.0.1.tar.bz2
 # Source2-md5:	6ae05158e678f4594343f32c2ca50515
 Patch0:		%{name}-realclean.patch
