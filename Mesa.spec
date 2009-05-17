@@ -37,6 +37,7 @@ BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
+BuildRequires:	OpenGL-glut-devel
 BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libXdamage-devel
