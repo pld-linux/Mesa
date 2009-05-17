@@ -18,18 +18,17 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	7.4.1
-Release:	2%{?with_multigl:.mgl}
+Version:	7.4.2
+Release:	1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	423260578b653818ba66c2fcbde6d7ad
+# Source0-md5:	b10a76e32bde4645cfc34ea0416d7d8b
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	1e169fb6abc2b45613f1c98a82dfe690
+# Source1-md5:	bf559a0485667a3bfa4513a23501579b
 Source2:	http://www.archlinux.org/~jgc/gl-manpages-1.0.1.tar.bz2
 # Source2-md5:	6ae05158e678f4594343f32c2ca50515
 Patch0:		%{name}-realclean.patch
-Patch1:		%{name}-fixes.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	expat-devel
 BuildRequires:	libdrm-devel >= 2.4.5
@@ -590,7 +589,6 @@ Sterownik X.org DRI dla rodziny kart VIA Unichrome.
 %prep
 %setup -q -b1 -a2
 %patch0 -p0
-%patch1 -p1
 
 # fix demos
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
