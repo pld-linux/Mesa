@@ -2,9 +2,11 @@
 # TODO:
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
 # - resurrect static if it's useful
+# - what's libEGL?
 #
 # Conditional build:
 %bcond_without	motif	# build static libGLw without Motif interface
+%bcond_without	gallium
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
 %bcond_with	static
 #
@@ -18,14 +20,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	7.4.4
+Version:	7.5
 Release:	1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	b66528d314c574dccbe0ed963cac5e93
+# Source0-md5:	459f332551f6ebb86f384d21dd15e1f0
 Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	628142ec9a54cd28cc027e6ce26cff47
+# Source1-md5:	398ee8801814a00e47f6c2314e3dfddc
 Source2:	http://www.archlinux.org/~jgc/gl-manpages-1.0.1.tar.bz2
 # Source2-md5:	6ae05158e678f4594343f32c2ca50515
 Patch0:		%{name}-realclean.patch
@@ -36,7 +38,6 @@ BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
-BuildRequires:	OpenGL-glut-devel
 BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libXdamage-devel
@@ -594,7 +595,12 @@ Sterownik X.org DRI dla rodziny kart VIA Unichrome.
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
 
 %build
-dri_drivers="i810 i915 i965 mach64 mga r128 r200 r300 radeon savage s3v trident \
+[ ! -f configure ] && ./autogen.sh
+
+dri_drivers="i810 i965 mach64 mga r128 r200 r300 radeon savage s3v trident \
+%if %{without gallium}
+i915 \
+%endif
 %ifarch sparc sparcv9 sparc64
 ffb \
 %endif
@@ -642,6 +648,7 @@ mv %{_lib} osmesa32
 	--enable-glu \
 	--enable-glw \
 	--disable-glut \
+	--%{?with_gallium:en}%{!?with_gallium:dis}able-gallium \
 	--with-driver=dri \
 	--with-dri-drivers=${dri_drivers} \
 	--with-dri-driverdir=%{_libdir}/xorg/modules/dri
@@ -689,6 +696,10 @@ rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{
 olddir=$(pwd)
 cd $RPM_BUILD_ROOT%{_includedir}/GL 
 rm [a-fh-np-wyz]*.h gg*.h glf*.h
+cd $RPM_BUILD_ROOT%{_libdir}
+%if %{without gallium}
+rm libEGL*
+%endif
 cd $olddir
 
 %if %{with multigl}
@@ -722,10 +733,13 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %ghost %{_libdir}/Mesa/libGL.so.1
 %else
 %attr(755,root,root) %{_libdir}/libGL.so.*.*
+%attr(755,root,root) %{_libdir}/libEGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libGL.so.1
+%attr(755,root,root) %ghost %{_libdir}/libEGL.so.1
 # symlink for binary apps which fail to conform Linux OpenGL ABI
 # (and dlopen libGL.so instead of libGL.so.1)
 %attr(755,root,root) %{_libdir}/libGL.so
+%attr(755,root,root) %{_libdir}/libEGL.so
 %endif
 
 %files libGL-devel
@@ -854,7 +868,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/EGL_i915.so
 
 %files dri-driver-intel-i965
 %defattr(644,root,root,755)
