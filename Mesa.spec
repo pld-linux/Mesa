@@ -2,7 +2,6 @@
 # TODO:
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
 # - resurrect static if it's useful
-# - what's libEGL?
 #
 # Conditional build:
 %bcond_without	motif	# build static libGLw without Motif interface
@@ -21,7 +20,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.5
-Release:	2%{?with_multigl:.mgl}
+Release:	3%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
@@ -615,7 +614,8 @@ dri_drivers=$(echo $dri_drivers | xargs | tr ' ' ',')
 common_flags="\
 	--enable-shared \
 	--enable-selinux \
-	--enable-pic"
+	--enable-pic \
+	--disable-egl"
 
 # osmesa variants
 %configure $common_flags \
@@ -649,7 +649,14 @@ mv %{_lib} osmesa32
 	--enable-glu \
 	--enable-glw \
 	--disable-glut \
-	--%{?with_gallium:en}%{!?with_gallium:dis}able-gallium \
+%if %{with gallium}
+	--enable-gallium \
+	--enable-gallium-intel \
+	--enable-gallium-nouveau \
+	--with-state-trackers=dri \
+%else
+	--disable-gallium \
+%endif
 	--with-driver=dri \
 	--with-dri-drivers=${dri_drivers} \
 	--with-dri-driverdir=%{_libdir}/xorg/modules/dri
@@ -698,9 +705,6 @@ olddir=$(pwd)
 cd $RPM_BUILD_ROOT%{_includedir}/GL 
 rm [a-fh-np-wyz]*.h gg*.h glf*.h
 cd $RPM_BUILD_ROOT%{_libdir}
-%if %{without gallium}
-rm libEGL*
-%endif
 cd $olddir
 
 %if %{with multigl}
@@ -734,13 +738,10 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %ghost %{_libdir}/Mesa/libGL.so.1
 %else
 %attr(755,root,root) %{_libdir}/libGL.so.*.*
-%attr(755,root,root) %{_libdir}/libEGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libGL.so.1
-%attr(755,root,root) %ghost %{_libdir}/libEGL.so.1
 # symlink for binary apps which fail to conform Linux OpenGL ABI
 # (and dlopen libGL.so instead of libGL.so.1)
 %attr(755,root,root) %{_libdir}/libGL.so
-%attr(755,root,root) %{_libdir}/libEGL.so
 %endif
 
 %files libGL-devel
@@ -869,7 +870,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/EGL_i915.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
 
 %files dri-driver-intel-i965
 %defattr(644,root,root,755)
