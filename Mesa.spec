@@ -33,6 +33,7 @@ Source2:	http://www.archlinux.org/~jgc/gl-manpages-1.0.1.tar.bz2
 Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	expat-devel
+BuildRequires:	glew-devel
 BuildRequires:	libdrm-devel >= 2.4.5
 BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel
