@@ -10,7 +10,6 @@
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
 %bcond_with	static
 #
-%define		snap		20090418
 # minimal supported xserver version
 %define		xserver_ver	1.5.0
 # glapi version (glapi tables in dri drivers and libglx must be in sync);
@@ -22,14 +21,13 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.5
-Release:	0.%{snap}.1%{?with_multigl:.mgl}
+Release:	1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
-# Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
-# Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	02816f10f30b1dc5e069e0f68c177c98
-Source0:	%{name}-%{snap}.tar.bz2
-# Source0-md5:	7aa345492afc769cf91a3446c4fcb4d8
+Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
+# Source0-md5:	459f332551f6ebb86f384d21dd15e1f0
+Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
+# Source1-md5:	398ee8801814a00e47f6c2314e3dfddc
 Source2:	http://www.archlinux.org/~jgc/gl-manpages-1.0.1.tar.bz2
 # Source2-md5:	6ae05158e678f4594343f32c2ca50515
 Patch0:		%{name}-realclean.patch
@@ -590,8 +588,7 @@ X.org DRI driver for VIA Unichrome card family.
 Sterownik X.org DRI dla rodziny kart VIA Unichrome.
 
 %prep
-# %setup -q -b1 -a2
-%setup -q -a2 -n %{name}
+%setup -q -b1 -a2
 %patch0 -p0
 
 # fix demos
@@ -651,11 +648,7 @@ mv %{_lib} osmesa32
 	--enable-glu \
 	--enable-glw \
 	--disable-glut \
-%if %{with gallium}
-	--with-state-trackers="dri2" \
-%else
-	--disable-gallium \
-%endif
+	--%{?with_gallium:en}%{!?with_gallium:dis}able-gallium \
 	--with-driver=dri \
 	--with-dri-drivers=${dri_drivers} \
 	--with-dri-driverdir=%{_libdir}/xorg/modules/dri
@@ -702,12 +695,11 @@ rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{
 # strip out undesirable headers
 olddir=$(pwd)
 cd $RPM_BUILD_ROOT%{_includedir}/GL 
-rm [a-fh-np-wyz]*.h gg*.h glf*.h glew.h glut*.h glxew.h
+rm [a-fh-np-wyz]*.h gg*.h glf*.h
 cd $RPM_BUILD_ROOT%{_libdir}
 %if %{without gallium}
 rm libEGL*
 %endif
-rm demodriver.so
 cd $olddir
 
 %if %{with multigl}
@@ -876,7 +868,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/EGL_i915.so
 
 %files dri-driver-intel-i965
 %defattr(644,root,root,755)
