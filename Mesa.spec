@@ -20,7 +20,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.5
-Release:	3%{?with_multigl:.mgl}
+Release:	4%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
@@ -107,8 +107,8 @@ Group:		X11/Development/Libraries
 # loose dependency on libGL to use with other libGL binaries
 Requires:	OpenGL >= 1.5
 Requires:	xorg-lib-libX11-devel
-Provides:	OpenGL-devel = 2.1
 Provides:	OpenGL-GLX-devel = 1.4
+Provides:	OpenGL-devel = 2.1
 Obsoletes:	Mesa-devel
 Obsoletes:	X11-OpenGL-devel < 1:7.0.0
 Obsoletes:	X11-OpenGL-devel-base < 1:7.0.0
@@ -478,6 +478,21 @@ X.org DRI drivers for Matrox G card family.
 %description dri-driver-matrox -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart Matrox G.
 
+%package dri-driver-nouveau
+Summary:	X.org DRI driver for NVIDIA card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart NVIDIA
+License:	MIT
+Group:		X11/Libraries
+Requires:	xorg-driver-video-nouveau
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
+
+%description dri-driver-nouveau
+X.org DRI drivers for NVIDIA card family.
+
+%description dri-driver-nouveau -l pl.UTF-8
+Sterowniki X.org DRI dla rodziny kart NVIDIA.
+
 %package dri-driver-s3virge
 Summary:	X.org DRI driver for S3 Virge card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart S3 Virge
@@ -702,7 +717,7 @@ rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{
 
 # strip out undesirable headers
 olddir=$(pwd)
-cd $RPM_BUILD_ROOT%{_includedir}/GL 
+cd $RPM_BUILD_ROOT%{_includedir}/GL
 rm [a-fh-np-wyz]*.h gg*.h glf*.h
 cd $RPM_BUILD_ROOT%{_libdir}
 cd $olddir
@@ -761,8 +776,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/internal/dri_interface.h
 %{_pkgconfigdir}/dri.pc
 %{_pkgconfigdir}/gl.pc
-%{_datadir}/man/man3/gl[^uX]*.3gl*
-%{_datadir}/man/man3/glX*.3gl*
+%{_mandir}/man3/gl[^uX]*.3gl*
+%{_mandir}/man3/glX*.3gl*
 
 %if %{with static}
 %files libGL-static
@@ -781,7 +796,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/glu.h
 %{_includedir}/GL/glu_mangle.h
 %{_pkgconfigdir}/glu.pc
-%{_datadir}/man/man3/glu*.3gl*
+%{_mandir}/man3/glu*.3gl*
 
 %if %{with static}
 %files libGLU-static
@@ -879,6 +894,11 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-matrox
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mga_dri.so
+
+%files dri-driver-nouveau
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri2.so
 
 %files dri-driver-s3virge
 %defattr(644,root,root,755)
