@@ -895,10 +895,12 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mga_dri.so
 
+%if %{with gallium}
 %files dri-driver-nouveau
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri2.so
+%endif
 
 %files dri-driver-s3virge
 %defattr(644,root,root,755)
