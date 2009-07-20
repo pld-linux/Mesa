@@ -6,6 +6,7 @@
 # Conditional build:
 %bcond_without	motif	# build static libGLw without Motif interface
 %bcond_without	gallium
+%bcond_with	gallium_intel # gallium i915 driver (but doesn't work with AIGLX)
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
 %bcond_with	static
 #
@@ -20,7 +21,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.5
-Release:	4%{?with_multigl:.mgl}
+Release:	5%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
@@ -48,6 +49,10 @@ BuildRequires:	xorg-proto-glproto-devel
 BuildRequires:	xorg-proto-printproto-devel
 BuildRequires:	xorg-util-makedepend
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
+%if %{without gallium}
+%undefine	with_gallium_intel
+%endif
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
@@ -613,7 +618,7 @@ find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{ver
 [ ! -f configure ] && ./autogen.sh
 
 dri_drivers="i810 i965 mach64 mga r128 r200 r300 radeon savage s3v trident \
-%if %{without gallium}
+%if %{without gallium_intel}
 i915 \
 %endif
 %ifarch sparc sparcv9 sparc64
@@ -666,7 +671,7 @@ mv %{_lib} osmesa32
 	--disable-glut \
 %if %{with gallium}
 	--enable-gallium \
-	--enable-gallium-intel \
+	--%{?with_gallium_intel:en}%{!?with_gallium_intel:dis}able-gallium-intel \
 	--enable-gallium-nouveau \
 	--with-state-trackers=dri \
 %else
