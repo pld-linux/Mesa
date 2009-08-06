@@ -1,0 +1,120 @@
+diff -Nur Mesa-7.5.orig/src/gallium/drivers/nv50/nv50_state_validate.c Mesa-7.5/src/gallium/drivers/nv50/nv50_state_validate.c
+--- Mesa-7.5.orig/src/gallium/drivers/nv50/nv50_state_validate.c	2009-06-26 20:21:59.000000000 +0200
++++ Mesa-7.5/src/gallium/drivers/nv50/nv50_state_validate.c	2009-08-06 03:30:12.000000000 +0200
+@@ -260,11 +260,11 @@
+ 
+ 		so = so_new(12, 0);
+ 		if (!bypass) {
+-			so_method(so, tesla, NV50TCL_VIEWPORT_UNK1(0), 3);
++			so_method(so, tesla, NV50TCL_VIEWPORT_TRANSLATE(0), 3);
+ 			so_data  (so, fui(nv50->viewport.translate[0]));
+ 			so_data  (so, fui(nv50->viewport.translate[1]));
+ 			so_data  (so, fui(nv50->viewport.translate[2]));
+-			so_method(so, tesla, NV50TCL_VIEWPORT_UNK0(0), 3);
++			so_method(so, tesla, NV50TCL_VIEWPORT_SCALE(0), 3);
+ 			so_data  (so, fui(nv50->viewport.scale[0]));
+ 			so_data  (so, fui(-nv50->viewport.scale[1]));
+ 			so_data  (so, fui(nv50->viewport.scale[2]));
+diff -Nur Mesa-7.5.orig/src/gallium/drivers/nv50/nv50_surface.c Mesa-7.5/src/gallium/drivers/nv50/nv50_surface.c
+--- Mesa-7.5.orig/src/gallium/drivers/nv50/nv50_surface.c	2009-06-26 20:21:59.000000000 +0200
++++ Mesa-7.5/src/gallium/drivers/nv50/nv50_surface.c	2009-08-06 03:30:12.000000000 +0200
+@@ -36,13 +36,13 @@
+ 	switch (format) {
+ 	case PIPE_FORMAT_A8R8G8B8_UNORM:
+ 	case PIPE_FORMAT_Z24S8_UNORM:
+-		return NV50_2D_DST_FORMAT_32BPP;
++		return NV50_2D_DST_FORMAT_A8R8G8B8_UNORM;
+ 	case PIPE_FORMAT_X8R8G8B8_UNORM:
+-		return NV50_2D_DST_FORMAT_24BPP;
++		return NV50_2D_DST_FORMAT_X8R8G8B8_UNORM;
+ 	case PIPE_FORMAT_R5G6B5_UNORM:
+-		return NV50_2D_DST_FORMAT_16BPP;
++		return NV50_2D_DST_FORMAT_R5G6B5_UNORM;
+ 	case PIPE_FORMAT_A8_UNORM:
+-		return NV50_2D_DST_FORMAT_8BPP;
++		return NV50_2D_DST_FORMAT_R8_UNORM;
+ 	default:
+ 		return -1;
+ 	}
+@@ -66,7 +66,7 @@
+  	if (format < 0)
+  		return 1;
+   
+- 	if (!bo->tiled) {
++ 	if (bo->tile_flags != 0x2800 && bo->tile_flags != 0x7000) {
+  		BEGIN_RING(chan, eng2d, mthd, 2);
+  		OUT_RING  (chan, format);
+  		OUT_RING  (chan, 1);
+diff -Nur Mesa-7.5.orig/src/gallium/drivers/nv50/nv50_transfer.c Mesa-7.5/src/gallium/drivers/nv50/nv50_transfer.c
+--- Mesa-7.5.orig/src/gallium/drivers/nv50/nv50_transfer.c	2009-06-26 20:21:59.000000000 +0200
++++ Mesa-7.5/src/gallium/drivers/nv50/nv50_transfer.c	2009-08-06 03:30:12.000000000 +0200
+@@ -35,7 +35,7 @@
+ 
+ 	WAIT_RING (chan, 14);
+ 
+-	if (!src_bo->tiled) {
++	if (src_bo->tile_flags != 0x2800 && src_bo->tile_flags != 0x7000) {
+ 		BEGIN_RING(chan, m2mf, 0x0200, 1);
+ 		OUT_RING  (chan, 1);
+ 		BEGIN_RING(chan, m2mf, 0x0314, 1);
+@@ -51,7 +51,7 @@
+ 		OUT_RING  (chan, 0);
+ 	}
+ 
+-	if (!dst_bo->tiled) {
++	if (dst_bo->tile_flags != 0x2800 && dst_bo->tile_flags != 0x7000) {
+ 		BEGIN_RING(chan, m2mf, 0x021c, 1);
+ 		OUT_RING  (chan, 1);
+ 		BEGIN_RING(chan, m2mf, 0x0318, 1);
+@@ -77,13 +77,13 @@
+ 		BEGIN_RING(chan, m2mf, 0x030c, 2);
+ 		OUT_RELOCl(chan, src_bo, src_offset, src_reloc);
+ 		OUT_RELOCl(chan, dst_bo, dst_offset, dst_reloc);
+-		if (src_bo->tiled) {
++		if (src_bo->tile_flags == 0x2800 || src_bo->tile_flags == 0x7000) {
+ 			BEGIN_RING(chan, m2mf, 0x0218, 1);
+ 			OUT_RING  (chan, (dy << 16) | sx);
+ 		} else {
+ 			src_offset += (line_count * src_pitch);
+ 		}
+-		if (dst_bo->tiled) {
++		if (dst_bo->tile_flags == 0x2800 || dst_bo->tile_flags == 0x7000) {
+ 			BEGIN_RING(chan, m2mf, 0x0234, 1);
+ 			OUT_RING  (chan, (sy << 16) | dx);
+ 		} else {
+diff -Nur Mesa-7.5.orig/src/gallium/winsys/drm/nouveau/dri/nouveau_screen.c Mesa-7.5/src/gallium/winsys/drm/nouveau/dri/nouveau_screen.c
+--- Mesa-7.5.orig/src/gallium/winsys/drm/nouveau/dri/nouveau_screen.c	2009-06-26 20:21:59.000000000 +0200
++++ Mesa-7.5/src/gallium/winsys/drm/nouveau/dri/nouveau_screen.c	2009-08-06 03:31:04.000000000 +0200
+@@ -15,7 +15,7 @@
+ #include "nouveau_drm.h"
+ #include "nouveau_drmif.h"
+ 
+-#if NOUVEAU_DRM_HEADER_PATCHLEVEL != 12
++#if NOUVEAU_DRM_HEADER_PATCHLEVEL != 15
+ #error nouveau_drm.h version does not match expected version
+ #endif
+ 
+diff -Nur Mesa-7.5.orig/src/gallium/winsys/drm/nouveau/drm/nouveau_winsys.c Mesa-7.5/src/gallium/winsys/drm/nouveau/drm/nouveau_winsys.c
+--- Mesa-7.5.orig/src/gallium/winsys/drm/nouveau/drm/nouveau_winsys.c	2009-06-26 20:21:59.000000000 +0200
++++ Mesa-7.5/src/gallium/winsys/drm/nouveau/drm/nouveau_winsys.c	2009-08-06 03:30:12.000000000 +0200
+@@ -38,7 +38,7 @@
+ 	struct nouveau_bo *bo = nouveau_pipe_buffer(buf)->bo;
+ 
+ 	return nouveau_pushbuf_emit_reloc(nvws->channel, ptr, bo,
+-					  data, flags, vor, tor);
++					  data, 0, flags, vor, tor);
+ }
+ 
+ static int
+diff -Nur Mesa-7.5.orig/src/gallium/winsys/g3dvl/nouveau/nouveau_screen_vl.c Mesa-7.5/src/gallium/winsys/g3dvl/nouveau/nouveau_screen_vl.c
+--- Mesa-7.5.orig/src/gallium/winsys/g3dvl/nouveau/nouveau_screen_vl.c	2009-05-07 17:34:49.000000000 +0200
++++ Mesa-7.5/src/gallium/winsys/g3dvl/nouveau/nouveau_screen_vl.c	2009-08-06 03:31:23.000000000 +0200
+@@ -4,7 +4,7 @@
+ #include <common/nouveau_dri.h>
+ #include <common/nouveau_local.h>
+ 
+-#if NOUVEAU_DRM_HEADER_PATCHLEVEL != 12
++#if NOUVEAU_DRM_HEADER_PATCHLEVEL != 15
+ #error nouveau_drm.h version does not match expected version
+ #endif
+ 
