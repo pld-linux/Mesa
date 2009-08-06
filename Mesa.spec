@@ -4,6 +4,7 @@
 # - resurrect static if it's useful
 #
 # Conditional build:
+%bcond_without	demos	# don't build demos
 %bcond_without	motif	# build static libGLw without Motif interface
 %bcond_without	gallium
 %bcond_with	gallium_intel # gallium i915 driver (but doesn't work with AIGLX)
@@ -31,10 +32,12 @@ Source1:	http://dl.sourceforge.net/mesa3d/%{name}Demos-%{version}.tar.bz2
 Source2:	http://www.archlinux.org/~jgc/gl-manpages-1.0.1.tar.bz2
 # Source2-md5:	6ae05158e678f4594343f32c2ca50515
 Patch0:		%{name}-realclean.patch
+Patch1:		%{name}-noveau-abi-0.0.15.patch
+Patch2:		%{name}-sparc64.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	expat-devel
-BuildRequires:	glew-devel
-BuildRequires:	libdrm-devel >= 2.4.12-2
+%{?with_demos:BuildRequires:	glew-devel}
+BuildRequires:	libdrm-devel >= 2.4.12-3
 BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
@@ -42,9 +45,9 @@ BuildRequires:	libtool >= 2:1.4d
 BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libXdamage-devel
+BuildRequires:	xorg-lib-libXext-devel >= 1.0.99.4
 BuildRequires:	xorg-lib-libXt-devel
 BuildRequires:	xorg-lib-libXxf86vm-devel
-BuildRequires:	xorg-proto-dri2proto-devel >= 1.99.3
 BuildRequires:	xorg-proto-glproto-devel
 BuildRequires:	xorg-proto-printproto-devel
 BuildRequires:	xorg-util-makedepend
@@ -610,6 +613,8 @@ Sterownik X.org DRI dla rodziny kart VIA Unichrome.
 %prep
 %setup -q -b1 -a2
 %patch0 -p0
+%patch1 -p1
+%patch2 -p1
 
 # fix demos
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
@@ -635,7 +640,8 @@ common_flags="\
 	--enable-shared \
 	--enable-selinux \
 	--enable-pic \
-	--disable-egl"
+	--disable-egl \
+	--with%{!?with_demos:out}-demos"
 
 # osmesa variants
 %configure $common_flags \
@@ -683,7 +689,9 @@ mv %{_lib} osmesa32
 
 %{__make}
 %{__make} -C progs/xdemos glxgears glxinfo
+%if %{with demos}
 %{__make} -C progs/demos
+%endif
 
 cd gl-manpages-*
 %configure
@@ -937,6 +945,8 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/unichrome_dri.so
 
+%if %{with demos}
 %files demos
 %defattr(644,root,root,755)
 %{_examplesdir}/%{name}-%{version}
+%endif
