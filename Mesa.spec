@@ -46,7 +46,7 @@ BuildRequires:	libtool >= 2:1.4d
 BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libXdamage-devel
-BuildRequires:	xorg-lib-libXext-devel >= 1.0.99.4
+BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXt-devel
 BuildRequires:	xorg-lib-libXxf86vm-devel
 BuildRequires:	xorg-proto-dri2proto-devel >= 1.99.3
