@@ -22,7 +22,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.5
-Release:	7%{?with_multigl:.mgl}
+Release:	8%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	http://dl.sourceforge.net/mesa3d/%{name}Lib-%{version}.tar.bz2
@@ -643,6 +643,7 @@ common_flags="\
 	--enable-shared \
 	--enable-selinux \
 	--enable-pic \
+	--enable-glx-tls \
 	--disable-egl \
 	--with%{!?with_demos:out}-demos"
 
