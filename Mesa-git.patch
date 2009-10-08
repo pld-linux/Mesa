@@ -1,0 +1,1973 @@
+diff --git a/include/GL/gl_mangle.h b/include/GL/gl_mangle.h
+index 54147f7..59f6149 100644
+--- a/include/GL/gl_mangle.h
++++ b/include/GL/gl_mangle.h
+@@ -108,12 +108,20 @@
+ #define glBlendColorEXT		MANGLE(BlendColorEXT)
+ #define glBlendColor		MANGLE(BlendColor)
+ #define glBlendEquationEXT		MANGLE(BlendEquationEXT)
++#define glBlendEquationi		MANGLE(BlendEquationi)
++#define glBlendEquationIndexedAMD		MANGLE(BlendEquationIndexedAMD)
+ #define glBlendEquation		MANGLE(BlendEquation)
+ #define glBlendEquationSeparateATI		MANGLE(BlendEquationSeparateATI)
+ #define glBlendEquationSeparateEXT		MANGLE(BlendEquationSeparateEXT)
++#define glBlendEquationSeparatei		MANGLE(BlendEquationSeparatei)
++#define glBlendEquationSeparateIndexedAMD		MANGLE(BlendEquationSeparateIndexedAMD)
+ #define glBlendEquationSeparate		MANGLE(BlendEquationSeparate)
++#define glBlendFunci		MANGLE(BlendFunci)
++#define glBlendFuncIndexedAMD		MANGLE(BlendFuncIndexedAMD)
+ #define glBlendFunc		MANGLE(BlendFunc)
+ #define glBlendFuncSeparateEXT		MANGLE(BlendFuncSeparateEXT)
++#define glBlendFuncSeparatei		MANGLE(BlendFuncSeparatei)
++#define glBlendFuncSeparateIndexedAMD		MANGLE(BlendFuncSeparateIndexedAMD)
+ #define glBlendFuncSeparateINGR		MANGLE(BlendFuncSeparateINGR)
+ #define glBlendFuncSeparate		MANGLE(BlendFuncSeparate)
+ #define glBlitFramebufferEXT		MANGLE(BlitFramebufferEXT)
+@@ -148,6 +156,7 @@
+ #define glClientActiveTexture		MANGLE(ClientActiveTexture)
+ #define glClientActiveVertexStreamATI		MANGLE(ClientActiveVertexStreamATI)
+ #define glClientAttribDefaultEXT		MANGLE(ClientAttribDefaultEXT)
++#define glClientWaitSync		MANGLE(ClientWaitSync)
+ #define glClipPlane		MANGLE(ClipPlane)
+ #define glColor3b		MANGLE(Color3b)
+ #define glColor3bv		MANGLE(Color3bv)
+@@ -320,6 +329,7 @@
+ #define glDeleteRenderbuffersEXT		MANGLE(DeleteRenderbuffersEXT)
+ #define glDeleteRenderbuffers		MANGLE(DeleteRenderbuffers)
+ #define glDeleteShader		MANGLE(DeleteShader)
++#define glDeleteSync		MANGLE(DeleteSync)
+ #define glDeleteTexturesEXT		MANGLE(DeleteTexturesEXT)
+ #define glDeleteTextures		MANGLE(DeleteTextures)
+ #define glDeleteTransformFeedbacksNV		MANGLE(DeleteTransformFeedbacksNV)
+@@ -341,6 +351,7 @@
+ #define glDisableIndexedEXT		MANGLE(DisableIndexedEXT)
+ #define glDisable		MANGLE(Disable)
+ #define glDisableVariantClientStateEXT		MANGLE(DisableVariantClientStateEXT)
++#define glDisableVertexAttribAPPLE		MANGLE(DisableVertexAttribAPPLE)
+ #define glDisableVertexAttribArrayARB		MANGLE(DisableVertexAttribArrayARB)
+ #define glDisableVertexAttribArray		MANGLE(DisableVertexAttribArray)
+ #define glDrawArraysEXT		MANGLE(DrawArraysEXT)
+@@ -354,7 +365,9 @@
+ #define glDrawBuffers		MANGLE(DrawBuffers)
+ #define glDrawElementArrayAPPLE		MANGLE(DrawElementArrayAPPLE)
+ #define glDrawElementArrayATI		MANGLE(DrawElementArrayATI)
++#define glDrawElementsBaseVertex		MANGLE(DrawElementsBaseVertex)
+ #define glDrawElementsInstancedARB		MANGLE(DrawElementsInstancedARB)
++#define glDrawElementsInstancedBaseVertex		MANGLE(DrawElementsInstancedBaseVertex)
+ #define glDrawElementsInstancedEXT		MANGLE(DrawElementsInstancedEXT)
+ #define glDrawElementsInstanced		MANGLE(DrawElementsInstanced)
+ #define glDrawElements		MANGLE(DrawElements)
+@@ -362,6 +375,7 @@
+ #define glDrawPixels		MANGLE(DrawPixels)
+ #define glDrawRangeElementArrayAPPLE		MANGLE(DrawRangeElementArrayAPPLE)
+ #define glDrawRangeElementArrayATI		MANGLE(DrawRangeElementArrayATI)
++#define glDrawRangeElementsBaseVertex		MANGLE(DrawRangeElementsBaseVertex)
+ #define glDrawRangeElementsEXT		MANGLE(DrawRangeElementsEXT)
+ #define glDrawRangeElements		MANGLE(DrawRangeElements)
+ #define glDrawTransformFeedbackNV		MANGLE(DrawTransformFeedbackNV)
+@@ -378,6 +392,7 @@
+ #define glEnableIndexedEXT		MANGLE(EnableIndexedEXT)
+ #define glEnable		MANGLE(Enable)
+ #define glEnableVariantClientStateEXT		MANGLE(EnableVariantClientStateEXT)
++#define glEnableVertexAttribAPPLE		MANGLE(EnableVertexAttribAPPLE)
+ #define glEnableVertexAttribArrayARB		MANGLE(EnableVertexAttribArrayARB)
+ #define glEnableVertexAttribArray		MANGLE(EnableVertexAttribArray)
+ #define glEndConditionalRender		MANGLE(EndConditionalRender)
+@@ -409,6 +424,7 @@
+ #define glExecuteProgramNV		MANGLE(ExecuteProgramNV)
+ #define glExtractComponentEXT		MANGLE(ExtractComponentEXT)
+ #define glFeedbackBuffer		MANGLE(FeedbackBuffer)
++#define glFenceSync		MANGLE(FenceSync)
+ #define glFinalCombinerInputNV		MANGLE(FinalCombinerInputNV)
+ #define glFinishAsyncSGIX		MANGLE(FinishAsyncSGIX)
+ #define glFinishFenceAPPLE		MANGLE(FinishFenceAPPLE)
+@@ -469,9 +485,11 @@
+ #define glFramebufferTextureEXT		MANGLE(FramebufferTextureEXT)
+ #define glFramebufferTextureFaceARB		MANGLE(FramebufferTextureFaceARB)
+ #define glFramebufferTextureFaceEXT		MANGLE(FramebufferTextureFaceEXT)
++#define glFramebufferTextureFace		MANGLE(FramebufferTextureFace)
+ #define glFramebufferTextureLayerARB		MANGLE(FramebufferTextureLayerARB)
+ #define glFramebufferTextureLayerEXT		MANGLE(FramebufferTextureLayerEXT)
+ #define glFramebufferTextureLayer		MANGLE(FramebufferTextureLayer)
++#define glFramebufferTexture		MANGLE(FramebufferTexture)
+ #define glFrameTerminatorGREMEDY		MANGLE(FrameTerminatorGREMEDY)
+ #define glFrameZoomSGIX		MANGLE(FrameZoomSGIX)
+ #define glFreeObjectBufferATI		MANGLE(FreeObjectBufferATI)
+@@ -523,6 +541,7 @@
+ #define glGetBooleanIndexedvEXT		MANGLE(GetBooleanIndexedvEXT)
+ #define glGetBooleani_v		MANGLE(GetBooleani_v)
+ #define glGetBooleanv		MANGLE(GetBooleanv)
++#define glGetBufferParameteri64v		MANGLE(GetBufferParameteri64v)
+ #define glGetBufferParameterivARB		MANGLE(GetBufferParameterivARB)
+ #define glGetBufferParameteriv		MANGLE(GetBufferParameteriv)
+ #define glGetBufferPointervARB		MANGLE(GetBufferPointervARB)
+@@ -586,6 +605,8 @@
+ #define glGetImageTransformParameterivHP		MANGLE(GetImageTransformParameterivHP)
+ #define glGetInfoLogARB		MANGLE(GetInfoLogARB)
+ #define glGetInstrumentsSGIX		MANGLE(GetInstrumentsSGIX)
++#define glGetInteger64i_v		MANGLE(GetInteger64i_v)
++#define glGetInteger64v		MANGLE(GetInteger64v)
+ #define glGetIntegerIndexedvEXT		MANGLE(GetIntegerIndexedvEXT)
+ #define glGetIntegeri_v		MANGLE(GetIntegeri_v)
+ #define glGetIntegerv		MANGLE(GetIntegerv)
+@@ -615,6 +636,7 @@
+ #define glGetMinmaxParameterfv		MANGLE(GetMinmaxParameterfv)
+ #define glGetMinmaxParameterivEXT		MANGLE(GetMinmaxParameterivEXT)
+ #define glGetMinmaxParameteriv		MANGLE(GetMinmaxParameteriv)
++#define glGetMultisamplefv		MANGLE(GetMultisamplefv)
+ #define glGetMultisamplefvNV		MANGLE(GetMultisamplefvNV)
+ #define glGetMultiTexEnvfvEXT		MANGLE(GetMultiTexEnvfvEXT)
+ #define glGetMultiTexEnvivEXT		MANGLE(GetMultiTexEnvivEXT)
+@@ -642,6 +664,7 @@
+ #define glGetObjectBufferfvATI		MANGLE(GetObjectBufferfvATI)
+ #define glGetObjectBufferivATI		MANGLE(GetObjectBufferivATI)
+ #define glGetObjectParameterfvARB		MANGLE(GetObjectParameterfvARB)
++#define glGetObjectParameterivAPPLE		MANGLE(GetObjectParameterivAPPLE)
+ #define glGetObjectParameterivARB		MANGLE(GetObjectParameterivARB)
+ #define glGetOcclusionQueryivNV		MANGLE(GetOcclusionQueryivNV)
+ #define glGetOcclusionQueryuivNV		MANGLE(GetOcclusionQueryuivNV)
+@@ -698,6 +721,7 @@
+ #define glGetSharpenTexFuncSGIS		MANGLE(GetSharpenTexFuncSGIS)
+ #define glGetStringi		MANGLE(GetStringi)
+ #define glGetString		MANGLE(GetString)
++#define glGetSynciv		MANGLE(GetSynciv)
+ #define glGetTexBumpParameterfvATI		MANGLE(GetTexBumpParameterfvATI)
+ #define glGetTexBumpParameterivATI		MANGLE(GetTexBumpParameterivATI)
+ #define glGetTexEnvfv		MANGLE(GetTexEnvfv)
+@@ -715,6 +739,7 @@
+ #define glGetTexParameterIuivEXT		MANGLE(GetTexParameterIuivEXT)
+ #define glGetTexParameterIuiv		MANGLE(GetTexParameterIuiv)
+ #define glGetTexParameteriv		MANGLE(GetTexParameteriv)
++#define glGetTexParameterPointervAPPLE		MANGLE(GetTexParameterPointervAPPLE)
+ #define glGetTextureImageEXT		MANGLE(GetTextureImageEXT)
+ #define glGetTextureLevelParameterfvEXT		MANGLE(GetTextureLevelParameterfvEXT)
+ #define glGetTextureLevelParameterivEXT		MANGLE(GetTextureLevelParameterivEXT)
+@@ -825,12 +850,14 @@
+ #define glIsRenderbufferEXT		MANGLE(IsRenderbufferEXT)
+ #define glIsRenderbuffer		MANGLE(IsRenderbuffer)
+ #define glIsShader		MANGLE(IsShader)
++#define glIsSync		MANGLE(IsSync)
+ #define glIsTextureEXT		MANGLE(IsTextureEXT)
+ #define glIsTexture		MANGLE(IsTexture)
+ #define glIsTransformFeedbackNV		MANGLE(IsTransformFeedbackNV)
+ #define glIsVariantEnabledEXT		MANGLE(IsVariantEnabledEXT)
+ #define glIsVertexArrayAPPLE		MANGLE(IsVertexArrayAPPLE)
+ #define glIsVertexArray		MANGLE(IsVertexArray)
++#define glIsVertexAttribEnabledAPPLE		MANGLE(IsVertexAttribEnabledAPPLE)
+ #define glLightEnviSGIX		MANGLE(LightEnviSGIX)
+ #define glLightf		MANGLE(Lightf)
+ #define glLightfv		MANGLE(Lightfv)
+@@ -877,6 +904,10 @@
+ #define glMapObjectBufferATI		MANGLE(MapObjectBufferATI)
+ #define glMapParameterfvNV		MANGLE(MapParameterfvNV)
+ #define glMapParameterivNV		MANGLE(MapParameterivNV)
++#define glMapVertexAttrib1dAPPLE		MANGLE(MapVertexAttrib1dAPPLE)
++#define glMapVertexAttrib1fAPPLE		MANGLE(MapVertexAttrib1fAPPLE)
++#define glMapVertexAttrib2dAPPLE		MANGLE(MapVertexAttrib2dAPPLE)
++#define glMapVertexAttrib2fAPPLE		MANGLE(MapVertexAttrib2fAPPLE)
+ #define glMaterialf		MANGLE(Materialf)
+ #define glMaterialfv		MANGLE(Materialfv)
+ #define glMateriali		MANGLE(Materiali)
+@@ -907,9 +938,11 @@
+ #define glMatrixTranslatefEXT		MANGLE(MatrixTranslatefEXT)
+ #define glMinmaxEXT		MANGLE(MinmaxEXT)
+ #define glMinmax		MANGLE(Minmax)
++#define glMinSampleShading		MANGLE(MinSampleShading)
+ #define glMultiDrawArraysEXT		MANGLE(MultiDrawArraysEXT)
+ #define glMultiDrawArrays		MANGLE(MultiDrawArrays)
+ #define glMultiDrawElementArrayAPPLE		MANGLE(MultiDrawElementArrayAPPLE)
++#define glMultiDrawElementsBaseVertex		MANGLE(MultiDrawElementsBaseVertex)
+ #define glMultiDrawElementsEXT		MANGLE(MultiDrawElementsEXT)
+ #define glMultiDrawElements		MANGLE(MultiDrawElements)
+ #define glMultiDrawRangeElementArrayAPPLE		MANGLE(MultiDrawRangeElementArrayAPPLE)
+@@ -1072,6 +1105,8 @@
+ #define glNormalStream3ivATI		MANGLE(NormalStream3ivATI)
+ #define glNormalStream3sATI		MANGLE(NormalStream3sATI)
+ #define glNormalStream3svATI		MANGLE(NormalStream3svATI)
++#define glObjectPurgeableAPPLE		MANGLE(ObjectPurgeableAPPLE)
++#define glObjectUnpurgeableAPPLE		MANGLE(ObjectUnpurgeableAPPLE)
+ #define glOrtho		MANGLE(Ortho)
+ #define glPassTexCoordATI		MANGLE(PassTexCoordATI)
+ #define glPassThrough		MANGLE(PassThrough)
+@@ -1162,6 +1197,7 @@
+ #define glProgramParameter4fvNV		MANGLE(ProgramParameter4fvNV)
+ #define glProgramParameteriARB		MANGLE(ProgramParameteriARB)
+ #define glProgramParameteriEXT		MANGLE(ProgramParameteriEXT)
++#define glProgramParameteri		MANGLE(ProgramParameteri)
+ #define glProgramParameters4dvNV		MANGLE(ProgramParameters4dvNV)
+ #define glProgramParameters4fvNV		MANGLE(ProgramParameters4fvNV)
+ #define glProgramStringARB		MANGLE(ProgramStringARB)
+@@ -1200,6 +1236,7 @@
+ #define glProgramUniformMatrix4x3fvEXT		MANGLE(ProgramUniformMatrix4x3fvEXT)
+ #define glProgramVertexLimitNV		MANGLE(ProgramVertexLimitNV)
+ #define glProvokingVertexEXT		MANGLE(ProvokingVertexEXT)
++#define glProvokingVertex		MANGLE(ProvokingVertex)
+ #define glPushAttrib		MANGLE(PushAttrib)
+ #define glPushClientAttribDefaultEXT		MANGLE(PushClientAttribDefaultEXT)
+ #define glPushClientAttrib		MANGLE(PushClientAttrib)
+@@ -1283,6 +1320,7 @@
+ #define glSampleCoverage		MANGLE(SampleCoverage)
+ #define glSampleMapATI		MANGLE(SampleMapATI)
+ #define glSampleMaskEXT		MANGLE(SampleMaskEXT)
++#define glSampleMaski		MANGLE(SampleMaski)
+ #define glSampleMaskIndexedNV		MANGLE(SampleMaskIndexedNV)
+ #define glSampleMaskSGIS		MANGLE(SampleMaskSGIS)
+ #define glSamplePatternEXT		MANGLE(SamplePatternEXT)
+@@ -1454,8 +1492,10 @@
+ #define glTexGeniv		MANGLE(TexGeniv)
+ #define glTexImage1D		MANGLE(TexImage1D)
+ #define glTexImage2D		MANGLE(TexImage2D)
++#define glTexImage2DMultisample		MANGLE(TexImage2DMultisample)
+ #define glTexImage3DEXT		MANGLE(TexImage3DEXT)
+ #define glTexImage3D		MANGLE(TexImage3D)
++#define glTexImage3DMultisample		MANGLE(TexImage3DMultisample)
+ #define glTexImage4DSGIS		MANGLE(TexImage4DSGIS)
+ #define glTexParameterf		MANGLE(TexParameterf)
+ #define glTexParameterfv		MANGLE(TexParameterfv)
+@@ -1487,6 +1527,7 @@
+ #define glTextureParameterIivEXT		MANGLE(TextureParameterIivEXT)
+ #define glTextureParameterIuivEXT		MANGLE(TextureParameterIuivEXT)
+ #define glTextureParameterivEXT		MANGLE(TextureParameterivEXT)
++#define glTextureRangeAPPLE		MANGLE(TextureRangeAPPLE)
+ #define glTextureRenderbufferEXT		MANGLE(TextureRenderbufferEXT)
+ #define glTextureSubImage1DEXT		MANGLE(TextureSubImage1DEXT)
+ #define glTextureSubImage2DEXT		MANGLE(TextureSubImage2DEXT)
+@@ -1828,6 +1869,7 @@
+ #define glVertexWeighthvNV		MANGLE(VertexWeighthvNV)
+ #define glVertexWeightPointerEXT		MANGLE(VertexWeightPointerEXT)
+ #define glViewport		MANGLE(Viewport)
++#define glWaitSync		MANGLE(WaitSync)
+ #define glWeightbvARB		MANGLE(WeightbvARB)
+ #define glWeightdvARB		MANGLE(WeightdvARB)
+ #define glWeightfvARB		MANGLE(WeightfvARB)
+diff --git a/progs/glsl/skinning.c b/progs/glsl/skinning.c
+index 65ba983..2b96f31 100644
+--- a/progs/glsl/skinning.c
++++ b/progs/glsl/skinning.c
+@@ -16,6 +16,9 @@
+ #include <GL/glut.h>
+ #include "shaderutil.h"
+ 
++#ifndef M_PI
++#define M_PI 3.1415926535
++#endif
+ 
+ static char *FragProgFile = "skinning.frag";
+ static char *VertProgFile = "skinning.vert";
+diff --git a/progs/glsl/texaaline.c b/progs/glsl/texaaline.c
+index 7a5ac40..2e4f932 100644
+--- a/progs/glsl/texaaline.c
++++ b/progs/glsl/texaaline.c
+@@ -14,6 +14,9 @@
+ #include <GL/glew.h>
+ #include <GL/glut.h>
+ 
++#ifndef M_PI
++#define M_PI 3.1415926535
++#endif
+ 
+ static GLint WinWidth = 300, WinHeight = 300;
+ static GLint win = 0;
+diff --git a/progs/glsl/twoside.c b/progs/glsl/twoside.c
+index a57484f..ce155d6 100644
+--- a/progs/glsl/twoside.c
++++ b/progs/glsl/twoside.c
+@@ -16,6 +16,9 @@
+ #include <GL/glut.h>
+ #include "shaderutil.h"
+ 
++#ifndef M_PI
++#define M_PI 3.1415926535
++#endif
+ 
+ static GLint WinWidth = 300, WinHeight = 300;
+ static char *FragProgFile = NULL;
+diff --git a/progs/xdemos/pbdemo.c b/progs/xdemos/pbdemo.c
+index 7db0017..2573209 100644
+--- a/progs/xdemos/pbdemo.c
++++ b/progs/xdemos/pbdemo.c
+@@ -143,7 +143,7 @@ MakePbuffer( Display *dpy, int screen, int width, int height )
+ 
+       /* Create the pbuffer using first fbConfig in the list that works. */
+       for (i=0;i<nConfigs;i++) {
+-         pBuffer = CreatePbuffer(dpy, screen, fbConfigs[i], width, height, preserve, largest);
++         pBuffer = CreatePbuffer(dpy, screen, fbConfigs[i], width, height, largest, preserve);
+          if (pBuffer) {
+             gFBconfig = fbConfigs[i];
+             gWidth = width;
+@@ -210,6 +210,21 @@ Setup(int width, int height)
+       return 0;
+    }
+ 
++   /* Test drawable queries */
++   {
++      unsigned int v;
++      glXQueryDrawable( gDpy, gPBuffer, GLX_WIDTH, &v);
++      printf("GLX_WIDTH = %u\n", v);
++      glXQueryDrawable( gDpy, gPBuffer, GLX_HEIGHT, &v);
++      printf("GLX_HEIGHT = %u\n", v);
++      glXQueryDrawable( gDpy, gPBuffer, GLX_PRESERVED_CONTENTS, &v);
++      printf("GLX_PRESERVED_CONTENTS = %u\n", v);
++      glXQueryDrawable( gDpy, gPBuffer, GLX_LARGEST_PBUFFER, &v);
++      printf("GLX_LARGEST_PBUFFER = %u\n", v);
++      glXQueryDrawable( gDpy, gPBuffer, GLX_FBCONFIG_ID, &v);
++      printf("GLX_FBCONFIG_ID = %u\n", v);
++   }
++
+    /* Get corresponding XVisualInfo */
+    visInfo = GetVisualFromFBConfig(gDpy, gScreen, gFBconfig);
+    if (!visInfo) {
+diff --git a/src/gallium/auxiliary/cso_cache/cso_context.c b/src/gallium/auxiliary/cso_cache/cso_context.c
+index 36c882a..4f13b3e 100644
+--- a/src/gallium/auxiliary/cso_cache/cso_context.c
++++ b/src/gallium/auxiliary/cso_cache/cso_context.c
+@@ -268,7 +268,7 @@ void cso_release_all( struct cso_context *ctx )
+ void cso_destroy_context( struct cso_context *ctx )
+ {
+    if (ctx) {
+-      //cso_release_all( ctx );
++      /*cso_release_all( ctx );*/
+       FREE( ctx );
+    }
+ }
+diff --git a/src/gallium/auxiliary/draw/draw_pt_fetch_shade_emit.c b/src/gallium/auxiliary/draw/draw_pt_fetch_shade_emit.c
+index 44147ae..734c05f 100644
+--- a/src/gallium/auxiliary/draw/draw_pt_fetch_shade_emit.c
++++ b/src/gallium/auxiliary/draw/draw_pt_fetch_shade_emit.c
+@@ -212,17 +212,10 @@ static void fse_prepare( struct draw_pt_middle_end *middle,
+       struct draw_vertex_shader *vs = draw->vs.vertex_shader;
+       vs->prepare(vs, draw);
+    }
+-   
+-
+-   //return TRUE;
+ }
+ 
+ 
+ 
+-
+-
+-
+-
+ static void fse_run_linear( struct draw_pt_middle_end *middle, 
+                             unsigned start, 
+                             unsigned count )
+diff --git a/src/gallium/auxiliary/draw/draw_pt_post_vs.c b/src/gallium/auxiliary/draw/draw_pt_post_vs.c
+index 00d7197..78953bc 100644
+--- a/src/gallium/auxiliary/draw/draw_pt_post_vs.c
++++ b/src/gallium/auxiliary/draw/draw_pt_post_vs.c
+@@ -210,7 +210,7 @@ void draw_pt_post_vs_prepare( struct pt_post_vs *pvs,
+ 	 pvs->run = post_vs_viewport;
+    }
+    else {
+-      //if (opengl) 
++      /* if (opengl) */
+       pvs->run = post_vs_cliptest_viewport_gl;
+    }
+ }
+diff --git a/src/gallium/auxiliary/draw/draw_vs_aos.c b/src/gallium/auxiliary/draw/draw_vs_aos.c
+index 62e04a6..645d7cc 100644
+--- a/src/gallium/auxiliary/draw/draw_vs_aos.c
++++ b/src/gallium/auxiliary/draw/draw_vs_aos.c
+@@ -891,7 +891,7 @@ static void x87_emit_ex2( struct aos_compilation *cp )
+    struct x86_reg st1 = x86_make_reg(file_x87, 1);
+    int stack = cp->func->x87_stack;
+ 
+-//   set_fpu_round_neg_inf( cp );
++   /* set_fpu_round_neg_inf( cp ); */
+ 
+    x87_fld(cp->func, st0);      /* a a */
+    x87_fprndint( cp->func );	/* int(a) a*/
+@@ -1759,14 +1759,14 @@ emit_instruction( struct aos_compilation *cp,
+       return emit_SUB(cp, inst);
+  
+    case TGSI_OPCODE_LRP:
+-//      return emit_LERP(cp, inst);
++      /*return emit_LERP(cp, inst);*/
+       return FALSE;
+ 
+    case TGSI_OPCODE_FRC:
+       return emit_FRC(cp, inst);
+ 
+    case TGSI_OPCODE_CLAMP:
+-//      return emit_CLAMP(cp, inst);
++      /*return emit_CLAMP(cp, inst);*/
+       return FALSE;
+ 
+    case TGSI_OPCODE_FLR:
+diff --git a/src/gallium/auxiliary/pipebuffer/pb_buffer_fenced.c b/src/gallium/auxiliary/pipebuffer/pb_buffer_fenced.c
+index 109ac7c..0d30363 100644
+--- a/src/gallium/auxiliary/pipebuffer/pb_buffer_fenced.c
++++ b/src/gallium/auxiliary/pipebuffer/pb_buffer_fenced.c
+@@ -584,7 +584,7 @@ fenced_buffer_list_destroy(struct fenced_buffer_list *fenced_list)
+    }
+ 
+ #ifdef DEBUG
+-   //assert(!fenced_list->numUnfenced);
++   /*assert(!fenced_list->numUnfenced);*/
+ #endif
+       
+    pipe_mutex_unlock(fenced_list->mutex);
+diff --git a/src/gallium/auxiliary/translate/translate_generic.c b/src/gallium/auxiliary/translate/translate_generic.c
+index 8d39b64..266e7ee 100644
+--- a/src/gallium/auxiliary/translate/translate_generic.c
++++ b/src/gallium/auxiliary/translate/translate_generic.c
+@@ -217,7 +217,7 @@ ATTRIB( R8G8_SNORM,      2, char, FROM_8_SNORM, TO_8_SNORM )
+ ATTRIB( R8_SNORM,        1, char, FROM_8_SNORM, TO_8_SNORM )
+ 
+ ATTRIB( A8R8G8B8_UNORM,       4, ubyte, FROM_8_UNORM, TO_8_UNORM )
+-//ATTRIB( R8G8B8A8_UNORM,       4, ubyte, FROM_8_UNORM, TO_8_UNORM )
++/*ATTRIB( R8G8B8A8_UNORM,       4, ubyte, FROM_8_UNORM, TO_8_UNORM )*/
+ 
+ ATTRIB( R32G32B32A32_FIXED,   4, int, FROM_32_FIXED, TO_32_FIXED )
+ ATTRIB( R32G32B32_FIXED,      3, int, FROM_32_FIXED, TO_32_FIXED )
+diff --git a/src/gallium/auxiliary/util/u_cpu_detect.c b/src/gallium/auxiliary/util/u_cpu_detect.c
+index d9f2f8f..f78706f 100644
+--- a/src/gallium/auxiliary/util/u_cpu_detect.c
++++ b/src/gallium/auxiliary/util/u_cpu_detect.c
+@@ -268,7 +268,7 @@ static void check_os_katmai_support(void)
+ 	 * and therefore to be safe I'm going to leave this test in here.
+ 	 */
+ 	if (__cpu_detect_caps.hasSSE) {
+-		//      test_os_katmai_exception_support();
++           /* test_os_katmai_exception_support(); */
+ 	}
+ 
+ 	/* Restore the original signal handlers.
+diff --git a/src/gallium/auxiliary/util/u_debug_profile.c b/src/gallium/auxiliary/util/u_debug_profile.c
+index 6d8b244..d765b50 100644
+--- a/src/gallium/auxiliary/util/u_debug_profile.c
++++ b/src/gallium/auxiliary/util/u_debug_profile.c
+@@ -254,7 +254,7 @@ debug_profile_start(void)
+ {
+    WCHAR *p;
+ 
+-   // increment starting from the less significant digit
++   /* increment starting from the less significant digit */
+    p = &wFileName[14];
+    while(1) {
+       if(*p == '9') {
+diff --git a/src/gallium/auxiliary/util/u_debug_symbol.c b/src/gallium/auxiliary/util/u_debug_symbol.c
+index 811931f..417d0cf 100644
+--- a/src/gallium/auxiliary/util/u_debug_symbol.c
++++ b/src/gallium/auxiliary/util/u_debug_symbol.c
+@@ -214,7 +214,7 @@ debug_symbol_print_imagehlp(const void *addr)
+    HANDLE hProcess;
+    BYTE symbolBuffer[1024];
+    PIMAGEHLP_SYMBOL pSymbol = (PIMAGEHLP_SYMBOL) symbolBuffer;
+-   DWORD dwDisplacement = 0;  // Displacement of the input address, relative to the start of the symbol
++   DWORD dwDisplacement = 0;  /* Displacement of the input address, relative to the start of the symbol */
+ 
+    hProcess = GetCurrentProcess();
+ 
+diff --git a/src/gallium/auxiliary/util/u_gen_mipmap.c b/src/gallium/auxiliary/util/u_gen_mipmap.c
+index 4e3d35f..aa823aa 100644
+--- a/src/gallium/auxiliary/util/u_gen_mipmap.c
++++ b/src/gallium/auxiliary/util/u_gen_mipmap.c
+@@ -1427,6 +1427,7 @@ set_vertex_data(struct gen_mipmap_state *ctx,
+             rz = -1.0f;
+             break;
+          default:
++            rx = ry = rz = 0.0f;
+             assert(0);
+          }
+ 
+diff --git a/src/gallium/drivers/softpipe/sp_context.c b/src/gallium/drivers/softpipe/sp_context.c
+index 86df320..b4650c0 100644
+--- a/src/gallium/drivers/softpipe/sp_context.c
++++ b/src/gallium/drivers/softpipe/sp_context.c
+@@ -105,12 +105,17 @@ static void softpipe_destroy( struct pipe_context *pipe )
+       softpipe->quad[i].output->destroy( softpipe->quad[i].output );
+    }
+ 
+-   for (i = 0; i < PIPE_MAX_COLOR_BUFS; i++)
++   for (i = 0; i < PIPE_MAX_COLOR_BUFS; i++) {
+       sp_destroy_tile_cache(softpipe->cbuf_cache[i]);
++      pipe_surface_reference(&softpipe->framebuffer.cbufs[i], NULL);
++   }
+    sp_destroy_tile_cache(softpipe->zsbuf_cache);
++   pipe_surface_reference(&softpipe->framebuffer.zsbuf, NULL);
+ 
+-   for (i = 0; i < PIPE_MAX_SAMPLERS; i++)
++   for (i = 0; i < PIPE_MAX_SAMPLERS; i++) {
+       sp_destroy_tile_cache(softpipe->tex_cache[i]);
++      pipe_texture_reference(&softpipe->texture[i], NULL);
++   }
+ 
+    for (i = 0; i < Elements(softpipe->constants); i++) {
+       if (softpipe->constants[i].buffer) {
+diff --git a/src/gallium/drivers/softpipe/sp_fs_sse.c b/src/gallium/drivers/softpipe/sp_fs_sse.c
+index f4fa090..31ccc3b 100644
+--- a/src/gallium/drivers/softpipe/sp_fs_sse.c
++++ b/src/gallium/drivers/softpipe/sp_fs_sse.c
+@@ -101,7 +101,7 @@ fs_sse_run( const struct sp_fragment_shader *base,
+ 		 machine->Consts,
+                  (const float (*)[4])shader->immediates,
+ 		 machine->InterpCoefs
+-		 //	 , &machine->QuadPos
++		 /*, &machine->QuadPos*/
+       );
+ 
+    return ~(machine->Temps[TGSI_EXEC_TEMP_KILMASK_I].xyzw[TGSI_EXEC_TEMP_KILMASK_C].u[0]);
+diff --git a/src/gallium/drivers/softpipe/sp_state_surface.c b/src/gallium/drivers/softpipe/sp_state_surface.c
+index 7c06d86..181bff8 100644
+--- a/src/gallium/drivers/softpipe/sp_state_surface.c
++++ b/src/gallium/drivers/softpipe/sp_state_surface.c
+@@ -56,7 +56,7 @@ softpipe_set_framebuffer_state(struct pipe_context *pipe,
+          sp_flush_tile_cache(sp, sp->cbuf_cache[i]);
+ 
+          /* assign new */
+-         sp->framebuffer.cbufs[i] = fb->cbufs[i];
++         pipe_surface_reference(&sp->framebuffer.cbufs[i], fb->cbufs[i]);
+ 
+          /* update cache */
+          sp_tile_cache_set_surface(sp->cbuf_cache[i], fb->cbufs[i]);
+@@ -71,7 +71,7 @@ softpipe_set_framebuffer_state(struct pipe_context *pipe,
+       sp_flush_tile_cache(sp, sp->zsbuf_cache);
+ 
+       /* assign new */
+-      sp->framebuffer.zsbuf = fb->zsbuf;
++      pipe_surface_reference(&sp->framebuffer.zsbuf, fb->zsbuf);
+ 
+       /* update cache */
+       sp_tile_cache_set_surface(sp->zsbuf_cache, fb->zsbuf);
+diff --git a/src/gallium/drivers/softpipe/sp_tile_cache.c b/src/gallium/drivers/softpipe/sp_tile_cache.c
+index 461cbb9..5f7864e 100644
+--- a/src/gallium/drivers/softpipe/sp_tile_cache.c
++++ b/src/gallium/drivers/softpipe/sp_tile_cache.c
+@@ -130,6 +130,11 @@ sp_create_tile_cache( struct pipe_screen *screen )
+          tc->entries[pos].x =
+          tc->entries[pos].y = -1;
+       }
++
++#if TILE_CLEAR_OPTIMIZATION
++      /* set flags to indicate all the tiles are cleared */
++      memset(tc->clear_flags, 255, sizeof(tc->clear_flags));
++#endif
+    }
+    return tc;
+ }
+diff --git a/src/gallium/state_trackers/glx/xlib/glx_api.c b/src/gallium/state_trackers/glx/xlib/glx_api.c
+index d1a98f8..f2881b9 100644
+--- a/src/gallium/state_trackers/glx/xlib/glx_api.c
++++ b/src/gallium/state_trackers/glx/xlib/glx_api.c
+@@ -850,10 +850,10 @@ choose_visual( Display *dpy, int screen, const int *list, GLboolean fbConfig )
+             if (!fbConfig)
+                return NULL;
+             parselist++;
+-            if (*parselist == GLX_RGBA_BIT) {
++            if (*parselist & GLX_RGBA_BIT) {
+                rgb_flag = GL_TRUE;
+             }
+-            else if (*parselist == GLX_COLOR_INDEX_BIT) {
++            else if (*parselist & GLX_COLOR_INDEX_BIT) {
+                rgb_flag = GL_FALSE;
+             }
+             else if (*parselist == 0) {
+@@ -1309,13 +1309,17 @@ glXCopyContext( Display *dpy, GLXContext src, GLXContext dst,
+ 
+ 
+ Bool
+-glXQueryExtension( Display *dpy, int *errorb, int *event )
++glXQueryExtension( Display *dpy, int *errorBase, int *eventBase )
+ {
++   int op, ev, err;
+    /* Mesa's GLX isn't really an X extension but we try to act like one. */
+-   (void) dpy;
+-   (void) errorb;
+-   (void) event;
+-   return True;
++   if (!XQueryExtension(dpy, GLX_EXTENSION_NAME, &op, &ev, &err))
++      ev = err = 0;
++   if (errorBase)
++      *errorBase = err;
++   if (eventBase)
++      *eventBase = ev;
++   return True; /* we're faking GLX so always return success */
+ }
+ 
+ 
+@@ -1990,32 +1994,42 @@ glXCreatePbuffer( Display *dpy, GLXFBConfig config,
+             break;
+          case GLX_PRESERVED_CONTENTS:
+             attrib++;
+-            preserveContents = *attrib; /* ignored */
++            preserveContents = *attrib;
+             break;
+          case GLX_LARGEST_PBUFFER:
+             attrib++;
+-            useLargest = *attrib; /* ignored */
++            useLargest = *attrib;
+             break;
+          default:
+             return 0;
+       }
+    }
+ 
+-   /* not used at this time */
+-   (void) useLargest;
+-   (void) preserveContents;
+-
+    if (width == 0 || height == 0)
+       return 0;
+ 
++   if (width > MAX_WIDTH || height > MAX_HEIGHT) {
++      /* If allocation would have failed and GLX_LARGEST_PBUFFER is set,
++       * allocate the largest possible buffer.
++       */
++      if (useLargest) {
++         width = MAX_WIDTH;
++         height = MAX_HEIGHT;
++      }
++   }
++
+    xmbuf = XMesaCreatePBuffer( xmvis, 0, width, height);
+    /* A GLXPbuffer handle must be an X Drawable because that's what
+     * glXMakeCurrent takes.
+     */
+-   if (xmbuf)
++   if (xmbuf) {
++      xmbuf->largestPbuffer = useLargest;
++      xmbuf->preservedContents = preserveContents;
+       return (GLXPbuffer) xmbuf->drawable;
+-   else
++   }
++   else {
+       return 0;
++   }
+ }
+ 
+ 
+@@ -2033,22 +2047,26 @@ void
+ glXQueryDrawable( Display *dpy, GLXDrawable draw, int attribute,
+                        unsigned int *value )
+ {
++   GLuint width, height;
+    XMesaBuffer xmbuf = XMesaFindBuffer(dpy, draw);
+    if (!xmbuf)
+       return;
+ 
++   /* make sure buffer's dimensions are up to date */
++   xmesa_get_window_size(dpy, xmbuf, &width, &height);
++
+    switch (attribute) {
+       case GLX_WIDTH:
+-         *value = xmesa_buffer_width(xmbuf);
++         *value = width;
+          break;
+       case GLX_HEIGHT:
+-         *value = xmesa_buffer_width(xmbuf);
++         *value = height;
+          break;
+       case GLX_PRESERVED_CONTENTS:
+-         *value = True;
++         *value = xmbuf->preservedContents;
+          break;
+       case GLX_LARGEST_PBUFFER:
+-         *value = xmesa_buffer_width(xmbuf) * xmesa_buffer_height(xmbuf);
++         *value = xmbuf->largestPbuffer;
+          break;
+       case GLX_FBCONFIG_ID:
+          *value = xmbuf->xm_visual->visinfo->visualid;
+@@ -2120,9 +2138,9 @@ glXQueryContext( Display *dpy, GLXContext ctx, int attribute, int *value )
+       break;
+    case GLX_RENDER_TYPE:
+       if (xmctx->xm_visual->mesa_visual.rgbMode)
+-         *value = GLX_RGBA_BIT;
++         *value = GLX_RGBA_TYPE;
+       else
+-         *value = GLX_COLOR_INDEX_BIT;
++         *value = GLX_COLOR_INDEX_TYPE;
+       break;
+    case GLX_SCREEN:
+       *value = 0;
+diff --git a/src/gallium/state_trackers/glx/xlib/xm_api.c b/src/gallium/state_trackers/glx/xlib/xm_api.c
+index 957002d..c76dfb3 100644
+--- a/src/gallium/state_trackers/glx/xlib/xm_api.c
++++ b/src/gallium/state_trackers/glx/xlib/xm_api.c
+@@ -228,7 +228,7 @@ get_drawable_size( Display *dpy, Drawable d, uint *width, uint *height )
+  * \param width  returns width in pixels
+  * \param height  returns height in pixels
+  */
+-static void
++void
+ xmesa_get_window_size(Display *dpy, XMesaBuffer b,
+                       GLuint *width, GLuint *height)
+ {
+diff --git a/src/gallium/state_trackers/glx/xlib/xm_api.h b/src/gallium/state_trackers/glx/xlib/xm_api.h
+index ce97a3e..d24971c 100644
+--- a/src/gallium/state_trackers/glx/xlib/xm_api.h
++++ b/src/gallium/state_trackers/glx/xlib/xm_api.h
+@@ -323,6 +323,9 @@ struct xmesa_buffer {
+    Colormap cmap;		/* the X colormap */
+    BufferType type;             /* window, pixmap, pbuffer or glxwindow */
+ 
++   GLboolean largestPbuffer;    /**< for pbuffers */
++   GLboolean preservedContents; /**< for pbuffers */
++
+    XImage *tempImage;
+    unsigned long selectedEvents;/* for pbuffers only */
+ 
+@@ -370,6 +373,10 @@ extern XMesaBuffer
+ xmesa_find_buffer(Display *dpy, Colormap cmap, XMesaBuffer notThis);
+ 
+ extern void
++xmesa_get_window_size(Display *dpy, XMesaBuffer b,
++                      GLuint *width, GLuint *height);
++
++extern void
+ xmesa_check_and_update_buffer_size(XMesaContext xmctx, XMesaBuffer drawBuffer);
+ 
+ extern void
+diff --git a/src/glx/x11/glxcmds.c b/src/glx/x11/glxcmds.c
+index ea55cc4..cd4aede 100644
+--- a/src/glx/x11/glxcmds.c
++++ b/src/glx/x11/glxcmds.c
+@@ -398,6 +398,10 @@ CreateContext(Display * dpy, XVisualInfo * vis,
+                _XError(dpy, &error);
+                return None;
+             }
++            if (renderType == 0) {
++               /* Initialize renderType now */
++               renderType = mode->rgbMode ? GLX_RGBA_TYPE : GLX_COLOR_INDEX_TYPE;
++            }
+          }
+          else {
+             mode = fbconfig;
+@@ -484,6 +488,8 @@ CreateContext(Display * dpy, XVisualInfo * vis,
+       gc->imported = GL_TRUE;
+    }
+ 
++   gc->renderType = renderType;
++
+    return gc;
+ }
+ 
+@@ -1575,7 +1581,7 @@ GLX_ALIAS(Display *, glXGetCurrentDisplayEXT, (void), (),
+  * This function dynamically determines whether to use the EXT_import_context
+  * version of the protocol or the GLX 1.3 version of the protocol.
+  */
+-     static int __glXQueryContextInfo(Display * dpy, GLXContext ctx)
++static int __glXQueryContextInfo(Display * dpy, GLXContext ctx)
+ {
+    __GLXdisplayPrivate *priv = __glXInitialize(dpy);
+    xGLXQueryContextReply reply;
+@@ -1713,7 +1719,7 @@ GLX_ALIAS(int, glXQueryContextInfoEXT,
+           (Display * dpy, GLXContext ctx, int attribute, int *value),
+           (dpy, ctx, attribute, value), glXQueryContext)
+ 
+-     PUBLIC GLXContextID glXGetContextIDEXT(const GLXContext ctx)
++PUBLIC GLXContextID glXGetContextIDEXT(const GLXContext ctx)
+ {
+    return ctx->xid;
+ }
+@@ -2159,18 +2165,19 @@ GLX_ALIAS(int, glXGetFBConfigAttribSGIX,
+           (Display * dpy, GLXFBConfigSGIX config, int attribute, int *value),
+           (dpy, config, attribute, value), glXGetFBConfigAttrib)
+ 
+-     PUBLIC GLX_ALIAS(GLXFBConfigSGIX *, glXChooseFBConfigSGIX,
+-                      (Display * dpy, int screen, int *attrib_list,
+-                       int *nelements), (dpy, screen, attrib_list, nelements),
+-                      glXChooseFBConfig)
++PUBLIC GLX_ALIAS(GLXFBConfigSGIX *, glXChooseFBConfigSGIX,
++                 (Display * dpy, int screen, int *attrib_list,
++                  int *nelements), (dpy, screen, attrib_list, nelements),
++                 glXChooseFBConfig)
+ 
+-     PUBLIC GLX_ALIAS(XVisualInfo *, glXGetVisualFromFBConfigSGIX,
+-                      (Display * dpy, GLXFBConfigSGIX config),
+-                      (dpy, config), glXGetVisualFromFBConfig)
++PUBLIC GLX_ALIAS(XVisualInfo *, glXGetVisualFromFBConfigSGIX,
++                 (Display * dpy, GLXFBConfigSGIX config),
++                 (dpy, config), glXGetVisualFromFBConfig)
+ 
+-     PUBLIC GLXPixmap glXCreateGLXPixmapWithConfigSGIX(Display * dpy,
+-                                                       GLXFBConfigSGIX config,
+-                                                       Pixmap pixmap)
++PUBLIC GLXPixmap
++glXCreateGLXPixmapWithConfigSGIX(Display * dpy,
++                                 GLXFBConfigSGIX config,
++                                 Pixmap pixmap)
+ {
+    xGLXVendorPrivateWithReplyReq *vpreq;
+    xGLXCreateGLXPixmapWithConfigSGIXReq *req;
+diff --git a/src/mesa/drivers/common/meta.c b/src/mesa/drivers/common/meta.c
+index 2741a41..b6c6ef7 100644
+--- a/src/mesa/drivers/common/meta.c
++++ b/src/mesa/drivers/common/meta.c
+@@ -238,34 +238,10 @@ _mesa_meta_init(GLcontext *ctx)
+ void
+ _mesa_meta_free(GLcontext *ctx)
+ {
+-   struct gl_meta_state *meta = ctx->Meta;
+-
+-   if (_mesa_get_current_context()) {
+-      /* if there's no current context, these textures, buffers, etc should
+-       * still get freed by _mesa_free_context_data().
+-       */
+-
+-      _mesa_DeleteTextures(1, &meta->TempTex.TexObj);
+-
+-      /* glBlitFramebuffer */
+-      _mesa_DeleteBuffersARB(1, & meta->Blit.VBO);
+-      _mesa_DeleteVertexArraysAPPLE(1, &meta->Blit.ArrayObj);
+-      _mesa_DeletePrograms(1, &meta->Blit.DepthFP);
+-
+-      /* glClear */
+-      _mesa_DeleteBuffersARB(1, & meta->Clear.VBO);
+-      _mesa_DeleteVertexArraysAPPLE(1, &meta->Clear.ArrayObj);
+-
+-      /* glCopyPixels */
+-      _mesa_DeleteBuffersARB(1, & meta->CopyPix.VBO);
+-      _mesa_DeleteVertexArraysAPPLE(1, &meta->CopyPix.ArrayObj);
+-
+-      /* glDrawPixels */
+-      _mesa_DeleteVertexArraysAPPLE(1, &meta->DrawPix.ArrayObj);
+-      _mesa_DeletePrograms(1, &meta->DrawPix.DepthFP);
+-      _mesa_DeletePrograms(1, &meta->DrawPix.StencilFP);
+-   }
+-
++   /* Note: Any textures, VBOs, etc, that we allocate should get
++    * freed by the normal context destruction code.  But this would be
++    * the place to free other meta data someday.
++    */
+    _mesa_free(ctx->Meta);
+    ctx->Meta = NULL;
+ }
+diff --git a/src/mesa/drivers/dri/i965/brw_state.h b/src/mesa/drivers/dri/i965/brw_state.h
+index 5335eac..d639656 100644
+--- a/src/mesa/drivers/dri/i965/brw_state.h
++++ b/src/mesa/drivers/dri/i965/brw_state.h
+@@ -151,6 +151,7 @@ void brw_state_cache_check_size( struct brw_context *brw );
+ 
+ void brw_init_caches( struct brw_context *brw );
+ void brw_destroy_caches( struct brw_context *brw );
++void brw_state_cache_bo_delete(struct brw_cache *cache, dri_bo *bo);
+ 
+ /***********************************************************************
+  * brw_state_batch.c
+diff --git a/src/mesa/drivers/dri/i965/brw_state_cache.c b/src/mesa/drivers/dri/i965/brw_state_cache.c
+index e40d7a0..f8e46aa 100644
+--- a/src/mesa/drivers/dri/i965/brw_state_cache.c
++++ b/src/mesa/drivers/dri/i965/brw_state_cache.c
+@@ -517,6 +517,55 @@ brw_clear_cache(struct brw_context *brw, struct brw_cache *cache)
+    brw->state.dirty.cache |= ~0;
+ }
+ 
++/* Clear all entries from the cache that point to the given bo.
++ *
++ * This lets us release memory for reuse earlier for known-dead buffers,
++ * at the cost of walking the entire hash table.
++ */
++void
++brw_state_cache_bo_delete(struct brw_cache *cache, dri_bo *bo)
++{
++   struct brw_cache_item **prev;
++   GLuint i;
++
++   if (INTEL_DEBUG & DEBUG_STATE)
++      _mesa_printf("%s\n", __FUNCTION__);
++
++   for (i = 0; i < cache->size; i++) {
++      for (prev = &cache->items[i]; *prev;) {
++	 struct brw_cache_item *c = *prev;
++	 int j;
++
++	 for (j = 0; j < c->nr_reloc_bufs; j++) {
++	    if (c->reloc_bufs[j] == bo)
++	       break;
++	 }
++
++	 if (j != c->nr_reloc_bufs) {
++
++	    *prev = c->next;
++
++	    for (j = 0; j < c->nr_reloc_bufs; j++)
++	       dri_bo_unreference(c->reloc_bufs[j]);
++	    dri_bo_unreference(c->bo);
++	    free((void *)c->key);
++	    free(c);
++	    cache->n_items--;
++
++	    /* Delete up the tree.  Notably we're trying to get from
++	     * a request to delete the surface, to deleting the surface state
++	     * object, to deleting the binding table.  We're slack and restart
++	     * the deletion process when we do this because the other delete
++	     * may kill our *prev.
++	     */
++	    brw_state_cache_bo_delete(cache, c->bo);
++	    prev = &cache->items[i];
++	 } else {
++	    prev = &(*prev)->next;
++	 }
++      }
++   }
++}
+ 
+ void
+ brw_state_cache_check_size(struct brw_context *brw)
+diff --git a/src/mesa/drivers/dri/intel/intel_context.c b/src/mesa/drivers/dri/intel/intel_context.c
+index fce42e9..c49f06e 100644
+--- a/src/mesa/drivers/dri/intel/intel_context.c
++++ b/src/mesa/drivers/dri/intel/intel_context.c
+@@ -993,41 +993,35 @@ intelMakeCurrent(__DRIcontextPrivate * driContextPriv,
+ 
+       _mesa_make_current(&intel->ctx, &intel_fb->Base, readFb);
+ 
+-      /* The drawbuffer won't always be updated by _mesa_make_current: 
+-       */
+-      if (intel->ctx.DrawBuffer == &intel_fb->Base) {
+-
+-	 if (intel->driReadDrawable != driReadPriv)
+-	    intel->driReadDrawable = driReadPriv;
+-
+-	 if (intel->driDrawable != driDrawPriv) {
+-	    if (driDrawPriv->swap_interval == (unsigned)-1) {
+-	       int i;
+-
+-	       driDrawPriv->vblFlags = (intel->intelScreen->irq_active != 0)
+-		  ? driGetDefaultVBlankFlags(&intel->optionCache)
+-		 : VBLANK_FLAG_NO_IRQ;
+-
+-	       /* Prevent error printf if one crtc is disabled, this will
+-		* be properly calculated in intelWindowMoved() next.
+-		*/
+-		driDrawPriv->vblFlags = intelFixupVblank(intel, driDrawPriv);
+-
+-	       (*psp->systemTime->getUST) (&intel_fb->swap_ust);
+-	       driDrawableInitVBlank(driDrawPriv);
+-	       intel_fb->vbl_waited = driDrawPriv->vblSeq;
+-
+-	       for (i = 0; i < 2; i++) {
+-		  if (intel_fb->color_rb[i])
+-		     intel_fb->color_rb[i]->vbl_pending = driDrawPriv->vblSeq;
+-	       }
+-	    }
+-	    intel->driDrawable = driDrawPriv;
+-	    intelWindowMoved(intel);
+-	 }
++      intel->driReadDrawable = driReadPriv;
++
++      if (intel->driDrawable != driDrawPriv) {
++         if (driDrawPriv->swap_interval == (unsigned)-1) {
++            int i;
++
++            driDrawPriv->vblFlags = (intel->intelScreen->irq_active != 0)
++               ? driGetDefaultVBlankFlags(&intel->optionCache)
++               : VBLANK_FLAG_NO_IRQ;
+ 
+-	 intel_draw_buffer(&intel->ctx, &intel_fb->Base);
++            /* Prevent error printf if one crtc is disabled, this will
++             * be properly calculated in intelWindowMoved() next.
++             */
++            driDrawPriv->vblFlags = intelFixupVblank(intel, driDrawPriv);
++
++            (*psp->systemTime->getUST) (&intel_fb->swap_ust);
++            driDrawableInitVBlank(driDrawPriv);
++            intel_fb->vbl_waited = driDrawPriv->vblSeq;
++
++            for (i = 0; i < 2; i++) {
++               if (intel_fb->color_rb[i])
++                  intel_fb->color_rb[i]->vbl_pending = driDrawPriv->vblSeq;
++            }
++         }
++         intel->driDrawable = driDrawPriv;
++         intelWindowMoved(intel);
+       }
++
++      intel_draw_buffer(&intel->ctx, &intel_fb->Base);
+    }
+    else {
+       _mesa_make_current(NULL, NULL, NULL);
+diff --git a/src/mesa/drivers/dri/intel/intel_mipmap_tree.c b/src/mesa/drivers/dri/intel/intel_mipmap_tree.c
+index c985da5..4f5101a 100644
+--- a/src/mesa/drivers/dri/intel/intel_mipmap_tree.c
++++ b/src/mesa/drivers/dri/intel/intel_mipmap_tree.c
+@@ -29,6 +29,9 @@
+ #include "intel_mipmap_tree.h"
+ #include "intel_regions.h"
+ #include "intel_chipset.h"
++#ifndef I915
++#include "brw_state.h"
++#endif
+ #include "main/enums.h"
+ 
+ #define FILE_DEBUG_FLAG DEBUG_MIPTREE
+@@ -269,6 +272,19 @@ intel_miptree_release(struct intel_context *intel,
+ 
+       DBG("%s deleting %p\n", __FUNCTION__, *mt);
+ 
++#ifndef I915
++      /* Free up cached binding tables holding a reference on our buffer, to
++       * avoid excessive memory consumption.
++       *
++       * This isn't as aggressive as we could be, as we'd like to do
++       * it from any time we free the last ref on a region.  But intel_region.c
++       * is context-agnostic.  Perhaps our constant state cache should be, as
++       * well.
++       */
++      brw_state_cache_bo_delete(&brw_context(&intel->ctx)->surface_cache,
++				(*mt)->region->buffer);
++#endif
++
+       intel_region_release(&((*mt)->region));
+ 
+       for (i = 0; i < MAX_TEXTURE_LEVELS; i++)
+diff --git a/src/mesa/drivers/dri/intel/intel_pixel_read.c b/src/mesa/drivers/dri/intel/intel_pixel_read.c
+index 8713463..e036736 100644
+--- a/src/mesa/drivers/dri/intel/intel_pixel_read.c
++++ b/src/mesa/drivers/dri/intel/intel_pixel_read.c
+@@ -236,14 +236,14 @@ do_blit_readpixels(GLcontext * ctx,
+    intelFlush(&intel->ctx);
+    LOCK_HARDWARE(intel);
+ 
+-   if (intel->driDrawable->numClipRects) {
++   if (intel->driReadDrawable->numClipRects) {
+       GLboolean all = (width * height * src->cpp == dst->Base.Size &&
+                        x == 0 && dst_offset == 0);
+ 
+       dri_bo *dst_buffer = intel_bufferobj_buffer(intel, dst,
+ 						  all ? INTEL_WRITE_FULL :
+ 						  INTEL_WRITE_PART);
+-      __DRIdrawablePrivate *dPriv = intel->driDrawable;
++      __DRIdrawablePrivate *dPriv = intel->driReadDrawable;
+       int nbox = dPriv->numClipRects;
+       drm_clip_rect_t *box = dPriv->pClipRects;
+       drm_clip_rect_t rect;
+diff --git a/src/mesa/drivers/dri/intel/intel_tex_copy.c b/src/mesa/drivers/dri/intel/intel_tex_copy.c
+index 74f7f58..b241c11 100644
+--- a/src/mesa/drivers/dri/intel/intel_tex_copy.c
++++ b/src/mesa/drivers/dri/intel/intel_tex_copy.c
+@@ -135,7 +135,7 @@ do_copy_texsubimage(struct intel_context *intel,
+ 
+       if (ctx->ReadBuffer->Name == 0) {
+ 	 /* reading from a window, adjust x, y */
+-	 __DRIdrawablePrivate *dPriv = intel->driDrawable;
++	 const __DRIdrawablePrivate *dPriv = intel->driReadDrawable;
+ 	 y = dPriv->y + (dPriv->h - (y + height));
+ 	 x += dPriv->x;
+ 
+diff --git a/src/mesa/drivers/dri/r200/r200_state.c b/src/mesa/drivers/dri/r200/r200_state.c
+index 76852e3..d28e96d 100644
+--- a/src/mesa/drivers/dri/r200/r200_state.c
++++ b/src/mesa/drivers/dri/r200/r200_state.c
+@@ -1578,13 +1578,6 @@ static void r200ClearStencil( GLcontext *ctx, GLint s )
+  * Window position and viewport transformation
+  */
+ 
+-/*
+- * To correctly position primitives:
+- */
+-#define SUBPIXEL_X 0.125
+-#define SUBPIXEL_Y 0.125
+-
+-
+ /**
+  * Called when window size or position changes or viewport or depth range
+  * state is changed.  We update the hardware viewport state here.
+@@ -1609,9 +1602,9 @@ void r200UpdateWindow( GLcontext *ctx )
+    }
+ 
+    float_ui32_type sx = { v[MAT_SX] };
+-   float_ui32_type tx = { v[MAT_TX] + xoffset + SUBPIXEL_X };
++   float_ui32_type tx = { v[MAT_TX] + xoffset };
+    float_ui32_type sy = { v[MAT_SY] * y_scale };
+-   float_ui32_type ty = { (v[MAT_TY] * y_scale) + y_bias + SUBPIXEL_Y };
++   float_ui32_type ty = { (v[MAT_TY] * y_scale) + y_bias };
+    float_ui32_type sz = { v[MAT_SZ] * depthScale };
+    float_ui32_type tz = { v[MAT_TZ] * depthScale };
+ 
+@@ -1680,8 +1673,8 @@ void r200UpdateViewportOffset( GLcontext *ctx )
+    float_ui32_type tx;
+    float_ui32_type ty;
+ 
+-   tx.f = v[MAT_TX] + xoffset + SUBPIXEL_X;
+-   ty.f = (- v[MAT_TY]) + yoffset + SUBPIXEL_Y;
++   tx.f = v[MAT_TX] + xoffset;
++   ty.f = (- v[MAT_TY]) + yoffset;
+ 
+    if ( rmesa->hw.vpt.cmd[VPT_SE_VPORT_XOFFSET] != tx.ui32 ||
+ 	rmesa->hw.vpt.cmd[VPT_SE_VPORT_YOFFSET] != ty.ui32 )
+diff --git a/src/mesa/drivers/dri/r300/r300_context.c b/src/mesa/drivers/dri/r300/r300_context.c
+index 2ea1b82..9df3897 100644
+--- a/src/mesa/drivers/dri/r300/r300_context.c
++++ b/src/mesa/drivers/dri/r300/r300_context.c
+@@ -374,11 +374,21 @@ static void r300InitConstValues(GLcontext *ctx, radeonScreenPtr screen)
+ 	if (screen->chip_family >= CHIP_FAMILY_RV515) {
+ 		ctx->Const.FragmentProgram.MaxNativeTemps = R500_PFS_NUM_TEMP_REGS;
+ 		ctx->Const.FragmentProgram.MaxNativeAttribs = 11;	/* copy i915... */
+-		ctx->Const.FragmentProgram.MaxNativeParameters = R500_PFS_NUM_CONST_REGS;
+-		ctx->Const.FragmentProgram.MaxNativeAluInstructions = R500_PFS_MAX_INST;
+-		ctx->Const.FragmentProgram.MaxNativeTexInstructions = R500_PFS_MAX_INST;
+-		ctx->Const.FragmentProgram.MaxNativeInstructions = R500_PFS_MAX_INST;
+-		ctx->Const.FragmentProgram.MaxNativeTexIndirections = R500_PFS_MAX_INST;
++
++		/* The hardware limits are higher than this,
++		 * but the non-KMS DRM interface artificially limits us
++		 * to this many instructions.
++		 *
++		 * We could of course work around it in the KMS path,
++		 * but it would be a mess, so it seems wiser
++		 * to leave it as is. Going forward, the Gallium driver
++		 * will not be subject to these limitations.
++		 */
++		ctx->Const.FragmentProgram.MaxNativeParameters = 255;
++		ctx->Const.FragmentProgram.MaxNativeAluInstructions = 255;
++		ctx->Const.FragmentProgram.MaxNativeTexInstructions = 255;
++		ctx->Const.FragmentProgram.MaxNativeInstructions = 255;
++		ctx->Const.FragmentProgram.MaxNativeTexIndirections = 255;
+ 		ctx->Const.FragmentProgram.MaxNativeAddressRegs = 0;
+ 	} else {
+ 		ctx->Const.FragmentProgram.MaxNativeTemps = R300_PFS_NUM_TEMP_REGS;
+diff --git a/src/mesa/drivers/dri/r300/r300_fragprog_common.c b/src/mesa/drivers/dri/r300/r300_fragprog_common.c
+index 0bdc90b..70c9252 100644
+--- a/src/mesa/drivers/dri/r300/r300_fragprog_common.c
++++ b/src/mesa/drivers/dri/r300/r300_fragprog_common.c
+@@ -239,6 +239,19 @@ static void translate_fragment_program(GLcontext *ctx, struct r300_fragment_prog
+ 	rewriteFog(&compiler, fp);
+ 
+ 	r3xx_compile_fragment_program(&compiler);
++
++	if (compiler.is_r500) {
++		/* We need to support the non-KMS DRM interface, which
++		 * artificially limits the number of instructions and
++		 * constants which are available to us.
++		 *
++		 * See also the comment in r300_context.c where we
++		 * set the MAX_NATIVE_xxx values.
++		 */
++		if (fp->code.code.r500.inst_end >= 255 || fp->code.constants.Count > 255)
++			rc_error(&compiler.Base, "Program is too big (upgrade to r300g to avoid this limitation).\n");
++	}
++
+ 	fp->error = compiler.Base.Error;
+ 
+ 	fp->InputsRead = compiler.Base.Program.InputsRead;
+diff --git a/src/mesa/drivers/x11/fakeglx.c b/src/mesa/drivers/x11/fakeglx.c
+index 34e0b8b..5c0084f 100644
+--- a/src/mesa/drivers/x11/fakeglx.c
++++ b/src/mesa/drivers/x11/fakeglx.c
+@@ -1197,10 +1197,10 @@ choose_visual( Display *dpy, int screen, const int *list, GLboolean fbConfig )
+             if (!fbConfig)
+                return NULL;
+             parselist++;
+-            if (*parselist == GLX_RGBA_BIT) {
++            if (*parselist & GLX_RGBA_BIT) {
+                rgb_flag = GL_TRUE;
+             }
+-            else if (*parselist == GLX_COLOR_INDEX_BIT) {
++            else if (*parselist & GLX_COLOR_INDEX_BIT) {
+                rgb_flag = GL_FALSE;
+             }
+             else if (*parselist == 0) {
+@@ -1637,13 +1637,17 @@ Fake_glXCopyContext( Display *dpy, GLXContext src, GLXContext dst,
+ 
+ 
+ static Bool
+-Fake_glXQueryExtension( Display *dpy, int *errorb, int *event )
++Fake_glXQueryExtension( Display *dpy, int *errorBase, int *eventBase )
+ {
++   int op, ev, err;
+    /* Mesa's GLX isn't really an X extension but we try to act like one. */
+-   (void) dpy;
+-   (void) errorb;
+-   (void) event;
+-   return True;
++   if (!XQueryExtension(dpy, GLX_EXTENSION_NAME, &op, &ev, &err))
++      ev = err = 0;
++   if (errorBase)
++      *errorBase = err;
++   if (eventBase)
++      *eventBase = ev;
++   return True; /* we're faking GLX so always return success */
+ }
+ 
+ 
+@@ -2349,32 +2353,42 @@ Fake_glXCreatePbuffer( Display *dpy, GLXFBConfig config,
+             break;
+          case GLX_PRESERVED_CONTENTS:
+             attrib++;
+-            preserveContents = *attrib; /* ignored */
++            preserveContents = *attrib;
+             break;
+          case GLX_LARGEST_PBUFFER:
+             attrib++;
+-            useLargest = *attrib; /* ignored */
++            useLargest = *attrib;
+             break;
+          default:
+             return 0;
+       }
+    }
+ 
+-   /* not used at this time */
+-   (void) useLargest;
+-   (void) preserveContents;
+-
+    if (width == 0 || height == 0)
+       return 0;
+ 
++   if (width > MAX_WIDTH || height > MAX_HEIGHT) {
++      /* If allocation would have failed and GLX_LARGEST_PBUFFER is set,
++       * allocate the largest possible buffer.
++       */
++      if (useLargest) {
++         width = MAX_WIDTH;
++         height = MAX_HEIGHT;
++      }
++   }
++
+    xmbuf = XMesaCreatePBuffer( xmvis, 0, width, height);
+    /* A GLXPbuffer handle must be an X Drawable because that's what
+     * glXMakeCurrent takes.
+     */
+-   if (xmbuf)
++   if (xmbuf) {
++      xmbuf->largestPbuffer = useLargest;
++      xmbuf->preservedContents = preserveContents;
+       return (GLXPbuffer) xmbuf->frontxrb->pixmap;
+-   else
++   }
++   else {
+       return 0;
++   }
+ }
+ 
+ 
+@@ -2396,6 +2410,9 @@ Fake_glXQueryDrawable( Display *dpy, GLXDrawable draw, int attribute,
+    if (!xmbuf)
+       return;
+ 
++   /* make sure buffer's dimensions are up to date */
++   xmesa_check_and_update_buffer_size(NULL, xmbuf);
++
+    switch (attribute) {
+       case GLX_WIDTH:
+          *value = xmbuf->mesa_buffer.Width;
+@@ -2404,10 +2421,10 @@ Fake_glXQueryDrawable( Display *dpy, GLXDrawable draw, int attribute,
+          *value = xmbuf->mesa_buffer.Height;
+          break;
+       case GLX_PRESERVED_CONTENTS:
+-         *value = True;
++         *value = xmbuf->preservedContents;
+          break;
+       case GLX_LARGEST_PBUFFER:
+-         *value = xmbuf->mesa_buffer.Width * xmbuf->mesa_buffer.Height;
++         *value = xmbuf->largestPbuffer;
+          break;
+       case GLX_FBCONFIG_ID:
+          *value = xmbuf->xm_visual->visinfo->visualid;
+@@ -2477,9 +2494,9 @@ Fake_glXQueryContext( Display *dpy, GLXContext ctx, int attribute, int *value )
+       break;
+    case GLX_RENDER_TYPE:
+       if (xmctx->xm_visual->mesa_visual.rgbMode)
+-         *value = GLX_RGBA_BIT;
++         *value = GLX_RGBA_TYPE;
+       else
+-         *value = GLX_COLOR_INDEX_BIT;
++         *value = GLX_COLOR_INDEX_TYPE;
+       break;
+    case GLX_SCREEN:
+       *value = 0;
+@@ -2764,10 +2781,10 @@ Fake_glXQueryGLXPbufferSGIX(Display *dpy, GLXPbufferSGIX pbuf, int attribute, un
+ 
+    switch (attribute) {
+       case GLX_PRESERVED_CONTENTS_SGIX:
+-         *value = True;
++         *value = xmbuf->preservedContents;
+          break;
+       case GLX_LARGEST_PBUFFER_SGIX:
+-         *value = xmbuf->mesa_buffer.Width * xmbuf->mesa_buffer.Height;
++         *value = xmbuf->largestPbuffer;
+          break;
+       case GLX_WIDTH_SGIX:
+          *value = xmbuf->mesa_buffer.Width;
+diff --git a/src/mesa/drivers/x11/xmesaP.h b/src/mesa/drivers/x11/xmesaP.h
+index 25db558..3ffd766 100644
+--- a/src/mesa/drivers/x11/xmesaP.h
++++ b/src/mesa/drivers/x11/xmesaP.h
+@@ -212,6 +212,9 @@ struct xmesa_buffer {
+    XMesaDisplay *display;
+    BufferType type;             /* window, pixmap, pbuffer or glxwindow */
+ 
++   GLboolean largestPbuffer;    /**< for pbuffers */
++   GLboolean preservedContents; /**< for pbuffers */
++
+    struct xmesa_renderbuffer *frontxrb; /* front color renderbuffer */
+    struct xmesa_renderbuffer *backxrb;  /* back color renderbuffer */
+ 
+diff --git a/src/mesa/main/context.c b/src/mesa/main/context.c
+index f6d4ac4..ac6540f 100644
+--- a/src/mesa/main/context.c
++++ b/src/mesa/main/context.c
+@@ -898,6 +898,7 @@ _mesa_initialize_context(GLcontext *ctx,
+       _mesa_free_shared_state(ctx, ctx->Shared);
+       if (ctx->Exec)
+          _mesa_free(ctx->Exec);
++      return GL_FALSE;
+    }
+ #if FEATURE_dispatch
+    _mesa_init_exec_table(ctx->Exec);
+diff --git a/src/mesa/main/dlist.c b/src/mesa/main/dlist.c
+index b53c173..41a5b61 100644
+--- a/src/mesa/main/dlist.c
++++ b/src/mesa/main/dlist.c
+@@ -1956,6 +1956,9 @@ save_Fogiv(GLenum pname, const GLint *params)
+    case GL_FOG_END:
+    case GL_FOG_INDEX:
+       p[0] = (GLfloat) *params;
++      p[1] = 0.0f;
++      p[2] = 0.0f;
++      p[3] = 0.0f;
+       break;
+    case GL_FOG_COLOR:
+       p[0] = INT_TO_FLOAT(params[0]);
+@@ -2244,6 +2247,9 @@ save_LightModeliv(GLenum pname, const GLint *params)
+    case GL_LIGHT_MODEL_TWO_SIDE:
+    case GL_LIGHT_MODEL_COLOR_CONTROL:
+       fparam[0] = (GLfloat) params[0];
++      fparam[1] = 0.0F;
++      fparam[2] = 0.0F;
++      fparam[3] = 0.0F;
+       break;
+    default:
+       /* Error will be caught later in gl_LightModelfv */
+diff --git a/src/mesa/main/image.c b/src/mesa/main/image.c
+index baecbab..139e56a 100644
+--- a/src/mesa/main/image.c
++++ b/src/mesa/main/image.c
+@@ -5511,7 +5511,7 @@ _mesa_clip_drawpixels(const GLcontext *ctx,
+    }
+ 
+    if (*height <= 0)
+-      return GL_TRUE;
++      return GL_FALSE;
+ 
+    return GL_TRUE;
+ }
+@@ -5564,7 +5564,7 @@ _mesa_clip_readpixels(const GLcontext *ctx,
+       *height -= (*srcY + *height - buffer->Height);
+ 
+    if (*height <= 0)
+-      return GL_TRUE;
++      return GL_FALSE;
+ 
+    return GL_TRUE;
+ }
+diff --git a/src/mesa/main/mipmap.c b/src/mesa/main/mipmap.c
+index 3dca09d..c3928fa 100644
+--- a/src/mesa/main/mipmap.c
++++ b/src/mesa/main/mipmap.c
+@@ -1501,8 +1501,7 @@ _mesa_generate_mipmap(GLcontext *ctx, GLenum target,
+    GLuint comps;
+ 
+    ASSERT(texObj);
+-   /* XXX choose cube map face here??? */
+-   srcImage = texObj->Image[0][texObj->BaseLevel];
++   srcImage = _mesa_select_tex_image(ctx, texObj, target, texObj->BaseLevel);
+    ASSERT(srcImage);
+ 
+    maxLevels = _mesa_max_texture_levels(ctx, texObj->Target);
+@@ -1510,7 +1509,9 @@ _mesa_generate_mipmap(GLcontext *ctx, GLenum target,
+ 
+    /* Find convertFormat - the format that do_row() will process */
+    if (srcImage->IsCompressed) {
+-      /* setup for compressed textures */
++      /* setup for compressed textures - need to allocate temporary
++       * image buffers to hold uncompressed images.
++       */
+       GLuint row;
+       GLint  components, size;
+       GLchan *dst;
+@@ -1587,11 +1588,7 @@ _mesa_generate_mipmap(GLcontext *ctx, GLenum target,
+                                          &dstWidth, &dstHeight, &dstDepth);
+       if (!nextLevel) {
+          /* all done */
+-         if (srcImage->IsCompressed) {
+-            _mesa_free((void *) srcData);
+-            _mesa_free(dstData);
+-         }
+-         return;
++         break;
+       }
+ 
+       /* get dest gl_texture_image */
+@@ -1682,6 +1679,12 @@ _mesa_generate_mipmap(GLcontext *ctx, GLenum target,
+       }
+ 
+    } /* loop over mipmap levels */
++
++   if (srcImage->IsCompressed) {
++      /* free uncompressed image buffers */
++      _mesa_free((void *) srcData);
++      _mesa_free(dstData);
++   }
+ }
+ 
+ 
+diff --git a/src/mesa/main/texobj.c b/src/mesa/main/texobj.c
+index d09c439..da55ac8 100644
+--- a/src/mesa/main/texobj.c
++++ b/src/mesa/main/texobj.c
+@@ -863,7 +863,7 @@ unbind_texobj_from_texunits(GLcontext *ctx, struct gl_texture_object *texObj)
+       for (tex = 0; tex < NUM_TEXTURE_TARGETS; tex++) {
+          if (texObj == unit->CurrentTex[tex]) {
+             _mesa_reference_texobj(&unit->CurrentTex[tex],
+-                                   ctx->Shared->DefaultTex[TEXTURE_1D_INDEX]);
++                                   ctx->Shared->DefaultTex[tex]);
+             ASSERT(unit->CurrentTex[tex]);
+             break;
+          }
+diff --git a/src/mesa/main/texstate.c b/src/mesa/main/texstate.c
+index 861c5f3..8292d43 100644
+--- a/src/mesa/main/texstate.c
++++ b/src/mesa/main/texstate.c
+@@ -99,16 +99,22 @@ _mesa_copy_texture_state( const GLcontext *src, GLcontext *dst )
+       dst->Texture.Unit[u].BumpTarget = src->Texture.Unit[u].BumpTarget;
+       COPY_4V(dst->Texture.Unit[u].RotMatrix, src->Texture.Unit[u].RotMatrix);
+ 
++      /*
++       * XXX strictly speaking, we should compare texture names/ids and
++       * bind textures in the dest context according to id.  For now, only
++       * copy bindings if the contexts share the same pool of textures to
++       * avoid refcounting bugs.
++       */
++      if (dst->Shared == src->Shared) {
++         /* copy texture object bindings, not contents of texture objects */
++         _mesa_lock_context_textures(dst);
+ 
+-      /* copy texture object bindings, not contents of texture objects */
+-      _mesa_lock_context_textures(dst);
+-
+-      for (tex = 0; tex < NUM_TEXTURE_TARGETS; tex++) {
+-         _mesa_reference_texobj(&dst->Texture.Unit[u].CurrentTex[tex],
+-                                src->Texture.Unit[u].CurrentTex[tex]);
++         for (tex = 0; tex < NUM_TEXTURE_TARGETS; tex++) {
++            _mesa_reference_texobj(&dst->Texture.Unit[u].CurrentTex[tex],
++                                   src->Texture.Unit[u].CurrentTex[tex]);
++         }
++         _mesa_unlock_context_textures(dst);
+       }
+-
+-      _mesa_unlock_context_textures(dst);
+    }
+ }
+ 
+diff --git a/src/mesa/main/version.h b/src/mesa/main/version.h
+index 0ccdbf9..f24e11c 100644
+--- a/src/mesa/main/version.h
++++ b/src/mesa/main/version.h
+@@ -1,6 +1,6 @@
+ /*
+  * Mesa 3-D graphics library
+- * Version:  7.6
++ * Version:  7.6.1
+  *
+  * Copyright (C) 1999-2008  Brian Paul   All Rights Reserved.
+  * Copyright (C) 2009  VMware, Inc.  All Rights Reserved.
+@@ -31,8 +31,8 @@
+ /* Mesa version */
+ #define MESA_MAJOR 7
+ #define MESA_MINOR 6
+-#define MESA_PATCH 0
+-#define MESA_VERSION_STRING "7.6"
++#define MESA_PATCH 1
++#define MESA_VERSION_STRING "7.6.1-devel"
+ 
+ /* To make version comparison easy */
+ #define MESA_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))
+diff --git a/src/mesa/shader/prog_execute.c b/src/mesa/shader/prog_execute.c
+index 69b81e7..192d39a 100644
+--- a/src/mesa/shader/prog_execute.c
++++ b/src/mesa/shader/prog_execute.c
+@@ -939,7 +939,7 @@ _mesa_execute_program(GLcontext * ctx,
+ 	    /* The fast LOG2 macro doesn't meet the precision requirements.
+ 	     */
+             if (a[0] == 0.0F) {
+-               val = 0.0F;
++               val = -FLT_MAX;
+             }
+             else {
+                val = log(a[0]) * 1.442695F;
+diff --git a/src/mesa/shader/prog_optimize.c b/src/mesa/shader/prog_optimize.c
+index be90310..9d93748 100644
+--- a/src/mesa/shader/prog_optimize.c
++++ b/src/mesa/shader/prog_optimize.c
+@@ -217,6 +217,7 @@ _mesa_remove_dead_code(struct gl_program *prog)
+             if (inst->SrcReg[j].RelAddr) {
+                if (dbg)
+                   _mesa_printf("abort remove dead code (indirect temp)\n");
++               _mesa_free(removeInst);
+                return;
+             }
+ 
+@@ -232,6 +233,7 @@ _mesa_remove_dead_code(struct gl_program *prog)
+          if (inst->DstReg.RelAddr) {
+             if (dbg)
+                _mesa_printf("abort remove dead code (indirect temp)\n");
++            _mesa_free(removeInst);
+             return;
+          }
+ 
+@@ -422,6 +424,8 @@ _mesa_remove_extra_moves(struct gl_program *prog)
+    /* now remove the instructions which aren't needed */
+    rem = remove_instructions(prog, removeInst);
+ 
++   _mesa_free(removeInst);
++
+    if (dbg) {
+       _mesa_printf("Optimize: End remove extra moves.  %u instructions removed\n", rem);
+       /*_mesa_print_program(prog);*/
+diff --git a/src/mesa/shader/prog_parameter.h b/src/mesa/shader/prog_parameter.h
+index d1fcf47..699cb0c 100644
+--- a/src/mesa/shader/prog_parameter.h
++++ b/src/mesa/shader/prog_parameter.h
+@@ -56,7 +56,13 @@ struct gl_program_parameter
+    const char *Name;        /**< Null-terminated string */
+    gl_register_file Type;   /**< PROGRAM_NAMED_PARAM, CONSTANT or STATE_VAR */
+    GLenum DataType;         /**< GL_FLOAT, GL_FLOAT_VEC2, etc */
+-   GLuint Size;             /**< Number of components (1..4) */
++   /**
++    * Number of components (1..4), or more.
++    * If the number of components is greater than 4,
++    * this parameter is part of a larger uniform like a GLSL matrix or array.
++    * The next program parameter's Size will be Size-4 of this parameter.
++    */
++   GLuint Size;
+    GLboolean Used;          /**< Helper flag for GLSL uniform tracking */
+    GLboolean Initialized;   /**< Has the ParameterValue[] been set? */
+    GLbitfield Flags;        /**< Bitmask of PROG_PARAM_*_BIT */
+diff --git a/src/mesa/shader/shader_api.c b/src/mesa/shader/shader_api.c
+index 178b7d0..b282d7a 100644
+--- a/src/mesa/shader/shader_api.c
++++ b/src/mesa/shader/shader_api.c
+@@ -1702,8 +1702,8 @@ set_program_uniform(GLcontext *ctx, struct gl_program *program,
+          /* we'll ignore extra data below */
+       }
+       else {
+-         /* non-array: count must be one */
+-         if (count != 1) {
++         /* non-array: count must be at most one; count == 0 is handled by the loop below */
++         if (count > 1) {
+             _mesa_error(ctx, GL_INVALID_OPERATION,
+                         "glUniform(uniform is not an array)");
+             return;
+@@ -1880,20 +1880,27 @@ set_program_uniform_matrix(GLcontext *ctx, struct gl_program *program,
+                            GLboolean transpose, const GLfloat *values)
+ {
+    GLuint mat, row, col;
+-   GLuint dst = index + offset, src = 0;
++   GLuint src = 0;
++   const struct gl_program_parameter * param = &program->Parameters->Parameters[index];
++   const GLint slots = (param->Size + 3) / 4;
++   const GLint typeSize = sizeof_glsl_type(param->DataType);
+    GLint nr, nc;
+ 
+    /* check that the number of rows, columns is correct */
+-   get_matrix_dims(program->Parameters->Parameters[index].DataType, &nr, &nc);
++   get_matrix_dims(param->DataType, &nr, &nc);
+    if (rows != nr || cols != nc) {
+       _mesa_error(ctx, GL_INVALID_OPERATION,
+                   "glUniformMatrix(matrix size mismatch)");
+       return;
+    }
+ 
+-   if (index + offset > program->Parameters->Size) {
+-      /* out of bounds! */
+-      return;
++   if (param->Size <= typeSize) {
++      /* non-array: count must be at most one; count == 0 is handled by the loop below */
++      if (count > 1) {
++         _mesa_error(ctx, GL_INVALID_OPERATION,
++                     "glUniformMatrix(uniform is not an array)");
++         return;
++      }
+    }
+ 
+    /*
+@@ -1907,7 +1914,12 @@ set_program_uniform_matrix(GLcontext *ctx, struct gl_program *program,
+ 
+       /* each matrix: */
+       for (col = 0; col < cols; col++) {
+-         GLfloat *v = program->Parameters->ParameterValues[dst];
++         GLfloat *v;
++         if (offset >= slots) {
++            /* Ignore writes beyond the end of (the used part of) an array */
++            return;
++         }
++         v = program->Parameters->ParameterValues[index + offset];
+          for (row = 0; row < rows; row++) {
+             if (transpose) {
+                v[row] = values[src + row * cols + col];
+@@ -1916,7 +1928,8 @@ set_program_uniform_matrix(GLcontext *ctx, struct gl_program *program,
+                v[row] = values[src + col * rows + row];
+             }
+          }
+-         dst++;
++
++         offset++;
+       }
+ 
+       src += rows * cols;  /* next matrix */
+diff --git a/src/mesa/shader/slang/library/slang_common_builtin.gc b/src/mesa/shader/slang/library/slang_common_builtin.gc
+index 9764fc2..56de47e 100644
+--- a/src/mesa/shader/slang/library/slang_common_builtin.gc
++++ b/src/mesa/shader/slang/library/slang_common_builtin.gc
+@@ -602,42 +602,50 @@ vec4 exp2(const vec4 a)
+ 
+ float sqrt(const float x)
+ {
++   const float nx = -x;
+    float r;
+    __asm float_rsq r, x;
+-   __asm float_rcp __retVal, r;
+-}
+-
+-vec2 sqrt(const vec2 v)
+-{
+-   float r;
+-   __asm float_rsq r, v.x;
+-   __asm float_rcp __retVal.x, r;
+-   __asm float_rsq r, v.y;
+-   __asm float_rcp __retVal.y, r;
+-}
+-
+-vec3 sqrt(const vec3 v)
+-{
+-   float r;
+-   __asm float_rsq r, v.x;
+-   __asm float_rcp __retVal.x, r;
+-   __asm float_rsq r, v.y;
+-   __asm float_rcp __retVal.y, r;
+-   __asm float_rsq r, v.z;
+-   __asm float_rcp __retVal.z, r;
+-}
+-
+-vec4 sqrt(const vec4 v)
+-{
+-   float r;
+-   __asm float_rsq r, v.x;
+-   __asm float_rcp __retVal.x, r;
+-   __asm float_rsq r, v.y;
+-   __asm float_rcp __retVal.y, r;
+-   __asm float_rsq r, v.z;
+-   __asm float_rcp __retVal.z, r;
+-   __asm float_rsq r, v.w;
+-   __asm float_rcp __retVal.w, r;
++   __asm float_rcp r, r;
++   __asm vec4_cmp __retVal, nx, r, 0.0;
++}
++
++vec2 sqrt(const vec2 x)
++{
++   const vec2 nx = -x, zero = vec2(0.0);
++   vec2 r;
++   __asm float_rsq r.x, x.x;
++   __asm float_rsq r.y, x.y;
++   __asm float_rcp r.x, r.x;
++   __asm float_rcp r.y, r.y;
++   __asm vec4_cmp __retVal, nx, r, zero;
++}
++
++vec3 sqrt(const vec3 x)
++{
++   const vec3 nx = -x, zero = vec3(0.0);
++   vec3 r;
++   __asm float_rsq r.x, x.x;
++   __asm float_rsq r.y, x.y;
++   __asm float_rsq r.z, x.z;
++   __asm float_rcp r.x, r.x;
++   __asm float_rcp r.y, r.y;
++   __asm float_rcp r.z, r.z;
++   __asm vec4_cmp __retVal, nx, r, zero;
++}
++
++vec4 sqrt(const vec4 x)
++{
++   const vec4 nx = -x, zero = vec4(0.0);
++   vec4 r;
++   __asm float_rsq r.x, x.x;
++   __asm float_rsq r.y, x.y;
++   __asm float_rsq r.z, x.z;
++   __asm float_rsq r.w, x.w;
++   __asm float_rcp r.x, r.x;
++   __asm float_rcp r.y, r.y;
++   __asm float_rcp r.z, r.z;
++   __asm float_rcp r.w, r.w;
++   __asm vec4_cmp __retVal, nx, r, zero;
+ }
+ 
+ 
+diff --git a/src/mesa/shader/slang/library/slang_common_builtin_gc.h b/src/mesa/shader/slang/library/slang_common_builtin_gc.h
+index 78a7b83..3c3666e 100644
+--- a/src/mesa/shader/slang/library/slang_common_builtin_gc.h
++++ b/src/mesa/shader/slang/library/slang_common_builtin_gc.h
+@@ -307,55 +307,63 @@
+ 0,0,18,97,0,59,121,0,0,0,4,102,108,111,97,116,95,101,120,112,50,0,18,95,95,114,101,116,86,97,108,0,
+ 59,122,0,0,18,97,0,59,122,0,0,0,4,102,108,111,97,116,95,101,120,112,50,0,18,95,95,114,101,116,86,
+ 97,108,0,59,119,0,0,18,97,0,59,119,0,0,0,0,1,90,95,0,0,9,0,0,115,113,114,116,0,1,1,0,0,9,0,120,0,0,
+-0,1,3,2,90,95,0,0,9,0,1,114,0,0,0,4,102,108,111,97,116,95,114,115,113,0,18,114,0,0,18,120,0,0,0,4,
+-102,108,111,97,116,95,114,99,112,0,18,95,95,114,101,116,86,97,108,0,0,18,114,0,0,0,0,1,90,95,0,0,
+-10,0,0,115,113,114,116,0,1,1,0,0,10,0,118,0,0,0,1,3,2,90,95,0,0,9,0,1,114,0,0,0,4,102,108,111,97,
+-116,95,114,115,113,0,18,114,0,0,18,118,0,59,120,0,0,0,4,102,108,111,97,116,95,114,99,112,0,18,95,
+-95,114,101,116,86,97,108,0,59,120,0,0,18,114,0,0,0,4,102,108,111,97,116,95,114,115,113,0,18,114,0,
+-0,18,118,0,59,121,0,0,0,4,102,108,111,97,116,95,114,99,112,0,18,95,95,114,101,116,86,97,108,0,59,
+-121,0,0,18,114,0,0,0,0,1,90,95,0,0,11,0,0,115,113,114,116,0,1,1,0,0,11,0,118,0,0,0,1,3,2,90,95,0,0,
+-9,0,1,114,0,0,0,4,102,108,111,97,116,95,114,115,113,0,18,114,0,0,18,118,0,59,120,0,0,0,4,102,108,
+-111,97,116,95,114,99,112,0,18,95,95,114,101,116,86,97,108,0,59,120,0,0,18,114,0,0,0,4,102,108,111,
+-97,116,95,114,115,113,0,18,114,0,0,18,118,0,59,121,0,0,0,4,102,108,111,97,116,95,114,99,112,0,18,
+-95,95,114,101,116,86,97,108,0,59,121,0,0,18,114,0,0,0,4,102,108,111,97,116,95,114,115,113,0,18,114,
+-0,0,18,118,0,59,122,0,0,0,4,102,108,111,97,116,95,114,99,112,0,18,95,95,114,101,116,86,97,108,0,59,
+-122,0,0,18,114,0,0,0,0,1,90,95,0,0,12,0,0,115,113,114,116,0,1,1,0,0,12,0,118,0,0,0,1,3,2,90,95,0,0,
+-9,0,1,114,0,0,0,4,102,108,111,97,116,95,114,115,113,0,18,114,0,0,18,118,0,59,120,0,0,0,4,102,108,
+-111,97,116,95,114,99,112,0,18,95,95,114,101,116,86,97,108,0,59,120,0,0,18,114,0,0,0,4,102,108,111,
+-97,116,95,114,115,113,0,18,114,0,0,18,118,0,59,121,0,0,0,4,102,108,111,97,116,95,114,99,112,0,18,
+-95,95,114,101,116,86,97,108,0,59,121,0,0,18,114,0,0,0,4,102,108,111,97,116,95,114,115,113,0,18,114,
+-0,0,18,118,0,59,122,0,0,0,4,102,108,111,97,116,95,114,99,112,0,18,95,95,114,101,116,86,97,108,0,59,
+-122,0,0,18,114,0,0,0,4,102,108,111,97,116,95,114,115,113,0,18,114,0,0,18,118,0,59,119,0,0,0,4,102,
+-108,111,97,116,95,114,99,112,0,18,95,95,114,101,116,86,97,108,0,59,119,0,0,18,114,0,0,0,0,1,90,95,
+-0,0,9,0,0,105,110,118,101,114,115,101,115,113,114,116,0,1,1,0,0,9,0,120,0,0,0,1,4,102,108,111,97,
+-116,95,114,115,113,0,18,95,95,114,101,116,86,97,108,0,59,120,0,0,18,120,0,0,0,0,1,90,95,0,0,10,0,0,
+-105,110,118,101,114,115,101,115,113,114,116,0,1,1,0,0,10,0,118,0,0,0,1,4,102,108,111,97,116,95,114,
+-115,113,0,18,95,95,114,101,116,86,97,108,0,59,120,0,0,18,118,0,59,120,0,0,0,4,102,108,111,97,116,
+-95,114,115,113,0,18,95,95,114,101,116,86,97,108,0,59,121,0,0,18,118,0,59,121,0,0,0,0,1,90,95,0,0,
+-11,0,0,105,110,118,101,114,115,101,115,113,114,116,0,1,1,0,0,11,0,118,0,0,0,1,4,102,108,111,97,116,
+-95,114,115,113,0,18,95,95,114,101,116,86,97,108,0,59,120,0,0,18,118,0,59,120,0,0,0,4,102,108,111,
+-97,116,95,114,115,113,0,18,95,95,114,101,116,86,97,108,0,59,121,0,0,18,118,0,59,121,0,0,0,4,102,
+-108,111,97,116,95,114,115,113,0,18,95,95,114,101,116,86,97,108,0,59,122,0,0,18,118,0,59,122,0,0,0,
+-0,1,90,95,0,0,12,0,0,105,110,118,101,114,115,101,115,113,114,116,0,1,1,0,0,12,0,118,0,0,0,1,4,102,
+-108,111,97,116,95,114,115,113,0,18,95,95,114,101,116,86,97,108,0,59,120,0,0,18,118,0,59,120,0,0,0,
+-4,102,108,111,97,116,95,114,115,113,0,18,95,95,114,101,116,86,97,108,0,59,121,0,0,18,118,0,59,121,
+-0,0,0,4,102,108,111,97,116,95,114,115,113,0,18,95,95,114,101,116,86,97,108,0,59,122,0,0,18,118,0,
+-59,122,0,0,0,4,102,108,111,97,116,95,114,115,113,0,18,95,95,114,101,116,86,97,108,0,59,119,0,0,18,
+-118,0,59,119,0,0,0,0,1,90,95,0,0,9,0,0,110,111,114,109,97,108,105,122,101,0,1,1,0,0,9,0,120,0,0,0,
+-1,9,18,95,95,114,101,116,86,97,108,0,17,49,0,48,0,0,20,0,0,1,90,95,0,0,10,0,0,110,111,114,109,97,
+-108,105,122,101,0,1,1,0,0,10,0,118,0,0,0,1,3,2,90,95,1,0,9,0,1,115,0,2,58,105,110,118,101,114,115,
+-101,115,113,114,116,0,0,58,100,111,116,0,0,18,118,0,0,18,118,0,0,0,0,0,0,0,4,118,101,99,52,95,109,
+-117,108,116,105,112,108,121,0,18,95,95,114,101,116,86,97,108,0,59,120,121,0,0,18,118,0,0,18,115,0,
+-0,0,0,1,90,95,0,0,11,0,0,110,111,114,109,97,108,105,122,101,0,1,1,0,0,11,0,118,0,0,0,1,3,2,90,95,0,
+-0,9,0,1,116,109,112,0,0,0,4,118,101,99,51,95,100,111,116,0,18,116,109,112,0,0,18,118,0,0,18,118,0,
+-0,0,4,102,108,111,97,116,95,114,115,113,0,18,116,109,112,0,0,18,116,109,112,0,0,0,4,118,101,99,52,
+-95,109,117,108,116,105,112,108,121,0,18,95,95,114,101,116,86,97,108,0,59,120,121,122,0,0,18,118,0,
+-0,18,116,109,112,0,0,0,0,1,90,95,0,0,12,0,0,110,111,114,109,97,108,105,122,101,0,1,1,0,0,12,0,118,
+-0,0,0,1,3,2,90,95,0,0,9,0,1,116,109,112,0,0,0,4,118,101,99,52,95,100,111,116,0,18,116,109,112,0,0,
+-18,118,0,0,18,118,0,0,0,4,102,108,111,97,116,95,114,115,113,0,18,116,109,112,0,0,18,116,109,112,0,
+-0,0,4,118,101,99,52,95,109,117,108,116,105,112,108,121,0,18,95,95,114,101,116,86,97,108,0,59,120,
+-121,122,0,0,18,118,0,0,18,116,109,112,0,0,0,0,1,90,95,0,0,9,0,0,97,98,115,0,1,1,0,0,9,0,97,0,0,0,1,
+-4,118,101,99,52,95,97,98,115,0,18,95,95,114,101,116,86,97,108,0,0,18,97,0,0,0,0,1,90,95,0,0,10,0,0,
++0,1,3,2,90,95,1,0,9,0,1,110,120,0,2,18,120,0,54,0,0,3,2,90,95,0,0,9,0,1,114,0,0,0,4,102,108,111,97,
++116,95,114,115,113,0,18,114,0,0,18,120,0,0,0,4,102,108,111,97,116,95,114,99,112,0,18,114,0,0,18,
++114,0,0,0,4,118,101,99,52,95,99,109,112,0,18,95,95,114,101,116,86,97,108,0,0,18,110,120,0,0,18,114,
++0,0,17,48,0,48,0,0,0,0,0,1,90,95,0,0,10,0,0,115,113,114,116,0,1,1,0,0,10,0,120,0,0,0,1,3,2,90,95,1,
++0,10,0,1,110,120,0,2,18,120,0,54,0,1,1,122,101,114,111,0,2,58,118,101,99,50,0,0,17,48,0,48,0,0,0,0,
++0,0,3,2,90,95,0,0,10,0,1,114,0,0,0,4,102,108,111,97,116,95,114,115,113,0,18,114,0,59,120,0,0,18,
++120,0,59,120,0,0,0,4,102,108,111,97,116,95,114,115,113,0,18,114,0,59,121,0,0,18,120,0,59,121,0,0,0,
++4,102,108,111,97,116,95,114,99,112,0,18,114,0,59,120,0,0,18,114,0,59,120,0,0,0,4,102,108,111,97,
++116,95,114,99,112,0,18,114,0,59,121,0,0,18,114,0,59,121,0,0,0,4,118,101,99,52,95,99,109,112,0,18,
++95,95,114,101,116,86,97,108,0,0,18,110,120,0,0,18,114,0,0,18,122,101,114,111,0,0,0,0,1,90,95,0,0,
++11,0,0,115,113,114,116,0,1,1,0,0,11,0,120,0,0,0,1,3,2,90,95,1,0,11,0,1,110,120,0,2,18,120,0,54,0,1,
++1,122,101,114,111,0,2,58,118,101,99,51,0,0,17,48,0,48,0,0,0,0,0,0,3,2,90,95,0,0,11,0,1,114,0,0,0,4,
++102,108,111,97,116,95,114,115,113,0,18,114,0,59,120,0,0,18,120,0,59,120,0,0,0,4,102,108,111,97,116,
++95,114,115,113,0,18,114,0,59,121,0,0,18,120,0,59,121,0,0,0,4,102,108,111,97,116,95,114,115,113,0,
++18,114,0,59,122,0,0,18,120,0,59,122,0,0,0,4,102,108,111,97,116,95,114,99,112,0,18,114,0,59,120,0,0,
++18,114,0,59,120,0,0,0,4,102,108,111,97,116,95,114,99,112,0,18,114,0,59,121,0,0,18,114,0,59,121,0,0,
++0,4,102,108,111,97,116,95,114,99,112,0,18,114,0,59,122,0,0,18,114,0,59,122,0,0,0,4,118,101,99,52,
++95,99,109,112,0,18,95,95,114,101,116,86,97,108,0,0,18,110,120,0,0,18,114,0,0,18,122,101,114,111,0,
++0,0,0,1,90,95,0,0,12,0,0,115,113,114,116,0,1,1,0,0,12,0,120,0,0,0,1,3,2,90,95,1,0,12,0,1,110,120,0,
++2,18,120,0,54,0,1,1,122,101,114,111,0,2,58,118,101,99,52,0,0,17,48,0,48,0,0,0,0,0,0,3,2,90,95,0,0,
++12,0,1,114,0,0,0,4,102,108,111,97,116,95,114,115,113,0,18,114,0,59,120,0,0,18,120,0,59,120,0,0,0,4,
++102,108,111,97,116,95,114,115,113,0,18,114,0,59,121,0,0,18,120,0,59,121,0,0,0,4,102,108,111,97,116,
++95,114,115,113,0,18,114,0,59,122,0,0,18,120,0,59,122,0,0,0,4,102,108,111,97,116,95,114,115,113,0,
++18,114,0,59,119,0,0,18,120,0,59,119,0,0,0,4,102,108,111,97,116,95,114,99,112,0,18,114,0,59,120,0,0,
++18,114,0,59,120,0,0,0,4,102,108,111,97,116,95,114,99,112,0,18,114,0,59,121,0,0,18,114,0,59,121,0,0,
++0,4,102,108,111,97,116,95,114,99,112,0,18,114,0,59,122,0,0,18,114,0,59,122,0,0,0,4,102,108,111,97,
++116,95,114,99,112,0,18,114,0,59,119,0,0,18,114,0,59,119,0,0,0,4,118,101,99,52,95,99,109,112,0,18,
++95,95,114,101,116,86,97,108,0,0,18,110,120,0,0,18,114,0,0,18,122,101,114,111,0,0,0,0,1,90,95,0,0,9,
++0,0,105,110,118,101,114,115,101,115,113,114,116,0,1,1,0,0,9,0,120,0,0,0,1,4,102,108,111,97,116,95,
++114,115,113,0,18,95,95,114,101,116,86,97,108,0,59,120,0,0,18,120,0,0,0,0,1,90,95,0,0,10,0,0,105,
++110,118,101,114,115,101,115,113,114,116,0,1,1,0,0,10,0,118,0,0,0,1,4,102,108,111,97,116,95,114,115,
++113,0,18,95,95,114,101,116,86,97,108,0,59,120,0,0,18,118,0,59,120,0,0,0,4,102,108,111,97,116,95,
++114,115,113,0,18,95,95,114,101,116,86,97,108,0,59,121,0,0,18,118,0,59,121,0,0,0,0,1,90,95,0,0,11,0,
++0,105,110,118,101,114,115,101,115,113,114,116,0,1,1,0,0,11,0,118,0,0,0,1,4,102,108,111,97,116,95,
++114,115,113,0,18,95,95,114,101,116,86,97,108,0,59,120,0,0,18,118,0,59,120,0,0,0,4,102,108,111,97,
++116,95,114,115,113,0,18,95,95,114,101,116,86,97,108,0,59,121,0,0,18,118,0,59,121,0,0,0,4,102,108,
++111,97,116,95,114,115,113,0,18,95,95,114,101,116,86,97,108,0,59,122,0,0,18,118,0,59,122,0,0,0,0,1,
++90,95,0,0,12,0,0,105,110,118,101,114,115,101,115,113,114,116,0,1,1,0,0,12,0,118,0,0,0,1,4,102,108,
++111,97,116,95,114,115,113,0,18,95,95,114,101,116,86,97,108,0,59,120,0,0,18,118,0,59,120,0,0,0,4,
++102,108,111,97,116,95,114,115,113,0,18,95,95,114,101,116,86,97,108,0,59,121,0,0,18,118,0,59,121,0,
++0,0,4,102,108,111,97,116,95,114,115,113,0,18,95,95,114,101,116,86,97,108,0,59,122,0,0,18,118,0,59,
++122,0,0,0,4,102,108,111,97,116,95,114,115,113,0,18,95,95,114,101,116,86,97,108,0,59,119,0,0,18,118,
++0,59,119,0,0,0,0,1,90,95,0,0,9,0,0,110,111,114,109,97,108,105,122,101,0,1,1,0,0,9,0,120,0,0,0,1,9,
++18,95,95,114,101,116,86,97,108,0,17,49,0,48,0,0,20,0,0,1,90,95,0,0,10,0,0,110,111,114,109,97,108,
++105,122,101,0,1,1,0,0,10,0,118,0,0,0,1,3,2,90,95,1,0,9,0,1,115,0,2,58,105,110,118,101,114,115,101,
++115,113,114,116,0,0,58,100,111,116,0,0,18,118,0,0,18,118,0,0,0,0,0,0,0,4,118,101,99,52,95,109,117,
++108,116,105,112,108,121,0,18,95,95,114,101,116,86,97,108,0,59,120,121,0,0,18,118,0,0,18,115,0,0,0,
++0,1,90,95,0,0,11,0,0,110,111,114,109,97,108,105,122,101,0,1,1,0,0,11,0,118,0,0,0,1,3,2,90,95,0,0,9,
++0,1,116,109,112,0,0,0,4,118,101,99,51,95,100,111,116,0,18,116,109,112,0,0,18,118,0,0,18,118,0,0,0,
++4,102,108,111,97,116,95,114,115,113,0,18,116,109,112,0,0,18,116,109,112,0,0,0,4,118,101,99,52,95,
++109,117,108,116,105,112,108,121,0,18,95,95,114,101,116,86,97,108,0,59,120,121,122,0,0,18,118,0,0,
++18,116,109,112,0,0,0,0,1,90,95,0,0,12,0,0,110,111,114,109,97,108,105,122,101,0,1,1,0,0,12,0,118,0,
++0,0,1,3,2,90,95,0,0,9,0,1,116,109,112,0,0,0,4,118,101,99,52,95,100,111,116,0,18,116,109,112,0,0,18,
++118,0,0,18,118,0,0,0,4,102,108,111,97,116,95,114,115,113,0,18,116,109,112,0,0,18,116,109,112,0,0,0,
++4,118,101,99,52,95,109,117,108,116,105,112,108,121,0,18,95,95,114,101,116,86,97,108,0,59,120,121,
++122,0,0,18,118,0,0,18,116,109,112,0,0,0,0,1,90,95,0,0,9,0,0,97,98,115,0,1,1,0,0,9,0,97,0,0,0,1,4,
++118,101,99,52,95,97,98,115,0,18,95,95,114,101,116,86,97,108,0,0,18,97,0,0,0,0,1,90,95,0,0,10,0,0,
+ 97,98,115,0,1,1,0,0,10,0,97,0,0,0,1,4,118,101,99,52,95,97,98,115,0,18,95,95,114,101,116,86,97,108,
+ 0,59,120,121,0,0,18,97,0,0,0,0,1,90,95,0,0,11,0,0,97,98,115,0,1,1,0,0,11,0,97,0,0,0,1,4,118,101,99,
+ 52,95,97,98,115,0,18,95,95,114,101,116,86,97,108,0,59,120,121,122,0,0,18,97,0,0,0,0,1,90,95,0,0,12,
+diff --git a/src/mesa/shader/slang/slang_codegen.c b/src/mesa/shader/slang/slang_codegen.c
+index 703af9f..344dfdc 100644
+--- a/src/mesa/shader/slang/slang_codegen.c
++++ b/src/mesa/shader/slang/slang_codegen.c
+@@ -422,6 +422,7 @@ static slang_asm_info AsmInfo[] = {
+    { "vec4_lrp", IR_LRP, 1, 3 },
+    { "vec4_min", IR_MIN, 1, 2 },
+    { "vec4_max", IR_MAX, 1, 2 },
++   { "vec4_cmp", IR_CMP, 1, 3 },
+    { "vec4_clamp", IR_CLAMP, 1, 3 },
+    { "vec4_seq", IR_SEQUAL, 1, 2 },
+    { "vec4_sne", IR_SNEQUAL, 1, 2 },
+diff --git a/src/mesa/shader/slang/slang_emit.c b/src/mesa/shader/slang/slang_emit.c
+index 3f455e0..3af301e 100644
+--- a/src/mesa/shader/slang/slang_emit.c
++++ b/src/mesa/shader/slang/slang_emit.c
+@@ -2287,6 +2287,7 @@ emit(slang_emit_info *emitInfo, slang_ir_node *n)
+    case IR_POW:
+    /* trinary operators */
+    case IR_LRP:
++   case IR_CMP:
+       return emit_arith(emitInfo, n);
+ 
+    case IR_EQUAL:
+diff --git a/src/mesa/shader/slang/slang_ir.c b/src/mesa/shader/slang/slang_ir.c
+index 1c7f747..6260350 100644
+--- a/src/mesa/shader/slang/slang_ir.c
++++ b/src/mesa/shader/slang/slang_ir.c
+@@ -80,6 +80,7 @@ static const slang_ir_info IrInfo[] = {
+    { IR_NOISE4, "IR_NOISE4", OPCODE_NOISE4, 1, 1 },
+ 
+    /* other */
++   { IR_CMP, "IR_CMP", OPCODE_CMP, 4, 3 },  /* compare/select */
+    { IR_SEQ, "IR_SEQ", OPCODE_NOP, 0, 0 },
+    { IR_SCOPE, "IR_SCOPE", OPCODE_NOP, 0, 0 },
+    { IR_LABEL, "IR_LABEL", OPCODE_NOP, 0, 0 },
+diff --git a/src/mesa/shader/slang/slang_ir.h b/src/mesa/shader/slang/slang_ir.h
+index e796693..166b4e8 100644
+--- a/src/mesa/shader/slang/slang_ir.h
++++ b/src/mesa/shader/slang/slang_ir.h
+@@ -91,6 +91,7 @@ typedef enum
+    IR_CLAMP,
+    IR_MIN,
+    IR_MAX,
++   IR_CMP,     /* = (op0 < 0) ? op1 : op2 */
+    IR_SEQUAL,  /* Set if args are equal (vector) */
+    IR_SNEQUAL, /* Set if args are not equal (vector) */
+    IR_SGE,     /* Set if greater or equal (vector) */
+diff --git a/src/mesa/shader/slang/slang_link.c b/src/mesa/shader/slang/slang_link.c
+index 8f2b40d..71038d2 100644
+--- a/src/mesa/shader/slang/slang_link.c
++++ b/src/mesa/shader/slang/slang_link.c
+@@ -670,6 +670,7 @@ get_main_shader(GLcontext *ctx,
+           !shader->Main ||
+           shader->UnresolvedRefs) {
+          link_error(shProg, "Unresolved symbols");
++         _mesa_free_shader(ctx, shader);
+          return NULL;
+       }
+    }
+diff --git a/src/mesa/state_tracker/st_cb_drawpixels.c b/src/mesa/state_tracker/st_cb_drawpixels.c
+index a9cafbf..c655690 100644
+--- a/src/mesa/state_tracker/st_cb_drawpixels.c
++++ b/src/mesa/state_tracker/st_cb_drawpixels.c
+@@ -598,15 +598,15 @@ draw_textured_quad(GLcontext *ctx, GLint x, GLint y, GLfloat z,
+ 
+    /* viewport state: viewport matching window dims */
+    {
+-      const float width = (float) ctx->DrawBuffer->Width;
+-      const float height = (float) ctx->DrawBuffer->Height;
++      const float w = (float) ctx->DrawBuffer->Width;
++      const float h = (float) ctx->DrawBuffer->Height;
+       struct pipe_viewport_state vp;
+-      vp.scale[0] =  0.5f * width;
+-      vp.scale[1] = -0.5f * height;
++      vp.scale[0] =  0.5f * w;
++      vp.scale[1] = -0.5f * h;
+       vp.scale[2] = 1.0f;
+       vp.scale[3] = 1.0f;
+-      vp.translate[0] = 0.5f * width;
+-      vp.translate[1] = 0.5f * height;
++      vp.translate[0] = 0.5f * w;
++      vp.translate[1] = 0.5f * h;
+       vp.translate[2] = 0.0f;
+       vp.translate[3] = 0.0f;
+       cso_set_viewport(cso, &vp);
+diff --git a/src/mesa/state_tracker/st_cb_fbo.c b/src/mesa/state_tracker/st_cb_fbo.c
+index fe0a121..e8399de 100644
+--- a/src/mesa/state_tracker/st_cb_fbo.c
++++ b/src/mesa/state_tracker/st_cb_fbo.c
+@@ -165,12 +165,12 @@ st_renderbuffer_alloc_storage(GLcontext * ctx, struct gl_renderbuffer *rb,
+                                                      strb->texture,
+                                                      0, 0, 0,
+                                                      surface_usage );
+-
+-      assert(strb->surface->texture);
+-      assert(strb->surface->format);
+-      assert(strb->surface->width == width);
+-      assert(strb->surface->height == height);
+-
++      if (strb->surface) {
++         assert(strb->surface->texture);
++         assert(strb->surface->format);
++         assert(strb->surface->width == width);
++         assert(strb->surface->height == height);
++      }
+ 
+       return strb->surface != NULL;
+    }
+@@ -298,6 +298,7 @@ st_new_renderbuffer_fb(enum pipe_format format, int samples, boolean sw)
+    default:
+       _mesa_problem(NULL,
+ 		    "Unexpected format in st_new_renderbuffer_fb");
++      _mesa_free(strb);
+       return NULL;
+    }
+ 
+diff --git a/src/mesa/state_tracker/st_cb_texture.c b/src/mesa/state_tracker/st_cb_texture.c
+index b13e377..50675b5 100644
+--- a/src/mesa/state_tracker/st_cb_texture.c
++++ b/src/mesa/state_tracker/st_cb_texture.c
+@@ -1775,7 +1775,11 @@ st_finalize_texture(GLcontext *ctx,
+        * incomplete.  In that case, we'll have set stObj->lastLevel before
+        * we get here.
+        */
+-      stObj->lastLevel = stObj->base._MaxLevel - stObj->base.BaseLevel;
++      if (stObj->base.MinFilter == GL_LINEAR ||
++          stObj->base.MinFilter == GL_NEAREST)
++         stObj->lastLevel = stObj->base.BaseLevel;
++      else
++         stObj->lastLevel = stObj->base._MaxLevel - stObj->base.BaseLevel;
+    }
+ 
+    firstImage = st_texture_image(stObj->base.Image[0][stObj->base.BaseLevel]);
+diff --git a/src/mesa/swrast/s_depth.c b/src/mesa/swrast/s_depth.c
+index 26e23f0..7086cae 100644
+--- a/src/mesa/swrast/s_depth.c
++++ b/src/mesa/swrast/s_depth.c
+@@ -1211,6 +1211,7 @@ _swrast_read_depth_span_float( GLcontext *ctx, struct gl_renderbuffer *rb,
+    if (!rb) {
+       /* really only doing this to prevent FP exceptions later */
+       _mesa_bzero(depth, n * sizeof(GLfloat));
++      return;
+    }
+ 
+    ASSERT(rb->_BaseFormat == GL_DEPTH_COMPONENT);
+@@ -1273,7 +1274,8 @@ _swrast_read_depth_span_uint( GLcontext *ctx, struct gl_renderbuffer *rb,
+ {
+    if (!rb) {
+       /* really only doing this to prevent FP exceptions later */
+-      _mesa_bzero(depth, n * sizeof(GLfloat));
++      _mesa_bzero(depth, n * sizeof(GLuint));
++      return;
+    }
+ 
+    ASSERT(rb->_BaseFormat == GL_DEPTH_COMPONENT);
