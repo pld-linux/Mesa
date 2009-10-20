@@ -2,13 +2,16 @@
 # TODO:
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
 # - resurrect static if it's useful
+# - subpackage egl?
 #
 # Conditional build:
 %bcond_without	demos	# don't build demos
-%bcond_without	motif	# build static libGLw without Motif interface
-%bcond_without	gallium
+%bcond_with	egl	# don't build egl
+%bcond_without	gallium	# don't build gallium
 %bcond_with	gallium_intel # gallium i915 driver (but doesn't work with AIGLX)
+%bcond_without	motif	# build static libGLw without Motif interface
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
+%bcond_without	osmesa	# don't build osmesa
 %bcond_with	static
 #
 # minimal supported xserver version
@@ -642,9 +645,10 @@ common_flags="\
 	--enable-selinux \
 	--enable-pic \
 	--enable-glx-tls \
-	--disable-egl \
+	--%{?with_egl:en}%{!?with_egl:dis}able-egl \
 	--with%{!?with_demos:out}-demos"
 
+%if %{with osmesa}
 # osmesa variants
 %configure $common_flags \
 	--with-driver=osmesa \
@@ -672,6 +676,7 @@ mv %{_lib} osmesa16
 	SRC_DIRS=mesa
 mv %{_lib} osmesa32
 %{__make} clean
+%endif
 
 %configure $common_flags \
 	--enable-glu \
@@ -713,7 +718,9 @@ cd gl-manpages-*
 	DESTDIR=$RPM_BUILD_ROOT
 cd ..
 
+%if %{with osmesa}
 install osmesa*/* $RPM_BUILD_ROOT%{_libdir}
+%endif
 
 install progs/xdemos/{glxgears,glxinfo} $RPM_BUILD_ROOT%{_bindir}
 # work on copy to keep -bi --short-circuit working
@@ -839,6 +846,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libGLw.a
 %endif
 
+%if %{with osmesa}
 %files libOSMesa
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libOSMesa*.so.*.*
@@ -853,6 +861,7 @@ rm -rf $RPM_BUILD_ROOT
 %files libOSMesa-static
 %defattr(644,root,root,755)
 %{_libdir}/libOSMesa*.a
+%endif
 %endif
 
 %files utils
