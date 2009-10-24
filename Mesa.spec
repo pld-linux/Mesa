@@ -38,6 +38,7 @@ Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-sparc64.patch
 Patch2:		%{name}-git.patch
 URL:		http://www.mesa3d.org/
+%{?with_demos:BuildRequires:	OpenGL-glut-devel >= 3.8}
 BuildRequires:	expat-devel
 %{?with_demos:BuildRequires:	glew-devel}
 BuildRequires:	libdrm-devel >= 2.4.12-3
