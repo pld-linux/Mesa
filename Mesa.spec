@@ -25,7 +25,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.6
-Release:	4%{?with_multigl:.mgl}
+Release:	5%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
@@ -625,7 +625,8 @@ Sterownik X.org DRI dla rodziny kart VIA Unichrome.
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
 
 %build
-[ ! -f configure ] && ./autogen.sh
+%{__aclocal}
+%{__autoconf}
 
 dri_drivers="i810 i965 mach64 mga r128 r200 r300 radeon savage s3v trident \
 %if %{without gallium_intel}
