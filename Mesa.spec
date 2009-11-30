@@ -39,6 +39,8 @@ Patch1:		%{name}-sparc64.patch
 Patch2:		%{name}-git.patch
 URL:		http://www.mesa3d.org/
 %{?with_demos:BuildRequires:	OpenGL-glut-devel >= 3.8}
+BuildRequires:	autoconf
+BuildRequires:	automake
 BuildRequires:	expat-devel
 %{?with_demos:BuildRequires:	glew-devel}
 BuildRequires:	libdrm-devel >= 2.4.12-3
@@ -46,6 +48,7 @@ BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
+BuildRequires:	pkgconfig
 BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libXdamage-devel
