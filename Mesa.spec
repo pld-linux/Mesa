@@ -21,22 +21,21 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver	7.1.0
 #
+%define		snap		-rc3
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	7.6
-Release:	5%{?with_multigl:.mgl}
+Version:	7.7
+Release:	0.1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
-Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	8c75f90cd0303cfac9e4b6d54f6759ca
-Source1:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	0ede7adf217951acd90dbe4551210c07
+Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}%{snap}.tar.bz2
+# Source0-md5:	775c278a211deacd722ed599e706a20e
+Source1:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Demos-%{version}%{snap}.tar.bz2
+# Source1-md5:	2404747b148e05ca74ffb243b6e26606
 Source2:	http://www.archlinux.org/~jgc/gl-manpages-1.0.1.tar.bz2
 # Source2-md5:	6ae05158e678f4594343f32c2ca50515
 Patch0:		%{name}-realclean.patch
-Patch1:		%{name}-sparc64.patch
-Patch2:		%{name}-git.patch
 URL:		http://www.mesa3d.org/
 %{?with_demos:BuildRequires:	OpenGL-glut-devel >= 3.8}
 BuildRequires:	autoconf
@@ -382,6 +381,22 @@ X.org DRI driver for ATI R300 card family.
 %description dri-driver-ati-radeon-R300 -l pl.UTF-8
 Sterownik X.org DRI dla rodziny kart ATI R300.
 
+%package dri-driver-ati-radeon-R600
+Summary:	X.org DRI driver for ATI R600 card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R600
+License:	MIT
+Group:		X11/Libraries
+Requires:	radeon-ucode
+Requires:	xorg-driver-video-ati
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
+
+%description dri-driver-ati-radeon-R600
+X.org DRI driver for ATI R600 card family.
+
+%description dri-driver-ati-radeon-R600 -l pl.UTF-8
+Sterownik X.org DRI dla rodziny kart ATI R600.
+
 %package dri-driver-ati-rage128
 Summary:	X.org DRI driver for ATI Rage128 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI Rage128
@@ -510,21 +525,6 @@ X.org DRI drivers for NVIDIA card family.
 %description dri-driver-nouveau -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart NVIDIA.
 
-%package dri-driver-s3virge
-Summary:	X.org DRI driver for S3 Virge card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart S3 Virge
-License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-driver-video-s3virge
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
-
-%description dri-driver-s3virge
-X.org DRI driver for S3 Virge card family.
-
-%description dri-driver-s3virge -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart S3 Virge.
-
 %package dri-driver-savage
 Summary:	X.org DRI driver for S3 Savage card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart S3 Savage
@@ -589,21 +589,6 @@ and Velocity 100/200).
 Sterownik X.org DRI dla rodziny kart 3DFX Voodoo. (Voodoo 3,4,5,
 Banshee i Velocity 100/200).
 
-%package dri-driver-trident
-Summary:	X.org DRI driver for Trident card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Trident
-License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-driver-video-trident
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
-
-%description dri-driver-trident
-X.org DRI drivers for Trident card family.
-
-%description dri-driver-trident -l pl.UTF-8
-Sterowniki X.org DRI dla rodziny kart Trident.
-
 %package dri-driver-via-unichrome
 Summary:	X.org DRI driver for VIA Unichrome card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart VIA Unichrome
@@ -619,11 +604,23 @@ X.org DRI driver for VIA Unichrome card family.
 %description dri-driver-via-unichrome -l pl.UTF-8
 Sterownik X.org DRI dla rodziny kart VIA Unichrome.
 
+%package dri-driver-vmwgfx
+Summary:	X.org DRI driver for VMware
+Summary(pl.UTF-8):	Sterownik X.org DRI dla VMware
+License:	MIT
+Group:		X11/Libraries
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
+
+%description dri-driver-vmwgfx
+X.org DRI driver for VMWare.
+
+%description dri-driver-vmwgfx -l pl.UTF-8
+Sterownik X.org DRI dla VMware.
+
 %prep
 %setup -q -b1 -a2
 %patch0 -p0
-%patch1 -p1
-%patch2 -p1
 
 # fix demos
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
@@ -632,7 +629,7 @@ find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{ver
 %{__aclocal}
 %{__autoconf}
 
-dri_drivers="i810 i965 mach64 mga r128 r200 r300 radeon savage s3v trident \
+dri_drivers="i810 i965 mach64 mga r128 r200 r300 r600 radeon savage \
 %if %{without gallium_intel}
 i915 \
 %endif
@@ -891,6 +888,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/r300_dri.so
 
+%files dri-driver-ati-radeon-R600
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/r600_dri.so
+
 %files dri-driver-ati-rage128
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/r128_dri.so
@@ -931,10 +932,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
 %endif
 
-%files dri-driver-s3virge
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/s3v_dri.so
-
 %files dri-driver-savage
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/savage_dri.so
@@ -953,13 +950,13 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/tdfx_dri.so
 
-%files dri-driver-trident
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/trident_dri.so
-
 %files dri-driver-via-unichrome
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/unichrome_dri.so
+
+%files dri-driver-vmwgfx
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/vmwgfx_dri
 
 %if %{with demos}
 %files demos
