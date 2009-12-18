@@ -956,7 +956,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files dri-driver-vmwgfx
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/vmwgfx_dri
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/vmwgfx_dri.so
 
 %if %{with demos}
 %files demos
