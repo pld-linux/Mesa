@@ -21,18 +21,17 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver	7.1.0
 #
-%define		snap		-rc3
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.7
-Release:	0.1%{?with_multigl:.mgl}
+Release:	1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
-Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}%{snap}.tar.bz2
-# Source0-md5:	775c278a211deacd722ed599e706a20e
-Source1:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Demos-%{version}%{snap}.tar.bz2
-# Source1-md5:	2404747b148e05ca74ffb243b6e26606
+Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
+# Source0-md5:	e3fa64a1508bc23dd9de9dd2cea7cfb1
+Source1:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Demos-%{version}.tar.bz2
+# Source1-md5:	6fd616b27b9826d0faa23e08e05d9435
 Source2:	http://www.archlinux.org/~jgc/gl-manpages-1.0.1.tar.bz2
 # Source2-md5:	6ae05158e678f4594343f32c2ca50515
 Patch0:		%{name}-realclean.patch
@@ -688,6 +687,7 @@ mv %{_lib} osmesa32
 %if %{with gallium}
 	--enable-gallium \
 	--%{?with_gallium_intel:en}%{!?with_gallium_intel:dis}able-gallium-intel \
+	--enable-gallium-svga \
 	--enable-gallium-nouveau \
 	--with-state-trackers=dri \
 %else
