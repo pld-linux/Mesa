@@ -35,6 +35,7 @@ Source1:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Demos-%{version}.t
 Source2:	http://www.archlinux.org/~jgc/gl-manpages-1.0.1.tar.bz2
 # Source2-md5:	6ae05158e678f4594343f32c2ca50515
 Patch0:		%{name}-realclean.patch
+Patch1:		%{name}-tgsi_dump.patch
 URL:		http://www.mesa3d.org/
 %{?with_demos:BuildRequires:	OpenGL-glut-devel >= 3.8}
 BuildRequires:	autoconf
@@ -620,6 +621,7 @@ Sterownik X.org DRI dla VMware.
 %prep
 %setup -q -b1 -a2
 %patch0 -p0
+%patch1 -p1
 
 # fix demos
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
