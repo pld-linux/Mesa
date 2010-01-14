@@ -32,8 +32,6 @@ Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar
 # Source0-md5:	e3fa64a1508bc23dd9de9dd2cea7cfb1
 Source1:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Demos-%{version}.tar.bz2
 # Source1-md5:	6fd616b27b9826d0faa23e08e05d9435
-Source2:	http://www.archlinux.org/~jgc/gl-manpages-1.0.1.tar.bz2
-# Source2-md5:	6ae05158e678f4594343f32c2ca50515
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-tgsi_dump.patch
 URL:		http://www.mesa3d.org/
@@ -123,6 +121,7 @@ Group:		X11/Development/Libraries
 # loose dependency on libGL to use with other libGL binaries
 Requires:	OpenGL >= 1.5
 Requires:	xorg-lib-libX11-devel
+Suggests:	OpenGL-doc-man
 Provides:	OpenGL-GLX-devel = 1.4
 Provides:	OpenGL-devel = 2.1
 Obsoletes:	Mesa-devel
@@ -619,7 +618,7 @@ X.org DRI driver for VMWare.
 Sterownik X.org DRI dla VMware.
 
 %prep
-%setup -q -b1 -a2
+%setup -q -b1
 %patch0 -p0
 %patch1 -p1
 
@@ -705,10 +704,6 @@ mv %{_lib} osmesa32
 %{__make} -C progs/demos
 %endif
 
-cd gl-manpages-*
-%configure
-%{__make}
-
 %install
 rm -rf $RPM_BUILD_ROOT
 
@@ -717,11 +712,6 @@ install -d $RPM_BUILD_ROOT{%{_bindir},%{_examplesdir}/%{name}-%{version}}
 # libs without drivers
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
-
-cd gl-manpages-*
-%{__make} install \
-	DESTDIR=$RPM_BUILD_ROOT
-cd ..
 
 %if %{with osmesa}
 install osmesa*/* $RPM_BUILD_ROOT%{_libdir}
@@ -803,8 +793,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/internal/dri_interface.h
 %{_pkgconfigdir}/dri.pc
 %{_pkgconfigdir}/gl.pc
-%{_mandir}/man3/gl[^uX]*.3gl*
-%{_mandir}/man3/glX*.3gl*
 
 %if %{with static}
 %files libGL-static
@@ -823,7 +811,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/glu.h
 %{_includedir}/GL/glu_mangle.h
 %{_pkgconfigdir}/glu.pc
-%{_mandir}/man3/glu*.3gl*
 
 %if %{with static}
 %files libGLU-static
