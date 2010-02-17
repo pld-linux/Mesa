@@ -40,7 +40,7 @@ BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	expat-devel
 %{?with_demos:BuildRequires:	glew-devel}
-BuildRequires:	libdrm-devel >= 2.4.12-3
+BuildRequires:	libdrm-devel >= 2.4.18
 BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
