@@ -21,6 +21,9 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver	7.1.0
 #
+%define		libdrm_ver	2.4.18
+%define		dri2proto_ver	1.99.3
+#
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
@@ -40,7 +43,7 @@ BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	expat-devel
 %{?with_demos:BuildRequires:	glew-devel}
-BuildRequires:	libdrm-devel >= 2.4.18
+BuildRequires:	libdrm-devel >= %{libdrm_ver}
 BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
@@ -53,7 +56,7 @@ BuildRequires:	xorg-lib-libXdamage-devel
 BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXt-devel
 BuildRequires:	xorg-lib-libXxf86vm-devel
-BuildRequires:	xorg-proto-dri2proto-devel >= 1.99.3
+BuildRequires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 BuildRequires:	xorg-proto-glproto-devel
 BuildRequires:	xorg-proto-printproto-devel
 BuildRequires:	xorg-util-makedepend
@@ -120,7 +123,10 @@ License:	MIT
 Group:		X11/Development/Libraries
 # loose dependency on libGL to use with other libGL binaries
 Requires:	OpenGL >= 1.5
+Requires:	libdrm-devel >= %{libdrm_ver}
 Requires:	xorg-lib-libX11-devel
+Requires:	xorg-lib-libXxf86vm-devel
+Requires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 Suggests:	OpenGL-doc-man
 Provides:	OpenGL-GLX-devel = 1.4
 Provides:	OpenGL-devel = 2.1
