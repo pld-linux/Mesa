@@ -125,6 +125,8 @@ Group:		X11/Development/Libraries
 Requires:	OpenGL >= 1.5
 Requires:	libdrm-devel >= %{libdrm_ver}
 Requires:	xorg-lib-libX11-devel
+Requires:	xorg-lib-libXdamage-devel
+Requires:	xorg-lib-libXext-devel
 Requires:	xorg-lib-libXxf86vm-devel
 Requires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 Suggests:	OpenGL-doc-man
