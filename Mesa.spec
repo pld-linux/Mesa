@@ -14,6 +14,7 @@
 %bcond_without	osmesa	# don't build osmesa
 %bcond_with	static
 #
+%define		snap	20100222
 # minimal supported xserver version
 %define		xserver_ver	1.5.0
 # glapi version (glapi tables in dri drivers and libglx must be in sync);
@@ -27,14 +28,18 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	7.7
-Release:	2%{?with_multigl:.mgl}
+Version:	7.8
+Release:	0.%{snap}.1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
-Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	e3fa64a1508bc23dd9de9dd2cea7cfb1
-Source1:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	6fd616b27b9826d0faa23e08e05d9435
+# Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
+## Source0-md5:	e3fa64a1508bc23dd9de9dd2cea7cfb1
+#Source1:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Demos-%{version}.tar.bz2
+## Source1-md5:	6fd616b27b9826d0faa23e08e05d9435
+# git clone git://anongit.freedesktop.org/git/mesa/mesa
+# cd mesa && git archive master --prefix Mesa/ | bzip2 > ../Mesa-$(date +%Y%m%d).tar.bz2
+Source0:	%{name}-%{snap}.tar.bz2
+# Source0-md5:	7c97eb9576bf93a26fa7eca286df7926
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-tgsi_dump.patch
 URL:		http://www.mesa3d.org/
@@ -626,7 +631,8 @@ X.org DRI driver for VMWare.
 Sterownik X.org DRI dla VMware.
 
 %prep
-%setup -q -b1
+%setup -q -n %{name}
+# -b1
 %patch0 -p0
 %patch1 -p1
 
@@ -634,8 +640,9 @@ Sterownik X.org DRI dla VMware.
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
 
 %build
-%{__aclocal}
-%{__autoconf}
+autoreconf --install  
+#%{__aclocal}
+#%{__autoconf}
 
 dri_drivers="i810 i965 mach64 mga r128 r200 r300 r600 radeon savage \
 %if %{without gallium_intel}
@@ -656,49 +663,44 @@ common_flags="\
 	--enable-selinux \
 	--enable-pic \
 	--enable-glx-tls \
+	--disable-glut \
+	--disable-os-mesa \
 	--%{?with_egl:en}%{!?with_egl:dis}able-egl \
 	--with%{!?with_demos:out}-demos"
 
-%if %{with osmesa}
-# osmesa variants
-%configure $common_flags \
+osmesa_common_flags="\
 	--with-driver=osmesa \
 	--disable-asm \
+	--disable-glu"
+
+%if %{with osmesa}
+# osmesa variants
+%configure $common_flags $osmesa_common_flags \
 	--with-osmesa-bits=8
-%{__make} \
-	SRC_DIRS=mesa
+%{__make}
 mv %{_lib} osmesa8
 %{__make} clean
 
-%configure $common_flags \
-	--with-driver=osmesa \
-	--disable-asm \
+%configure $common_flags $osmesa_common_flags \
 	--with-osmesa-bits=16
-%{__make} \
-	SRC_DIRS=mesa
+%{__make}
 mv %{_lib} osmesa16
 %{__make} clean
 
-%configure $common_flags \
-	--with-driver=osmesa \
-	--disable-asm \
+%configure $common_flags $osmesa_common_flags \
 	--with-osmesa-bits=32
-%{__make} \
-	SRC_DIRS=mesa
+%{__make}
 mv %{_lib} osmesa32
 %{__make} clean
 %endif
 
 %configure $common_flags \
-	--enable-glu \
-	--enable-glw \
-	--disable-glut \
 %if %{with gallium}
 	--enable-gallium \
 	--%{?with_gallium_intel:en}%{!?with_gallium_intel:dis}able-gallium-intel \
 	--enable-gallium-svga \
 	--enable-gallium-nouveau \
-	--with-state-trackers=dri \
+	--with-state-trackers=dri,xorg,glx \
 %else
 	--disable-gallium \
 %endif
@@ -722,6 +724,7 @@ install -d $RPM_BUILD_ROOT{%{_bindir},%{_examplesdir}/%{name}-%{version}}
 	DESTDIR=$RPM_BUILD_ROOT
 
 %if %{with osmesa}
+rm -f osmesa*/libGLEW.*
 install osmesa*/* $RPM_BUILD_ROOT%{_libdir}
 %endif
 

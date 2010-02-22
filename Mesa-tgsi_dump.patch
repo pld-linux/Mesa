@@ -1,6 +1,6 @@
---- Mesa-7.7/src/gallium/auxiliary/tgsi/tgsi_dump.c.orig	2009-12-22 03:26:02.000000000 +0100
-+++ Mesa-7.7/src/gallium/auxiliary/tgsi/tgsi_dump.c	2010-01-10 09:40:23.298610151 +0100
-@@ -47,7 +47,7 @@
+--- mesa/src/gallium/auxiliary/tgsi/tgsi_dump.c.org	2010-02-22 22:04:55.733686714 +0100
++++ mesa/src/gallium/auxiliary/tgsi/tgsi_dump.c	2010-02-22 22:05:07.487007669 +0100
+@@ -47,16 +47,16 @@
     
     uint indentation;
  
@@ -9,6 +9,17 @@
  };
  
  static void 
+-dump_ctx_printf(struct dump_ctx *ctx, const char *format, ...)
++dump_ctx_dump_printf(struct dump_ctx *ctx, const char *format, ...)
+ {
+    va_list ap;
+    (void)ctx;
+    va_start(ap, format);
+-   debug_vprintf(format, ap);
++   debug_vdump_printf(format, ap);
+    va_end(ap);
+ }
+ 
 @@ -68,19 +68,19 @@
     uint enum_count )
  {
@@ -39,48 +50,80 @@
  #define ENM(E,ENUMS)    dump_enum( ctx, E, ENUMS, sizeof( ENUMS ) / sizeof( *ENUMS ) )
  
  static const char *processor_type_names[] =
-@@ -278,7 +278,7 @@
+@@ -369,7 +369,7 @@
  {
     struct dump_ctx ctx;
  
 -   ctx.printf = dump_ctx_printf;
-+   ctx.dump_printf = dump_ctx_printf;
++   ctx.dump_printf = dump_ctx_dump_printf;
  
     iter_declaration( &ctx.iter, (struct tgsi_full_declaration *)decl );
  }
-@@ -323,7 +323,7 @@
+@@ -419,7 +419,7 @@
  {
     struct dump_ctx ctx;
  
 -   ctx.printf = dump_ctx_printf;
-+   ctx.dump_printf = dump_ctx_printf;
++   ctx.dump_printf = dump_ctx_dump_printf;
+ 
+    iter_property( &ctx.iter, (struct tgsi_full_property *)prop );
+ }
+@@ -470,7 +470,7 @@
+ {
+    struct dump_ctx ctx;
+ 
+-   ctx.printf = dump_ctx_printf;
++   ctx.dump_printf = dump_ctx_dump_printf;
  
     iter_immediate( &ctx.iter, (struct tgsi_full_immediate *)imm );
  }
-@@ -491,7 +491,7 @@
+@@ -605,7 +605,7 @@
  
     ctx.instno = instno;
     ctx.indent = 0;
 -   ctx.printf = dump_ctx_printf;
-+   ctx.dump_printf = dump_ctx_printf;
++   ctx.dump_printf = dump_ctx_dump_printf;
     ctx.indentation = 0;
  
     iter_instruction( &ctx.iter, (struct tgsi_full_instruction *)inst );
-@@ -525,7 +525,7 @@
+@@ -637,7 +637,7 @@
  
     ctx.instno = 0;
     ctx.indent = 0;
 -   ctx.printf = dump_ctx_printf;
-+   ctx.dump_printf = dump_ctx_printf;
++   ctx.dump_printf = dump_ctx_dump_printf;
     ctx.indentation = 0;
  
     tgsi_iterate_shader( tokens, &ctx.iter );
-@@ -579,7 +579,7 @@
+@@ -652,7 +652,7 @@
+ };
+ 
+ static void
+-str_dump_ctx_printf(struct dump_ctx *ctx, const char *format, ...)
++str_dump_ctx_dump_printf(struct dump_ctx *ctx, const char *format, ...)
+ {
+    struct str_dump_ctx *sctx = (struct str_dump_ctx *)ctx;
+    
+@@ -660,11 +660,11 @@
+       int written;
+       va_list ap;
+       va_start(ap, format);
+-      written = util_vsnprintf(sctx->ptr, sctx->left, format, ap);
++      written = util_vsndump_printf(sctx->ptr, sctx->left, format, ap);
+       va_end(ap);
+ 
+       /* Some complicated logic needed to handle the return value of
+-       * vsnprintf:
++       * vsndump_printf:
+        */
+       if (written > 0) {
+          written = MIN2(sctx->left, written);
+@@ -692,7 +692,7 @@
  
     ctx.base.instno = 0;
     ctx.base.indent = 0;
 -   ctx.base.printf = &str_dump_ctx_printf;
-+   ctx.base.dump_printf = &str_dump_ctx_printf;
++   ctx.base.dump_printf = &str_dump_ctx_dump_printf;
     ctx.base.indentation = 0;
  
     ctx.str = str;
