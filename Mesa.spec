@@ -47,12 +47,13 @@ URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	expat-devel
-%{?with_demos:BuildRequires:	glew-devel}
+#%%{?with_demos:BuildRequires:	glew-devel}
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
 BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
+BuildRequires:	pixman-devel
 BuildRequires:	pkgconfig
 BuildRequires:	python
 BuildRequires:	rpmbuild(macros) >= 1.470
@@ -63,8 +64,8 @@ BuildRequires:	xorg-lib-libXt-devel
 BuildRequires:	xorg-lib-libXxf86vm-devel
 BuildRequires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 BuildRequires:	xorg-proto-glproto-devel
-BuildRequires:	xorg-proto-printproto-devel
 BuildRequires:	xorg-util-makedepend
+BuildRequires:	xorg-xserver-server-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %if %{without gallium}
@@ -640,7 +641,7 @@ Sterownik X.org DRI dla VMware.
 find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
 
 %build
-autoreconf --install  
+autoreconf --install
 #%{__aclocal}
 #%{__autoconf}
 
