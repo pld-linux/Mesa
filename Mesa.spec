@@ -14,7 +14,7 @@
 %bcond_without	osmesa	# don't build osmesa
 %bcond_with	static
 #
-%define		snap	20100222
+%define		snap	20100324
 # minimal supported xserver version
 %define		xserver_ver	1.5.0
 # glapi version (glapi tables in dri drivers and libglx must be in sync);
@@ -39,7 +39,7 @@ Group:		X11/Libraries
 # git clone git://anongit.freedesktop.org/git/mesa/mesa
 # cd mesa && git archive master --prefix Mesa/ | bzip2 > ../Mesa-$(date +%Y%m%d).tar.bz2
 Source0:	%{name}-%{snap}.tar.bz2
-# Source0-md5:	7c97eb9576bf93a26fa7eca286df7926
+# Source0-md5:	d41d8cd98f00b204e9800998ecf8427e
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-tgsi_dump.patch
 URL:		http://www.mesa3d.org/
@@ -747,7 +747,7 @@ rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{
 # strip out undesirable headers
 olddir=$(pwd)
 cd $RPM_BUILD_ROOT%{_includedir}/GL
-rm [a-fh-np-wyz]*.h gg*.h glf*.h
+rm [a-fh-np-wyz]*.h glf*.h
 cd $RPM_BUILD_ROOT%{_libdir}
 cd $olddir
 
@@ -930,6 +930,7 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium}
 %files dri-driver-nouveau
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/drivers/modesetting_drv.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
 %endif
 
@@ -958,6 +959,7 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium}
 %files dri-driver-vmwgfx
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/drivers/vmwgfx_drv.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/vmwgfx_dri.so
 %endif
 
