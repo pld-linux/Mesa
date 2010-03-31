@@ -14,7 +14,6 @@
 %bcond_without	osmesa	# don't build osmesa
 %bcond_with	static
 #
-%define		snap	20100324
 # minimal supported xserver version
 %define		xserver_ver	1.5.0
 # glapi version (glapi tables in dri drivers and libglx must be in sync);
@@ -29,17 +28,13 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.8
-Release:	0.%{snap}.1%{?with_multigl:.mgl}
+Release:	1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
-# Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-## Source0-md5:	e3fa64a1508bc23dd9de9dd2cea7cfb1
-#Source1:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Demos-%{version}.tar.bz2
-## Source1-md5:	6fd616b27b9826d0faa23e08e05d9435
-# git clone git://anongit.freedesktop.org/git/mesa/mesa
-# cd mesa && git archive master --prefix Mesa/ | bzip2 > ../Mesa-$(date +%Y%m%d).tar.bz2
-Source0:	%{name}-%{snap}.tar.bz2
-# Source0-md5:	d41d8cd98f00b204e9800998ecf8427e
+Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
+# Source0-md5:	85cb891eecb89aae4fdd3499cccd934b
+Source1:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Demos-%{version}.tar.bz2
+# Source1-md5:	9fe8ec184c7f78691e43c4c0a7f97d56
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-tgsi_dump.patch
 URL:		http://www.mesa3d.org/
@@ -632,8 +627,7 @@ X.org DRI driver for VMWare.
 Sterownik X.org DRI dla VMware.
 
 %prep
-%setup -q -n %{name}
-# -b1
+%setup -q -b1
 %patch0 -p0
 %patch1 -p1
 
