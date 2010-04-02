@@ -58,7 +58,7 @@ BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXt-devel
 BuildRequires:	xorg-lib-libXxf86vm-devel
 BuildRequires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
-BuildRequires:	xorg-proto-glproto-devel
+BuildRequires:	xorg-proto-glproto-devel >= 1.4.11
 BuildRequires:	xorg-util-makedepend
 BuildRequires:	xorg-xserver-server-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
