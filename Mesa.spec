@@ -27,14 +27,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	7.8
+Version:	7.8.1
 Release:	1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	85cb891eecb89aae4fdd3499cccd934b
+# Source0-md5:	25ec15f8e41fde6d206118cc786dbac4
 Source1:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	9fe8ec184c7f78691e43c4c0a7f97d56
+# Source1-md5:	9ef47f911869657c6bf2f43ebce86b61
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-tgsi_dump.patch
 URL:		http://www.mesa3d.org/
