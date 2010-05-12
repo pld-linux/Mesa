@@ -51,6 +51,7 @@ BuildRequires:	libtool >= 2:1.4d
 BuildRequires:	pixman-devel
 BuildRequires:	pkgconfig
 BuildRequires:	python
+BuildRequires:	python-modules
 BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libXdamage-devel
