@@ -9,6 +9,7 @@
 %bcond_with	egl	# don't build egl
 %bcond_without	gallium	# don't build gallium
 %bcond_with	gallium_intel # gallium i915 driver (but doesn't work with AIGLX)
+%bcond_with	galliun_nouveau
 %bcond_without	motif	# build static libGLw without Motif interface
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
 %bcond_without	osmesa	# don't build osmesa
@@ -697,7 +698,7 @@ mv %{_lib} osmesa32
 	--enable-gallium \
 	--%{?with_gallium_intel:en}%{!?with_gallium_intel:dis}able-gallium-intel \
 	--enable-gallium-svga \
-	--enable-gallium-nouveau \
+%{?with_gallium_nouveau:--enable-gallium-nouveau} \
 	--with-state-trackers=dri,xorg,glx \
 %else
 	--disable-gallium \
@@ -925,10 +926,12 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mga_dri.so
 
 %if %{with gallium}
+%if %{with gallium_nouveau}
 %files dri-driver-nouveau
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/drivers/modesetting_drv.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
+%endif
 %endif
 
 %files dri-driver-savage
