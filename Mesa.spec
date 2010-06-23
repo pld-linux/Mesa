@@ -9,7 +9,7 @@
 %bcond_with	egl	# don't build egl
 %bcond_without	gallium	# don't build gallium
 %bcond_with	gallium_intel # gallium i915 driver (but doesn't work with AIGLX)
-%bcond_with	galliun_nouveau
+%bcond_with	gallium_nouveau
 %bcond_without	motif	# build static libGLw without Motif interface
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
 %bcond_without	osmesa	# don't build osmesa
