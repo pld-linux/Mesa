@@ -5,11 +5,10 @@
 # - subpackage egl?
 #
 # Conditional build:
-%bcond_without	demos	# don't build demos
 %bcond_with	egl	# don't build egl
 %bcond_without	gallium	# don't build gallium
 %bcond_with	gallium_intel # gallium i915 driver (but doesn't work with AIGLX)
-%bcond_with	gallium_nouveau
+%bcond_without	gallium_nouveau
 %bcond_without	motif	# build static libGLw without Motif interface
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
 %bcond_without	osmesa	# don't build osmesa
@@ -26,25 +25,23 @@
 %define		dri2proto_ver	1.99.3
 %define		glproto_ver	1.4.11
 #
+%define		snap		20100701
+#
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	7.8.2
-Release:	1%{?with_multigl:.mgl}
+Version:	7.9
+Release:	0.%{snap}.1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
-Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	6be2d343a0089bfd395ce02aaf8adb57
-Source1:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Demos-%{version}.tar.bz2
-# Source1-md5:	757d9e2e06f48b1a52848be9b0307ced
+#Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
+Source0:	%{name}Lib-%{snap}.tar.bz2
+# Source0-md5:	9923c6618a39a645225b9c64309da6d5
 Patch0:		%{name}-realclean.patch
-Patch1:		%{name}-tgsi_dump.patch
 URL:		http://www.mesa3d.org/
-%{?with_demos:BuildRequires:	OpenGL-glut-devel >= 3.8}
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	expat-devel
-#%%{?with_demos:BuildRequires:	glew-devel}
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
 BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel
@@ -316,19 +313,6 @@ OpenGL utilities from Mesa3D: glxgears and glxinfo.
 
 %description utils -l pl.UTF-8
 Programy narzędziowe OpenGL z projektu Mesa3D: glxgears i glxinfo.
-
-%package demos
-Summary:	Mesa Demos source code
-Summary(pl.UTF-8):	Kod źródłowy programów demonstrujących dla bibliotek Mesa
-License:	various (MIT, SGI, GPL - see copyright notes in sources)
-Group:		Development/Libraries
-Requires:	OpenGL-devel
-
-%description demos
-Demonstration programs for the Mesa libraries in source code form.
-
-%description demos -l pl.UTF-8
-Kod źródłowy programów demonstracyjnych dla bibliotek Mesa.
 
 %package dri-driver-ati-mach64
 Summary:	X.org DRI driver for ATI Mach64 card family
@@ -631,12 +615,8 @@ X.org DRI driver for VMWare.
 Sterownik X.org DRI dla VMware.
 
 %prep
-%setup -q -b1
+%setup -q
 %patch0 -p0
-%patch1 -p1
-
-# fix demos
-find progs -type f|xargs sed -i -e "s,\.\./images/,%{_examplesdir}/%{name}-%{version}/images/,g"
 
 %build
 autoreconf --install
@@ -664,8 +644,7 @@ common_flags="\
 	--enable-glx-tls \
 	--disable-glut \
 	--disable-os-mesa \
-	--%{?with_egl:en}%{!?with_egl:dis}able-egl \
-	--with%{!?with_demos:out}-demos"
+	--%{?with_egl:en}%{!?with_egl:dis}able-egl"
 
 osmesa_common_flags="\
 	--with-driver=osmesa \
@@ -699,7 +678,7 @@ mv %{_lib} osmesa32
 	--%{?with_gallium_intel:en}%{!?with_gallium_intel:dis}able-gallium-intel \
 	--enable-gallium-svga \
 %{?with_gallium_nouveau:--enable-gallium-nouveau} \
-	--with-state-trackers=dri,xorg,glx \
+	--with-state-trackers=dri,glx \
 %else
 	--disable-gallium \
 %endif
@@ -708,38 +687,20 @@ mv %{_lib} osmesa32
 	--with-dri-driverdir=%{_libdir}/xorg/modules/dri
 
 %{__make}
-%{__make} -C progs/xdemos glxgears glxinfo
-%if %{with demos}
-%{__make} -C progs/demos
-%endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-install -d $RPM_BUILD_ROOT{%{_bindir},%{_examplesdir}/%{name}-%{version}}
+install -d $RPM_BUILD_ROOT{%{_examplesdir}/%{name}-%{version}}
 
 # libs without drivers
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
 %if %{with osmesa}
-rm -f osmesa*/libGLEW.*
 install osmesa*/* $RPM_BUILD_ROOT%{_libdir}
 %endif
 
-install progs/xdemos/{glxgears,glxinfo} $RPM_BUILD_ROOT%{_bindir}
-# work on copy to keep -bi --short-circuit working
-rm -rf progs-clean
-install -d progs-clean
-for l in demos glsl osdemos redbook samples xdemos ; do
-	cp -a progs/$l progs-clean/$l
-	%{__make} -C progs-clean/$l clean
-	cp -Rf progs-clean/$l $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/$l
-done
-rm -rf progs-clean
-for l in util images ; do
-	cp -Rf progs/$l $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/$l
-done
 rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{BeOS*,win,cygnus,DJ,dja}}
 
 # strip out undesirable headers
@@ -866,11 +827,6 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %endif
 
-%files utils
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_bindir}/glxgears
-%attr(755,root,root) %{_bindir}/glxinfo
-
 %files dri-driver-ati-mach64
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mach64_dri.so
@@ -929,7 +885,7 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium_nouveau}
 %files dri-driver-nouveau
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/drivers/modesetting_drv.so
+#%attr(755,root,root) %{_libdir}/xorg/modules/drivers/modesetting_drv.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
 %endif
 %endif
@@ -947,6 +903,7 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-swrast
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/swrastg_dri.so
 
 %files dri-driver-tdfx
 %defattr(644,root,root,755)
@@ -959,12 +916,5 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium}
 %files dri-driver-vmwgfx
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/drivers/vmwgfx_drv.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/vmwgfx_dri.so
-%endif
-
-%if %{with demos}
-%files demos
-%defattr(644,root,root,755)
-%{_examplesdir}/%{name}-%{version}
 %endif
