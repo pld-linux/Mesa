@@ -25,7 +25,7 @@
 %define		dri2proto_ver	1.99.3
 %define		glproto_ver	1.4.11
 #
-%define		snap		20100701
+%define		snap		20100822
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
@@ -36,7 +36,7 @@ License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
 Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	9923c6618a39a645225b9c64309da6d5
+# Source0-md5:	c379f09b97e5f80e8a4da3f454ff5740
 Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf
@@ -49,6 +49,7 @@ BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
 BuildRequires:	pixman-devel
 BuildRequires:	pkgconfig
+BuildRequires:	pkgconfig(talloc) >= 2.0.1
 BuildRequires:	python
 BuildRequires:	python-modules
 BuildRequires:	rpmbuild(macros) >= 1.470
