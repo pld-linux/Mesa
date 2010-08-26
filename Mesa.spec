@@ -5,18 +5,23 @@
 # - subpackage egl?
 #
 # Conditional build:
-%bcond_without	demos	# don't build demos
-%bcond_with	egl	# don't build egl
-%bcond_without	gallium	# don't build gallium
-%bcond_with	gallium_intel # gallium i915 driver (but doesn't work with AIGLX)
-%bcond_with	gallium_nouveau
-%bcond_without	motif	# build static libGLw without Motif interface
-%bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
-%bcond_without	osmesa	# don't build osmesa
-%bcond_with	static
+%bcond_without	demos		# don't build demos
+%bcond_with	egl		# don't build egl
+%bcond_without	gallium		# don't build gallium
+%bcond_with	gallium_intel	# gallium i915 driver (but doesn't work with AIGLX)
+%bcond_with	gallium_nouveau	# gallium nouveau driver
+%bcond_without	motif		# build static libGLw without Motif interface
+%bcond_with	multigl		# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
+%bcond_without	osmesa		# don't build osmesa
+%bcond_with	static		# build static libraries
 #
 # minimal supported xserver version
+%if %{with gallium}
+%define		xserver_ver	1.6.0
+%else
 %define		xserver_ver	1.5.0
+%endif
+
 # glapi version (glapi tables in dri drivers and libglx must be in sync);
 # set to current Mesa version on ABI break, when xserver tables get regenerated
 # (until they start to be somehow versioned themselves)
@@ -63,7 +68,7 @@ BuildRequires:	xorg-lib-libXxf86vm-devel
 BuildRequires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 BuildRequires:	xorg-proto-glproto-devel >= %{glproto_ver}
 BuildRequires:	xorg-util-makedepend
-BuildRequires:	xorg-xserver-server-devel
+BuildRequires:	xorg-xserver-server-devel >= %{xserver_ver}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %if %{without gallium}
