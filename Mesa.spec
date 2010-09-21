@@ -25,7 +25,7 @@
 %define		dri2proto_ver	1.99.3
 %define		glproto_ver	1.4.11
 #
-%define		snap		20100915
+%define		snap		20100921
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
@@ -36,7 +36,7 @@ License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
 Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	7cecff912384a85d523dd3265391f6b6
+# Source0-md5:	8a0bd09446e0bc4654889682cc65cb11
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-selinux.patch
 URL:		http://www.mesa3d.org/
