@@ -2,7 +2,6 @@
 # TODO:
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
 # - resurrect static if it's useful
-# - subpackage egl?
 #
 # Conditional build:
 %bcond_with	egl	# don't build egl
@@ -83,6 +82,50 @@ tego stopnia, że Mesa używa składni i automatu OpenGL jest używana z
 autoryzacją Silicon Graphics, Inc. Jednak autor nie posiada licencji
 OpenGL od SGI i nie twierdzi, że Mesa jest kompatybilnym zamiennikiem
 OpenGL ani powiązana z SGI.
+
+%package libEGL
+Summary:	SGI implementation of libEGL OpenGL library
+Summary(pl.UTF-8):	Implementacja SGI biblioteki libEGL ze standardu OpenGL
+License:	SGI Free Software License B v2.0 (MIT-like)
+Group:		Libraries
+Requires:	OpenGL >= 1.2
+Provides:	OpenGL-EGL = 1.0
+
+%description libEGL
+SGI implementation of libEGL OpenGL library.
+
+%description libEGL -l pl.UTF-8
+Implementacja SGI biblioteki libEGL ze standardu OpenGL.
+
+%package libEGL-devel
+Summary:	Header files for SGI libEGL library
+Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki SGI libEGL
+License:	SGI Free Software License B v2.0 (MIT-like)
+Group:		Development/Libraries
+Requires:	%{name}-libEGL = %{version}-%{release}
+Requires:	OpenGL-devel >= 1.2
+Requires:	libstdc++-devel
+Provides:	OpenGL-EGL-devel = 1.0
+
+%description libEGL-devel
+Header files for SGI libEGL library.
+
+%description libEGL-devel -l pl.UTF-8
+Pliki nagłówkowe biblioteki SGI libEGL.
+
+%package libEGL-static
+Summary:	Static SGI libEGL library
+Summary(pl.UTF-8):	Statyczna biblioteka SGI libEGL
+License:	SGI Free Software License B v2.0 (MIT-like)
+Group:		Development/Libraries
+Requires:	%{name}-libEGL-devel = %{version}-%{release}
+Provides:	OpenGL-EGL-static = 1.0
+
+%description libEGL-static
+Static SGI libEGL library.
+
+%description libEGL-static -l pl.UTF-8
+Statyczna biblioteka SGI libEGL.
 
 %package libGL
 Summary:	Free Mesa3D implementation of libGL OpenGL library
@@ -725,6 +768,9 @@ echo %{_libdir}/Mesa >$RPM_BUILD_ROOT%{_sysconfdir}/ld.so.conf.d/Mesa.conf
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%post	libEGL -p /sbin/ldconfig
+%postun	libEGL -p /sbin/ldconfig
+
 %post	libGL -p /sbin/ldconfig
 %postun	libGL -p /sbin/ldconfig
 
@@ -733,6 +779,34 @@ rm -rf $RPM_BUILD_ROOT
 
 %post	libGLw -p /sbin/ldconfig
 %postun	libGLw -p /sbin/ldconfig
+
+%if %{with egl}
+%files libEGL
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libEGL.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libEGL.so.?
+%dir %{_libdir}/egl
+%attr(755,root,root) %{_libdir}/egl/egl_dri2.so
+%attr(755,root,root) %{_libdir}/egl/egl_glx.so
+
+%files libEGL-devel
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libEGL.so
+%attr(755,root,root) %ghost %{_libdir}/libEGL.so.?
+%dir %{_includedir}/EGL
+%{_includedir}/EGL/egl.h
+%{_includedir}/EGL/eglext.h
+%{_includedir}/EGL/eglplatform.h
+%dir %{_includedir}/KHR
+%{_includedir}/KHR/khrplatform.h
+%{_pkgconfigdir}/egl.pc
+
+%if %{with static}
+%files libEGL-static
+%defattr(644,root,root,755)
+%{_libdir}/libEGL.a
+%endif
+%endif
 
 %files libGL
 %defattr(644,root,root,755)
@@ -777,7 +851,7 @@ rm -rf $RPM_BUILD_ROOT
 %files libGLU
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libGLU.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libGLU.so.1
+%attr(755,root,root) %ghost %{_libdir}/libGLU.so.?
 
 %files libGLU-devel
 %defattr(644,root,root,755)
@@ -795,7 +869,7 @@ rm -rf $RPM_BUILD_ROOT
 %files libGLw
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libGLw.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libGLw.so.1
+%attr(755,root,root) %ghost %{_libdir}/libGLw.so.?
 
 %files libGLw-devel
 %defattr(644,root,root,755)
