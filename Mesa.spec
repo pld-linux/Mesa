@@ -4,7 +4,7 @@
 # - resurrect static if it's useful
 #
 # Conditional build:
-%bcond_with	egl	# don't build egl
+%bcond_without	egl	# build egl
 %bcond_without	gallium	# don't build gallium
 %bcond_with	gallium_intel # gallium i915 driver (but doesn't work with AIGLX)
 %bcond_without	gallium_nouveau
