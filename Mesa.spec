@@ -24,18 +24,15 @@
 %define		dri2proto_ver	1.99.3
 %define		glproto_ver	1.4.11
 #
-%define		snap		20100921
-#
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.9
-Release:	0.%{snap}.1%{?with_multigl:.mgl}
+Release:	1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
-#Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	8a0bd09446e0bc4654889682cc65cb11
+Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
+# Source0-md5:	82c740c49d572baa6da2b1a1eee90bca
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-selinux.patch
 URL:		http://www.mesa3d.org/
@@ -744,7 +741,7 @@ install -d $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 	DESTDIR=$RPM_BUILD_ROOT
 
 %if %{with osmesa}
-install osmesa*/* $RPM_BUILD_ROOT%{_libdir}
+install osmesa*/*OSMesa* $RPM_BUILD_ROOT%{_libdir}
 %endif
 
 rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{BeOS*,win,cygnus,DJ,dja}}
