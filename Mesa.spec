@@ -7,6 +7,7 @@
 %bcond_without	egl	# build egl
 %bcond_without	gallium	# don't build gallium
 %bcond_with	gallium_intel # gallium i915 driver (but doesn't work with AIGLX)
+%bcond_with	gallium_radeon
 %bcond_without	gallium_nouveau
 %bcond_without	motif	# build static libGLw without Motif interface
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
@@ -28,7 +29,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.9
-Release:	1%{?with_multigl:.mgl}
+Release:	2%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
@@ -63,6 +64,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %if %{without gallium}
 %undefine	with_gallium_intel
+%undefine	with_gallium_radeon
 %endif
 
 %description
@@ -666,7 +668,11 @@ Sterownik X.org DRI dla VMware.
 %{__aclocal}
 %{__autoconf}
 
-dri_drivers="i810 i965 mach64 mga r128 r200 r300 r600 radeon savage \
+dri_drivers="i810 i965 mach64 mga r128 \
+%if %{without gallium_radeon}
+r200 r300 r600 radeon \
+%endif
+savage \
 %if %{without gallium_intel}
 i915 \
 %endif
@@ -719,6 +725,7 @@ mv %{_lib} osmesa32
 %if %{with gallium}
 	--enable-gallium \
 	--%{?with_gallium_intel:en}%{!?with_gallium_intel:dis}able-gallium-intel \
+	--%{?with_gallium_radeon:en}%{!?with_gallium_radeon:dis}able-gallium-radeon \
 	--enable-gallium-svga \
 %{?with_gallium_nouveau:--enable-gallium-nouveau} \
 	--with-state-trackers=dri,glx \
