@@ -1,0 +1,611 @@
+diff --git a/docs/devinfo.html b/docs/devinfo.html
+index df0e726..2d1c125 100644
+--- a/docs/devinfo.html
++++ b/docs/devinfo.html
+@@ -145,7 +145,7 @@ Make sure the values in src/mesa/main/version.h are correct.
+ </p>
+ 
+ <p>
+-Update the docs/news.html file and docs/download.html files.
++Update docs/news.html.
+ </p>
+ 
+ <p>
+@@ -208,10 +208,11 @@ sftp USERNAME,mesa3d@web.sourceforge.net
+ 
+ <p>
+ Make an announcement on the mailing lists:
+-<em>m</em><em>e</em><em>s</em><em>a</em><em>3</em><em>d</em><em>-</em><em>d</em><em>e</em><em>v</em><em>@</em><em>l</em><em>i</em><em>s</em><em>t</em><em>s</em><em>.</em><em>s</em><em>f</em><em>.</em><em>n</em><em>e</em><em>t</em>,
+-<em>m</em><em>e</em><em>s</em><em>a</em><em>3</em><em>d</em><em>-</em><em>u</em><em>s</em><em>e</em><em>r</em><em>s</em><em>@</em><em>l</em><em>i</em><em>s</em><em>t</em><em>s</em><em>.</em><em>s</em><em>f</em><em>.</em><em>n</em><em>e</em><em>t</em>
++
++<em>m</em><em>e</em><em>s</em><em>a</em><em>-</em><em>d</em><em>e</em><em>v</em><em>@</em><em>l</em><em>i</em><em>s</em><em>t</em><em>s</em><em>.</em><em>f</em><em>r</em><em>e</em><em>e</em><em>d</em><em>e</em><em>s</em><em>k</em><em>t</em><em>o</em><em>p</em><em>.</em><em>o</em><em>r</em><em>g</em>,
++<em>m</em><em>e</em><em>s</em><em>a</em><em>-</em><em>u</em><em>s</em><em>e</em><em>r</em><em>s</em><em>@</em><em>l</em><em>i</em><em>s</em><em>t</em><em>s</em><em>.</em><em>f</em><em>r</em><em>e</em><em>e</em><em>d</em><em>e</em><em>s</em><em>k</em><em>t</em><em>o</em><em>p</em><em>.</em><em>o</em><em>r</em><em>g</em>
+ and
+-<em>m</em><em>e</em><em>s</em><em>a</em><em>3</em><em>d</em><em>-</em><em>a</em><em>n</em><em>n</em><em>o</em><em>u</em><em>n</em><em>c</em><em>e</em><em>@</em><em>l</em><em>i</em><em>s</em><em>t</em><em>s</em><em>.</em><em>s</em><em>f</em><em>.</em><em>n</em><em>e</em><em>t</em>
++<em>m</em><em>e</em><em>s</em><em>a</em><em>-</em><em>a</em><em>n</em><em>n</em><em>o</em><em>u</em><em>n</em><em>c</em><em>e</em><em>@</em><em>l</em><em>i</em><em>s</em><em>t</em><em>s</em><em>.</em><em>f</em><em>r</em><em>e</em><em>e</em><em>d</em><em>e</em><em>s</em><em>k</em><em>t</em><em>o</em><em>p</em><em>.</em><em>o</em><em>r</em><em>g</em>
+ </p>
+ 
+ 
+diff --git a/docs/news.html b/docs/news.html
+index b3fb8b5..72d38ee 100644
+--- a/docs/news.html
++++ b/docs/news.html
+@@ -11,10 +11,18 @@
+ <H1>News</H1>
+ 
+ 
++<h2>October 4, 2010</h2>
++
++<p>
++<a href="relnotes-7.9.html">Mesa 7.9</a> (final) is released.  This is a new
++development release.
++</p>
++
++
+ <h2>September 27, 2010</h2>
+ 
+ <p>
+-<a href="relnotes-7.9.0.html">Mesa 7.9.0-rc1</a> is released.  This is a
++<a href="relnotes-7.9.html">Mesa 7.9.0-rc1</a> is released.  This is a
+ release candidate for the 7.9 development release.
+ </p>
+ 
+diff --git a/docs/relnotes-7.8.2.html b/docs/relnotes-7.8.2.html
+index e1b0f2d..1393b2e 100644
+--- a/docs/relnotes-7.8.2.html
++++ b/docs/relnotes-7.8.2.html
+@@ -26,7 +26,15 @@ for DRI hardware acceleration.
+ 
+ <h2>MD5 checksums</h2>
+ <pre>
+-tbd
++c89b63d253605ed40e8ac370d25a833c  MesaLib-7.8.2.tar.gz
++6be2d343a0089bfd395ce02aaf8adb57  MesaLib-7.8.2.tar.bz2
++a04ad3b06ac5ff3969a003fa7bbf7d5b  MesaLib-7.8.2.zip
++7c213f92efeb471f0331670d5079d4c0  MesaDemos-7.8.2.tar.gz
++757d9e2e06f48b1a52848be9b0307ced  MesaDemos-7.8.2.tar.bz2
++8d0e5cfe68b8ebf90265d350ae2c48b1  MesaDemos-7.8.2.zip
++b74482e3f44f35ed395c4aada4fd8240  MesaGLUT-7.8.2.tar.gz
++a471807b65e49c325808ba4551be93ed  MesaGLUT-7.8.2.tar.bz2
++9f190268c42be582ef66e47365ee61e3  MesaGLUT-7.8.2.zip
+ </pre>
+ 
+ 
+@@ -44,10 +52,95 @@ tbd
+ <ul>
+ <li>Fixed Gallium glDrawPixels(GL_DEPTH_COMPONENT).
+ <li>Fixed Gallium Cell driver to buildable, runable state
++<li>Fixed bad error checking for glFramebufferRenderbuffer(attachment=GL_DEPTH_STENCIL_ATTACHMENT).
++<li>Fixed incorrect Z coordinate handling in "meta" glDraw/CopyPixels.
++    <a href="https://bugs.freedesktop.org/show_bug.cgi?id=23670">Bug
++    #23670</a>.</li>
++
++<li>Assorted i965 driver fixes.
++    Including but not limited to:
++  <ul>
++    <li>Fix scissoring when width or height is
++    0.  <a href="https://bugs.freedesktop.org/show_bug.cgi?id=27643">Bug
++    #27643</a>.
++    <li>Fix bit allocation for number of color regions for
++    ARB_draw_buffers.</li>
++    <li>Set the correct provoking vertex for clipped first-mode
++    trifans.  <a href="https://bugs.freedesktop.org/show_bug.cgi?id=24470">Bug
++    #24470</a>.</li>
++    <li>Use <code>R16G16B16A16_FLOAT</code> for 3-component half-float.</li>
++    <li>Fix assertion for surface tile offset usage on Ironlake.</li>
++    <li>Fix cube map layouts on Ironlake.</li>
++    <li>When an RB gets a new region, clear the old from the state
++    cache.  <a href="https://bugs.freedesktop.org/show_bug.cgi?id=24119">Bug
++    #24119</a>.</li>
++    <li>Reject shaders with uninlined function calls instead of hanging.</li>
++  </ul>
++</li>
++
++<li>Assorted i915 driver fixes.  Including but not limited to:
++  <ul>
++    <li>Fixed texture LOD clamping in i915 driver.
++    <a href="https://bugs.freedesktop.org/show_bug.cgi?id=24846">Bug
++    #24846</a>.</li>
++    <li>Fix off-by-one for drawing rectangle.
++    <a href="https://bugs.freedesktop.org/show_bug.cgi?id=27408">Bug
++    #27408</a>.</li>
++  </ul>
++</li>
++
++<li>Fixed hangs in etracer on 830 and 845
++    chipsets.  <a href="https://bugs.freedesktop.org/show_bug.cgi?id=26557">Bug
++    #26557</a>.</li>
++<li>Fixed tiling of small textures on all Intel drivers.</li>
++<li>Fixed crash in Savage driver when using <code>_mesa_CopyTexImage2D</code>.
++    <a href="https://bugs.freedesktop.org/show_bug.cgi?id=27652">Bug
++    #27652</a>.</li>
++
++<li>Assorted GLX fixes.  Including but not limited to:
++  <ul>
++    <li>Fixed <code>__glXInitializeVisualConfigFromTags</code>'s handling of
++        unrecognized fbconfig tags.</li>
++    <li>Fixed regression with <code>GLX_USE_GL</code>.
++    <li>Fixed config chooser logic for 'mask' matching.</li>
++    <li>Report swap events correctly in direct rendered case (DRI2)</li>
++    <li>Fixed build with dri2proto which doesn't define
++        <code>X_DRI2SwapInterval</code>.</li>
++    <li>Get <code>GLX_SCREEN</code> first in <code>__glXQueryContextInfo</code>.
++        <a href="https://bugs.freedesktop.org/show_bug.cgi?id=14245">Bug
++	#14245</a>.</li>
++  </ul>
++</li>
++
++<li>Assorted GLSL fixes.  Including but not limited to:
++  <ul>
++    <li>Change variable declared assertion into conditional in GLSL
++        compiler.  <a href="https://bugs.freedesktop.org/show_bug.cgi?id=27921">Bug
++        #27921</a>.</li>
++    <li>Fix instruction indexing
++        bugs.  <a href="https://bugs.freedesktop.org/show_bug.cgi?id=27566">Bug
++        #27566</a>.</li>
++    <li>Updated uniform location / offset encoding to be more like
++        other implementations.</li>
++    <li>Don't overwrite a driver's shader infolog with generic failure
++        message.</li>
++  </ul>
++</li>
++
++<li>Fixed OSMesa build for 16 and 32-bit color channel depth.
++<li>Fixed OSMesa build with hidden symbol visibility. libOSMesa no longer links to libGL.
++    <a href="https://bugs.freedesktop.org/show_bug.cgi?id=28305">Bug
++    #28305</a>.
++<li>Fixed handling of multiple render targets in fixed-function
++    texture envrionmnent programs.</li>
++<li>Fixed conversion errors in <code>signed_rgba8888[rev]</code> texel
++    fetch.</li>
++<li>Don't set srcLevel on <code>GL_TEXTURE_RECTANGLE_ARB</code> targets.</li>
++<li>Various build fixes for OpenBSD.</li>
++<li>Various build fixes for OS X.</li>
++<li>Various build fixes for GCC 3.3.</li>
+ </ul>
+ 
+ 
+-<h2>Changes</h2>
+-<p>None.</p>
+ </body>
+ </html>
+diff --git a/docs/relnotes-7.8.3.html b/docs/relnotes-7.8.3.html
+new file mode 100644
+index 0000000..1e9f433
+--- /dev/null
++++ b/docs/relnotes-7.8.3.html
+@@ -0,0 +1,89 @@
++<HTML>
++
++<TITLE>Mesa Release Notes</TITLE>
++
++<head><link rel="stylesheet" type="text/css" href="mesa.css"></head>
++
++<BODY>
++
++<body bgcolor="#eeeeee">
++
++<H1>Mesa 7.8.3 Release Notes / (date tbd)</H1>
++
++<p>
++Mesa 7.8.3 is a bug fix release which fixes bugs found since the 7.8.2 release.
++</p>
++<p>
++Mesa 7.8.3 implements the OpenGL 2.1 API, but the version reported by
++glGetString(GL_VERSION) depends on the particular driver being used.
++Some drivers don't support all the features required in OpenGL 2.1.
++</p>
++<p>
++See the <a href="install.html">Compiling/Installing page</a> for prerequisites
++for DRI hardware acceleration.
++</p>
++
++
++<h2>MD5 checksums</h2>
++<pre>
++x  MesaLib-7.8.3.tar.gz
++x  MesaLib-7.8.3.tar.bz2
++x  MesaLib-7.8.3.zip
++x  MesaDemos-7.8.3.tar.gz
++x  MesaDemos-7.8.3.tar.bz2
++x  MesaDemos-7.8.3.zip
++x  MesaGLUT-7.8.3.tar.gz
++x  MesaGLUT-7.8.3.tar.bz2
++x  MesaGLUT-7.8.3.zip
++</pre>
++
++
++<h2>New features</h2>
++<p>None.</p>
++
++
++<h2>Changes</h2>
++<ul>
++<li>The radeon driver should use less memory when searching for a valid mip
++image.</li>
++</ul>
++
++
++<h2>Bug fixes</h2>
++<ul>
++<li>Fix unsupported FB with D24S8 (bug 
++    <a href="https://bugs.freedesktop.org/show_bug.cgi?id=23670">29116</a>)</li>
++<li>Fix ReadPixels crash when reading depth/stencil from an FBO</li>
++<li>Fixed a bug rendering to 16-bit buffers using swrast.</li>
++<li>Fixed a state tracker/TGSI bug that caused crashes when using Windows'
++    memory debugging features.</li>
++<li>Fixed an issue rendering to 32-bit channels with swrast (bug
++    <a href="https://bugs.freedesktop.org/show_bug.cgi?id=29487">29487</a>)</li>
++<li>GLSL: fix indirect <TT>gl_TextureMatrix</TT> addressing (bug
++    <a href="https://bugs.freedesktop.org/show_bug.cgi?id=28967">28967</a>)</li>
++<li>GLSL: fix for bug
++    <a href="https://bugs.freedesktop.org/show_bug.cgi?id=27216">27216</a></li>
++<li>GLSL: fix zw fragcoord entries in some cases (bug
++    <a href="https://bugs.freedesktop.org/show_bug.cgi?id=29183">29183</a>)</li>
++<li>Fix texture env generation in some cases (bug
++    <a href="https://bugs.freedesktop.org/show_bug.cgi?id=28169">28169</a>)</li>
++<li>osmesa: a fix for calling <TT>OSMesaMakeCurrent</TT> twice was applied (bug 
++    <a href="https://bugs.freedesktop.org/show_bug.cgi?id=10966">10966</a></li>
++<li>A bug was fixed which could cause Mesa to ignore the
++    <TT>MESA_EXTENSION_OVERRIDE</TT> environment variable.</li>
++<li>A bug related to specular highlights on backfaces was fixed.</li>
++<li>A radeon-specific issue with <TT>glCopyTex(Sub)Image</TT> was
++    corrected.</li>
++<li>radeon/wine: flush command stream in more cases, fixing wine d3d9
++    tests.</li>
++<li>r600: fix sin+cos normalization.</li>
++<li>r600: (properly) ignore <TT>GL_COORD_REPLACE</TT> when point sprites are
++    disabled.</li>
++<li>radeon: avoid flushing when the context is not current.</li>
++<li>r300c: a bug affecting unaligned BOs was fixed.</li>
++<li>r300c: a hardlock caused by ARB_half_float_vertex incorrectly advertised on some chipsets.</li>
++</ul>
++
++
++</body>
++</html>
+diff --git a/docs/relnotes-7.9.html b/docs/relnotes-7.9.html
+index b09fb1d..fe1fd5e 100644
+--- a/docs/relnotes-7.9.html
++++ b/docs/relnotes-7.9.html
+@@ -28,12 +28,12 @@ for DRI hardware acceleration.
+ 
+ <h2>MD5 checksums</h2>
+ <pre>
+-f1f01a7baec255f13e9468fb4b05922a  MesaLib-7.9-rc1.tar.gz
+-7ffbda3b7056c60b8f87e3082d853af1  MesaLib-7.9-rc1.tar.bz2
+-9d4650df4e5b530178d6fde840f76664  MesaLib-7.9-rc1.zip
+-a81c2e7a0c7832e67c768d6f209f2c8f  MesaGLUT-7.9-rc1.tar.gz
+-b4c1c2f0b47a07be10fa2dd42e6a63d7  MesaGLUT-7.9-rc1.tar.bz2
+-c9dd7419a19bcb24a1fe556ec2e78451  MesaGLUT-7.9-rc1.zip
++ed65ab425b25895c7f473d0a5e6e64f8  MesaLib-7.9.tar.gz
++82c740c49d572baa6da2b1a1eee90bca  MesaLib-7.9.tar.bz2
++cd2b6ecec759b0457475e94bbb38fedb  MesaLib-7.9.zip
++7b54af9fb9b1f6a1a65db2520f50848f  MesaGLUT-7.9.tar.gz
++20d07419d1929f833fdb36bced290ad5  MesaGLUT-7.9.tar.bz2
++62a7edecd7c92675cd6029b05217eb0a  MesaGLUT-7.9.zip
+ </pre>
+ 
+ 
+diff --git a/docs/relnotes.html b/docs/relnotes.html
+index 47e7f80..4487af9 100644
+--- a/docs/relnotes.html
++++ b/docs/relnotes.html
+@@ -14,6 +14,7 @@ The release notes summarize what's new or changed in each Mesa release.
+ 
+ <UL>
+ <LI><A HREF="relnotes-7.9.html">7.9 release notes</A>
++<LI><A HREF="relnotes-7.8.3.html">7.8.3 release notes</A>
+ <LI><A HREF="relnotes-7.8.2.html">7.8.2 release notes</A>
+ <LI><A HREF="relnotes-7.8.1.html">7.8.1 release notes</A>
+ <LI><A HREF="relnotes-7.8.html">7.8 release notes</A>
+diff --git a/src/gallium/state_trackers/egl/common/egl_g3d_api.c b/src/gallium/state_trackers/egl/common/egl_g3d_api.c
+index c0164da..3bde397 100644
+--- a/src/gallium/state_trackers/egl/common/egl_g3d_api.c
++++ b/src/gallium/state_trackers/egl/common/egl_g3d_api.c
+@@ -609,8 +609,10 @@ egl_g3d_wait_client(_EGLDriver *drv, _EGLDisplay *dpy, _EGLContext *ctx)
+ 
+    gctx->stctxi->flush(gctx->stctxi,
+          PIPE_FLUSH_RENDER_CACHE | PIPE_FLUSH_FRAME, &fence);
+-   screen->fence_finish(screen, fence, 0);
+-   screen->fence_reference(screen, &fence, NULL);
++   if (fence) {
++      screen->fence_finish(screen, fence, 0);
++      screen->fence_reference(screen, &fence, NULL);
++   }
+ 
+    return EGL_TRUE;
+ }
+diff --git a/src/gallium/state_trackers/vega/vg_manager.c b/src/gallium/state_trackers/vega/vg_manager.c
+index e799674..232deef 100644
+--- a/src/gallium/state_trackers/vega/vg_manager.c
++++ b/src/gallium/state_trackers/vega/vg_manager.c
+@@ -352,7 +352,7 @@ vg_api_create_context(struct st_api *stapi, struct st_manager *smapi,
+       return NULL;
+ 
+    /* only 1.0 is supported */
+-   if (attribs->major != 1 || attribs->minor > 0)
++   if (attribs->major > 1 || (attribs->major == 1 && attribs->minor > 0))
+       return NULL;
+ 
+    pipe = smapi->screen->context_create(smapi->screen, NULL);
+diff --git a/src/gallium/state_trackers/xorg/xorg_crtc.c b/src/gallium/state_trackers/xorg/xorg_crtc.c
+index 26a907f..c65da71 100644
+--- a/src/gallium/state_trackers/xorg/xorg_crtc.c
++++ b/src/gallium/state_trackers/xorg/xorg_crtc.c
+@@ -234,6 +234,10 @@ crtc_load_cursor_argb_ga3d(xf86CrtcPtr crtc, CARD32 * image)
+ 		   64, 64, (void*)image, 64 * 4, 0, 0);
+     ms->ctx->transfer_unmap(ms->ctx, transfer);
+     ms->ctx->transfer_destroy(ms->ctx, transfer);
++
++    if (crtc->cursor_shown)
++	drmModeSetCursor(ms->fd, crtcp->drm_crtc->crtc_id,
++			 crtcp->cursor_handle, 64, 64);
+ }
+ 
+ #if HAVE_LIBKMS
+@@ -271,6 +275,10 @@ crtc_load_cursor_argb_kms(xf86CrtcPtr crtc, CARD32 * image)
+     memcpy(ptr, image, 64*64*4);
+     kms_bo_unmap(crtcp->cursor_bo);
+ 
++    if (crtc->cursor_shown)
++	drmModeSetCursor(ms->fd, crtcp->drm_crtc->crtc_id,
++			 crtcp->cursor_handle, 64, 64);
++
+     return;
+ 
+ err_bo_destroy:
+diff --git a/src/gallium/state_trackers/xorg/xorg_driver.c b/src/gallium/state_trackers/xorg/xorg_driver.c
+index e10ff2f..3a5db98 100644
+--- a/src/gallium/state_trackers/xorg/xorg_driver.c
++++ b/src/gallium/state_trackers/xorg/xorg_driver.c
+@@ -369,6 +369,7 @@ drv_pre_init(ScrnInfoPtr pScrn, int flags)
+     ms = modesettingPTR(pScrn);
+     ms->pEnt = pEnt;
+     ms->cust = cust;
++    ms->fb_id = -1;
+ 
+     pScrn->displayWidth = 640;	       /* default it */
+ 
+@@ -402,19 +403,6 @@ drv_pre_init(ScrnInfoPtr pScrn, int flags)
+     if (!drv_init_drm(pScrn))
+ 	return FALSE;
+ 
+-    use3D = cust ? !cust->no_3d : TRUE;
+-    ms->from_3D = xf86GetOptValBool(ms->Options, OPTION_3D_ACCEL,
+-				    &use3D) ?
+-	X_CONFIG : X_PROBED;
+-
+-    ms->no3D = !use3D;
+-
+-    if (!drv_init_resource_management(pScrn)) {
+-	xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Could not init "
+-					       "Gallium3D or libKMS.");
+-	return FALSE;
+-    }
+-
+     pScrn->monitor = pScrn->confScreen->monitor;
+     pScrn->progClock = TRUE;
+     pScrn->rgbBits = 8;
+@@ -449,6 +437,19 @@ drv_pre_init(ScrnInfoPtr pScrn, int flags)
+     memcpy(ms->Options, drv_options, sizeof(drv_options));
+     xf86ProcessOptions(pScrn->scrnIndex, pScrn->options, ms->Options);
+ 
++    use3D = cust ? !cust->no_3d : TRUE;
++    ms->from_3D = xf86GetOptValBool(ms->Options, OPTION_3D_ACCEL,
++				    &use3D) ?
++	X_CONFIG : X_PROBED;
++
++    ms->no3D = !use3D;
++
++    if (!drv_init_resource_management(pScrn)) {
++	xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "Could not init "
++					       "Gallium3D or libKMS.");
++	return FALSE;
++    }
++
+     /* Allocate an xf86CrtcConfig */
+     xf86CrtcConfigInit(pScrn, &crtc_config_funcs);
+     xf86_config = XF86_CRTC_CONFIG_PTR(pScrn);
+@@ -791,7 +792,9 @@ drv_screen_init(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
+     if (!ms->SWCursor)
+ 	xf86_cursors_init(pScreen, 64, 64,
+ 			  HARDWARE_CURSOR_SOURCE_MASK_INTERLEAVE_64 |
+-			  HARDWARE_CURSOR_ARGB);
++			  HARDWARE_CURSOR_ARGB |
++			  ((cust && cust->unhidden_hw_cursor_update) ?
++			   HARDWARE_CURSOR_UPDATE_UNHIDDEN : 0));
+ 
+     /* Must force it before EnterVT, so we are in control of VT and
+      * later memory should be bound when allocating, e.g rotate_mem */
+@@ -862,8 +865,10 @@ drv_leave_vt(int scrnIndex, int flags)
+ 	}
+     }
+ 
+-    drmModeRmFB(ms->fd, ms->fb_id);
+-    ms->fb_id = -1;
++    if (ms->fb_id != -1) {
++	drmModeRmFB(ms->fd, ms->fb_id);
++	ms->fb_id = -1;
++    }
+ 
+     /* idle hardware */
+     if (!ms->kms)
+@@ -944,7 +949,6 @@ drv_close_screen(int scrnIndex, ScreenPtr pScreen)
+     }
+ #endif
+ 
+-    drmModeRmFB(ms->fd, ms->fb_id);
+     ms->destroy_front_buffer(pScrn);
+ 
+     if (ms->exa)
+diff --git a/src/gallium/state_trackers/xorg/xorg_tracker.h b/src/gallium/state_trackers/xorg/xorg_tracker.h
+index be1a9fd..a3fb5e5 100644
+--- a/src/gallium/state_trackers/xorg/xorg_tracker.h
++++ b/src/gallium/state_trackers/xorg/xorg_tracker.h
+@@ -76,6 +76,7 @@ typedef struct _CustomizerRec
+     Bool dirty_throttling;
+     Bool swap_throttling;
+     Bool no_3d;
++    Bool unhidden_hw_cursor_update;
+     Bool (*winsys_pre_init) (struct _CustomizerRec *cust, int fd);
+     Bool (*winsys_screen_init)(struct _CustomizerRec *cust);
+     Bool (*winsys_screen_close)(struct _CustomizerRec *cust);
+diff --git a/src/gallium/targets/egl/Makefile b/src/gallium/targets/egl/Makefile
+index 47c24ce..38e60db 100644
+--- a/src/gallium/targets/egl/Makefile
++++ b/src/gallium/targets/egl/Makefile
+@@ -24,7 +24,9 @@ common_CPPFLAGS := \
+ 	-I$(TOP)/src/gallium/auxiliary \
+ 	-I$(TOP)/src/gallium/drivers \
+ 	-I$(TOP)/src/gallium/include \
+-	-I$(TOP)/src/gallium/winsys
++	-I$(TOP)/src/gallium/winsys \
++	$(LIBDRM_CFLAGS)
++
+ common_SYS :=
+ common_LIBS := \
+ 	$(TOP)/src/gallium/drivers/identity/libidentity.a \
+@@ -41,11 +43,11 @@ egl_SYS := -lm $(DLOPEN_LIBS) -L$(TOP)/$(LIB_DIR) -lEGL
+ egl_LIBS := $(TOP)/src/gallium/state_trackers/egl/libegl.a
+ 
+ ifneq ($(findstring x11, $(EGL_PLATFORMS)),)
+-egl_SYS += -lX11 -lXext -lXfixes
++egl_SYS += -lX11 -lXext -lXfixes $(LIBDRM_LIB)
+ egl_LIBS += $(TOP)/src/gallium/winsys/sw/xlib/libws_xlib.a
+ endif
+-ifneq ($(findstring kms, $(EGL_PLATFORMS)),)
+-egl_SYS += -ldrm
++ifneq ($(findstring drm, $(EGL_PLATFORMS)),)
++egl_SYS += $(LIBDRM_LIB)
+ endif
+ ifneq ($(findstring fbdev, $(EGL_PLATFORMS)),)
+ egl_LIBS += $(TOP)/src/gallium/winsys/sw/fbdev/libfbdev.a
+diff --git a/src/gallium/targets/xorg-vmwgfx/vmw_ctrl.c b/src/gallium/targets/xorg-vmwgfx/vmw_ctrl.c
+index 237b308..9c075b5 100644
+--- a/src/gallium/targets/xorg-vmwgfx/vmw_ctrl.c
++++ b/src/gallium/targets/xorg-vmwgfx/vmw_ctrl.c
+@@ -32,6 +32,7 @@
+  *      allows X clients to communicate with the driver.
+  */
+ 
++#include <xorg-server.h>
+ #include "dixstruct.h"
+ #include "extnsionst.h"
+ #include <X11/X.h>
+diff --git a/src/gallium/targets/xorg-vmwgfx/vmw_screen.c b/src/gallium/targets/xorg-vmwgfx/vmw_screen.c
+index 8173908..7662203 100644
+--- a/src/gallium/targets/xorg-vmwgfx/vmw_screen.c
++++ b/src/gallium/targets/xorg-vmwgfx/vmw_screen.c
+@@ -245,6 +245,7 @@ vmw_screen_pre_init(ScrnInfoPtr pScrn, int flags)
+     cust->winsys_enter_vt = vmw_screen_enter_vt;
+     cust->winsys_leave_vt = vmw_screen_leave_vt;
+     cust->no_3d = TRUE;
++    cust->unhidden_hw_cursor_update = TRUE;
+     vmw->pScrn = pScrn;
+ 
+     pScrn->driverPrivate = cust;
+diff --git a/src/mesa/drivers/dri/r200/r200_swtcl.c b/src/mesa/drivers/dri/r200/r200_swtcl.c
+index dbf4ad4..effe6fb 100644
+--- a/src/mesa/drivers/dri/r200/r200_swtcl.c
++++ b/src/mesa/drivers/dri/r200/r200_swtcl.c
+@@ -613,6 +613,9 @@ static void r200RasterPrimitive( GLcontext *ctx, GLuint hwprim )
+    r200ContextPtr rmesa = R200_CONTEXT(ctx);
+ 
+    radeon_prepare_render(&rmesa->radeon);
++   if (rmesa->radeon.NewGLState)
++      r200ValidateState( ctx );
++
+ 
+    if (rmesa->radeon.swtcl.hw_primitive != hwprim) {
+       /* need to disable perspective-correct texturing for point sprites */
+diff --git a/src/mesa/drivers/dri/r200/r200_tcl.c b/src/mesa/drivers/dri/r200/r200_tcl.c
+index 4ae0f30..ba54177 100644
+--- a/src/mesa/drivers/dri/r200/r200_tcl.c
++++ b/src/mesa/drivers/dri/r200/r200_tcl.c
+@@ -265,6 +265,8 @@ void r200TclPrimitive( GLcontext *ctx,
+    GLuint newprim = hw_prim | R200_VF_TCL_OUTPUT_VTX_ENABLE;
+ 
+    radeon_prepare_render(&rmesa->radeon);
++   if (rmesa->radeon.NewGLState)
++      r200ValidateState( ctx );
+ 
+    if (newprim != rmesa->tcl.hw_primitive ||
+        !discrete_prim[hw_prim&0xf]) {
+diff --git a/src/mesa/drivers/dri/radeon/radeon_common_context.c b/src/mesa/drivers/dri/radeon/radeon_common_context.c
+index 85e4988..8804b9c 100644
+--- a/src/mesa/drivers/dri/radeon/radeon_common_context.c
++++ b/src/mesa/drivers/dri/radeon/radeon_common_context.c
+@@ -521,6 +521,7 @@ void radeon_prepare_render(radeonContextPtr radeon)
+     __DRIcontext *driContext = radeon->dri.context;
+     __DRIdrawable *drawable;
+     __DRIscreen *screen;
++    struct radeon_framebuffer *draw;
+ 
+     screen = driContext->driScreenPriv;
+     if (!screen->dri2.loader)
+@@ -531,9 +532,10 @@ void radeon_prepare_render(radeonContextPtr radeon)
+ 	if (drawable->lastStamp != drawable->dri2.stamp)
+ 	    radeon_update_renderbuffers(driContext, drawable, GL_FALSE);
+ 
+-	/* Intel driver does the equivalent of this, no clue if it is needed:
+-	 * radeon_draw_buffer(radeon->glCtx, &(drawable->driverPrivate)->base);
+-	 */
++	/* Intel driver does the equivalent of this, no clue if it is needed:*/
++	draw = drawable->driverPrivate;
++	radeon_draw_buffer(radeon->glCtx, &draw->base);
++
+ 	driContext->dri2.draw_stamp = drawable->dri2.stamp;
+     }
+ 
+diff --git a/src/mesa/state_tracker/st_manager.c b/src/mesa/state_tracker/st_manager.c
+index 66e32b4..cd418a0 100644
+--- a/src/mesa/state_tracker/st_manager.c
++++ b/src/mesa/state_tracker/st_manager.c
+@@ -486,9 +486,18 @@ st_context_notify_invalid_framebuffer(struct st_context_iface *stctxi,
+    stfb = st_ws_framebuffer(st->ctx->WinSysDrawBuffer);
+    if (!stfb || stfb->iface != stfbi)
+       stfb = st_ws_framebuffer(st->ctx->WinSysReadBuffer);
+-   assert(stfb && stfb->iface == stfbi);
+ 
+-   p_atomic_set(&stfb->revalidate, TRUE);
++   if (stfb && stfb->iface == stfbi) {
++      p_atomic_set(&stfb->revalidate, TRUE);
++   }
++   else {
++      /* This function is probably getting called when we've detected a
++       * change in a window's size but the currently bound context is
++       * not bound to that window.
++       * If the st_framebuffer_iface structure had a pointer to the
++       * corresponding st_framebuffer we'd be able to handle this.
++       */
++   }
+ }
+ 
+ static void
+diff --git a/src/mesa/swrast/s_texfilter.c b/src/mesa/swrast/s_texfilter.c
+index 3fc554c..198f0e2 100644
+--- a/src/mesa/swrast/s_texfilter.c
++++ b/src/mesa/swrast/s_texfilter.c
+@@ -2972,11 +2972,16 @@ choose_depth_texture_level(const struct gl_texture_object *tObj, GLfloat lambda)
+ {
+    GLint level;
+ 
+-   lambda = CLAMP(lambda, tObj->MinLod, tObj->MaxLod);
+-
+-   level = (GLint) lambda;
+-
+-   level = CLAMP(level, tObj->BaseLevel, tObj->_MaxLevel);
++   if (tObj->MinFilter == GL_NEAREST || tObj->MinFilter == GL_LINEAR) {
++      /* no mipmapping - use base level */
++      level = tObj->BaseLevel;
++   }
++   else {
++      /* choose mipmap level */
++      lambda = CLAMP(lambda, tObj->MinLod, tObj->MaxLod);
++      level = (GLint) lambda;
++      level = CLAMP(level, tObj->BaseLevel, tObj->_MaxLevel);
++   }
+ 
+    return level;
+ }
