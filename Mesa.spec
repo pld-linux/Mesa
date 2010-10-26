@@ -790,7 +790,7 @@ rm -rf $RPM_BUILD_ROOT
 %files libEGL
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libEGL.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libEGL.so.?
+%attr(755,root,root) %ghost %{_libdir}/libEGL.so.1
 %dir %{_libdir}/egl
 %attr(755,root,root) %{_libdir}/egl/egl_dri2.so
 %attr(755,root,root) %{_libdir}/egl/egl_glx.so
@@ -798,7 +798,6 @@ rm -rf $RPM_BUILD_ROOT
 %files libEGL-devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libEGL.so
-%attr(755,root,root) %ghost %{_libdir}/libEGL.so.?
 %dir %{_includedir}/EGL
 %{_includedir}/EGL/egl.h
 %{_includedir}/EGL/eglext.h
@@ -857,7 +856,7 @@ rm -rf $RPM_BUILD_ROOT
 %files libGLU
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libGLU.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libGLU.so.?
+%attr(755,root,root) %ghost %{_libdir}/libGLU.so.1
 
 %files libGLU-devel
 %defattr(644,root,root,755)
@@ -875,7 +874,7 @@ rm -rf $RPM_BUILD_ROOT
 %files libGLw
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libGLw.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libGLw.so.?
+%attr(755,root,root) %ghost %{_libdir}/libGLw.so.1
 
 %files libGLw-devel
 %defattr(644,root,root,755)
@@ -896,7 +895,7 @@ rm -rf $RPM_BUILD_ROOT
 %files libOSMesa
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libOSMesa*.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libOSMesa*.so.[0-9]
+%attr(755,root,root) %ghost %{_libdir}/libOSMesa*.so.7
 
 %files libOSMesa-devel
 %defattr(644,root,root,755)
