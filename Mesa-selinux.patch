@@ -1,48 +1,13 @@
---- configure.ac.orig	2010-08-30 22:19:47.937720469 +0200
-+++ configure.ac	2010-08-30 22:34:04.557727158 +0200
-@@ -429,6 +429,7 @@
-     SELINUX_LIBS="-lselinux"
-     DEFINES="$DEFINES -DMESA_SELINUX"
- fi
-+    SELINUX_LIBS="-lselinux"
- 
- dnl
- dnl Driver configuration. Options are xlib, dri and osmesa right now.
-@@ -568,11 +569,11 @@
-         PKG_CHECK_MODULES([XLIBGL], [x11 xext])
-         GL_PC_REQ_PRIV="x11 xext"
-         X11_INCLUDES="$X11_INCLUDES $XLIBGL_CFLAGS"
--        GL_LIB_DEPS="$XLIBGL_LIBS"
-+        GL_LIB_DEPS="$XLIBGL_LIBS $SELINUX_LIBS"
-     else
-         # should check these...
-         X11_INCLUDES="$X11_INCLUDES $X_CFLAGS"
--        GL_LIB_DEPS="$X_LIBS -lX11 -lXext"
-+        GL_LIB_DEPS="$X_LIBS -lX11 -lXext $SELINUX_LIBS"
-         GL_PC_LIB_PRIV="$GL_LIB_DEPS"
-         GL_PC_CFLAGS="$X11_INCLUDES"
-     fi
-@@ -610,7 +611,7 @@
-         PKG_CHECK_MODULES([DRIGL], [$dri_modules])
-         GL_PC_REQ_PRIV="$GL_PC_REQ_PRIV $dri_modules"
-         X11_INCLUDES="$X11_INCLUDES $DRIGL_CFLAGS"
--        GL_LIB_DEPS="$DRIGL_LIBS"
-+        GL_LIB_DEPS="$DRIGL_LIBS $SELINUX_LIBS"
-     else
-         # should check these...
-         X11_INCLUDES="$X11_INCLUDES $X_CFLAGS"
-@@ -623,12 +624,12 @@
-             PKG_CHECK_MODULES([XCB],[x11-xcb xcb-glx])
-             GL_PC_REQ_PRIV="$GL_PC_REQ_PRIV x11-xcb xcb-glx"
-             X11_INCLUDES="$X11_INCLUDES $XCB_CFLAGS"
--            GL_LIB_DEPS="$GL_LIB_DEPS $XCB_LIBS"
-+            GL_LIB_DEPS="$GL_LIB_DEPS $XCB_LIBS $SELINUX_LIBS"
-         fi
+--- Mesa-7.9/configure.ac.orig	2010-10-05 03:58:00.000000000 +0200
++++ Mesa-7.9/configure.ac	2010-10-27 08:04:55.739734339 +0200
+@@ -667,8 +667,8 @@
      fi
  
      # need DRM libs, -lpthread, etc.
 -    GL_LIB_DEPS="$GL_LIB_DEPS $LIBDRM_LIBS -lm -lpthread $DLOPEN_LIBS"
-+    GL_LIB_DEPS="$GL_LIB_DEPS $LIBDRM_LIBS -lm -lpthread $DLOPEN_LIBS $SELINUX_LIBS"
-     GL_PC_LIB_PRIV="-lm -lpthread $DLOPEN_LIBS"
+-    GL_PC_LIB_PRIV="-lm -lpthread $DLOPEN_LIBS"
++    GL_LIB_DEPS="$GL_LIB_DEPS $SELINUX_LIBS $LIBDRM_LIBS -lm -lpthread $DLOPEN_LIBS"
++    GL_PC_LIB_PRIV="$SELINUX_LIBS -lm -lpthread $DLOPEN_LIBS"
      GLESv1_CM_LIB_DEPS="$LIBDRM_LIBS -lm -lpthread $DLOPEN_LIBS"
      GLESv1_CM_PC_LIB_PRIV="-lm -lpthread $DLOPEN_LIBS"
+     GLESv2_LIB_DEPS="$LIBDRM_LIBS -lm -lpthread $DLOPEN_LIBS"

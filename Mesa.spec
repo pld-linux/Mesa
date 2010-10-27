@@ -6,13 +6,13 @@
 # Conditional build:
 %bcond_without	egl	# build egl
 %bcond_without	gallium	# don't build gallium
-%bcond_with	gallium_intel # gallium i915 driver (but doesn't work with AIGLX)
-%bcond_with	gallium_radeon
-%bcond_without	gallium_nouveau
+%bcond_with	gallium_intel	# gallium i915 driver (but doesn't work with AIGLX)
+%bcond_with	gallium_radeon	# gallium radeon driver
+%bcond_without	gallium_nouveau	# gallium nouveau driver
 %bcond_without	motif	# build static libGLw without Motif interface
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
 %bcond_without	osmesa	# don't build osmesa
-%bcond_with	static
+%bcond_with	static	# static libraries
 #
 # minimal supported xserver version
 %define		xserver_ver	1.5.0
@@ -662,11 +662,10 @@ Sterownik X.org DRI dla VMware.
 %prep
 %setup -q
 %patch0 -p0
-%patch1 -p0
+%patch1 -p1
 %patch2 -p1
 
 %build
-#autoreconf --install
 %{__aclocal}
 %{__autoconf}
 
