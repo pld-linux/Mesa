@@ -1,3 +1,32 @@
+diff --git a/Makefile b/Makefile
+index b8069f9..b13ed33 100644
+--- a/Makefile
++++ b/Makefile
+@@ -347,23 +347,19 @@ GALLIUM_FILES = \
+ 
+ DRI_FILES = \
+ 	$(DIRECTORY)/include/GL/internal/dri_interface.h		\
+-	$(DIRECTORY)/include/GL/internal/glcore.h			\
+ 	$(DIRECTORY)/include/GL/internal/sarea.h			\
+ 	$(DIRECTORY)/src/glx/Makefile					\
+-	$(DIRECTORY)/src/glx/Makefile					\
+ 	$(DIRECTORY)/src/glx/*.[ch]					\
+ 	$(DIRECTORY)/src/mesa/drivers/dri/Makefile			\
+ 	$(DIRECTORY)/src/mesa/drivers/dri/Makefile.template		\
+ 	$(DIRECTORY)/src/mesa/drivers/dri/dri.pc.in			\
+-	$(DIRECTORY)/src/mesa/drivers/dri/common/xmlpool/*.[ch]		\
+ 	$(DIRECTORY)/src/mesa/drivers/dri/common/xmlpool/*.po		\
+ 	$(DIRECTORY)/src/mesa/drivers/dri/*/*.[chS]			\
+ 	$(DIRECTORY)/src/mesa/drivers/dri/*/*.cpp			\
+ 	$(DIRECTORY)/src/mesa/drivers/dri/*/*/*.[chS]			\
+ 	$(DIRECTORY)/src/mesa/drivers/dri/*/Makefile			\
+ 	$(DIRECTORY)/src/mesa/drivers/dri/*/*/Makefile			\
+-	$(DIRECTORY)/src/mesa/drivers/dri/*/Doxyfile			\
+-	$(DIRECTORY)/src/mesa/drivers/dri/*/server/*.[ch]
++	$(DIRECTORY)/src/mesa/drivers/dri/*/Doxyfile
+ 
+ SGI_GLU_FILES = \
+ 	$(DIRECTORY)/src/glu/Makefile					\
 diff --git a/docs/devinfo.html b/docs/devinfo.html
 index df0e726..2d1c125 100644
 --- a/docs/devinfo.html
@@ -299,6 +328,63 @@ index 47e7f80..4487af9 100644
  <LI><A HREF="relnotes-7.8.2.html">7.8.2 release notes</A>
  <LI><A HREF="relnotes-7.8.1.html">7.8.1 release notes</A>
  <LI><A HREF="relnotes-7.8.html">7.8 release notes</A>
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index 9c4ff56..4a6506c 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -741,7 +741,7 @@ dri2_create_screen(_EGLDisplay *disp)
+    if (dri2_dpy->dri2->base.version >= 2)
+       api_mask = dri2_dpy->dri2->getAPIMask(dri2_dpy->dri_screen);
+    else
+-      api_mask = __DRI_API_OPENGL;
++      api_mask = 1 << __DRI_API_OPENGL;
+ 
+    disp->ClientAPIsMask = 0;
+    if (api_mask & (1 <<__DRI_API_OPENGL))
+diff --git a/src/egl/main/eglcontext.c b/src/egl/main/eglcontext.c
+index bc22913..763b1b3 100644
+--- a/src/egl/main/eglcontext.c
++++ b/src/egl/main/eglcontext.c
+@@ -272,10 +272,6 @@ _eglCheckMakeCurrent(_EGLContext *ctx, _EGLSurface *draw, _EGLSurface *read)
+    if (!surfaceless && (draw == NULL || read == NULL))
+       return _eglError(EGL_BAD_MATCH, "eglMakeCurrent");
+ 
+-   /* context stealing from another thread is not allowed */
+-   if (ctx->Binding && ctx->Binding != t)
+-      return _eglError(EGL_BAD_ACCESS, "eglMakeCurrent");
+-
+    /*
+     * The spec says
+     *
+@@ -283,16 +279,23 @@ _eglCheckMakeCurrent(_EGLContext *ctx, _EGLSurface *draw, _EGLSurface *read)
+     * bound to contexts in another thread, an EGL_BAD_ACCESS error is
+     * generated."
+     *
+-    * But it also says
++    * and
+     *
+     * "at most one context may be bound to a particular surface at a given
+     * time"
+-    *
+-    * The latter is more restrictive so we can check only the latter case.
+     */
+-   if ((draw && draw->CurrentContext && draw->CurrentContext != ctx) ||
+-       (read && read->CurrentContext && read->CurrentContext != ctx))
++   if (ctx->Binding && ctx->Binding != t)
+       return _eglError(EGL_BAD_ACCESS, "eglMakeCurrent");
++   if (draw && draw->CurrentContext && draw->CurrentContext != ctx) {
++      if (draw->CurrentContext->Binding != t ||
++          draw->CurrentContext->ClientAPI != ctx->ClientAPI)
++         return _eglError(EGL_BAD_ACCESS, "eglMakeCurrent");
++   }
++   if (read && read->CurrentContext && read->CurrentContext != ctx) {
++      if (read->CurrentContext->Binding != t ||
++          read->CurrentContext->ClientAPI != ctx->ClientAPI)
++         return _eglError(EGL_BAD_ACCESS, "eglMakeCurrent");
++   }
+ 
+    /* simply require the configs to be equal */
+    if ((draw && draw->Config != ctx->Config) ||
 diff --git a/src/gallium/state_trackers/egl/common/egl_g3d_api.c b/src/gallium/state_trackers/egl/common/egl_g3d_api.c
 index c0164da..3bde397 100644
 --- a/src/gallium/state_trackers/egl/common/egl_g3d_api.c
@@ -315,6 +401,22 @@ index c0164da..3bde397 100644
 +   }
  
     return EGL_TRUE;
+ }
+diff --git a/src/gallium/state_trackers/vega/api_context.c b/src/gallium/state_trackers/vega/api_context.c
+index 0d04d8e..d6bbda5 100644
+--- a/src/gallium/state_trackers/vega/api_context.c
++++ b/src/gallium/state_trackers/vega/api_context.c
+@@ -73,7 +73,8 @@ void vegaFinish(void)
+    pipe = ctx->pipe;
+ 
+    pipe->flush(pipe, PIPE_FLUSH_RENDER_CACHE | PIPE_FLUSH_FRAME, &fence);
+-
+-   pipe->screen->fence_finish(pipe->screen, fence, 0);
+-   pipe->screen->fence_reference(pipe->screen, &fence, NULL);
++   if (fence) {
++      pipe->screen->fence_finish(pipe->screen, fence, 0);
++      pipe->screen->fence_reference(pipe->screen, &fence, NULL);
++   }
  }
 diff --git a/src/gallium/state_trackers/vega/vg_manager.c b/src/gallium/state_trackers/vega/vg_manager.c
 index e799674..232deef 100644
@@ -1153,11 +1255,270 @@ index 5e1718f..ded3ebe 100644
  
     if (newprim != rmesa->tcl.hw_primitive ||
         !discrete_prim[hw_prim&0xf]) {
+diff --git a/src/mesa/main/bufferobj.c b/src/mesa/main/bufferobj.c
+index 4797f29..d9eaada 100644
+--- a/src/mesa/main/bufferobj.c
++++ b/src/mesa/main/bufferobj.c
+@@ -55,6 +55,13 @@
+ 
+ 
+ /**
++ * Used as a placeholder for buffer objects between glGenBuffers() and
++ * glBindBuffer() so that glIsBuffer() can work correctly.
++ */
++static struct gl_buffer_object DummyBufferObject;
++
++
++/**
+  * Return pointer to address of a buffer object target.
+  * \param ctx  the GL context
+  * \param target  the buffer object target to be retrieved.
+@@ -554,6 +561,9 @@ _mesa_copy_buffer_subdata(GLcontext *ctx,
+ void
+ _mesa_init_buffer_objects( GLcontext *ctx )
+ {
++   memset(&DummyBufferObject, 0, sizeof(DummyBufferObject));
++   DummyBufferObject.RefCount = 1000*1000*1000; /* never delete */
++
+    _mesa_reference_buffer_object(ctx, &ctx->Array.ArrayBufferObj,
+                                  ctx->Shared->NullBufferObj);
+    _mesa_reference_buffer_object(ctx, &ctx->Array.ElementArrayBufferObj,
+@@ -611,8 +621,10 @@ bind_buffer_object(GLcontext *ctx, GLenum target, GLuint buffer)
+    else {
+       /* non-default buffer object */
+       newBufObj = _mesa_lookup_bufferobj(ctx, buffer);
+-      if (!newBufObj) {
+-         /* if this is a new buffer object id, allocate a buffer object now */
++      if (!newBufObj || newBufObj == &DummyBufferObject) {
++         /* If this is a new buffer object id, or one which was generated but
++          * never used before, allocate a buffer object now.
++          */
+          ASSERT(ctx->Driver.NewBufferObject);
+          newBufObj = ctx->Driver.NewBufferObject(ctx, buffer, target);
+          if (!newBufObj) {
+@@ -992,7 +1004,7 @@ _mesa_DeleteBuffersARB(GLsizei n, const GLuint *ids)
+          struct gl_array_object *arrayObj = ctx->Array.ArrayObj;
+          GLuint j;
+ 
+-         ASSERT(bufObj->Name == ids[i]);
++         ASSERT(bufObj->Name == ids[i] || bufObj == &DummyBufferObject);
+ 
+          if (_mesa_bufferobj_mapped(bufObj)) {
+             /* if mapped, unmap it now */
+@@ -1033,7 +1045,7 @@ _mesa_DeleteBuffersARB(GLsizei n, const GLuint *ids)
+          }
+ 
+          /* The ID is immediately freed for re-use */
+-         _mesa_HashRemove(ctx->Shared->BufferObjects, bufObj->Name);
++         _mesa_HashRemove(ctx->Shared->BufferObjects, ids[i]);
+          _mesa_reference_buffer_object(ctx, &bufObj, NULL);
+       }
+    }
+@@ -1072,18 +1084,10 @@ _mesa_GenBuffersARB(GLsizei n, GLuint *buffer)
+ 
+    first = _mesa_HashFindFreeKeyBlock(ctx->Shared->BufferObjects, n);
+ 
+-   /* Allocate new, empty buffer objects and return identifiers */
++   /* Insert the ID and pointer to dummy buffer object into hash table */
+    for (i = 0; i < n; i++) {
+-      struct gl_buffer_object *bufObj;
+-      GLuint name = first + i;
+-      GLenum target = 0;
+-      bufObj = ctx->Driver.NewBufferObject( ctx, name, target );
+-      if (!bufObj) {
+-         _glthread_UNLOCK_MUTEX(ctx->Shared->Mutex);
+-         _mesa_error(ctx, GL_OUT_OF_MEMORY, "glGenBuffersARB");
+-         return;
+-      }
+-      _mesa_HashInsert(ctx->Shared->BufferObjects, first + i, bufObj);
++      _mesa_HashInsert(ctx->Shared->BufferObjects, first + i,
++                       &DummyBufferObject);
+       buffer[i] = first + i;
+    }
+ 
+@@ -1109,7 +1113,7 @@ _mesa_IsBufferARB(GLuint id)
+    bufObj = _mesa_lookup_bufferobj(ctx, id);
+    _glthread_UNLOCK_MUTEX(ctx->Shared->Mutex);
+ 
+-   return bufObj ? GL_TRUE : GL_FALSE;
++   return bufObj && bufObj != &DummyBufferObject;
+ }
+ 
+ 
+diff --git a/src/mesa/main/formats.c b/src/mesa/main/formats.c
+index 9db9f1c..c3fe8a3 100644
+--- a/src/mesa/main/formats.c
++++ b/src/mesa/main/formats.c
+@@ -1109,6 +1109,7 @@ _mesa_format_to_type_and_comps(gl_format format,
+    case MESA_FORMAT_ARGB8888:
+    case MESA_FORMAT_ARGB8888_REV:
+    case MESA_FORMAT_XRGB8888:
++   case MESA_FORMAT_XRGB8888_REV:
+       *datatype = GL_UNSIGNED_BYTE;
+       *comps = 4;
+       return;
+@@ -1135,6 +1136,11 @@ _mesa_format_to_type_and_comps(gl_format format,
+       *comps = 4;
+       return;
+ 
++   case MESA_FORMAT_RGBA5551:
++      *datatype = GL_UNSIGNED_SHORT_5_5_5_1;
++      *comps = 4;
++      return;
++
+    case MESA_FORMAT_AL88:
+    case MESA_FORMAT_AL88_REV:
+       *datatype = GL_UNSIGNED_BYTE;
+@@ -1156,6 +1162,7 @@ _mesa_format_to_type_and_comps(gl_format format,
+    case MESA_FORMAT_L8:
+    case MESA_FORMAT_I8:
+    case MESA_FORMAT_CI8:
++   case MESA_FORMAT_S8:
+       *datatype = GL_UNSIGNED_BYTE;
+       *comps = 1;
+       return;
+@@ -1201,12 +1208,26 @@ _mesa_format_to_type_and_comps(gl_format format,
+       *comps = 2;
+       return;
+ 
++   case MESA_FORMAT_SIGNED_R8:
++      *datatype = GL_BYTE;
++      *comps = 1;
++      return;
++   case MESA_FORMAT_SIGNED_RG88:
++      *datatype = GL_BYTE;
++      *comps = 2;
++      return;
+    case MESA_FORMAT_SIGNED_RGBA8888:
+    case MESA_FORMAT_SIGNED_RGBA8888_REV:
++   case MESA_FORMAT_SIGNED_RGBX8888:
+       *datatype = GL_BYTE;
+       *comps = 4;
+       return;
+ 
++   case MESA_FORMAT_RGBA_16:
++      *datatype = GL_UNSIGNED_SHORT;
++      *comps = 4;
++      return;
++
+    case MESA_FORMAT_SIGNED_R_16:
+       *datatype = GL_SHORT;
+       *comps = 1;
+@@ -1331,9 +1352,14 @@ _mesa_format_to_type_and_comps(gl_format format,
+       *comps = 4;
+       return;
+ 
+-
++   case MESA_FORMAT_NONE:
++   case MESA_FORMAT_COUNT:
++   /* For debug builds, warn if any formats are not handled */
++#ifndef DEBUG
+    default:
+-      _mesa_problem(NULL, "bad format in _mesa_format_to_type_and_comps");
++#endif
++      _mesa_problem(NULL, "bad format %s in _mesa_format_to_type_and_comps",
++                    _mesa_get_format_name(format));
+       *datatype = 0;
+       *comps = 1;
+    }
 diff --git a/src/mesa/main/mipmap.c b/src/mesa/main/mipmap.c
-index 3d1a4c4..d07892f 100644
+index 3d1a4c4..71aa8c2 100644
 --- a/src/mesa/main/mipmap.c
 +++ b/src/mesa/main/mipmap.c
-@@ -606,7 +606,7 @@ do_row_3D(GLenum datatype, GLuint comps, GLint srcWidth,
+@@ -288,6 +288,54 @@ do_row(GLenum datatype, GLuint comps, GLint srcWidth,
+          dst[i] = (rowA[j] + rowA[k] + rowB[j] + rowB[k]) / 4;
+       }
+    }
++
++   else if (datatype == GL_SHORT && comps == 4) {
++      GLuint i, j, k;
++      const GLshort(*rowA)[4] = (const GLshort(*)[4]) srcRowA;
++      const GLshort(*rowB)[4] = (const GLshort(*)[4]) srcRowB;
++      GLshort(*dst)[4] = (GLshort(*)[4]) dstRow;
++      for (i = j = 0, k = k0; i < (GLuint) dstWidth;
++           i++, j += colStride, k += colStride) {
++         dst[i][0] = (rowA[j][0] + rowA[k][0] + rowB[j][0] + rowB[k][0]) / 4;
++         dst[i][1] = (rowA[j][1] + rowA[k][1] + rowB[j][1] + rowB[k][1]) / 4;
++         dst[i][2] = (rowA[j][2] + rowA[k][2] + rowB[j][2] + rowB[k][2]) / 4;
++         dst[i][3] = (rowA[j][3] + rowA[k][3] + rowB[j][3] + rowB[k][3]) / 4;
++      }
++   }
++   else if (datatype == GL_SHORT && comps == 3) {
++      GLuint i, j, k;
++      const GLshort(*rowA)[3] = (const GLshort(*)[3]) srcRowA;
++      const GLshort(*rowB)[3] = (const GLshort(*)[3]) srcRowB;
++      GLshort(*dst)[3] = (GLshort(*)[3]) dstRow;
++      for (i = j = 0, k = k0; i < (GLuint) dstWidth;
++           i++, j += colStride, k += colStride) {
++         dst[i][0] = (rowA[j][0] + rowA[k][0] + rowB[j][0] + rowB[k][0]) / 4;
++         dst[i][1] = (rowA[j][1] + rowA[k][1] + rowB[j][1] + rowB[k][1]) / 4;
++         dst[i][2] = (rowA[j][2] + rowA[k][2] + rowB[j][2] + rowB[k][2]) / 4;
++      }
++   }
++   else if (datatype == GL_SHORT && comps == 2) {
++      GLuint i, j, k;
++      const GLshort(*rowA)[2] = (const GLshort(*)[2]) srcRowA;
++      const GLshort(*rowB)[2] = (const GLshort(*)[2]) srcRowB;
++      GLshort(*dst)[2] = (GLshort(*)[2]) dstRow;
++      for (i = j = 0, k = k0; i < (GLuint) dstWidth;
++           i++, j += colStride, k += colStride) {
++         dst[i][0] = (rowA[j][0] + rowA[k][0] + rowB[j][0] + rowB[k][0]) / 4;
++         dst[i][1] = (rowA[j][1] + rowA[k][1] + rowB[j][1] + rowB[k][1]) / 4;
++      }
++   }
++   else if (datatype == GL_SHORT && comps == 1) {
++      GLuint i, j, k;
++      const GLshort *rowA = (const GLshort *) srcRowA;
++      const GLshort *rowB = (const GLshort *) srcRowB;
++      GLshort *dst = (GLshort *) dstRow;
++      for (i = j = 0, k = k0; i < (GLuint) dstWidth;
++           i++, j += colStride, k += colStride) {
++         dst[i] = (rowA[j] + rowA[k] + rowB[j] + rowB[k]) / 4;
++      }
++   }
++
+    else if (datatype == GL_FLOAT && comps == 4) {
+       GLuint i, j, k;
+       const GLfloat(*rowA)[4] = (const GLfloat(*)[4]) srcRowA;
+@@ -507,6 +555,37 @@ do_row(GLenum datatype, GLuint comps, GLint srcWidth,
+          dst[i] = (alpha << 15) | (blue << 10) | (green << 5) | red;
+       }
+    }
++   else if (datatype == GL_UNSIGNED_SHORT_5_5_5_1 && comps == 4) {
++      GLuint i, j, k;
++      const GLushort *rowA = (const GLushort *) srcRowA;
++      const GLushort *rowB = (const GLushort *) srcRowB;
++      GLushort *dst = (GLushort *) dstRow;
++      for (i = j = 0, k = k0; i < (GLuint) dstWidth;
++           i++, j += colStride, k += colStride) {
++         const GLint rowAr0 = (rowA[j] >> 11) & 0x1f;
++         const GLint rowAr1 = (rowA[k] >> 11) & 0x1f;
++         const GLint rowBr0 = (rowB[j] >> 11) & 0x1f;
++         const GLint rowBr1 = (rowB[k] >> 11) & 0x1f;
++         const GLint rowAg0 = (rowA[j] >> 6) & 0x1f;
++         const GLint rowAg1 = (rowA[k] >> 6) & 0x1f;
++         const GLint rowBg0 = (rowB[j] >> 6) & 0x1f;
++         const GLint rowBg1 = (rowB[k] >> 6) & 0x1f;
++         const GLint rowAb0 = (rowA[j] >> 1) & 0x1f;
++         const GLint rowAb1 = (rowA[k] >> 1) & 0x1f;
++         const GLint rowBb0 = (rowB[j] >> 1) & 0x1f;
++         const GLint rowBb1 = (rowB[k] >> 1) & 0x1f;
++         const GLint rowAa0 = (rowA[j] & 0x1);
++         const GLint rowAa1 = (rowA[k] & 0x1);
++         const GLint rowBa0 = (rowB[j] & 0x1);
++         const GLint rowBa1 = (rowB[k] & 0x1);
++         const GLint red = (rowAr0 + rowAr1 + rowBr0 + rowBr1) >> 2;
++         const GLint green = (rowAg0 + rowAg1 + rowBg0 + rowBg1) >> 2;
++         const GLint blue = (rowAb0 + rowAb1 + rowBb0 + rowBb1) >> 2;
++         const GLint alpha = (rowAa0 + rowAa1 + rowBa0 + rowBa1) >> 2;
++         dst[i] = (red << 11) | (green << 6) | (blue << 1) | alpha;
++      }
++   }
++
+    else if (datatype == GL_UNSIGNED_BYTE_3_3_2 && comps == 3) {
+       GLuint i, j, k;
+       const GLubyte *rowA = (const GLubyte *) srcRowA;
+@@ -606,7 +685,7 @@ do_row_3D(GLenum datatype, GLuint comps, GLint srcWidth,
           FILTER_3D(0);
        }
     }
@@ -1166,6 +1527,119 @@ index 3d1a4c4..d07892f 100644
        DECLARE_ROW_POINTERS(GLbyte, 4);
  
        for (i = j = 0, k = k0; i < (GLuint) dstWidth;
+@@ -682,6 +761,44 @@ do_row_3D(GLenum datatype, GLuint comps, GLint srcWidth,
+          FILTER_3D(0);
+       }
+    }
++   else if ((datatype == GL_SHORT) && (comps == 4)) {
++      DECLARE_ROW_POINTERS(GLshort, 4);
++
++      for (i = j = 0, k = k0; i < (GLuint) dstWidth;
++           i++, j += colStride, k += colStride) {
++         FILTER_3D(0);
++         FILTER_3D(1);
++         FILTER_3D(2);
++         FILTER_3D(3);
++      }
++   }
++   else if ((datatype == GL_SHORT) && (comps == 3)) {
++      DECLARE_ROW_POINTERS(GLshort, 3);
++
++      for (i = j = 0, k = k0; i < (GLuint) dstWidth;
++           i++, j += colStride, k += colStride) {
++         FILTER_3D(0);
++         FILTER_3D(1);
++         FILTER_3D(2);
++      }
++   }
++   else if ((datatype == GL_SHORT) && (comps == 2)) {
++      DECLARE_ROW_POINTERS(GLshort, 2);
++
++      for (i = j = 0, k = k0; i < (GLuint) dstWidth;
++           i++, j += colStride, k += colStride) {
++         FILTER_3D(0);
++         FILTER_3D(1);
++      }
++   }
++   else if ((datatype == GL_SHORT) && (comps == 1)) {
++      DECLARE_ROW_POINTERS(GLshort, 1);
++
++      for (i = j = 0, k = k0; i < (GLuint) dstWidth;
++           i++, j += colStride, k += colStride) {
++         FILTER_3D(0);
++      }
++   }
+    else if ((datatype == GL_FLOAT) && (comps == 4)) {
+       DECLARE_ROW_POINTERS(GLfloat, 4);
+ 
+@@ -910,6 +1027,55 @@ do_row_3D(GLenum datatype, GLuint comps, GLint srcWidth,
+          dst[i] = (a << 15) | (b << 10) | (g << 5) | r;
+       }
+    }
++   else if ((datatype == GL_UNSIGNED_SHORT_5_5_5_1) && (comps == 4)) {
++      DECLARE_ROW_POINTERS0(GLushort);
++
++      for (i = j = 0, k = k0; i < (GLuint) dstWidth;
++           i++, j += colStride, k += colStride) {
++         const GLint rowAr0 = (rowA[j] >> 11) & 0x1f;
++         const GLint rowAr1 = (rowA[k] >> 11) & 0x1f;
++         const GLint rowBr0 = (rowB[j] >> 11) & 0x1f;
++         const GLint rowBr1 = (rowB[k] >> 11) & 0x1f;
++         const GLint rowCr0 = (rowC[j] >> 11) & 0x1f;
++         const GLint rowCr1 = (rowC[k] >> 11) & 0x1f;
++         const GLint rowDr0 = (rowD[j] >> 11) & 0x1f;
++         const GLint rowDr1 = (rowD[k] >> 11) & 0x1f;
++         const GLint rowAg0 = (rowA[j] >> 6) & 0x1f;
++         const GLint rowAg1 = (rowA[k] >> 6) & 0x1f;
++         const GLint rowBg0 = (rowB[j] >> 6) & 0x1f;
++         const GLint rowBg1 = (rowB[k] >> 6) & 0x1f;
++         const GLint rowCg0 = (rowC[j] >> 6) & 0x1f;
++         const GLint rowCg1 = (rowC[k] >> 6) & 0x1f;
++         const GLint rowDg0 = (rowD[j] >> 6) & 0x1f;
++         const GLint rowDg1 = (rowD[k] >> 6) & 0x1f;
++         const GLint rowAb0 = (rowA[j] >> 1) & 0x1f;
++         const GLint rowAb1 = (rowA[k] >> 1) & 0x1f;
++         const GLint rowBb0 = (rowB[j] >> 1) & 0x1f;
++         const GLint rowBb1 = (rowB[k] >> 1) & 0x1f;
++         const GLint rowCb0 = (rowC[j] >> 1) & 0x1f;
++         const GLint rowCb1 = (rowC[k] >> 1) & 0x1f;
++         const GLint rowDb0 = (rowD[j] >> 1) & 0x1f;
++         const GLint rowDb1 = (rowD[k] >> 1) & 0x1f;
++         const GLint rowAa0 = (rowA[j] & 0x1);
++         const GLint rowAa1 = (rowA[k] & 0x1);
++         const GLint rowBa0 = (rowB[j] & 0x1);
++         const GLint rowBa1 = (rowB[k] & 0x1);
++         const GLint rowCa0 = (rowC[j] & 0x1);
++         const GLint rowCa1 = (rowC[k] & 0x1);
++         const GLint rowDa0 = (rowD[j] & 0x1);
++         const GLint rowDa1 = (rowD[k] & 0x1);
++         const GLint r = FILTER_SUM_3D(rowAr0, rowAr1, rowBr0, rowBr1,
++                                       rowCr0, rowCr1, rowDr0, rowDr1);
++         const GLint g = FILTER_SUM_3D(rowAg0, rowAg1, rowBg0, rowBg1,
++                                       rowCg0, rowCg1, rowDg0, rowDg1);
++         const GLint b = FILTER_SUM_3D(rowAb0, rowAb1, rowBb0, rowBb1,
++                                       rowCb0, rowCb1, rowDb0, rowDb1);
++         const GLint a = FILTER_SUM_3D(rowAa0, rowAa1, rowBa0, rowBa1,
++                                       rowCa0, rowCa1, rowDa0, rowDa1);
++
++         dst[i] = (r << 11) | (g << 6) | (b << 1) | a;
++      }
++   }
+    else if ((datatype == GL_UNSIGNED_BYTE_3_3_2) && (comps == 3)) {
+       DECLARE_ROW_POINTERS0(GLushort);
+ 
+diff --git a/src/mesa/state_tracker/st_cb_eglimage.c b/src/mesa/state_tracker/st_cb_eglimage.c
+index 3145416..c54baf4 100644
+--- a/src/mesa/state_tracker/st_cb_eglimage.c
++++ b/src/mesa/state_tracker/st_cb_eglimage.c
+@@ -129,6 +129,7 @@ st_bind_surface(GLcontext *ctx, GLenum target,
+ 
+    /* FIXME create a non-default sampler view from the pipe_surface? */
+    pipe_resource_reference(&stObj->pt, ps->texture);
++   pipe_sampler_view_reference(&stObj->sampler_view, NULL);
+    pipe_resource_reference(&stImage->pt, stObj->pt);
+ 
+    stObj->width0 = ps->width;
 diff --git a/src/mesa/state_tracker/st_manager.c b/src/mesa/state_tracker/st_manager.c
 index 66e32b4..cd418a0 100644
 --- a/src/mesa/state_tracker/st_manager.c
