@@ -385,6 +385,32 @@ index bc22913..763b1b3 100644
  
     /* simply require the configs to be equal */
     if ((draw && draw->Config != ctx->Config) ||
+diff --git a/src/egl/main/egldriver.h b/src/egl/main/egldriver.h
+index c618feb..950774f 100644
+--- a/src/egl/main/egldriver.h
++++ b/src/egl/main/egldriver.h
+@@ -4,7 +4,7 @@
+ 
+ #include "egltypedefs.h"
+ #include "eglapi.h"
+-
++#include <stddef.h>
+ 
+ /**
+  * Define an inline driver typecast function.
+diff --git a/src/gallium/state_trackers/egl/Makefile b/src/gallium/state_trackers/egl/Makefile
+index 8dbfc5b..8cfcef9 100644
+--- a/src/gallium/state_trackers/egl/Makefile
++++ b/src/gallium/state_trackers/egl/Makefile
+@@ -17,7 +17,7 @@ x11_INCLUDES = \
+ 	-I$(TOP)/src/mapi \
+ 	-I$(TOP)/src/mesa \
+ 	$(X11_CFLAGS) \
+-	$(shell pkg-config --cflags-only-I libdrm)
++	$(shell pkg-config --cflags-only-I libdrm dri2proto)
+ 
+ x11_SOURCES = $(wildcard x11/*.c) \
+ 	      $(TOP)/src/glx/dri2.c
 diff --git a/src/gallium/state_trackers/egl/common/egl_g3d_api.c b/src/gallium/state_trackers/egl/common/egl_g3d_api.c
 index c0164da..3bde397 100644
 --- a/src/gallium/state_trackers/egl/common/egl_g3d_api.c
@@ -402,6 +428,18 @@ index c0164da..3bde397 100644
  
     return EGL_TRUE;
  }
+diff --git a/src/gallium/state_trackers/egl/x11/native_x11.h b/src/gallium/state_trackers/egl/x11/native_x11.h
+index 0b47837..8945117 100644
+--- a/src/gallium/state_trackers/egl/x11/native_x11.h
++++ b/src/gallium/state_trackers/egl/x11/native_x11.h
+@@ -27,6 +27,7 @@
+ #define _NATIVE_X11_H_
+ 
+ #include "common/native.h"
++#include <X11/Xlib.h>
+ 
+ struct native_display *
+ x11_create_ximage_display(Display *dpy,
 diff --git a/src/gallium/state_trackers/vega/api_context.c b/src/gallium/state_trackers/vega/api_context.c
 index 0d04d8e..d6bbda5 100644
 --- a/src/gallium/state_trackers/vega/api_context.c
@@ -860,6 +898,19 @@ index f98bd93..f64959f 100644
        x = box_x1;
        y = box_y1;
        w = box_x2 - box_x1;
+diff --git a/src/gallium/targets/Makefile.dri b/src/gallium/targets/Makefile.dri
+index 59961e9..3fb4cc6 100644
+--- a/src/gallium/targets/Makefile.dri
++++ b/src/gallium/targets/Makefile.dri
+@@ -80,7 +80,7 @@ $(LIBNAME): $(OBJECTS) $(MESA_MODULES) $(PIPE_DRIVERS) Makefile \
+ 		$(OBJECTS) $(PIPE_DRIVERS) \
+                 -Wl,--start-group $(MESA_MODULES) -Wl,--end-group \
+                  $(DRI_LIB_DEPS) $(DRIVER_EXTRAS)
+-	$(CXX) $(CFLAGS) -o $@.test $(TOP)/src/mesa/drivers/dri/common/dri_test.o $@.tmp $(DRI_LIB_DEPS);
++	$(CXX) $(CFLAGS) -o $@.test $(TOP)/src/mesa/drivers/dri/common/dri_test.o $@.tmp $(DRI_LIB_DEPS) $(LDFLAGS);
+ 	@rm -f $@.test
+ 	mv -f $@.tmp $@
+ 
 diff --git a/src/gallium/targets/Makefile.xorg b/src/gallium/targets/Makefile.xorg
 index 762c905..87eedd7 100644
 --- a/src/gallium/targets/Makefile.xorg
@@ -882,6 +933,41 @@ index 762c905..87eedd7 100644
  
  depend: $(C_SOURCES) $(CPP_SOURCES) $(ASM_SOURCES) $(SYMLINKS) $(GENERATED_SOURCES)
  	rm -f depend
+diff --git a/src/gallium/targets/dri-vmwgfx/Makefile b/src/gallium/targets/dri-vmwgfx/Makefile
+index 97c703b..38f7893 100644
+--- a/src/gallium/targets/dri-vmwgfx/Makefile
++++ b/src/gallium/targets/dri-vmwgfx/Makefile
+@@ -12,6 +12,7 @@ PIPE_DRIVERS = \
+ 
+ C_SOURCES = \
+ 	target.c \
++	vmw_powf.c \
+ 	$(COMMON_GALLIUM_SOURCES)
+ 
+ DRIVER_DEFINES = \
+diff --git a/src/gallium/targets/dri-vmwgfx/vmw_powf.c b/src/gallium/targets/dri-vmwgfx/vmw_powf.c
+new file mode 100644
+index 0000000..ca5e39b
+--- /dev/null
++++ b/src/gallium/targets/dri-vmwgfx/vmw_powf.c
+@@ -0,0 +1,17 @@
++/**
++ * Powf may leave an unresolved symbol pointing to a libstdc++.so powf.
++ * However, not all libstdc++.so include this function, so optionally
++ * replace the powf function with calls to expf and logf.
++ */
++
++#ifdef VMW_RESOLVE_POWF
++
++extern float expf(float x);
++extern float logf(float x);
++extern float powf(float x, float y);
++
++float powf(float x, float y) {
++    return expf(logf(x)*y);
++}
++
++#endif
 diff --git a/src/gallium/targets/egl/Makefile b/src/gallium/targets/egl/Makefile
 index 47c24ce..38e60db 100644
 --- a/src/gallium/targets/egl/Makefile
@@ -1046,19 +1132,136 @@ index eced60d..94465e5 100644
      vmw_ioctl_buffer_unmap(vmw, out->buf);
      vmw_ioctl_buffer_destroy(vmw, out->buf);
  
+diff --git a/src/glsl/glsl_parser.cpp b/src/glsl/glsl_parser.cpp
+index 301c221..ad99eee 100644
+--- a/src/glsl/glsl_parser.cpp
++++ b/src/glsl/glsl_parser.cpp
+@@ -1,9 +1,9 @@
+-/* A Bison parser, made by GNU Bison 2.4.3.  */
++/* A Bison parser, made by GNU Bison 2.4.2.  */
+ 
+ /* Skeleton implementation for Bison's Yacc-like parsers in C
+    
+-      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
+-   2009, 2010 Free Software Foundation, Inc.
++      Copyright (C) 1984, 1989-1990, 2000-2006, 2009-2010 Free Software
++   Foundation, Inc.
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+@@ -45,7 +45,7 @@
+ #define YYBISON 1
+ 
+ /* Bison version.  */
+-#define YYBISON_VERSION "2.4.3"
++#define YYBISON_VERSION "2.4.2"
+ 
+ /* Skeleton name.  */
+ #define YYSKELETON_NAME "yacc.c"
+@@ -2621,7 +2621,7 @@ YYLTYPE yylloc;
+     YYLTYPE *yylsp;
+ 
+     /* The locations where the error started and ended.  */
+-    YYLTYPE yyerror_range[3];
++    YYLTYPE yyerror_range[2];
+ 
+     YYSIZE_T yystacksize;
+ 
+@@ -5084,7 +5084,7 @@ yyerrlab:
+ #endif
+     }
+ 
+-  yyerror_range[1] = yylloc;
++  yyerror_range[0] = yylloc;
+ 
+   if (yyerrstatus == 3)
+     {
+@@ -5121,7 +5121,7 @@ yyerrorlab:
+   if (/*CONSTCOND*/ 0)
+      goto yyerrorlab;
+ 
+-  yyerror_range[1] = yylsp[1-yylen];
++  yyerror_range[0] = yylsp[1-yylen];
+   /* Do not reclaim the symbols of the rule which action triggered
+      this YYERROR.  */
+   YYPOPSTACK (yylen);
+@@ -5155,7 +5155,7 @@ yyerrlab1:
+       if (yyssp == yyss)
+ 	YYABORT;
+ 
+-      yyerror_range[1] = *yylsp;
++      yyerror_range[0] = *yylsp;
+       yydestruct ("Error: popping",
+ 		  yystos[yystate], yyvsp, yylsp, state);
+       YYPOPSTACK (1);
+@@ -5165,10 +5165,10 @@ yyerrlab1:
+ 
+   *++yyvsp = yylval;
+ 
+-  yyerror_range[2] = yylloc;
++  yyerror_range[1] = yylloc;
+   /* Using YYLLOC is tempting, but would change the location of
+      the lookahead.  YYLOC is available though.  */
+-  YYLLOC_DEFAULT (yyloc, yyerror_range, 2);
++  YYLLOC_DEFAULT (yyloc, (yyerror_range - 1), 2);
+   *++yylsp = yyloc;
+ 
+   /* Shift the error token.  */
+diff --git a/src/glsl/glsl_parser.h b/src/glsl/glsl_parser.h
+index 4a78037..266a4a2 100644
+--- a/src/glsl/glsl_parser.h
++++ b/src/glsl/glsl_parser.h
+@@ -1,9 +1,9 @@
+-/* A Bison parser, made by GNU Bison 2.4.3.  */
++/* A Bison parser, made by GNU Bison 2.4.2.  */
+ 
+ /* Skeleton interface for Bison's Yacc-like parsers in C
+    
+-      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
+-   2009, 2010 Free Software Foundation, Inc.
++      Copyright (C) 1984, 1989-1990, 2000-2006, 2009-2010 Free Software
++   Foundation, Inc.
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
 diff --git a/src/mesa/Makefile b/src/mesa/Makefile
-index c41c38c..7a6936e 100644
+index c41c38c..8b0756b 100644
 --- a/src/mesa/Makefile
 +++ b/src/mesa/Makefile
-@@ -34,7 +34,7 @@ ES1_CPPFLAGS := -DFEATURE_ES1=1 $(DEFINES)
+@@ -34,9 +34,9 @@ ES1_CPPFLAGS := -DFEATURE_ES1=1 $(DEFINES)
  ES2_CPPFLAGS := -DFEATURE_ES2=1 $(DEFINES)
  
  # append include dirs
 -MESA_CPPFLAGS += $(INCLUDE_DIRS)
+-ES1_CPPFLAGS += -I$(TOP)/src/mapi/es1api $(INCLUDE_DIRS)
+-ES2_CPPFLAGS += -I$(TOP)/src/mapi/es2api $(INCLUDE_DIRS)
 +MESA_CPPFLAGS += $(INCLUDE_DIRS) $(TALLOC_CFLAGS)
- ES1_CPPFLAGS += -I$(TOP)/src/mapi/es1api $(INCLUDE_DIRS)
- ES2_CPPFLAGS += -I$(TOP)/src/mapi/es2api $(INCLUDE_DIRS)
++ES1_CPPFLAGS += -I$(TOP)/src/mapi/es1api $(INCLUDE_DIRS) $(TALLOC_CFLAGS)
++ES2_CPPFLAGS += -I$(TOP)/src/mapi/es2api $(INCLUDE_DIRS) $(TALLOC_CFLAGS)
  
+ # tidy compiler flags
+ CFLAGS := $(filter-out $(DEFINES), $(CFLAGS))
+diff --git a/src/mesa/drivers/common/meta.c b/src/mesa/drivers/common/meta.c
+index a03cb68..20dda5f 100644
+--- a/src/mesa/drivers/common/meta.c
++++ b/src/mesa/drivers/common/meta.c
+@@ -1385,6 +1385,7 @@ _mesa_meta_Clear(GLcontext *ctx, GLbitfield buffers)
+    struct vertex verts[4];
+    /* save all state but scissor, pixel pack/unpack */
+    GLbitfield metaSave = META_ALL - META_SCISSOR - META_PIXEL_STORE;
++   const GLuint stencilMax = (1 << ctx->DrawBuffer->Visual.stencilBits) - 1;
+ 
+    if (buffers & BUFFER_BITS_COLOR) {
+       /* if clearing color buffers, don't save/restore colormask */
+@@ -1440,7 +1441,7 @@ _mesa_meta_Clear(GLcontext *ctx, GLbitfield buffers)
+       _mesa_StencilOpSeparate(GL_FRONT_AND_BACK,
+                               GL_REPLACE, GL_REPLACE, GL_REPLACE);
+       _mesa_StencilFuncSeparate(GL_FRONT_AND_BACK, GL_ALWAYS,
+-                                ctx->Stencil.Clear & 0x7fffffff,
++                                ctx->Stencil.Clear & stencilMax,
+                                 ctx->Stencil.WriteMask[0]);
+    }
+    else {
 diff --git a/src/mesa/drivers/dri/r200/r200_swtcl.c b/src/mesa/drivers/dri/r200/r200_swtcl.c
 index dbf4ad4..160e7e7 100644
 --- a/src/mesa/drivers/dri/r200/r200_swtcl.c
@@ -1112,6 +1315,317 @@ index 4ae0f30..2743997 100644
  
     if (newprim != rmesa->tcl.hw_primitive ||
         !discrete_prim[hw_prim&0xf]) {
+diff --git a/src/mesa/drivers/dri/r300/compiler/r300_fragprog_emit.c b/src/mesa/drivers/dri/r300/compiler/r300_fragprog_emit.c
+index 3b2b06f..9f19f8f 100644
+--- a/src/mesa/drivers/dri/r300/compiler/r300_fragprog_emit.c
++++ b/src/mesa/drivers/dri/r300/compiler/r300_fragprog_emit.c
+@@ -76,6 +76,9 @@ static void use_temporary(struct r300_fragment_program_code *code, unsigned int
+ 
+ static unsigned int use_source(struct r300_fragment_program_code* code, struct radeon_pair_instruction_source src)
+ {
++	if (!src.Used)
++		return 0;
++
+ 	if (src.File == RC_FILE_CONSTANT) {
+ 		return src.Index | (1 << 5);
+ 	} else if (src.File == RC_FILE_TEMPORARY) {
+diff --git a/src/mesa/drivers/dri/r300/compiler/r300_fragprog_swizzle.c b/src/mesa/drivers/dri/r300/compiler/r300_fragprog_swizzle.c
+index caa48fe..1aa40c7 100644
+--- a/src/mesa/drivers/dri/r300/compiler/r300_fragprog_swizzle.c
++++ b/src/mesa/drivers/dri/r300/compiler/r300_fragprog_swizzle.c
+@@ -94,6 +94,10 @@ static const struct swizzle_data* lookup_native_swizzle(unsigned int swizzle)
+  */
+ static int r300_swizzle_is_native(rc_opcode opcode, struct rc_src_register reg)
+ {
++	const struct swizzle_data* sd;
++	unsigned int relevant;
++	int j;
++
+ 	if (reg.Abs)
+ 		reg.Negate = RC_MASK_NONE;
+ 
+@@ -117,8 +121,7 @@ static int r300_swizzle_is_native(rc_opcode opcode, struct rc_src_register reg)
+ 		return 1;
+ 	}
+ 
+-	unsigned int relevant = 0;
+-	int j;
++	relevant = 0;
+ 
+ 	for(j = 0; j < 3; ++j)
+ 		if (GET_SWZ(reg.Swizzle, j) != RC_SWIZZLE_UNUSED)
+@@ -127,7 +130,8 @@ static int r300_swizzle_is_native(rc_opcode opcode, struct rc_src_register reg)
+ 	if ((reg.Negate & relevant) && ((reg.Negate & relevant) != relevant))
+ 		return 0;
+ 
+-	if (!lookup_native_swizzle(reg.Swizzle))
++	sd = lookup_native_swizzle(reg.Swizzle);
++	if (!sd || (reg.File == RC_FILE_PRESUB && sd->srcp_stride == 0))
+ 		return 0;
+ 
+ 	return 1;
+@@ -200,7 +204,7 @@ unsigned int r300FPTranslateRGBSwizzle(unsigned int src, unsigned int swizzle)
+ {
+ 	const struct swizzle_data* sd = lookup_native_swizzle(swizzle);
+ 
+-	if (!sd) {
++	if (!sd || (src == RC_PAIR_PRESUB_SRC && sd->srcp_stride == 0)) {
+ 		fprintf(stderr, "Not a native swizzle: %08x\n", swizzle);
+ 		return 0;
+ 	}
+diff --git a/src/mesa/drivers/dri/r300/compiler/r500_fragprog_emit.c b/src/mesa/drivers/dri/r300/compiler/r500_fragprog_emit.c
+index efa3bb5..abbf704 100644
+--- a/src/mesa/drivers/dri/r300/compiler/r500_fragprog_emit.c
++++ b/src/mesa/drivers/dri/r300/compiler/r500_fragprog_emit.c
+@@ -200,6 +200,9 @@ static void use_temporary(struct r500_fragment_program_code* code, unsigned int
+ 
+ static unsigned int use_source(struct r500_fragment_program_code* code, struct radeon_pair_instruction_source src)
+ {
++	if (!src.Used)
++		return 0;
++
+ 	if (src.File == RC_FILE_CONSTANT) {
+ 		return src.Index | 0x100;
+ 	} else if (src.File == RC_FILE_TEMPORARY) {
+diff --git a/src/mesa/drivers/dri/r300/compiler/radeon_optimize.c b/src/mesa/drivers/dri/r300/compiler/radeon_optimize.c
+index 3be50b9..bebe806 100644
+--- a/src/mesa/drivers/dri/r300/compiler/radeon_optimize.c
++++ b/src/mesa/drivers/dri/r300/compiler/radeon_optimize.c
+@@ -566,6 +566,7 @@ static int presub_helper(
+ 		for(i = 0; i < info->NumSrcRegs; i++) {
+ 			unsigned int mask = src_reads_dst_mask(
+ 				inst->U.I.SrcReg[i], s->Inst->U.I.DstReg);
++			struct rc_src_register src = inst->U.I.SrcReg[i];
+ 			/* XXX We could be more aggressive here using
+ 			 * presubtract.  It is okay if SrcReg[i] only reads
+ 			 * from some of the mask components. */
+@@ -577,6 +578,11 @@ static int presub_helper(
+ 					continue;
+ 				}
+ 			}
++			src.File = RC_FILE_PRESUB;
++			if (!c->SwizzleCaps->IsNative(inst->U.I.Opcode, src)){
++				can_remove = 0;
++				break;
++			}
+ 			if (cant_sub || !can_use_presub) {
+ 				can_remove = 0;
+ 				break;
+@@ -635,7 +641,9 @@ static void presub_replace_add(struct peephole_state *s,
+ 	inst->U.I.SrcReg[src_index].Index = presub_opcode;
+ }
+ 
+-static int is_presub_candidate(struct rc_instruction * inst)
++static int is_presub_candidate(
++	struct radeon_compiler * c,
++	struct rc_instruction * inst)
+ {
+ 	const struct rc_opcode_info * info = rc_get_opcode_info(inst->U.I.Opcode);
+ 	unsigned int i;
+@@ -644,7 +652,12 @@ static int is_presub_candidate(struct rc_instruction * inst)
+ 		return 0;
+ 
+ 	for(i = 0; i < info->NumSrcRegs; i++) {
+-		if (src_reads_dst_mask(inst->U.I.SrcReg[i], inst->U.I.DstReg))
++		struct rc_src_register src = inst->U.I.SrcReg[i];
++		if (src_reads_dst_mask(src, inst->U.I.DstReg))
++			return 0;
++
++		src.File = RC_FILE_PRESUB;
++		if (!c->SwizzleCaps->IsNative(inst->U.I.Opcode, src))
+ 			return 0;
+ 	}
+ 	return 1;
+@@ -659,7 +672,7 @@ static int peephole_add_presub_add(
+ 	unsigned int i;
+ 	struct peephole_state s;
+ 
+-	if (!is_presub_candidate(inst_add))
++	if (!is_presub_candidate(c, inst_add))
+ 		return 0;
+ 
+ 	if (inst_add->U.I.SrcReg[0].Swizzle != inst_add->U.I.SrcReg[1].Swizzle)
+@@ -726,7 +739,7 @@ static int peephole_add_presub_inv(
+ 	unsigned int i, swz, mask;
+ 	struct peephole_state s;
+ 
+-	if (!is_presub_candidate(inst_add))
++	if (!is_presub_candidate(c, inst_add))
+ 		return 0;
+ 
+ 	mask = inst_add->U.I.DstReg.WriteMask;
+diff --git a/src/mesa/drivers/dri/r300/compiler/radeon_pair_regalloc.c b/src/mesa/drivers/dri/r300/compiler/radeon_pair_regalloc.c
+index c738455..126b50b 100644
+--- a/src/mesa/drivers/dri/r300/compiler/radeon_pair_regalloc.c
++++ b/src/mesa/drivers/dri/r300/compiler/radeon_pair_regalloc.c
+@@ -66,10 +66,13 @@ struct regalloc_state {
+ 	struct hardware_register * HwTemporary;
+ 	unsigned int NumHwTemporaries;
+ 	/**
+-	 * If an instruction is inside of a loop, end_loop will be the
+-	 * IP of the ENDLOOP instruction, otherwise end_loop will be 0
++	 * If an instruction is inside of a loop, EndLoop will be the
++	 * IP of the ENDLOOP instruction, and BeginLoop will be the IP
++	 * of the BGNLOOP instruction.  Otherwise, EndLoop and BeginLoop
++	 * will be -1.
+ 	 */
+-	int end_loop;
++	int EndLoop;
++	int BeginLoop;
+ };
+ 
+ static void print_live_intervals(struct live_intervals * src)
+@@ -180,11 +183,13 @@ static void scan_callback(void * data, struct rc_instruction * inst,
+ 		reg->Used = 1;
+ 		if (file == RC_FILE_INPUT)
+ 			reg->Live.Start = -1;
++		else if (s->BeginLoop >= 0)
++			reg->Live.Start = s->BeginLoop;
+ 		else
+ 			reg->Live.Start = inst->IP;
+ 		reg->Live.End = inst->IP;
+-	} else if (s->end_loop)
+-		reg->Live.End = s->end_loop;
++	} else if (s->EndLoop >= 0)
++		reg->Live.End = s->EndLoop;
+ 	else if (inst->IP > reg->Live.End)
+ 		reg->Live.End = inst->IP;
+ }
+@@ -195,6 +200,8 @@ static void compute_live_intervals(struct radeon_compiler *c,
+ 	memset(s, 0, sizeof(*s));
+ 	s->C = c;
+ 	s->NumHwTemporaries = c->max_temp_regs;
++	s->BeginLoop = -1;
++	s->EndLoop = -1;
+ 	s->HwTemporary =
+ 		memory_pool_malloc(&c->Pool,
+ 				   s->NumHwTemporaries * sizeof(struct hardware_register));
+@@ -207,8 +214,10 @@ static void compute_live_intervals(struct radeon_compiler *c,
+ 	    inst = inst->Next) {
+ 
+ 		/* For all instructions inside of a loop, the ENDLOOP
+-		 * instruction is used as the end of the live interval. */
+-		if (inst->U.I.Opcode == RC_OPCODE_BGNLOOP && !s->end_loop) {
++		 * instruction is used as the end of the live interval and
++		 * the BGNLOOP instruction is used as the beginning. */
++		if (inst->U.I.Opcode == RC_OPCODE_BGNLOOP && s->EndLoop < 0) {
++			s->BeginLoop = inst->IP;
+ 			int loops = 1;
+ 			struct rc_instruction * tmp;
+ 			for(tmp = inst->Next;
+@@ -219,15 +228,17 @@ static void compute_live_intervals(struct radeon_compiler *c,
+ 				} else if (tmp->U.I.Opcode
+ 							== RC_OPCODE_ENDLOOP) {
+ 					if(!--loops) {
+-						s->end_loop = tmp->IP;
++						s->EndLoop = tmp->IP;
+ 						break;
+ 					}
+ 				}
+ 			}
+ 		}
+ 
+-		if (inst->IP == s->end_loop)
+-			s->end_loop = 0;
++		if (inst->IP == s->EndLoop) {
++			s->EndLoop = -1;
++			s->BeginLoop = -1;
++		}
+ 
+ 		rc_for_all_reads_mask(inst, scan_callback, s);
+ 		rc_for_all_writes_mask(inst, scan_callback, s);
+diff --git a/src/mesa/drivers/dri/r300/compiler/radeon_pair_schedule.c b/src/mesa/drivers/dri/r300/compiler/radeon_pair_schedule.c
+index 7ab2df3..0b003d7 100644
+--- a/src/mesa/drivers/dri/r300/compiler/radeon_pair_schedule.c
++++ b/src/mesa/drivers/dri/r300/compiler/radeon_pair_schedule.c
+@@ -126,15 +126,6 @@ static struct reg_value ** get_reg_valuep(struct schedule_state * s,
+ 	return &s->Temporary[index].Values[chan];
+ }
+ 
+-static struct reg_value * get_reg_value(struct schedule_state * s,
+-		rc_register_file file, unsigned int index, unsigned int chan)
+-{
+-	struct reg_value ** pv = get_reg_valuep(s, file, index, chan);
+-	if (!pv)
+-		return 0;
+-	return *pv;
+-}
+-
+ static void add_inst_to_list(struct schedule_instruction ** list, struct schedule_instruction * inst)
+ {
+ 	inst->NextReady = *list;
+@@ -602,12 +593,13 @@ static void scan_read(void * data, struct rc_instruction * inst,
+ 		rc_register_file file, unsigned int index, unsigned int chan)
+ {
+ 	struct schedule_state * s = data;
+-	struct reg_value * v = get_reg_value(s, file, index, chan);
++	struct reg_value ** v = get_reg_valuep(s, file, index, chan);
++	struct reg_value_reader * reader;
+ 
+ 	if (!v)
+ 		return;
+ 
+-	if (v->Writer == s->Current) {
++	if (*v && (*v)->Writer == s->Current) {
+ 		/* The instruction reads and writes to a register component.
+ 		 * In this case, we only want to increment dependencies by one.
+ 		 */
+@@ -616,18 +608,30 @@ static void scan_read(void * data, struct rc_instruction * inst,
+ 
+ 	DBG("%i: read %i[%i] chan %i\n", s->Current->Instruction->IP, file, index, chan);
+ 
+-	struct reg_value_reader * reader = memory_pool_malloc(&s->C->Pool, sizeof(*reader));
++	reader = memory_pool_malloc(&s->C->Pool, sizeof(*reader));
+ 	reader->Reader = s->Current;
+-	reader->Next = v->Readers;
+-	v->Readers = reader;
+-	v->NumReaders++;
+-
+-	s->Current->NumDependencies++;
++	if (!*v) {
++		/* In this situation, the instruction reads from a register
++		 * that hasn't been written to or read from in the current
++		 * block. */
++		*v = memory_pool_malloc(&s->C->Pool, sizeof(struct reg_value));
++		memset(*v, 0, sizeof(struct reg_value));
++		(*v)->Readers = reader;
++	} else {
++		reader->Next = (*v)->Readers;
++		(*v)->Readers = reader;
++		/* Only update the current instruction's dependencies if the
++		 * register it reads from has been written to in this block. */
++		if ((*v)->Writer) {
++			s->Current->NumDependencies++;
++		}
++	}
++	(*v)->NumReaders++;
+ 
+ 	if (s->Current->NumReadValues >= 12) {
+ 		rc_error(s->C, "%s: NumReadValues overflow\n", __FUNCTION__);
+ 	} else {
+-		s->Current->ReadValues[s->Current->NumReadValues++] = v;
++		s->Current->ReadValues[s->Current->NumReadValues++] = *v;
+ 	}
+ }
+ 
+diff --git a/src/mesa/drivers/dri/r300/compiler/radeon_pair_translate.c b/src/mesa/drivers/dri/r300/compiler/radeon_pair_translate.c
+index ff82584..840c7a5 100644
+--- a/src/mesa/drivers/dri/r300/compiler/radeon_pair_translate.c
++++ b/src/mesa/drivers/dri/r300/compiler/radeon_pair_translate.c
+@@ -278,9 +278,12 @@ static void set_pair_instruction(struct r300_fragment_program_compiler *c,
+ 			pair->RGB.DestIndex = inst->DstReg.Index;
+ 			pair->RGB.WriteMask |= inst->DstReg.WriteMask & RC_MASK_XYZ;
+ 		}
++
+ 		if (needalpha) {
+-			pair->Alpha.DestIndex = inst->DstReg.Index;
+ 			pair->Alpha.WriteMask |= GET_BIT(inst->DstReg.WriteMask, 3);
++			if (pair->Alpha.WriteMask) {
++				pair->Alpha.DestIndex = inst->DstReg.Index;
++			}
+ 		}
+ 	}
+ 
 diff --git a/src/mesa/drivers/dri/r300/r300_draw.c b/src/mesa/drivers/dri/r300/r300_draw.c
 index 5ae9f49..767778b 100644
 --- a/src/mesa/drivers/dri/r300/r300_draw.c
@@ -1421,6 +1935,20 @@ index 9db9f1c..c3fe8a3 100644
        *datatype = 0;
        *comps = 1;
     }
+diff --git a/src/mesa/main/imports.c b/src/mesa/main/imports.c
+index 46e5c93..13dabde 100644
+--- a/src/mesa/main/imports.c
++++ b/src/mesa/main/imports.c
+@@ -88,7 +88,8 @@ _mesa_align_malloc(size_t bytes, unsigned long alignment)
+ #if defined(HAVE_POSIX_MEMALIGN)
+    void *mem;
+    int err = posix_memalign(& mem, alignment, bytes);
+-   (void) err;
++   if (err)
++      return NULL;
+    return mem;
+ #elif defined(_WIN32) && defined(_MSC_VER)
+    return _aligned_malloc(bytes, alignment);
 diff --git a/src/mesa/main/mipmap.c b/src/mesa/main/mipmap.c
 index 3d1a4c4..71aa8c2 100644
 --- a/src/mesa/main/mipmap.c
@@ -1628,6 +2156,68 @@ index 3d1a4c4..71aa8c2 100644
     else if ((datatype == GL_UNSIGNED_BYTE_3_3_2) && (comps == 3)) {
        DECLARE_ROW_POINTERS0(GLushort);
  
+diff --git a/src/mesa/state_tracker/st_cb_bufferobjects.c b/src/mesa/state_tracker/st_cb_bufferobjects.c
+index 7991a93..50b352c 100644
+--- a/src/mesa/state_tracker/st_cb_bufferobjects.c
++++ b/src/mesa/state_tracker/st_cb_bufferobjects.c
+@@ -211,6 +211,13 @@ st_bufferobj_data(GLcontext *ctx,
+ 
+ 
+ /**
++ * Dummy data whose's pointer is used for zero size buffers or ranges.
++ */
++static long st_bufferobj_zero_length = 0;
++
++
++
++/**
+  * Called via glMapBufferARB().
+  */
+ static void *
+@@ -233,10 +240,16 @@ st_bufferobj_map(GLcontext *ctx, GLenum target, GLenum access,
+       break;      
+    }
+ 
+-   obj->Pointer = pipe_buffer_map(st_context(ctx)->pipe,
+-                                  st_obj->buffer,
+-                                  flags,
+-                                  &st_obj->transfer);
++   /* Handle zero-size buffers here rather than in drivers */
++   if (obj->Size == 0) {
++      obj->Pointer = &st_bufferobj_zero_length;
++   }
++   else {
++      obj->Pointer = pipe_buffer_map(st_context(ctx)->pipe,
++                                     st_obj->buffer,
++                                     flags,
++                                     &st_obj->transfer);
++   }
+ 
+    if (obj->Pointer) {
+       obj->Offset = 0;
+@@ -247,13 +260,6 @@ st_bufferobj_map(GLcontext *ctx, GLenum target, GLenum access,
+ 
+ 
+ /**
+- * Dummy data whose's pointer is used for zero length ranges.
+- */
+-static long
+-st_bufferobj_zero_length_range = 0;
+-
+-
+-/**
+  * Called via glMapBufferRange().
+  */
+ static void *
+@@ -293,7 +299,7 @@ st_bufferobj_map_range(GLcontext *ctx, GLenum target,
+     * length range from the pipe driver.
+     */
+    if (!length) {
+-      obj->Pointer = &st_bufferobj_zero_length_range;
++      obj->Pointer = &st_bufferobj_zero_length;
+    }
+    else {
+       obj->Pointer = pipe_buffer_map_range(pipe, 
 diff --git a/src/mesa/state_tracker/st_cb_eglimage.c b/src/mesa/state_tracker/st_cb_eglimage.c
 index 3145416..c54baf4 100644
 --- a/src/mesa/state_tracker/st_cb_eglimage.c
@@ -1666,10 +2256,18 @@ index 66e32b4..cd418a0 100644
  
  static void
 diff --git a/src/mesa/swrast/s_texfilter.c b/src/mesa/swrast/s_texfilter.c
-index 3fc554c..198f0e2 100644
+index 3fc554c..28063e0 100644
 --- a/src/mesa/swrast/s_texfilter.c
 +++ b/src/mesa/swrast/s_texfilter.c
-@@ -2972,11 +2972,16 @@ choose_depth_texture_level(const struct gl_texture_object *tObj, GLfloat lambda)
+@@ -1368,6 +1368,7 @@ opt_sample_rgb_2d(GLcontext *ctx,
+       rgba[k][RCOMP] = UBYTE_TO_FLOAT(texel[2]);
+       rgba[k][GCOMP] = UBYTE_TO_FLOAT(texel[1]);
+       rgba[k][BCOMP] = UBYTE_TO_FLOAT(texel[0]);
++      rgba[k][ACOMP] = 1.0F;
+    }
+ }
+ 
+@@ -2972,11 +2973,16 @@ choose_depth_texture_level(const struct gl_texture_object *tObj, GLfloat lambda)
  {
     GLint level;
  
