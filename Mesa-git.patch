@@ -398,6 +398,486 @@ index c618feb..950774f 100644
  
  /**
   * Define an inline driver typecast function.
+diff --git a/src/gallium/drivers/llvmpipe/lp_bld_depth.c b/src/gallium/drivers/llvmpipe/lp_bld_depth.c
+index 99a768a..749ae66 100644
+--- a/src/gallium/drivers/llvmpipe/lp_bld_depth.c
++++ b/src/gallium/drivers/llvmpipe/lp_bld_depth.c
+@@ -262,7 +262,7 @@ lp_build_stencil_op_single(struct lp_build_context *bld,
+       LLVMValueRef writemask = lp_build_const_int_vec(type, stencil->writemask);
+       mask = LLVMBuildAnd(bld->builder, mask, writemask, "");
+       /* res = (res & mask) | (stencilVals & ~mask) */
+-      res = lp_build_select_bitwise(bld, writemask, res, stencilVals);
++      res = lp_build_select_bitwise(bld, mask, res, stencilVals);
+    }
+    else {
+       /* res = mask ? res : stencilVals */
+diff --git a/src/gallium/drivers/r300/r300_chipset.c b/src/gallium/drivers/r300/r300_chipset.c
+index 48c2409..583e981 100644
+--- a/src/gallium/drivers/r300/r300_chipset.c
++++ b/src/gallium/drivers/r300/r300_chipset.c
+@@ -424,4 +424,5 @@ void r300_parse_chipset(struct r300_capabilities* caps)
+     }
+ 
+     caps->is_rv350 = caps->family >= CHIP_FAMILY_RV350;
++    caps->dxtc_swizzle = caps->is_r400 || caps->is_r500;
+ }
+diff --git a/src/gallium/drivers/r300/r300_chipset.h b/src/gallium/drivers/r300/r300_chipset.h
+index e7ca642..7ea4175 100644
+--- a/src/gallium/drivers/r300/r300_chipset.h
++++ b/src/gallium/drivers/r300/r300_chipset.h
+@@ -79,6 +79,8 @@ struct r300_capabilities {
+     boolean is_r500;
+     /* Whether or not the second pixel pipe is accessed with the high bit */
+     boolean high_second_pipe;
++    /* DXTC texture swizzling. */
++    boolean dxtc_swizzle;
+ };
+ 
+ /* Enumerations for legibility and telling which card we're running on. */
+diff --git a/src/gallium/drivers/r300/r300_context.c b/src/gallium/drivers/r300/r300_context.c
+index 624dadd..46504f5 100644
+--- a/src/gallium/drivers/r300/r300_context.c
++++ b/src/gallium/drivers/r300/r300_context.c
+@@ -79,6 +79,9 @@ static void r300_release_referenced_objects(struct r300_context *r300)
+                 NULL);
+     }
+ 
++    /* The dummy VBO. */
++    pipe_resource_reference(&r300->dummy_vb, NULL);
++
+     /* The SWTCL VBO. */
+     pipe_resource_reference(&r300->vbo, NULL);
+ 
+@@ -488,6 +491,7 @@ struct pipe_context* r300_create_context(struct pipe_screen* screen,
+         rtempl.target = PIPE_TEXTURE_2D;
+         rtempl.format = PIPE_FORMAT_I8_UNORM;
+         rtempl.bind = PIPE_BIND_SAMPLER_VIEW;
++        rtempl.usage = PIPE_USAGE_IMMUTABLE;
+         rtempl.width0 = 1;
+         rtempl.height0 = 1;
+         rtempl.depth0 = 1;
+@@ -501,6 +505,19 @@ struct pipe_context* r300_create_context(struct pipe_screen* screen,
+         pipe_resource_reference(&tex, NULL);
+     }
+ 
++    {
++        struct pipe_resource vb = {};
++        vb.target = PIPE_BUFFER;
++        vb.format = PIPE_FORMAT_R8_UNORM;
++        vb.bind = PIPE_BIND_VERTEX_BUFFER;
++        vb.usage = PIPE_USAGE_IMMUTABLE;
++        vb.width0 = sizeof(float) * 16;
++        vb.height0 = 1;
++        vb.depth0 = 1;
++
++        r300->dummy_vb = screen->resource_create(screen, &vb);
++    }
++
+     return &r300->context;
+ 
+  fail:
+diff --git a/src/gallium/drivers/r300/r300_context.h b/src/gallium/drivers/r300/r300_context.h
+index 8f4e2de..743e9da 100644
+--- a/src/gallium/drivers/r300/r300_context.h
++++ b/src/gallium/drivers/r300/r300_context.h
+@@ -470,6 +470,10 @@ struct r300_context {
+      * dummy texture there. */
+     struct r300_sampler_view *texkill_sampler;
+ 
++    /* When no vertex buffer is set, this one is used instead to prevent
++     * hardlocks. */
++    struct pipe_resource *dummy_vb;
++
+     /* The currently active query. */
+     struct r300_query *query_current;
+     /* The saved query for blitter operations. */
+diff --git a/src/gallium/drivers/r300/r300_reg.h b/src/gallium/drivers/r300/r300_reg.h
+index 6bea783..788c513 100644
+--- a/src/gallium/drivers/r300/r300_reg.h
++++ b/src/gallium/drivers/r300/r300_reg.h
+@@ -1520,11 +1520,11 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
+ #	define R300_TX_TRI_PERF_3_8            (3<<15)
+ #	define R300_ANISO_THRESHOLD_MASK       (7<<17)
+ 
++#       define R400_DXTC_SWIZZLE_ENABLE        (1<<21)
+ #	define R500_MACRO_SWITCH               (1<<22)
+ #       define R500_TX_MAX_ANISO(x)            ((x) << 23)
+ #       define R500_TX_MAX_ANISO_MASK          (63 << 23)
+ #       define R500_TX_ANISO_HIGH_QUALITY      (1 << 30)
+-
+ #	define R500_BORDER_FIX                 (1<<31)
+ 
+ #define R300_TX_FORMAT0_0                   0x4480
+diff --git a/src/gallium/drivers/r300/r300_render.c b/src/gallium/drivers/r300/r300_render.c
+index 2f00c87..7a3eb09 100644
+--- a/src/gallium/drivers/r300/r300_render.c
++++ b/src/gallium/drivers/r300/r300_render.c
+@@ -676,9 +676,6 @@ static void r300_draw_vbo(struct pipe_context* pipe,
+ {
+     struct r300_context* r300 = r300_context(pipe);
+ 
+-    if (!r300->velems->count || !r300->vertex_buffer_count)
+-	    return;
+-
+     if (info->indexed && r300->index_buffer.buffer) {
+         unsigned offset;
+ 
+diff --git a/src/gallium/drivers/r300/r300_screen.c b/src/gallium/drivers/r300/r300_screen.c
+index 7f41ff0..c349e7f 100644
+--- a/src/gallium/drivers/r300/r300_screen.c
++++ b/src/gallium/drivers/r300/r300_screen.c
+@@ -114,8 +114,9 @@ static int r300_get_param(struct pipe_screen* pscreen, enum pipe_cap param)
+         case PIPE_CAP_TEXTURE_MIRROR_CLAMP:
+         case PIPE_CAP_TEXTURE_MIRROR_REPEAT:
+         case PIPE_CAP_BLEND_EQUATION_SEPARATE:
+-        case PIPE_CAP_TEXTURE_SWIZZLE:
+             return 1;
++        case PIPE_CAP_TEXTURE_SWIZZLE:
++            return util_format_s3tc_enabled ? r300screen->caps.dxtc_swizzle : 1;
+ 
+         /* Unsupported features (boolean caps). */
+         case PIPE_CAP_TIMER_QUERY:
+diff --git a/src/gallium/drivers/r300/r300_state.c b/src/gallium/drivers/r300/r300_state.c
+index 53c1657..7779766 100644
+--- a/src/gallium/drivers/r300/r300_state.c
++++ b/src/gallium/drivers/r300/r300_state.c
+@@ -1363,6 +1363,7 @@ r300_create_sampler_view(struct pipe_context *pipe,
+     struct r300_sampler_view *view = CALLOC_STRUCT(r300_sampler_view);
+     struct r300_texture *tex = r300_texture(texture);
+     boolean is_r500 = r300_screen(pipe->screen)->caps.is_r500;
++    boolean dxtc_swizzle = r300_screen(pipe->screen)->caps.dxtc_swizzle;
+ 
+     if (view) {
+         view->base = *templ;
+@@ -1379,7 +1380,8 @@ r300_create_sampler_view(struct pipe_context *pipe,
+         view->format = tex->tx_format;
+         view->format.format1 |= r300_translate_texformat(templ->format,
+                                                          view->swizzle,
+-                                                         is_r500);
++                                                         is_r500,
++                                                         dxtc_swizzle);
+         if (is_r500) {
+             view->format.format2 |= r500_tx_format_msb_bit(templ->format);
+         }
+@@ -1464,6 +1466,15 @@ static void r300_set_vertex_buffers(struct pipe_context* pipe,
+     struct pipe_vertex_buffer *vbo;
+     unsigned i, max_index = (1 << 24) - 1;
+     boolean any_user_buffer = FALSE;
++    struct pipe_vertex_buffer dummy_vb = {0};
++
++    /* There must be at least one vertex buffer set, otherwise it locks up. */
++    if (!count) {
++        dummy_vb.buffer = r300->dummy_vb;
++        dummy_vb.max_index = r300->dummy_vb->width0 / 4;
++        buffers = &dummy_vb;
++        count = 1;
++    }
+ 
+     if (count == r300->vertex_buffer_count &&
+         memcmp(r300->vertex_buffer, buffers,
+@@ -1617,6 +1628,14 @@ static void* r300_create_vertex_elements_state(struct pipe_context* pipe,
+     struct r300_vertex_element_state *velems;
+     unsigned i;
+     enum pipe_format *format;
++    struct pipe_vertex_element dummy_attrib = {0};
++
++    /* R300 Programmable Stream Control (PSC) doesn't support 0 vertex elements. */
++    if (!count) {
++        dummy_attrib.src_format = PIPE_FORMAT_R8G8B8A8_UNORM;
++        attribs = &dummy_attrib;
++        count = 1;
++    }
+ 
+     assert(count <= PIPE_MAX_ATTRIBS);
+     velems = CALLOC_STRUCT(r300_vertex_element_state);
+@@ -1683,7 +1702,8 @@ static void* r300_create_vertex_elements_state(struct pipe_context* pipe,
+              * swizzles are already set up.
+              * Also compute the vertex size. */
+             for (i = 0; i < count; i++) {
+-                /* This is OK because we check for aligned strides too. */
++                /* This is OK because we check for aligned strides too
++                 * elsewhere. */
+                 velems->hw_format_size[i] =
+                     align(util_format_get_blocksize(velems->hw_format[i]), 4);
+                 velems->vertex_size_dwords += velems->hw_format_size[i] / 4;
+diff --git a/src/gallium/drivers/r300/r300_state_derived.c b/src/gallium/drivers/r300/r300_state_derived.c
+index 2613e70..9d8b6da 100644
+--- a/src/gallium/drivers/r300/r300_state_derived.c
++++ b/src/gallium/drivers/r300/r300_state_derived.c
+@@ -25,6 +25,7 @@
+ 
+ #include "util/u_math.h"
+ #include "util/u_memory.h"
++#include "util/u_pack_color.h"
+ 
+ #include "r300_context.h"
+ #include "r300_fs.h"
+@@ -568,55 +569,93 @@ static void r300_update_rs_block(struct r300_context *r300)
+ }
+ 
+ static uint32_t r300_get_border_color(enum pipe_format format,
+-                                      const float border[4])
++                                      const float border[4],
++                                      boolean is_r500)
+ {
+     const struct util_format_description *desc;
+-    float border_swizzled[4] = {
+-        border[2],
+-        border[1],
+-        border[0],
+-        border[3]
+-    };
+-    uint32_t r;
++    float border_swizzled[4] = {0};
++    unsigned i;
++    union util_color uc = {0};
+ 
+     desc = util_format_description(format);
+ 
+-    /* We don't use util_pack_format because it does not handle the formats
+-     * we want, e.g. R4G4B4A4 is non-existent in Gallium. */
++    /* Do depth formats first. */
++    if (util_format_is_depth_or_stencil(format)) {
++        switch (format) {
++        case PIPE_FORMAT_Z16_UNORM:
++            return util_pack_z(PIPE_FORMAT_Z16_UNORM, border[0]);
++        case PIPE_FORMAT_X8Z24_UNORM:
++        case PIPE_FORMAT_S8_USCALED_Z24_UNORM:
++            if (is_r500) {
++                return util_pack_z(PIPE_FORMAT_X8Z24_UNORM, border[0]);
++            } else {
++                return util_pack_z(PIPE_FORMAT_Z16_UNORM, border[0]) << 16;
++            }
++        default:
++            assert(0);
++            return 0;
++        }
++    }
++
++    /* Apply inverse swizzle of the format. */
++    for (i = 0; i < 4; i++) {
++        switch (desc->swizzle[i]) {
++        case UTIL_FORMAT_SWIZZLE_X:
++            border_swizzled[2] = border[i];
++            break;
++        case UTIL_FORMAT_SWIZZLE_Y:
++            border_swizzled[1] = border[i];
++            break;
++        case UTIL_FORMAT_SWIZZLE_Z:
++            border_swizzled[0] = border[i];
++            break;
++        case UTIL_FORMAT_SWIZZLE_W:
++            border_swizzled[3] = border[i];
++            break;
++        }
++    }
++
++    /* Compressed formats. */
++    if (util_format_is_compressed(format)) {
++        util_pack_color(border_swizzled, PIPE_FORMAT_R8G8B8A8_UNORM, &uc);
++        return uc.ui;
++    }
++
+     switch (desc->channel[0].size) {
+         case 4:
+-            r = ((float_to_ubyte(border_swizzled[0]) & 0xf0) >> 4) |
+-                ((float_to_ubyte(border_swizzled[1]) & 0xf0) << 0) |
+-                ((float_to_ubyte(border_swizzled[2]) & 0xf0) << 4) |
+-                ((float_to_ubyte(border_swizzled[3]) & 0xf0) << 8);
++            util_pack_color(border_swizzled, PIPE_FORMAT_B4G4R4A4_UNORM, &uc);
+             break;
+ 
+         case 5:
+             if (desc->channel[1].size == 5) {
+-                r = ((float_to_ubyte(border_swizzled[0]) & 0xf8) >> 3) |
+-                    ((float_to_ubyte(border_swizzled[1]) & 0xf8) << 2) |
+-                    ((float_to_ubyte(border_swizzled[2]) & 0xf8) << 7) |
+-                    ((float_to_ubyte(border_swizzled[3]) & 0x80) << 8);
++                util_pack_color(border_swizzled, PIPE_FORMAT_B5G5R5A1_UNORM, &uc);
+             } else if (desc->channel[1].size == 6) {
+-                r = ((float_to_ubyte(border_swizzled[0]) & 0xf8) >> 3) |
+-                    ((float_to_ubyte(border_swizzled[1]) & 0xfc) << 3) |
+-                    ((float_to_ubyte(border_swizzled[2]) & 0xf8) << 8);
++                util_pack_color(border_swizzled, PIPE_FORMAT_B5G6R5_UNORM, &uc);
+             } else {
+                 assert(0);
+             }
+             break;
+ 
+         default:
+-            /* I think the fat formats (16, 32) are specified
+-             * as the 8-bit ones. I am not sure how compressed formats
+-             * work here. */
+-            r = ((float_to_ubyte(border_swizzled[0]) & 0xff) << 0) |
+-                ((float_to_ubyte(border_swizzled[1]) & 0xff) << 8) |
+-                ((float_to_ubyte(border_swizzled[2]) & 0xff) << 16) |
+-                ((float_to_ubyte(border_swizzled[3]) & 0xff) << 24);
++        case 8:
++            util_pack_color(border_swizzled, PIPE_FORMAT_B8G8R8A8_UNORM, &uc);
++            break;
++
++        case 10:
++            util_pack_color(border_swizzled, PIPE_FORMAT_B10G10R10A2_UNORM, &uc);
++            break;
++
++        case 16:
++            if (desc->nr_channels <= 2) {
++                border_swizzled[0] = border_swizzled[2];
++                util_pack_color(border_swizzled, PIPE_FORMAT_R16G16_UNORM, &uc);
++            } else {
++                util_pack_color(border_swizzled, PIPE_FORMAT_B8G8R8A8_UNORM, &uc);
++            }
++            break;
+     }
+ 
+-    return r;
++    return uc.ui;
+ }
+ 
+ static void r300_merge_textures_and_samplers(struct r300_context* r300)
+@@ -655,7 +694,8 @@ static void r300_merge_textures_and_samplers(struct r300_context* r300)
+             /* Set the border color. */
+             texstate->border_color =
+                 r300_get_border_color(view->base.format,
+-                                      sampler->state.border_color);
++                                      sampler->state.border_color,
++                                      r300->screen->caps.is_r500);
+ 
+             /* determine min/max levels */
+             max_level = MIN3(sampler->max_lod + view->base.first_level,
+@@ -701,13 +741,18 @@ static void r300_merge_textures_and_samplers(struct r300_context* r300)
+                 if (sampler->state.compare_mode == PIPE_TEX_COMPARE_NONE) {
+                     texstate->format.format1 |=
+                         r300_get_swizzle_combined(depth_swizzle,
+-                                                  view->swizzle);
++                                                  view->swizzle, FALSE);
+                 } else {
+                     texstate->format.format1 |=
+-                        r300_get_swizzle_combined(depth_swizzle, 0);
++                        r300_get_swizzle_combined(depth_swizzle, 0, FALSE);
+                 }
+             }
+ 
++            if (r300->screen->caps.dxtc_swizzle &&
++                util_format_is_compressed(tex->desc.b.b.format)) {
++                texstate->filter1 |= R400_DXTC_SWIZZLE_ENABLE;
++            }
++
+             /* to emulate 1D textures through 2D ones correctly */
+             if (tex->desc.b.b.target == PIPE_TEXTURE_1D) {
+                 texstate->filter0 &= ~R300_TX_WRAP_T_MASK;
+diff --git a/src/gallium/drivers/r300/r300_texture.c b/src/gallium/drivers/r300/r300_texture.c
+index 34105aa..7e2f69a 100644
+--- a/src/gallium/drivers/r300/r300_texture.c
++++ b/src/gallium/drivers/r300/r300_texture.c
+@@ -40,7 +40,8 @@
+ #include "pipe/p_screen.h"
+ 
+ unsigned r300_get_swizzle_combined(const unsigned char *swizzle_format,
+-                                   const unsigned char *swizzle_view)
++                                   const unsigned char *swizzle_view,
++                                   boolean dxtc_swizzle)
+ {
+     unsigned i;
+     unsigned char swizzle[4];
+@@ -51,10 +52,10 @@ unsigned r300_get_swizzle_combined(const unsigned char *swizzle_format,
+         R300_TX_FORMAT_B_SHIFT,
+         R300_TX_FORMAT_A_SHIFT
+     };
+-    const uint32_t swizzle_bit[4] = {
+-        R300_TX_FORMAT_X,
++    uint32_t swizzle_bit[4] = {
++        dxtc_swizzle ? R300_TX_FORMAT_Z : R300_TX_FORMAT_X,
+         R300_TX_FORMAT_Y,
+-        R300_TX_FORMAT_Z,
++        dxtc_swizzle ? R300_TX_FORMAT_X : R300_TX_FORMAT_Z,
+         R300_TX_FORMAT_W
+     };
+ 
+@@ -107,7 +108,8 @@ unsigned r300_get_swizzle_combined(const unsigned char *swizzle_format,
+  * makes available X, Y, Z, W, ZERO, and ONE for swizzling. */
+ uint32_t r300_translate_texformat(enum pipe_format format,
+                                   const unsigned char *swizzle_view,
+-                                  boolean is_r500)
++                                  boolean is_r500,
++                                  boolean dxtc_swizzle)
+ {
+     uint32_t result = 0;
+     const struct util_format_description *desc;
+@@ -169,7 +171,8 @@ uint32_t r300_translate_texformat(enum pipe_format format,
+             }
+     }
+ 
+-    result |= r300_get_swizzle_combined(desc->swizzle, swizzle_view);
++    result |= r300_get_swizzle_combined(desc->swizzle, swizzle_view,
++                    util_format_is_compressed(format) && dxtc_swizzle);
+ 
+     /* S3TC formats. */
+     if (desc->layout == UTIL_FORMAT_LAYOUT_S3TC) {
+@@ -538,7 +541,7 @@ boolean r300_is_zs_format_supported(enum pipe_format format)
+ 
+ boolean r300_is_sampler_format_supported(enum pipe_format format)
+ {
+-    return r300_translate_texformat(format, 0, TRUE) != ~0;
++    return r300_translate_texformat(format, 0, TRUE, FALSE) != ~0;
+ }
+ 
+ void r300_texture_setup_format_state(struct r300_screen *screen,
+diff --git a/src/gallium/drivers/r300/r300_texture.h b/src/gallium/drivers/r300/r300_texture.h
+index c4588a0..fe9d351 100644
+--- a/src/gallium/drivers/r300/r300_texture.h
++++ b/src/gallium/drivers/r300/r300_texture.h
+@@ -35,11 +35,13 @@ struct r300_texture;
+ struct r300_screen;
+ 
+ unsigned r300_get_swizzle_combined(const unsigned char *swizzle_format,
+-                                   const unsigned char *swizzle_view);
++                                   const unsigned char *swizzle_view,
++                                   boolean dxtc_swizzle);
+ 
+ uint32_t r300_translate_texformat(enum pipe_format format,
+                                   const unsigned char *swizzle_view,
+-                                  boolean is_r500);
++                                  boolean is_r500,
++                                  boolean dxtc_swizzle);
+ 
+ uint32_t r500_tx_format_msb_bit(enum pipe_format format);
+ 
+diff --git a/src/gallium/drivers/r300/r300_texture_desc.c b/src/gallium/drivers/r300/r300_texture_desc.c
+index e2d01cd..ff6d2b2 100644
+--- a/src/gallium/drivers/r300/r300_texture_desc.c
++++ b/src/gallium/drivers/r300/r300_texture_desc.c
+@@ -44,7 +44,7 @@ unsigned r300_get_pixel_alignment(enum pipe_format format,
+             {{ 32, 1}, { 8,  4}, { 0,  0}}, /*   8 bits per pixel */
+             {{ 16, 1}, { 8,  2}, { 4,  4}}, /*  16 bits per pixel */
+             {{  8, 1}, { 4,  2}, { 0,  0}}, /*  32 bits per pixel */
+-            {{  4, 1}, { 0,  0}, { 2,  2}}, /*  64 bits per pixel */
++            {{  4, 1}, { 2,  2}, { 0,  0}}, /*  64 bits per pixel */
+             {{  2, 1}, { 0,  0}, { 0,  0}}  /* 128 bits per pixel */
+         },
+         {
+@@ -53,7 +53,7 @@ unsigned r300_get_pixel_alignment(enum pipe_format format,
+             {{256, 8}, {64, 32}, { 0,  0}}, /*   8 bits per pixel */
+             {{128, 8}, {64, 16}, {32, 32}}, /*  16 bits per pixel */
+             {{ 64, 8}, {32, 16}, { 0,  0}}, /*  32 bits per pixel */
+-            {{ 32, 8}, { 0,  0}, {16, 16}}, /*  64 bits per pixel */
++            {{ 32, 8}, {16, 16}, { 0,  0}}, /*  64 bits per pixel */
+             {{ 16, 8}, { 0,  0}, { 0,  0}}  /* 128 bits per pixel */
+         }
+     };
+@@ -368,11 +368,11 @@ static void r300_setup_tiling(struct r300_screen *screen,
+     switch (util_format_get_blocksize(format)) {
+         case 1:
+         case 4:
++        case 8:
+             desc->microtile = R300_BUFFER_TILED;
+             break;
+ 
+         case 2:
+-        case 8:
+             if (rws->get_value(rws, R300_VID_SQUARE_TILING_SUPPORT)) {
+                 desc->microtile = R300_BUFFER_SQUARETILED;
+             }
 diff --git a/src/gallium/state_trackers/egl/Makefile b/src/gallium/state_trackers/egl/Makefile
 index 8dbfc5b..8cfcef9 100644
 --- a/src/gallium/state_trackers/egl/Makefile
@@ -1132,6 +1612,226 @@ index eced60d..94465e5 100644
      vmw_ioctl_buffer_unmap(vmw, out->buf);
      vmw_ioctl_buffer_destroy(vmw, out->buf);
  
+diff --git a/src/gallium/winsys/radeon/drm/radeon_drm.h b/src/gallium/winsys/radeon/drm/radeon_drm.h
+index df6dd91..061229f 100644
+--- a/src/gallium/winsys/radeon/drm/radeon_drm.h
++++ b/src/gallium/winsys/radeon/drm/radeon_drm.h
+@@ -37,7 +37,214 @@
+  * I believe that this check is valid, but I haven't been exhaustive. */
+ static INLINE boolean is_r3xx(int pciid)
+ {
+-    return (pciid > 0x3150) && (pciid < 0x796f);
++      switch (pciid) {
++      case 0x4144: /* PCI_CHIP_R300_AD */
++      case 0x4145: /* PCI_CHIP_R300_AE */
++      case 0x4146: /* PCI_CHIP_R300_AF */
++      case 0x4147: /* PCI_CHIP_R300_AG */
++      case 0x4E44: /* PCI_CHIP_R300_ND */
++      case 0x4E45: /* PCI_CHIP_R300_NE */
++      case 0x4E46: /* PCI_CHIP_R300_NF */
++      case 0x4E47: /* PCI_CHIP_R300_NG */
++      case 0x4E48: /* PCI_CHIP_R350_NH */
++      case 0x4E49: /* PCI_CHIP_R350_NI */
++      case 0x4E4B: /* PCI_CHIP_R350_NK */
++      case 0x4148: /* PCI_CHIP_R350_AH */
++      case 0x4149: /* PCI_CHIP_R350_AI */
++      case 0x414A: /* PCI_CHIP_R350_AJ */
++      case 0x414B: /* PCI_CHIP_R350_AK */
++      case 0x4E4A: /* PCI_CHIP_R360_NJ */
++      case 0x4150: /* PCI_CHIP_RV350_AP */
++      case 0x4151: /* PCI_CHIP_RV350_AQ */
++      case 0x4152: /* PCI_CHIP_RV350_AR */
++      case 0x4153: /* PCI_CHIP_RV350_AS */
++      case 0x4154: /* PCI_CHIP_RV350_AT */
++      case 0x4155: /* PCI_CHIP_RV350_AU */
++      case 0x4156: /* PCI_CHIP_RV350_AV */
++      case 0x4E50: /* PCI_CHIP_RV350_NP */
++      case 0x4E51: /* PCI_CHIP_RV350_NQ */
++      case 0x4E52: /* PCI_CHIP_RV350_NR */
++      case 0x4E53: /* PCI_CHIP_RV350_NS */
++      case 0x4E54: /* PCI_CHIP_RV350_NT */
++      case 0x4E56: /* PCI_CHIP_RV350_NV */
++      case 0x5460: /* PCI_CHIP_RV370_5460 */
++      case 0x5462: /* PCI_CHIP_RV370_5462 */
++      case 0x5464: /* PCI_CHIP_RV370_5464 */
++      case 0x5B60: /* PCI_CHIP_RV370_5B60 */
++      case 0x5B62: /* PCI_CHIP_RV370_5B62 */
++      case 0x5B63: /* PCI_CHIP_RV370_5B63 */
++      case 0x5B64: /* PCI_CHIP_RV370_5B64 */
++      case 0x5B65: /* PCI_CHIP_RV370_5B65 */
++      case 0x3150: /* PCI_CHIP_RV380_3150 */
++      case 0x3152: /* PCI_CHIP_RV380_3152 */
++      case 0x3154: /* PCI_CHIP_RV380_3154 */
++      case 0x3155: /* PCI_CHIP_RV380_3155 */
++      case 0x3E50: /* PCI_CHIP_RV380_3E50 */
++      case 0x3E54: /* PCI_CHIP_RV380_3E54 */
++      case 0x4A48: /* PCI_CHIP_R420_JH */
++      case 0x4A49: /* PCI_CHIP_R420_JI */
++      case 0x4A4A: /* PCI_CHIP_R420_JJ */
++      case 0x4A4B: /* PCI_CHIP_R420_JK */
++      case 0x4A4C: /* PCI_CHIP_R420_JL */
++      case 0x4A4D: /* PCI_CHIP_R420_JM */
++      case 0x4A4E: /* PCI_CHIP_R420_JN */
++      case 0x4A4F: /* PCI_CHIP_R420_JO */
++      case 0x4A50: /* PCI_CHIP_R420_JP */
++      case 0x4A54: /* PCI_CHIP_R420_JT */
++      case 0x5548: /* PCI_CHIP_R423_UH */
++      case 0x5549: /* PCI_CHIP_R423_UI */
++      case 0x554A: /* PCI_CHIP_R423_UJ */
++      case 0x554B: /* PCI_CHIP_R423_UK */
++      case 0x5550: /* PCI_CHIP_R423_5550 */
++      case 0x5551: /* PCI_CHIP_R423_UQ */
++      case 0x5552: /* PCI_CHIP_R423_UR */
++      case 0x5554: /* PCI_CHIP_R423_UT */
++      case 0x5D57: /* PCI_CHIP_R423_5D57 */
++      case 0x554C: /* PCI_CHIP_R430_554C */
++      case 0x554D: /* PCI_CHIP_R430_554D */
++      case 0x554E: /* PCI_CHIP_R430_554E */
++      case 0x554F: /* PCI_CHIP_R430_554F */
++      case 0x5D48: /* PCI_CHIP_R430_5D48 */
++      case 0x5D49: /* PCI_CHIP_R430_5D49 */
++      case 0x5D4A: /* PCI_CHIP_R430_5D4A */
++      case 0x5D4C: /* PCI_CHIP_R480_5D4C */
++      case 0x5D4D: /* PCI_CHIP_R480_5D4D */
++      case 0x5D4E: /* PCI_CHIP_R480_5D4E */
++      case 0x5D4F: /* PCI_CHIP_R480_5D4F */
++      case 0x5D50: /* PCI_CHIP_R480_5D50 */
++      case 0x5D52: /* PCI_CHIP_R480_5D52 */
++      case 0x4B49: /* PCI_CHIP_R481_4B49 */
++      case 0x4B4A: /* PCI_CHIP_R481_4B4A */
++      case 0x4B4B: /* PCI_CHIP_R481_4B4B */
++      case 0x4B4C: /* PCI_CHIP_R481_4B4C */
++      case 0x564A: /* PCI_CHIP_RV410_564A */
++      case 0x564B: /* PCI_CHIP_RV410_564B */
++      case 0x564F: /* PCI_CHIP_RV410_564F */
++      case 0x5652: /* PCI_CHIP_RV410_5652 */
++      case 0x5653: /* PCI_CHIP_RV410_5653 */
++      case 0x5657: /* PCI_CHIP_RV410_5657 */
++      case 0x5E48: /* PCI_CHIP_RV410_5E48 */
++      case 0x5E4A: /* PCI_CHIP_RV410_5E4A */
++      case 0x5E4B: /* PCI_CHIP_RV410_5E4B */
++      case 0x5E4C: /* PCI_CHIP_RV410_5E4C */
++      case 0x5E4D: /* PCI_CHIP_RV410_5E4D */
++      case 0x5E4F: /* PCI_CHIP_RV410_5E4F */
++      case 0x5A41: /* PCI_CHIP_RS400_5A41 */
++      case 0x5A42: /* PCI_CHIP_RS400_5A42 */
++      case 0x5A61: /* PCI_CHIP_RC410_5A61 */
++      case 0x5A62: /* PCI_CHIP_RC410_5A62 */
++      case 0x5954: /* PCI_CHIP_RS480_5954 */
++      case 0x5955: /* PCI_CHIP_RS480_5955 */
++      case 0x5974: /* PCI_CHIP_RS482_5974 */
++      case 0x5975: /* PCI_CHIP_RS482_5975 */
++      case 0x7100: /* PCI_CHIP_R520_7100 */
++      case 0x7101: /* PCI_CHIP_R520_7101 */
++      case 0x7102: /* PCI_CHIP_R520_7102 */
++      case 0x7103: /* PCI_CHIP_R520_7103 */
++      case 0x7104: /* PCI_CHIP_R520_7104 */
++      case 0x7105: /* PCI_CHIP_R520_7105 */
++      case 0x7106: /* PCI_CHIP_R520_7106 */
++      case 0x7108: /* PCI_CHIP_R520_7108 */
++      case 0x7109: /* PCI_CHIP_R520_7109 */
++      case 0x710A: /* PCI_CHIP_R520_710A */
++      case 0x710B: /* PCI_CHIP_R520_710B */
++      case 0x710C: /* PCI_CHIP_R520_710C */
++      case 0x710E: /* PCI_CHIP_R520_710E */
++      case 0x710F: /* PCI_CHIP_R520_710F */
++      case 0x7140: /* PCI_CHIP_RV515_7140 */
++      case 0x7141: /* PCI_CHIP_RV515_7141 */
++      case 0x7142: /* PCI_CHIP_RV515_7142 */
++      case 0x7143: /* PCI_CHIP_RV515_7143 */
++      case 0x7144: /* PCI_CHIP_RV515_7144 */
++      case 0x7145: /* PCI_CHIP_RV515_7145 */
++      case 0x7146: /* PCI_CHIP_RV515_7146 */
++      case 0x7147: /* PCI_CHIP_RV515_7147 */
++      case 0x7149: /* PCI_CHIP_RV515_7149 */
++      case 0x714A: /* PCI_CHIP_RV515_714A */
++      case 0x714B: /* PCI_CHIP_RV515_714B */
++      case 0x714C: /* PCI_CHIP_RV515_714C */
++      case 0x714D: /* PCI_CHIP_RV515_714D */
++      case 0x714E: /* PCI_CHIP_RV515_714E */
++      case 0x714F: /* PCI_CHIP_RV515_714F */
++      case 0x7151: /* PCI_CHIP_RV515_7151 */
++      case 0x7152: /* PCI_CHIP_RV515_7152 */
++      case 0x7153: /* PCI_CHIP_RV515_7153 */
++      case 0x715E: /* PCI_CHIP_RV515_715E */
++      case 0x715F: /* PCI_CHIP_RV515_715F */
++      case 0x7180: /* PCI_CHIP_RV515_7180 */
++      case 0x7181: /* PCI_CHIP_RV515_7181 */
++      case 0x7183: /* PCI_CHIP_RV515_7183 */
++      case 0x7186: /* PCI_CHIP_RV515_7186 */
++      case 0x7187: /* PCI_CHIP_RV515_7187 */
++      case 0x7188: /* PCI_CHIP_RV515_7188 */
++      case 0x718A: /* PCI_CHIP_RV515_718A */
++      case 0x718B: /* PCI_CHIP_RV515_718B */
++      case 0x718C: /* PCI_CHIP_RV515_718C */
++      case 0x718D: /* PCI_CHIP_RV515_718D */
++      case 0x718F: /* PCI_CHIP_RV515_718F */
++      case 0x7193: /* PCI_CHIP_RV515_7193 */
++      case 0x7196: /* PCI_CHIP_RV515_7196 */
++      case 0x719B: /* PCI_CHIP_RV515_719B */
++      case 0x719F: /* PCI_CHIP_RV515_719F */
++      case 0x7200: /* PCI_CHIP_RV515_7200 */
++      case 0x7210: /* PCI_CHIP_RV515_7210 */
++      case 0x7211: /* PCI_CHIP_RV515_7211 */
++      case 0x71C0: /* PCI_CHIP_RV530_71C0 */
++      case 0x71C1: /* PCI_CHIP_RV530_71C1 */
++      case 0x71C2: /* PCI_CHIP_RV530_71C2 */
++      case 0x71C3: /* PCI_CHIP_RV530_71C3 */
++      case 0x71C4: /* PCI_CHIP_RV530_71C4 */
++      case 0x71C5: /* PCI_CHIP_RV530_71C5 */
++      case 0x71C6: /* PCI_CHIP_RV530_71C6 */
++      case 0x71C7: /* PCI_CHIP_RV530_71C7 */
++      case 0x71CD: /* PCI_CHIP_RV530_71CD */
++      case 0x71CE: /* PCI_CHIP_RV530_71CE */
++      case 0x71D2: /* PCI_CHIP_RV530_71D2 */
++      case 0x71D4: /* PCI_CHIP_RV530_71D4 */
++      case 0x71D5: /* PCI_CHIP_RV530_71D5 */
++      case 0x71D6: /* PCI_CHIP_RV530_71D6 */
++      case 0x71DA: /* PCI_CHIP_RV530_71DA */
++      case 0x71DE: /* PCI_CHIP_RV530_71DE */
++      case 0x7281: /* PCI_CHIP_RV560_7281 */
++      case 0x7283: /* PCI_CHIP_RV560_7283 */
++      case 0x7287: /* PCI_CHIP_RV560_7287 */
++      case 0x7290: /* PCI_CHIP_RV560_7290 */
++      case 0x7291: /* PCI_CHIP_RV560_7291 */
++      case 0x7293: /* PCI_CHIP_RV560_7293 */
++      case 0x7297: /* PCI_CHIP_RV560_7297 */
++      case 0x7280: /* PCI_CHIP_RV570_7280 */
++      case 0x7288: /* PCI_CHIP_RV570_7288 */
++      case 0x7289: /* PCI_CHIP_RV570_7289 */
++      case 0x728B: /* PCI_CHIP_RV570_728B */
++      case 0x728C: /* PCI_CHIP_RV570_728C */
++      case 0x7240: /* PCI_CHIP_R580_7240 */
++      case 0x7243: /* PCI_CHIP_R580_7243 */
++      case 0x7244: /* PCI_CHIP_R580_7244 */
++      case 0x7245: /* PCI_CHIP_R580_7245 */
++      case 0x7246: /* PCI_CHIP_R580_7246 */
++      case 0x7247: /* PCI_CHIP_R580_7247 */
++      case 0x7248: /* PCI_CHIP_R580_7248 */
++      case 0x7249: /* PCI_CHIP_R580_7249 */
++      case 0x724A: /* PCI_CHIP_R580_724A */
++      case 0x724B: /* PCI_CHIP_R580_724B */
++      case 0x724C: /* PCI_CHIP_R580_724C */
++      case 0x724D: /* PCI_CHIP_R580_724D */
++      case 0x724E: /* PCI_CHIP_R580_724E */
++      case 0x724F: /* PCI_CHIP_R580_724F */
++      case 0x7284: /* PCI_CHIP_R580_7284 */
++      case 0x793F: /* PCI_CHIP_RS600_793F */
++      case 0x7941: /* PCI_CHIP_RS600_7941 */
++      case 0x7942: /* PCI_CHIP_RS600_7942 */
++      case 0x791E: /* PCI_CHIP_RS690_791E */
++      case 0x791F: /* PCI_CHIP_RS690_791F */
++      case 0x796C: /* PCI_CHIP_RS740_796C */
++      case 0x796D: /* PCI_CHIP_RS740_796D */
++      case 0x796E: /* PCI_CHIP_RS740_796E */
++      case 0x796F: /* PCI_CHIP_RS740_796F */
++	      return TRUE;
++      default:
++	      return FALSE;
++      }
+ }
+ 
+ #endif
 diff --git a/src/glsl/glsl_parser.cpp b/src/glsl/glsl_parser.cpp
 index 301c221..ad99eee 100644
 --- a/src/glsl/glsl_parser.cpp
@@ -1373,6 +2073,53 @@ index caa48fe..1aa40c7 100644
  		fprintf(stderr, "Not a native swizzle: %08x\n", swizzle);
  		return 0;
  	}
+diff --git a/src/mesa/drivers/dri/r300/compiler/r3xx_fragprog.c b/src/mesa/drivers/dri/r300/compiler/r3xx_fragprog.c
+index 4793f33..d9a398d 100644
+--- a/src/mesa/drivers/dri/r300/compiler/r3xx_fragprog.c
++++ b/src/mesa/drivers/dri/r300/compiler/r3xx_fragprog.c
+@@ -54,6 +54,8 @@ static void rc_rewrite_depth_out(struct radeon_compiler *cc, void *user)
+ 
+ 	for (rci = c->Base.Program.Instructions.Next; rci != &c->Base.Program.Instructions; rci = rci->Next) {
+ 		struct rc_sub_instruction * inst = &rci->U.I;
++		unsigned i;
++		const struct rc_opcode_info *info = rc_get_opcode_info(inst->Opcode);
+ 
+ 		if (inst->DstReg.File != RC_FILE_OUTPUT || inst->DstReg.Index != c->OutputDepth)
+ 			continue;
+@@ -65,27 +67,12 @@ static void rc_rewrite_depth_out(struct radeon_compiler *cc, void *user)
+ 			continue;
+ 		}
+ 
+-		switch (inst->Opcode) {
+-			case RC_OPCODE_FRC:
+-			case RC_OPCODE_MOV:
+-				inst->SrcReg[0] = lmul_swizzle(RC_SWIZZLE_ZZZZ, inst->SrcReg[0]);
+-				break;
+-			case RC_OPCODE_ADD:
+-			case RC_OPCODE_MAX:
+-			case RC_OPCODE_MIN:
+-			case RC_OPCODE_MUL:
+-				inst->SrcReg[0] = lmul_swizzle(RC_SWIZZLE_ZZZZ, inst->SrcReg[0]);
+-				inst->SrcReg[1] = lmul_swizzle(RC_SWIZZLE_ZZZZ, inst->SrcReg[1]);
+-				break;
+-			case RC_OPCODE_CMP:
+-			case RC_OPCODE_MAD:
+-				inst->SrcReg[0] = lmul_swizzle(RC_SWIZZLE_ZZZZ, inst->SrcReg[0]);
+-				inst->SrcReg[1] = lmul_swizzle(RC_SWIZZLE_ZZZZ, inst->SrcReg[1]);
+-				inst->SrcReg[2] = lmul_swizzle(RC_SWIZZLE_ZZZZ, inst->SrcReg[2]);
+-				break;
+-			default:
+-				// Scalar instructions needn't be reswizzled
+-				break;
++		if (!info->IsComponentwise) {
++			continue;
++		}
++
++		for (i = 0; i < info->NumSrcRegs; i++) {
++			inst->SrcReg[i] = lmul_swizzle(RC_SWIZZLE_ZZZZ, inst->SrcReg[i]);
+ 		}
+ 	}
+ }
 diff --git a/src/mesa/drivers/dri/r300/compiler/r500_fragprog_emit.c b/src/mesa/drivers/dri/r300/compiler/r500_fragprog_emit.c
 index efa3bb5..abbf704 100644
 --- a/src/mesa/drivers/dri/r300/compiler/r500_fragprog_emit.c
@@ -2156,6 +2903,65 @@ index 3d1a4c4..71aa8c2 100644
     else if ((datatype == GL_UNSIGNED_BYTE_3_3_2) && (comps == 3)) {
        DECLARE_ROW_POINTERS0(GLushort);
  
+diff --git a/src/mesa/program/prog_statevars.c b/src/mesa/program/prog_statevars.c
+index 2687f8a..778447d 100644
+--- a/src/mesa/program/prog_statevars.c
++++ b/src/mesa/program/prog_statevars.c
+@@ -584,6 +584,24 @@ _mesa_fetch_state(GLcontext *ctx, const gl_state_index state[],
+          value[3] = 0.0F;
+          return;
+ 
++      case STATE_FB_WPOS_Y_TRANSFORM:
++         /* A driver may negate this conditional by using ZW swizzle
++          * instead of XY (based on e.g. some other state). */
++         if (ctx->DrawBuffer->Name != 0) {
++            /* Identity (XY) followed by flipping Y upside down (ZW). */
++            value[0] = 1.0F;
++            value[1] = 0.0F;
++            value[2] = -1.0F;
++            value[3] = (GLfloat) (ctx->DrawBuffer->Height - 1);
++         } else {
++            /* Flipping Y upside down (XY) followed by identity (ZW). */
++            value[0] = -1.0F;
++            value[1] = (GLfloat) (ctx->DrawBuffer->Height - 1);
++            value[2] = 1.0F;
++            value[3] = 0.0F;
++         }
++         return;
++
+       case STATE_ROT_MATRIX_0:
+          {
+             const int unit = (int) state[2];
+@@ -711,6 +729,7 @@ _mesa_program_state_flags(const gl_state_index state[STATE_LENGTH])
+          return _NEW_PIXEL;
+ 
+       case STATE_FB_SIZE:
++      case STATE_FB_WPOS_Y_TRANSFORM:
+          return _NEW_BUFFERS;
+ 
+       default:
+@@ -925,6 +944,9 @@ append_token(char *dst, gl_state_index k)
+    case STATE_FB_SIZE:
+       append(dst, "FbSize");
+       break;
++   case STATE_FB_WPOS_Y_TRANSFORM:
++      append(dst, "FbWposYTransform");
++      break;
+    case STATE_ROT_MATRIX_0:
+       append(dst, "rotMatrixRow0");
+       break;
+diff --git a/src/mesa/program/prog_statevars.h b/src/mesa/program/prog_statevars.h
+index 1753471..82712c5 100644
+--- a/src/mesa/program/prog_statevars.h
++++ b/src/mesa/program/prog_statevars.h
+@@ -120,6 +120,7 @@ typedef enum gl_state_index_ {
+    STATE_PCM_BIAS,              /**< Post color matrix RGBA bias */
+    STATE_SHADOW_AMBIENT,        /**< ARB_shadow_ambient fail value; token[2] is texture unit index */
+    STATE_FB_SIZE,               /**< (width-1, height-1, 0, 0) */
++   STATE_FB_WPOS_Y_TRANSFORM,   /**< (1, 0, -1, height-1) if a FBO is bound, (-1, height-1, 1, 0) otherwise */
+    STATE_ROT_MATRIX_0,          /**< ATI_envmap_bumpmap, rot matrix row 0 */
+    STATE_ROT_MATRIX_1,          /**< ATI_envmap_bumpmap, rot matrix row 1 */
+    STATE_INTERNAL_DRIVER	/* first available state index for drivers (must be last) */
 diff --git a/src/mesa/state_tracker/st_cb_bufferobjects.c b/src/mesa/state_tracker/st_cb_bufferobjects.c
 index 7991a93..50b352c 100644
 --- a/src/mesa/state_tracker/st_cb_bufferobjects.c
@@ -2255,6 +3061,102 @@ index 66e32b4..cd418a0 100644
  }
  
  static void
+diff --git a/src/mesa/state_tracker/st_mesa_to_tgsi.c b/src/mesa/state_tracker/st_mesa_to_tgsi.c
+index 0ed822b..2712717 100644
+--- a/src/mesa/state_tracker/st_mesa_to_tgsi.c
++++ b/src/mesa/state_tracker/st_mesa_to_tgsi.c
+@@ -760,10 +760,13 @@ emit_adjusted_wpos( struct st_translate *t,
+ 
+ /**
+  * Emit the TGSI instructions for inverting the WPOS y coordinate.
++ * This code is unavoidable because it also depends on whether
++ * a FBO is bound (STATE_FB_WPOS_Y_TRANSFORM).
+  */
+ static void
+-emit_inverted_wpos( struct st_translate *t,
+-                    const struct gl_program *program )
++emit_wpos_inversion( struct st_translate *t,
++                     const struct gl_program *program,
++                     boolean invert)
+ {
+    struct ureg_program *ureg = t->ureg;
+ 
+@@ -771,17 +774,17 @@ emit_inverted_wpos( struct st_translate *t,
+     * Need to replace instances of INPUT[WPOS] with temp T
+     * where T = INPUT[WPOS] by y is inverted.
+     */
+-   static const gl_state_index winSizeState[STATE_LENGTH]
+-      = { STATE_INTERNAL, STATE_FB_SIZE, 0, 0, 0 };
++   static const gl_state_index wposTransformState[STATE_LENGTH]
++      = { STATE_INTERNAL, STATE_FB_WPOS_Y_TRANSFORM, 0, 0, 0 };
+    
+    /* XXX: note we are modifying the incoming shader here!  Need to
+     * do this before emitting the constant decls below, or this
+     * will be missed:
+     */
+-   unsigned winHeightConst = _mesa_add_state_reference(program->Parameters,
+-                                                       winSizeState);
++   unsigned wposTransConst = _mesa_add_state_reference(program->Parameters,
++                                                       wposTransformState);
+ 
+-   struct ureg_src winsize = ureg_DECL_constant( ureg, winHeightConst );
++   struct ureg_src wpostrans = ureg_DECL_constant( ureg, wposTransConst );
+    struct ureg_dst wpos_temp;
+    struct ureg_src wpos_input = t->inputs[t->inputMapping[FRAG_ATTRIB_WPOS]];
+ 
+@@ -794,12 +797,23 @@ emit_inverted_wpos( struct st_translate *t,
+       ureg_MOV( ureg, wpos_temp, wpos_input );
+    }
+ 
+-   /* SUB wpos_temp.y, winsize_const, wpos_input
+-    */
+-   ureg_SUB( ureg,
+-             ureg_writemask(wpos_temp, TGSI_WRITEMASK_Y ),
+-             winsize,
+-             wpos_input);
++   if (invert) {
++      /* MAD wpos_temp.y, wpos_input, wpostrans.xxxx, wpostrans.yyyy
++       */
++      ureg_MAD( ureg,
++                ureg_writemask(wpos_temp, TGSI_WRITEMASK_Y ),
++                wpos_input,
++                ureg_scalar(wpostrans, 0),
++                ureg_scalar(wpostrans, 1));
++   } else {
++      /* MAD wpos_temp.y, wpos_input, wpostrans.zzzz, wpostrans.wwww
++       */
++      ureg_MAD( ureg,
++                ureg_writemask(wpos_temp, TGSI_WRITEMASK_Y ),
++                wpos_input,
++                ureg_scalar(wpostrans, 2),
++                ureg_scalar(wpostrans, 3));
++   }
+ 
+    /* Use wpos_temp as position input from here on:
+     */
+@@ -861,8 +875,7 @@ emit_wpos(struct st_context *st,
+ 
+    /* we invert after adjustment so that we avoid the MOV to temporary,
+     * and reuse the adjustment ADD instead */
+-   if (invert)
+-      emit_inverted_wpos(t, program);
++   emit_wpos_inversion(t, program, invert);
+ }
+ 
+ 
+diff --git a/src/mesa/state_tracker/st_program.c b/src/mesa/state_tracker/st_program.c
+index 8c2d8b6..63faa4a 100644
+--- a/src/mesa/state_tracker/st_program.c
++++ b/src/mesa/state_tracker/st_program.c
+@@ -216,6 +216,8 @@ st_translate_vertex_program(struct st_context *st,
+       return NULL;
+    }
+ 
++   vpv->key = *key;
++
+    vpv->num_inputs = stvp->num_inputs;
+    num_outputs = stvp->num_outputs;
+    if (key->passthrough_edgeflags) {
 diff --git a/src/mesa/swrast/s_texfilter.c b/src/mesa/swrast/s_texfilter.c
 index 3fc554c..28063e0 100644
 --- a/src/mesa/swrast/s_texfilter.c
