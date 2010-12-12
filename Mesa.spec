@@ -21,22 +21,22 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver	7.1.0
 #
-%define		libdrm_ver	2.4.21
+%define		libdrm_ver	2.4.23
 %define		dri2proto_ver	1.99.3
 %define		glproto_ver	1.4.11
+%define		snap		20101212
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	7.9
-Release:	7%{?with_multigl:.mgl}
+Version:	7.9.1
+Release:	0.%{snap}.1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
-Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	82c740c49d572baa6da2b1a1eee90bca
+Source0:	%{name}Lib-%{snap}.tar.bz2
+# Source0-md5:	0acffbdd9f23e9bf68ba291afba57bf0
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-selinux.patch
-Patch2:		%{name}-git.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -663,7 +663,6 @@ Sterownik X.org DRI dla VMware.
 %setup -q
 %patch0 -p0
 %patch1 -p1
-%patch2 -p1
 
 %build
 %{__aclocal}
