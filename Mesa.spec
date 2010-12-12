@@ -29,7 +29,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.9
-Release:	7%{?with_multigl:.mgl}
+Release:	8%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
@@ -37,6 +37,7 @@ Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-selinux.patch
 Patch2:		%{name}-git.patch
+Patch3:		%{name}-nouveau.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -664,6 +665,7 @@ Sterownik X.org DRI dla VMware.
 %patch0 -p0
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 %{__aclocal}
