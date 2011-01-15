@@ -1,5 +1,60 @@
+diff --git a/docs/news.html b/docs/news.html
+index 72d38ee..ce0cd0c 100644
+--- a/docs/news.html
++++ b/docs/news.html
+@@ -11,6 +11,19 @@
+ <H1>News</H1>
+ 
+ 
++<h2>January 7, 2011</h2>
++
++<p>
++<a href="relnotes-7.10.html">Mesa 7.10</a> (final) is released.  This is a new
++development release.
++</p>
++
++<p>
++Also, <a href="relnotes-7.9.1.html">Mesa 7.9.1</a> (final) is released.
++This is a bug fix release.
++</p>
++
++
+ <h2>October 4, 2010</h2>
+ 
+ <p>
+diff --git a/docs/relnotes-7.10.html b/docs/relnotes-7.10.html
+index 2abbc4a..3f4f229 100644
+--- a/docs/relnotes-7.10.html
++++ b/docs/relnotes-7.10.html
+@@ -1,8 +1,10 @@
+ <HTML>
+ 
++<head>
+ <TITLE>Mesa Release Notes</TITLE>
+-
+-<head><link rel="stylesheet" type="text/css" href="mesa.css"></head>
++<link rel="stylesheet" type="text/css" href="mesa.css">
++<meta http-equiv="content-type" content="text/html; charset=utf-8" />
++</head>
+ 
+ <BODY>
+ 
+@@ -28,7 +30,12 @@ for DRI hardware acceleration.
+ 
+ <h2>MD5 checksums</h2>
+ <pre>
+-tbd
++0a70c15c135561824bdcae92bf232e43  MesaLib-7.10.tar.gz
++33fb94eccc02cbb4d8d1365615e38e46  MesaLib-7.10.tar.bz2
++5cafdc0eda0f9bf370b95c98df3338fa  MesaLib-7.10.zip
++bc644be551ed585fc4f66c16b64a91c9  MesaGLUT-7.10.tar.gz
++5c2677a155672352d62b177e4f0f92e8  MesaGLUT-7.10.tar.bz2
++2ce5001f74496d1ba719ef74d910a5cf  MesaGLUT-7.10.zip
+ </pre>
+ 
+ 
 diff --git a/docs/relnotes-7.9.1.html b/docs/relnotes-7.9.1.html
-index dae0ba2..bef4ef1 100644
+index a46eb16..bef4ef1 100644
 --- a/docs/relnotes-7.9.1.html
 +++ b/docs/relnotes-7.9.1.html
 @@ -1,8 +1,10 @@
@@ -15,20 +70,19 @@ index dae0ba2..bef4ef1 100644
  
  <BODY>
  
-@@ -26,7 +28,12 @@ for DRI hardware acceleration.
+diff --git a/docs/relnotes.html b/docs/relnotes.html
+index 4487af9..036d3f8 100644
+--- a/docs/relnotes.html
++++ b/docs/relnotes.html
+@@ -13,6 +13,8 @@ The release notes summarize what's new or changed in each Mesa release.
+ </p>
  
- <h2>MD5 checksums</h2>
- <pre>
--TBD.
-+78422843ea875ad4eac35b9b8584032b  MesaLib-7.9.1.tar.gz
-+07dc6cfb5928840b8b9df5bd1b3ae434  MesaLib-7.9.1.tar.bz2
-+c8eaea5b3c3d6dee784bd8c2db91c80f  MesaLib-7.9.1.zip
-+ee9ecae4ca56fbb2d14dc15e3a0a7640  MesaGLUT-7.9.1.tar.gz
-+41fc477d524e7dc5c84da8ef22422bea  MesaGLUT-7.9.1.tar.bz2
-+90b287229afdf19317aa989d19462e7a  MesaGLUT-7.9.1.zip
- </pre>
- 
- 
+ <UL>
++<LI><A HREF="relnotes-7.10.html">7.10 release notes</A>
++<LI><A HREF="relnotes-7.9.1html">7.9.1 release notes</A>
+ <LI><A HREF="relnotes-7.9.html">7.9 release notes</A>
+ <LI><A HREF="relnotes-7.8.3.html">7.8.3 release notes</A>
+ <LI><A HREF="relnotes-7.8.2.html">7.8.2 release notes</A>
 diff --git a/src/gallium/auxiliary/draw/draw_pt_vsplit_tmp.h b/src/gallium/auxiliary/draw/draw_pt_vsplit_tmp.h
 index 3f66f96..75dba8c 100644
 --- a/src/gallium/auxiliary/draw/draw_pt_vsplit_tmp.h
