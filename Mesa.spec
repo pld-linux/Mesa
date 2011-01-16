@@ -22,7 +22,7 @@
 %define		glapi_ver	7.1.0
 #
 %define		libdrm_ver	2.4.23
-%define		dri2proto_ver	1.99.3
+%define		dri2proto_ver	2.1
 %define		glproto_ver	1.4.11
 #
 Summary:	Free OpenGL implementation
@@ -38,17 +38,17 @@ Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-selinux.patch
 Patch2:		%{name}-git.patch
 URL:		http://www.mesa3d.org/
-BuildRequires:	autoconf
+BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake
 BuildRequires:	expat-devel
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
 BuildRequires:	libselinux-devel
-BuildRequires:	libstdc++-devel
+BuildRequires:	libstdc++-devel >+ 5:3.3.0
+BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
 BuildRequires:	pixman-devel
 BuildRequires:	pkgconfig
-BuildRequires:	pkgconfig(talloc) >= 2.0.1
 BuildRequires:	python
 BuildRequires:	python-modules
 BuildRequires:	rpmbuild(macros) >= 1.470
@@ -61,6 +61,14 @@ BuildRequires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 BuildRequires:	xorg-proto-glproto-devel >= %{glproto_ver}
 BuildRequires:	xorg-util-makedepend
 BuildRequires:	xorg-xserver-server-devel
+%if %{with egl}
+BuildRequires:	libxcb-devel
+BuildRequires:	udev-devel >= 150
+%endif
+%if %{with gallium}
+BuildRequires:	xorg-proto-xextproto-devel >= 7.0.99.1
+BuildRequires:	xorg-xserver-server-devel >= 1.6.0
+%endif
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %if %{without gallium}
@@ -89,6 +97,7 @@ Summary(pl.UTF-8):	Implementacja SGI biblioteki libEGL ze standardu OpenGL
 License:	SGI Free Software License B v2.0 (MIT-like)
 Group:		Libraries
 Requires:	OpenGL >= 1.2
+Requires:	udev-libs >= 150
 Provides:	OpenGL-EGL = 1.0
 
 %description libEGL
@@ -728,7 +737,7 @@ mv %{_lib} osmesa32
 	--%{?with_gallium_intel:en}%{!?with_gallium_intel:dis}able-gallium-intel \
 	--%{?with_gallium_radeon:en}%{!?with_gallium_radeon:dis}able-gallium-radeon \
 	--enable-gallium-svga \
-%{?with_gallium_nouveau:--enable-gallium-nouveau} \
+	%{?with_gallium_nouveau:--enable-gallium-nouveau} \
 	--with-state-trackers=dri,glx \
 %else
 	--disable-gallium \
