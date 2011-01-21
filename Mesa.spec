@@ -6,8 +6,8 @@
 # Conditional build:
 %bcond_without	egl	# build egl
 %bcond_without	gallium	# don't build gallium
-%bcond_with	gallium_intel	# gallium i915 driver (but doesn't work with AIGLX)
-%bcond_with	gallium_radeon	# gallium radeon driver
+%bcond_without	gallium_intel	# gallium i915 driver (but doesn't work with AIGLX)
+%bcond_without	gallium_radeon	# gallium radeon driver
 %bcond_without	gallium_nouveau	# gallium nouveau driver
 %bcond_without	motif	# build static libGLw without Motif interface
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
@@ -43,7 +43,7 @@ BuildRequires:	automake
 BuildRequires:	expat-devel
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
 BuildRequires:	libselinux-devel
-BuildRequires:	libstdc++-devel >+ 5:3.3.0
+BuildRequires:	libstdc++-devel >= 5:3.3.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
@@ -75,6 +75,8 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %undefine	with_gallium_intel
 %undefine	with_gallium_radeon
 %endif
+
+%define	skip_post_check_so libOpenVG.so.1.0.0
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
@@ -354,6 +356,34 @@ Static OSMesa (off-screen renderer) library.
 
 %description libOSMesa-static -l pl.UTF-8
 Biblioteka statyczna OSMesa (renderująca bitmapy w pamięci).
+
+%package libOpenVG
+Summary:	OpenVG API implementation
+Summary(pl.UTF-8):	Implementacja API OpenVG
+License:	MIT
+Group:		Libraries
+# doesn't require base
+
+%description libOpenVG
+OpenVG API implementation.
+
+%description libOSMesa -l pl.UTF-8
+Implementacja API OpenVG.
+
+%package libOpenVG-devel
+Summary:	Header file for libOpenVG library
+Summary(pl.UTF-8):	Plik nagłówkowy biblioteki libOpenVG
+License:	MIT
+Group:		Development/Libraries
+# for <KHR/khrplatform.h>
+Requires:	%{name}-libEGL-devel = %{version}-%{release}
+Requires:	%{name}-libOpenVG = %{version}-%{release}
+
+%description libOpenVG-devel
+Header file for libOpenVG library.
+
+%description libOSMesa-devel -l pl.UTF-8
+Plik nagłówkowy biblioteki libOpenVG.
 
 %package utils
 Summary:	OpenGL utilities from Mesa3D
@@ -678,13 +708,13 @@ Sterownik X.org DRI dla VMware.
 %{__aclocal}
 %{__autoconf}
 
-dri_drivers="i810 i965 mach64 mga r128 \
+dri_drivers="i810 mach64 mga r128 r200 radeon \
 %if %{without gallium_radeon}
-r200 r300 r600 radeon \
+r300 r600 \
 %endif
 savage \
 %if %{without gallium_intel}
-i915 \
+i915 i965 \
 %endif
 %ifarch sparc sparcv9 sparc64
 ffb \
@@ -702,8 +732,7 @@ common_flags="\
 	--enable-pic \
 	--enable-glx-tls \
 	--disable-glut \
-	--disable-os-mesa \
-	--%{?with_egl:en}%{!?with_egl:dis}able-egl"
+	%{__enable_disable egl}"
 
 osmesa_common_flags="\
 	--with-driver=osmesa \
@@ -734,14 +763,18 @@ mv %{_lib} osmesa32
 %configure $common_flags \
 %if %{with gallium}
 	--enable-gallium \
-	--%{?with_gallium_intel:en}%{!?with_gallium_intel:dis}able-gallium-intel \
-	--%{?with_gallium_radeon:en}%{!?with_gallium_radeon:dis}able-gallium-radeon \
+	%{__enable_disable gallium_intel gallium-i915} \
+	%{__enable_disable gallium_intel gallium-i965} \
+	%{__enable_disable gallium_radeon gallium-radeon} \
+	%{__enable_disable gallium_radeon gallium-r600} \
+	%{__enable gallium_nouveau gallium-nouveau} \
 	--enable-gallium-svga \
-	%{?with_gallium_nouveau:--enable-gallium-nouveau} \
-	--with-state-trackers=dri,glx \
+	--enable-gallium-swrast \
+	--with-state-trackers=dri,glx,egl,xorg,vega \
 %else
 	--disable-gallium \
 %endif
+	--enable-openvg \
 	--with-driver=dri \
 	--with-dri-drivers=${dri_drivers} \
 	--with-dri-driverdir=%{_libdir}/xorg/modules/dri
@@ -794,6 +827,12 @@ rm -rf $RPM_BUILD_ROOT
 %post	libGLw -p /sbin/ldconfig
 %postun	libGLw -p /sbin/ldconfig
 
+%post	libOSMesa -p /sbin/ldconfig
+%postun	libOSMesa -p /sbin/ldconfig
+
+%post	libOpenVG -p /sbin/ldconfig
+%postun	libOpenVG -p /sbin/ldconfig
+
 %if %{with egl}
 %files libEGL
 %defattr(644,root,root,755)
@@ -802,6 +841,18 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/egl
 %attr(755,root,root) %{_libdir}/egl/egl_dri2.so
 %attr(755,root,root) %{_libdir}/egl/egl_glx.so
+%if %{with gallium}
+%attr(755,root,root) %{_libdir}/egl/egl_gallium.so
+%attr(755,root,root) %{_libdir}/egl/pipe_i915.so
+%attr(755,root,root) %{_libdir}/egl/pipe_i965.so
+%attr(755,root,root) %{_libdir}/egl/pipe_nouveau.so
+%attr(755,root,root) %{_libdir}/egl/pipe_r300.so
+%attr(755,root,root) %{_libdir}/egl/pipe_r600.so
+%attr(755,root,root) %{_libdir}/egl/pipe_swrast.so
+%attr(755,root,root) %{_libdir}/egl/pipe_vmwgfx.so
+%attr(755,root,root) %{_libdir}/egl/st_GL.so
+%attr(755,root,root) %{_libdir}/egl/st_OpenVG.so
+%endif
 
 %files libEGL-devel
 %defattr(644,root,root,755)
@@ -917,6 +968,17 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %endif
 
+%files libOpenVG
+%defattr(644,root,root,755)
+%attr(755,root,root) %ghost %{_libdir}/libOpenVG.so.1
+%attr(755,root,root) %{_libdir}/libOpenVG.so.1.0.0
+
+%files libOpenVG-devel
+%defattr(644,root,root,755)
+%{_includedir}/VG
+%{_libdir}/libOpenVG.so
+%{_pkgconfigdir}/vg.pc
+
 %files dri-driver-ati-mach64
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mach64_dri.so
@@ -924,6 +986,10 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-ati-radeon-R100
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/radeon_dri.so
+#if %{with gallium}
+# this file conflicts with xorg-driver-video-ati
+#attr(755,root,root) %{_libdir}/xorg/modules/drivers/radeon_drv.so
+#endif
 
 %files dri-driver-ati-radeon-R200
 %defattr(644,root,root,755)
@@ -966,6 +1032,9 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-intel-i965
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i965_dri.so
+%if %{with gallium}
+%attr(755,root,root) %{_libdir}/xorg/modules/drivers/i965g_drv.so
+%endif
 
 %files dri-driver-matrox
 %defattr(644,root,root,755)
@@ -975,7 +1044,7 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium_nouveau}
 %files dri-driver-nouveau
 %defattr(644,root,root,755)
-#%attr(755,root,root) %{_libdir}/xorg/modules/drivers/modesetting_drv.so
+%attr(755,root,root) %{_libdir}/xorg/modules/drivers/modesetting_drv.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
 %endif
 %endif
@@ -993,7 +1062,9 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-swrast
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
+%if %{with gallium}
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/swrastg_dri.so
+%endif
 
 %files dri-driver-tdfx
 %defattr(644,root,root,755)
@@ -1007,4 +1078,5 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-vmwgfx
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/vmwgfx_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/drivers/vmwgfx_drv.so
 %endif
