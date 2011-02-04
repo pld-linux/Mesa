@@ -280,7 +280,7 @@ Provides:	OpenGL-GLw
 %description libGLw
 SGI OpenGL Xt widgets library.
 
-%description libGLU -l pl.UTF-8
+%description libGLw -l pl.UTF-8
 Biblioteka SGI widgetów Xt dla OpenGL-a.
 
 %package libGLw-devel
