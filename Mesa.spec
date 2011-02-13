@@ -43,7 +43,7 @@ BuildRequires:	automake
 BuildRequires:	expat-devel
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
 BuildRequires:	libselinux-devel
-BuildRequires:	libstdc++-devel >+ 5:3.3.0
+BuildRequires:	libstdc++-devel >= 5:3.3.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
