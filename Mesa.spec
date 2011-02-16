@@ -22,28 +22,29 @@
 %define		glapi_ver	7.1.0
 #
 %define		libdrm_ver	2.4.23
-%define		dri2proto_ver	1.99.3
+%define		dri2proto_ver	2.1
 %define		glproto_ver	1.4.11
-%define		snap		20101212
+%define		snap		20110216
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	7.9.1
+Version:	7.11
 Release:	0.%{snap}.1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	0acffbdd9f23e9bf68ba291afba57bf0
+# Source0-md5:	0aca853f3747cec875fbcaf4e924c40f
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-selinux.patch
 URL:		http://www.mesa3d.org/
-BuildRequires:	autoconf
+BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake
 BuildRequires:	expat-devel
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
 BuildRequires:	libselinux-devel
-BuildRequires:	libstdc++-devel
+BuildRequires:	libstdc++-devel >= 5:3.3.0
+BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:1.4d
 %{?with_motif:BuildRequires:	motif-devel}
 BuildRequires:	pixman-devel
@@ -89,6 +90,7 @@ Summary(pl.UTF-8):	Implementacja SGI biblioteki libEGL ze standardu OpenGL
 License:	SGI Free Software License B v2.0 (MIT-like)
 Group:		Libraries
 Requires:	OpenGL >= 1.2
+Requires:	udev-libs >= 150
 Provides:	OpenGL-EGL = 1.0
 
 %description libEGL
@@ -271,7 +273,7 @@ Provides:	OpenGL-GLw
 %description libGLw
 SGI OpenGL Xt widgets library.
 
-%description libGLU -l pl.UTF-8
+%description libGLw -l pl.UTF-8
 Biblioteka SGI widgetów Xt dla OpenGL-a.
 
 %package libGLw-devel
@@ -727,7 +729,7 @@ mv %{_lib} osmesa32
 	--%{?with_gallium_intel:en}%{!?with_gallium_intel:dis}able-gallium-intel \
 	--%{?with_gallium_radeon:en}%{!?with_gallium_radeon:dis}able-gallium-radeon \
 	--enable-gallium-svga \
-%{?with_gallium_nouveau:--enable-gallium-nouveau} \
+	%{?with_gallium_nouveau:--enable-gallium-nouveau} \
 	--with-state-trackers=dri,glx \
 %else
 	--disable-gallium \
