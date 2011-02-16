@@ -24,7 +24,10 @@
 %define		libdrm_ver	2.4.23
 %define		dri2proto_ver	2.1
 %define		glproto_ver	1.4.11
+#
 %define		snap		20110216
+# for snapshots ONLY!
+%define		no_install_post_check_so	1
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
@@ -43,10 +46,13 @@ BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake
 BuildRequires:	expat-devel
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
+# drop when 2.4.24 is released
+%{?with_nouveau:BuildRequires:	libdrm-devel >= 2.4.24}
 BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= 5:3.3.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:1.4d
+BuildRequires:	llvm-devel
 %{?with_motif:BuildRequires:	motif-devel}
 BuildRequires:	pixman-devel
 BuildRequires:	pkgconfig
@@ -129,6 +135,27 @@ Static SGI libEGL library.
 
 %description libEGL-static -l pl.UTF-8
 Statyczna biblioteka SGI libEGL.
+
+%package libGLES
+Summary:	Mesa libGLES runtime libraries
+Group:		Libraries
+
+%description libGLES
+Mesa GLES runtime libraries.
+
+%description libGLES -l pl.UTF-8
+Biblioteka Mesa GLES.
+
+%package libGLES-devel
+Summary:	Header files for libGLES library
+Group:		Development/Libraries
+Requires:	%{name}-libGLES = %{version}-%{release}
+
+%description libGLES-devel
+Header files for libGLES library.
+
+%description libGLES-devel -l pl.UTF-8
+Pliki nagłówkowe biblioteki libGLES.
 
 %package libGL
 Summary:	Free Mesa3D implementation of libGL OpenGL library
@@ -696,44 +723,39 @@ common_flags="\
 	--enable-pic \
 	--enable-glx-tls \
 	--disable-glut \
-	--disable-os-mesa \
-	--%{?with_egl:en}%{!?with_egl:dis}able-egl"
+%if %{with egl}
+	--enable-egl \
+	--enable-gles1 \
+	--enable-gles2 \
+%endif
+"
 
 osmesa_common_flags="\
 	--with-driver=osmesa \
 	--disable-asm \
-	--disable-glu"
+	--disable-glu \
+	--disable-egl"
 
 %if %{with osmesa}
-# osmesa variants
 %configure $common_flags $osmesa_common_flags \
 	--with-osmesa-bits=8
 %{__make}
 mv %{_lib} osmesa8
-%{__make} clean
-
-%configure $common_flags $osmesa_common_flags \
-	--with-osmesa-bits=16
-%{__make}
-mv %{_lib} osmesa16
-%{__make} clean
-
-%configure $common_flags $osmesa_common_flags \
-	--with-osmesa-bits=32
-%{__make}
-mv %{_lib} osmesa32
 %{__make} clean
 %endif
 
 %configure $common_flags \
 %if %{with gallium}
 	--enable-gallium \
-	--%{?with_gallium_intel:en}%{!?with_gallium_intel:dis}able-gallium-intel \
+%if %{with gallium_intel}
+	--enable-gallium-i915 \
+	--enable-gallium-i965 \
+%endif
 	--%{?with_gallium_radeon:en}%{!?with_gallium_radeon:dis}able-gallium-radeon \
 	--enable-gallium-svga \
 	--enable-gallium-egl \
 	%{?with_gallium_nouveau:--enable-gallium-nouveau} \
-	--with-state-trackers=dri,glx \
+	--with-state-trackers=dri,glx,egl \
 %else
 	--disable-gallium \
 %endif
@@ -765,6 +787,11 @@ rm [a-fh-np-wyz]*.h glf*.h
 cd $RPM_BUILD_ROOT%{_libdir}
 cd $olddir
 
+%if %{with gallium}
+# use gallium swrastg as swrast
+mv $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/swrastg_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/swrast_dri.so
+%endif
+
 %if %{with multigl}
 install -d $RPM_BUILD_ROOT{%{_libdir}/Mesa,%{_sysconfdir}/ld.so.conf.d}
 
@@ -783,6 +810,9 @@ rm -rf $RPM_BUILD_ROOT
 %post	libGL -p /sbin/ldconfig
 %postun	libGL -p /sbin/ldconfig
 
+%post	libGLES -p /sbin/ldconfig
+%postun	libGLES -p /sbin/ldconfig
+
 %post	libGLU -p /sbin/ldconfig
 %postun	libGLU -p /sbin/ldconfig
 
@@ -794,13 +824,23 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libEGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libEGL.so.1
+%attr(755,root,root) %{_libdir}/libglapi.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libglapi.so.0
 %dir %{_libdir}/egl
+%if %{with gallium}
+%attr(755,root,root) %{_libdir}/egl/egl_gallium.so
+%else
 %attr(755,root,root) %{_libdir}/egl/egl_dri2.so
 %attr(755,root,root) %{_libdir}/egl/egl_glx.so
+%endif
+%attr(755,root,root) %{_libdir}/egl/pipe_swrast.so
+%attr(755,root,root) %{_libdir}/egl/pipe_vmwgfx.so
+%attr(755,root,root) %{_libdir}/egl/st_GL.so
 
 %files libEGL-devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libEGL.so
+%attr(755,root,root) %{_libdir}/libglapi.so
 %dir %{_includedir}/EGL
 %{_includedir}/EGL/egl.h
 %{_includedir}/EGL/eglext.h
@@ -849,6 +889,18 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/internal/dri_interface.h
 %{_pkgconfigdir}/dri.pc
 %{_pkgconfigdir}/gl.pc
+
+%files libGLES
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libGLES*.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libGLES*.so.[0-9]
+
+%files libGLES-devel
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libGLES*.so
+%{_includedir}/GLES
+%{_includedir}/GLES2
+%{_pkgconfigdir}/gles*.pc
 
 %if %{with static}
 %files libGL-static
@@ -988,7 +1040,6 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-swrast
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/swrastg_dri.so
 
 %files dri-driver-tdfx
 %defattr(644,root,root,755)
