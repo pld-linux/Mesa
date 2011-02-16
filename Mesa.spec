@@ -37,6 +37,7 @@ Source0:	%{name}Lib-%{snap}.tar.bz2
 # Source0-md5:	0aca853f3747cec875fbcaf4e924c40f
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-selinux.patch
+Patch2:		%{name}-git.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake
@@ -665,6 +666,7 @@ Sterownik X.org DRI dla VMware.
 %setup -q
 %patch0 -p0
 %patch1 -p1
+%patch2 -p1
 
 %build
 %{__aclocal}
@@ -729,6 +731,7 @@ mv %{_lib} osmesa32
 	--%{?with_gallium_intel:en}%{!?with_gallium_intel:dis}able-gallium-intel \
 	--%{?with_gallium_radeon:en}%{!?with_gallium_radeon:dis}able-gallium-radeon \
 	--enable-gallium-svga \
+	--enable-gallium-egl \
 	%{?with_gallium_nouveau:--enable-gallium-nouveau} \
 	--with-state-trackers=dri,glx \
 %else
