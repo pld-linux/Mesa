@@ -25,7 +25,7 @@
 %define		dri2proto_ver	2.1
 %define		glproto_ver	1.4.11
 #
-%define		snap		20110216
+%define		snap		20110221
 # for snapshots ONLY!
 %define		no_install_post_check_so	1
 #
@@ -37,7 +37,7 @@ Release:	0.%{snap}.1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	0aca853f3747cec875fbcaf4e924c40f
+# Source0-md5:	da4776026feb4636248f6cf7c6b601eb
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-selinux.patch
 Patch2:		%{name}-git.patch
