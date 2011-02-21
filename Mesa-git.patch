@@ -4,7 +4,7 @@ e - Mesa-7.11/src/glsl/Makefile~	2011-02-16 18:31:15.419335627 +0100
  
  builtin_function.cpp: builtins/profiles/* builtins/ir/* builtins/tools/generate_builtins.py builtins/tools/texture_builtins.py builtin_compiler
  	@echo Regenerating builtin_function.cpp...
--	$(PYTHON2) $(PYTHON_FLAGS) builtins/tools/generate_builtins.py $(PWD)/builtin_compiler > builtin_function.cpp
-+	$(PYTHON2) $(PYTHON_FLAGS) builtins/tools/generate_builtins.py $(shell pwd)/builtin_compiler > builtin_function.cpp || rm -f builtin_function.cpp
+-	$(PYTHON2) $(PYTHON_FLAGS) builtins/tools/generate_builtins.py ./builtin_compiler > builtin_function.cpp
++	$(PYTHON2) $(PYTHON_FLAGS) builtins/tools/generate_builtins.py ./builtin_compiler > builtin_function.cpp || rm -f builtin_function.cpp
  
  -include depend
