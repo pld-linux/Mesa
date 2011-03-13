@@ -702,6 +702,8 @@ Sterownik X.org DRI dla VMware.
 dri_drivers="i810 i965 mach64 mga r128 \
 %if %{without gallium_radeon}
 r200 r300 r600 radeon \
+%else
+r200 radeon \
 %endif
 savage \
 %if %{without gallium_intel}
@@ -832,6 +834,13 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/egl
 %if %{with gallium}
 %attr(755,root,root) %{_libdir}/egl/egl_gallium.so
+%if %{with_gallium_nouveau}
+%attr(755,root,root) %{_libdir}/egl/pipe_nouveau.so
+%endif
+%if %{with_gallium_radeon}
+%attr(755,root,root) %{_libdir}/egl/pipe_r300.so
+%attr(755,root,root) %{_libdir}/egl/pipe_r600.so
+%endif
 %else
 %attr(755,root,root) %{_libdir}/egl/egl_dri2.so
 %attr(755,root,root) %{_libdir}/egl/egl_glx.so
