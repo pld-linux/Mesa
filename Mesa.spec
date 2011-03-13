@@ -751,7 +751,10 @@ mv %{_lib} osmesa8
 	--enable-gallium-i915 \
 	--enable-gallium-i965 \
 %endif
-	--%{?with_gallium_radeon:en}%{!?with_gallium_radeon:dis}able-gallium-radeon \
+%if %{with_gallium_radeon}
+	--enable-gallium-radeon \
+	--enable-gallium-r600 \
+%endif
 	--enable-gallium-svga \
 	--enable-gallium-egl \
 	%{?with_gallium_nouveau:--enable-gallium-nouveau} \
