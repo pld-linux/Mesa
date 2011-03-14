@@ -37,6 +37,9 @@ Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-selinux.patch
 Patch2:		%{name}-git.patch
+Patch3:		%{name}-nouveau-updates.patch
+Patch4:		%{name}-nouveau-revert.patch
+Patch5:		%{name}-nouveau-classic-libdrm.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake
@@ -673,6 +676,9 @@ Sterownik X.org DRI dla VMware.
 %patch0 -p0
 %patch1 -p1
 #patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
 
 %build
 %{__aclocal}

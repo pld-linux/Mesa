@@ -1,0 +1,114 @@
+From 20f77c532547c7f8f1cb26f41357037821cf2a9f Mon Sep 17 00:00:00 2001
+From: Ben Skeggs <bskeggs@redhat.com>
+Date: Mon, 17 Jan 2011 12:47:12 +1000
+Subject: [PATCH 2/3] mesa-7.10-nouveau-revert.patch
+
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+---
+ src/gallium/drivers/nv50/nv50_context.c      |    4 ----
+ src/gallium/drivers/nv50/nv50_shader_state.c |    2 +-
+ src/gallium/drivers/nv50/nv50_state.c        |    5 ++---
+ src/gallium/drivers/nv50/nv50_vbo.c          |    2 +-
+ src/gallium/drivers/nvc0/nvc0_screen.c       |    2 +-
+ src/gallium/drivers/nvfx/nvfx_vbo.c          |   14 +++++++++++---
+ 6 files changed, 16 insertions(+), 13 deletions(-)
+
+diff --git a/src/gallium/drivers/nv50/nv50_context.c b/src/gallium/drivers/nv50/nv50_context.c
+index 4f97616..0874cb5 100644
+--- a/src/gallium/drivers/nv50/nv50_context.c
++++ b/src/gallium/drivers/nv50/nv50_context.c
+@@ -49,10 +49,6 @@ nv50_destroy(struct pipe_context *pipe)
+ 	struct nv50_context *nv50 = nv50_context(pipe);
+ 	int i;
+ 
+-        for (i = 0; i < nv50->vtxbuf_nr; i++) {
+-           pipe_resource_reference(&nv50->vtxbuf[i].buffer, NULL);
+-        }
+-
+ 	for (i = 0; i < 64; i++) {
+ 		if (!nv50->state.hw[i])
+ 			continue;
+diff --git a/src/gallium/drivers/nv50/nv50_shader_state.c b/src/gallium/drivers/nv50/nv50_shader_state.c
+index 1c1b66d..306aa81 100644
+--- a/src/gallium/drivers/nv50/nv50_shader_state.c
++++ b/src/gallium/drivers/nv50/nv50_shader_state.c
+@@ -71,7 +71,7 @@ nv50_transfer_constbuf(struct nv50_context *nv50,
+       map += nr;
+    }
+ 
+-   pipe_buffer_unmap(pipe, transfer);
++   pipe_buffer_unmap(pipe, buf, transfer);
+ }
+ 
+ static void
+diff --git a/src/gallium/drivers/nv50/nv50_state.c b/src/gallium/drivers/nv50/nv50_state.c
+index b4eda0f..04291e4 100644
+--- a/src/gallium/drivers/nv50/nv50_state.c
++++ b/src/gallium/drivers/nv50/nv50_state.c
+@@ -779,9 +779,8 @@ nv50_set_vertex_buffers(struct pipe_context *pipe, unsigned count,
+ {
+ 	struct nv50_context *nv50 = nv50_context(pipe);
+ 
+-        util_copy_vertex_buffers(nv50->vtxbuf,
+-                                 &nv50->vtxbuf_nr,
+-                                 vb, count);
++	memcpy(nv50->vtxbuf, vb, sizeof(*vb) * count);
++	nv50->vtxbuf_nr = count;
+ 
+ 	nv50->dirty |= NV50_NEW_ARRAYS;
+ }
+diff --git a/src/gallium/drivers/nv50/nv50_vbo.c b/src/gallium/drivers/nv50/nv50_vbo.c
+index 53f319a..d41a59d 100644
+--- a/src/gallium/drivers/nv50/nv50_vbo.c
++++ b/src/gallium/drivers/nv50/nv50_vbo.c
+@@ -284,7 +284,7 @@ nv50_draw_elements_inline(struct pipe_context *pipe,
+ 		nzi = TRUE;
+ 	}
+ 
+-	pipe_buffer_unmap(pipe, transfer);
++	pipe_buffer_unmap(pipe, indexBuffer, transfer);
+ }
+ 
+ static void
+diff --git a/src/gallium/drivers/nvc0/nvc0_screen.c b/src/gallium/drivers/nvc0/nvc0_screen.c
+index f608b32..e14d4fd 100644
+--- a/src/gallium/drivers/nvc0/nvc0_screen.c
++++ b/src/gallium/drivers/nvc0/nvc0_screen.c
+@@ -110,7 +110,7 @@ nvc0_screen_get_param(struct pipe_screen *pscreen, enum pipe_cap param)
+    case PIPE_CAP_SHADER_STENCIL_EXPORT:
+       return 0;
+    case PIPE_CAP_PRIMITIVE_RESTART:
+-   case PIPE_CAP_INSTANCED_DRAWING:
++//   case PIPE_CAP_INSTANCED_DRAWING:
+       return 1;
+    default:
+       NOUVEAU_ERR("unknown PIPE_CAP %d\n", param);
+diff --git a/src/gallium/drivers/nvfx/nvfx_vbo.c b/src/gallium/drivers/nvfx/nvfx_vbo.c
+index 01dacb4..1c88f5f 100644
+--- a/src/gallium/drivers/nvfx/nvfx_vbo.c
++++ b/src/gallium/drivers/nvfx/nvfx_vbo.c
+@@ -591,10 +591,18 @@ nvfx_set_vertex_buffers(struct pipe_context *pipe, unsigned count,
+ {
+ 	struct nvfx_context *nvfx = nvfx_context(pipe);
+ 
+-        util_copy_vertex_buffers(nvfx->vtxbuf,
+-                                 &nvfx->vtxbuf_nr,
+-                                 vb, count);
++	for(unsigned i = 0; i < count; ++i)
++	{
++		pipe_resource_reference(&nvfx->vtxbuf[i].buffer, vb[i].buffer);
++		nvfx->vtxbuf[i].buffer_offset = vb[i].buffer_offset;
++		nvfx->vtxbuf[i].max_index = vb[i].max_index;
++		nvfx->vtxbuf[i].stride = vb[i].stride;
++	}
++
++	for(unsigned i = count; i < nvfx->vtxbuf_nr; ++i)
++		pipe_resource_reference(&nvfx->vtxbuf[i].buffer, 0);
+ 
++	nvfx->vtxbuf_nr = count;
+ 	nvfx->use_vertex_buffers = -1;
+ 	nvfx->draw_dirty |= NVFX_NEW_ARRAYS;
+ }
+-- 
+1.7.3.4
+
