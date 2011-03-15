@@ -95,49 +95,54 @@ OpenGL od SGI i nie twierdzi, że Mesa jest kompatybilnym zamiennikiem
 OpenGL ani powiązana z SGI.
 
 %package libEGL
-Summary:	SGI implementation of libEGL OpenGL library
-Summary(pl.UTF-8):	Implementacja SGI biblioteki libEGL ze standardu OpenGL
-License:	SGI Free Software License B v2.0 (MIT-like)
+Summary:	Mesa implementation of EGL Native Platform Graphics Interface library
+Summary(pl.UTF-8):	Implementacja Mesa biblioteki interfejsu EGL
+License:	MIT
 Group:		Libraries
 Requires:	OpenGL >= 1.2
 Requires:	udev-libs >= 150
-Provides:	OpenGL-EGL = 1.0
+Provides:	EGL = 1.4
 
 %description libEGL
-SGI implementation of libEGL OpenGL library.
+This package contains shared libEGL - Mesa implementation of EGL
+Native Platform Graphics Interface as specified by Khronos Group:
+<http://www.khronos.org/egl/>.
 
 %description libEGL -l pl.UTF-8
-Implementacja SGI biblioteki libEGL ze standardu OpenGL.
+Ten pakiet zawiera bibliotekę współdzieloną libEGL - implementację
+Mesa standardu EGL Native Platform Graphics Interface (interfejsu
+graficznego platformy natywnej) wg specyfikacji Khronos Group:
+<http://www.khronos.org/egl/>.
 
 %package libEGL-devel
-Summary:	Header files for SGI libEGL library
-Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki SGI libEGL
-License:	SGI Free Software License B v2.0 (MIT-like)
+Summary:	Header files for Mesa implementation of EGL library
+Summary(pl.UTF-8):	Pliki nagłówkowe implementacji Mesa biblioteki EGL
+License:	MIT
 Group:		Development/Libraries
 Requires:	%{name}-libEGL = %{version}-%{release}
 Requires:	OpenGL-devel >= 1.2
 Requires:	libstdc++-devel
-Provides:	OpenGL-EGL-devel = 1.0
+Provides:	EGL-devel = 1.4
 
 %description libEGL-devel
-Header files for SGI libEGL library.
+Header files for Mesa implementation of EGL library.
 
 %description libEGL-devel -l pl.UTF-8
-Pliki nagłówkowe biblioteki SGI libEGL.
+Pliki nagłówkowe implementacji Mesa biblioteki EGL.
 
 %package libEGL-static
-Summary:	Static SGI libEGL library
-Summary(pl.UTF-8):	Statyczna biblioteka SGI libEGL
-License:	SGI Free Software License B v2.0 (MIT-like)
+Summary:	Static Mesa libEGL library
+Summary(pl.UTF-8):	Statyczna biblioteka Mesa libEGL
+License:	MIT
 Group:		Development/Libraries
 Requires:	%{name}-libEGL-devel = %{version}-%{release}
-Provides:	OpenGL-EGL-static = 1.0
+Provides:	EGL-static = 1.4
 
 %description libEGL-static
-Static SGI libEGL library.
+Static Mesa libEGL library.
 
 %description libEGL-static -l pl.UTF-8
-Statyczna biblioteka SGI libEGL.
+Statyczna biblioteka Mesa libEGL.
 
 %package libGL
 Summary:	Free Mesa3D implementation of libGL OpenGL library
