@@ -33,7 +33,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.11
-Release:	0.%{snap}.1%{?with_multigl:.mgl}
+Release:	0.%{snap}.2%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	%{name}Lib-%{snap}.tar.bz2
@@ -785,6 +785,7 @@ mv %{_lib} osmesa8
 %configure $common_flags \
 %if %{with gallium}
 	--enable-gallium \
+	--enable-openvg \
 %if %{with gallium_intel}
 	--enable-gallium-i915 \
 	--enable-gallium-i965 \
@@ -801,7 +802,6 @@ mv %{_lib} osmesa8
 %else
 	--disable-gallium \
 %endif
-	--enable-openvg \
 	--with-driver=dri \
 	--with-dri-drivers=${dri_drivers} \
 	--with-dri-driverdir=%{_libdir}/xorg/modules/dri
@@ -818,7 +818,7 @@ install -d $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 	DESTDIR=$RPM_BUILD_ROOT
 
 %if %{with osmesa}
-install osmesa*/*OSMesa* $RPM_BUILD_ROOT%{_libdir}
+cp -Pp osmesa*/*OSMesa* $RPM_BUILD_ROOT%{_libdir}
 %endif
 
 rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{BeOS*,win,cygnus,DJ,dja}}
@@ -875,9 +875,13 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %ghost %{_libdir}/libEGL.so.1
 %attr(755,root,root) %{_libdir}/libglapi.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libglapi.so.0
-%dir %{_libdir}/egl
 %if %{with gallium}
+%dir %{_libdir}/egl
 %attr(755,root,root) %{_libdir}/egl/egl_gallium.so
+%attr(755,root,root) %{_libdir}/egl/pipe_swrast.so
+%attr(755,root,root) %{_libdir}/egl/pipe_vmwgfx.so
+%attr(755,root,root) %{_libdir}/egl/st_GL.so
+%attr(755,root,root) %{_libdir}/egl/st_OpenVG.so
 %if %{with gallium_nouveau}
 %attr(755,root,root) %{_libdir}/egl/pipe_nouveau.so
 %endif
@@ -889,14 +893,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/egl/pipe_i915.so
 %attr(755,root,root) %{_libdir}/egl/pipe_i965.so
 %endif
-%else
-%attr(755,root,root) %{_libdir}/egl/egl_dri2.so
-%attr(755,root,root) %{_libdir}/egl/egl_glx.so
 %endif
-%attr(755,root,root) %{_libdir}/egl/pipe_swrast.so
-%attr(755,root,root) %{_libdir}/egl/pipe_vmwgfx.so
-%attr(755,root,root) %{_libdir}/egl/st_GL.so
-%attr(755,root,root) %{_libdir}/egl/st_OpenVG.so
 
 %files libEGL-devel
 %defattr(644,root,root,755)
@@ -1025,6 +1022,7 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %endif
 
+%if %{with gallium}
 %files libOpenVG
 %defattr(644,root,root,755)
 %attr(755,root,root) %ghost %{_libdir}/libOpenVG.so.1
@@ -1035,6 +1033,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/VG
 %{_libdir}/libOpenVG.so
 %{_pkgconfigdir}/vg.pc
+%endif
 
 %files dri-driver-ati-mach64
 %defattr(644,root,root,755)
