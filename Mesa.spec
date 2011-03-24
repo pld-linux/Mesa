@@ -25,7 +25,7 @@
 %define		dri2proto_ver	2.1
 %define		glproto_ver	1.4.11
 #
-%define		snap		20110310
+%define		snap		20110324
 # for snapshots ONLY!
 %define		no_install_post_check_so	1
 #
@@ -33,11 +33,11 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.11
-Release:	0.%{snap}.2%{?with_multigl:.mgl}
+Release:	0.%{snap}.1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	9be2275876642669aafca9dbf87125ee
+# Source0-md5:	47dd4d88449b86fd78c5b6b96a868635
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-selinux.patch
 Patch2:		%{name}-git.patch
