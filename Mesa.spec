@@ -25,7 +25,7 @@
 %define		dri2proto_ver	2.1
 %define		glproto_ver	1.4.11
 #
-%define		snap		20110504
+%define		snap		20110526
 # for snapshots ONLY!
 %define		no_install_post_check_so	1
 #
@@ -37,7 +37,7 @@ Release:	0.%{snap}.1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	f27a3d50618a3b32c11610dd19ecad2d
+# Source0-md5:	b7c8e2d977183c70fd1b9f24f2f9b2e4
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-selinux.patch
 Patch2:		%{name}-git.patch
@@ -52,7 +52,7 @@ BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= 5:3.3.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:1.4d
-BuildRequires:	llvm-devel
+BuildRequires:	llvm-devel >= 2.9
 %{?with_motif:BuildRequires:	motif-devel}
 BuildRequires:	pixman-devel
 BuildRequires:	pkgconfig
@@ -85,6 +85,9 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %endif
 
 %define	skip_post_check_so libOpenVG.so.1.0.0
+
+# llvm build broken
+%define           filterout_ld    -Wl,--as-needed
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
