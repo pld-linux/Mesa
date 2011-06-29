@@ -25,7 +25,7 @@
 %define		dri2proto_ver	2.1
 %define		glproto_ver	1.4.11
 #
-%define		snap		20110604
+%define		snap		20110629
 # for snapshots ONLY!
 %define		no_install_post_check_so	1
 #
@@ -37,7 +37,7 @@ Release:	0.%{snap}.1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	54ea64bc99ca1d6477b486f26fadff05
+# Source0-md5:	e777531d9defa041d13de82b81f735fc
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-selinux.patch
 Patch2:		%{name}-git.patch
@@ -758,6 +758,22 @@ swrast tdfx unichrome"
 
 dri_drivers=$(echo $dri_drivers | xargs | tr ' ' ',')
 
+gallium_drivers="svga swrast \
+%if %{with gallium_intel}
+i915 \
+i965 \
+%endif
+%if %{with gallium_radeon}
+radeon \
+r600 \
+%endif
+%if %{with gallium_nouveau}
+nouveau \
+%endif
+"
+
+gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
+
 common_flags="\
 	--enable-shared \
 	--enable-selinux \
@@ -787,21 +803,9 @@ mv %{_lib} osmesa8
 
 %configure $common_flags \
 %if %{with gallium}
-	--enable-gallium \
 	--enable-openvg \
-%if %{with gallium_intel}
-	--enable-gallium-i915 \
-	--enable-gallium-i965 \
-%endif
-%if %{with gallium_radeon}
-	--enable-gallium-radeon \
-	--enable-gallium-r600 \
-%endif
-	--enable-gallium-svga \
 	--enable-gallium-egl \
-	--enable-gallium-swrast \
-	%{?with_gallium_nouveau:--enable-gallium-nouveau} \
-	--with-state-trackers=dri,glx,egl,xorg,vega \
+	--with-gallium-drivers=${gallium_drivers} \
 %else
 	--disable-gallium \
 %endif
@@ -881,12 +885,12 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium}
 %dir %{_libdir}/egl
 %attr(755,root,root) %{_libdir}/egl/egl_gallium.so
-%attr(755,root,root) %{_libdir}/egl/pipe_swrast.so
-%attr(755,root,root) %{_libdir}/egl/pipe_vmwgfx.so
+#%attr(755,root,root) %{_libdir}/egl/pipe_swrast.so
+#%attr(755,root,root) %{_libdir}/egl/pipe_vmwgfx.so
 %attr(755,root,root) %{_libdir}/egl/st_GL.so
-%attr(755,root,root) %{_libdir}/egl/st_OpenVG.so
+#%attr(755,root,root) %{_libdir}/egl/st_OpenVG.so
 %if %{with gallium_nouveau}
-%attr(755,root,root) %{_libdir}/egl/pipe_nouveau.so
+#%attr(755,root,root) %{_libdir}/egl/pipe_nouveau.so
 %endif
 %if %{with gallium_radeon}
 %attr(755,root,root) %{_libdir}/egl/pipe_r300.so
@@ -1103,7 +1107,7 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium_nouveau}
 %files dri-driver-nouveau
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/drivers/modesetting_drv.so
+#%attr(755,root,root) %{_libdir}/xorg/modules/drivers/modesetting_drv.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
 %endif
 %endif
@@ -1134,5 +1138,5 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-vmwgfx
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/vmwgfx_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/drivers/vmwgfx_drv.so
+#%attr(755,root,root) %{_libdir}/xorg/modules/drivers/vmwgfx_drv.so
 %endif
