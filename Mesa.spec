@@ -21,7 +21,7 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver	7.1.0
 #
-%define		libdrm_ver	2.4.23
+%define		libdrm_ver	2.4.24
 %define		dri2proto_ver	2.1
 %define		glproto_ver	1.4.11
 #
