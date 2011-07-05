@@ -22,7 +22,7 @@
 %define		glapi_ver	7.1.0
 #
 %define		libdrm_ver	2.4.25
-%define		dri2proto_ver	2.1
+%define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.11
 #
 %define		snap		20110629
@@ -83,11 +83,6 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %undefine	with_gallium_intel
 %undefine	with_gallium_radeon
 %endif
-
-%define	skip_post_check_so libOpenVG.so.1.0.0
-
-# llvm build broken
-%define           filterout_ld    -Wl,--as-needed
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
