@@ -25,7 +25,7 @@
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.11
 #
-%define		snap		20110629
+%define		snap		20110714
 # for snapshots ONLY!
 %define		no_install_post_check_so	1
 #
@@ -37,7 +37,7 @@ Release:	0.%{snap}.1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	e777531d9defa041d13de82b81f735fc
+# Source0-md5:	99c87d2af2b8217ce23fe8525ab79f79
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-selinux.patch
 Patch2:		%{name}-git.patch
@@ -831,11 +831,6 @@ cd $RPM_BUILD_ROOT%{_includedir}/GL
 rm [a-fh-np-wyz]*.h glf*.h
 cd $RPM_BUILD_ROOT%{_libdir}
 cd $olddir
-
-%if %{with gallium}
-# use gallium swrastg as swrast
-mv $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/swrastg_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/swrast_dri.so
-%endif
 
 %if %{with multigl}
 install -d $RPM_BUILD_ROOT{%{_libdir}/Mesa,%{_sysconfdir}/ld.so.conf.d}
