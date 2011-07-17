@@ -25,7 +25,7 @@
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.11
 #
-%define		snap		20110714
+%define		snap		20110717
 # for snapshots ONLY!
 %define		no_install_post_check_so	1
 #
@@ -37,10 +37,9 @@ Release:	0.%{snap}.1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	99c87d2af2b8217ce23fe8525ab79f79
+# Source0-md5:	db0591e831b4a9cf7b5e0838ba5a667c
 Patch0:		%{name}-realclean.patch
-Patch1:		%{name}-selinux.patch
-Patch2:		%{name}-git.patch
+Patch1:		%{name}-git.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake
@@ -729,7 +728,6 @@ Sterownik X.org DRI dla VMware.
 %setup -q
 %patch0 -p0
 %patch1 -p1
-%patch2 -p1
 
 %build
 %{__aclocal}
@@ -831,6 +829,11 @@ cd $RPM_BUILD_ROOT%{_includedir}/GL
 rm [a-fh-np-wyz]*.h glf*.h
 cd $RPM_BUILD_ROOT%{_libdir}
 cd $olddir
+
+%if %{with gallium}
+# use gallium swrastg as swrast
+mv $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/swrastg_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/swrast_dri.so
+%endif
 
 %if %{with multigl}
 install -d $RPM_BUILD_ROOT{%{_libdir}/Mesa,%{_sysconfdir}/ld.so.conf.d}
