@@ -1,0 +1,11 @@
+--- Mesa-7.11/configure.ac~	2011-07-12 12:57:43.000000000 +0200
++++ Mesa-7.11/configure.ac	2011-07-18 19:40:58.701272226 +0200
+@@ -908,7 +908,7 @@
+ AC_SUBST([GLESv2_LIB_DEPS])
+ AC_SUBST([GLESv2_PC_LIB_PRIV])
+ 
+-GLAPI_LIB_DEPS="-lpthread"
++GLAPI_LIB_DEPS="-lpthread $SELINUX_LIBS"
+ AC_SUBST([GLAPI_LIB_DEPS])
+ 
+ 

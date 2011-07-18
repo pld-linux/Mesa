@@ -26,8 +26,6 @@
 %define		glproto_ver	1.4.11
 #
 %define		snap		20110717
-# for snapshots ONLY!
-%define		no_install_post_check_so	1
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
@@ -40,6 +38,7 @@ Source0:	%{name}Lib-%{snap}.tar.bz2
 # Source0-md5:	db0591e831b4a9cf7b5e0838ba5a667c
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-git.patch
+Patch2:		%{name}-selinux.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake
@@ -82,6 +81,9 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %undefine	with_gallium_intel
 %undefine	with_gallium_radeon
 %endif
+
+# unresolved symbol _glapi_tls_Dispatch
+%define		skip_post_check_so	libGLESv1_CM.so.1.* libGLESv2.so.2.*
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
@@ -728,6 +730,7 @@ Sterownik X.org DRI dla VMware.
 %setup -q
 %patch0 -p0
 %patch1 -p1
+%patch2 -p1
 
 %build
 %{__aclocal}
