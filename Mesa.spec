@@ -136,8 +136,8 @@ Header files for Mesa implementation of EGL library.
 Pliki nagłówkowe implementacji Mesa biblioteki EGL.
 
 %package libEGL-static
-Summary:	Static SGI libEGL library
-Summary(pl.UTF-8):	Statyczna biblioteka SGI libEGL
+Summary:	Mesa libEGL library
+Summary(pl.UTF-8):	Statyczna biblioteka Mesa libEGL
 License:	MIT
 Group:		Development/Libraries
 Requires:	%{name}-libEGL-devel = %{version}-%{release}
