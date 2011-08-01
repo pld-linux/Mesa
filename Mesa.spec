@@ -25,17 +25,15 @@
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.11
 #
-%define		snap		20110726
-#
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.11
-Release:	0.%{snap}.1%{?with_multigl:.mgl}
+Release:	1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
-Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	aaded5155ac32d31ea84e98fb160c998
+Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
+# Source0-md5:	ff03aca82d0560009a076a87c888cf13
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-git.patch
 Patch2:		%{name}-selinux.patch
@@ -56,6 +54,7 @@ BuildRequires:	pixman-devel
 BuildRequires:	pkgconfig
 BuildRequires:	pkgconfig(talloc) >= 2.0.1
 BuildRequires:	python
+BuildRequires:	python-libxml2
 BuildRequires:	python-modules
 BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
@@ -101,49 +100,54 @@ OpenGL od SGI i nie twierdzi, że Mesa jest kompatybilnym zamiennikiem
 OpenGL ani powiązana z SGI.
 
 %package libEGL
-Summary:	SGI implementation of libEGL OpenGL library
-Summary(pl.UTF-8):	Implementacja SGI biblioteki libEGL ze standardu OpenGL
-License:	SGI Free Software License B v2.0 (MIT-like)
+Summary:	Mesa implementation of EGL Native Platform Graphics Interface library
+Summary(pl.UTF-8):	Implementacja Mesa biblioteki interfejsu EGL
+License:	MIT
 Group:		Libraries
 Requires:	OpenGL >= 1.2
 Requires:	udev-libs >= 150
-Provides:	OpenGL-EGL = 1.0
+Provides:	EGL = 1.4
 
 %description libEGL
-SGI implementation of libEGL OpenGL library.
+This package contains shared libEGL - Mesa implementation of EGL
+Native Platform Graphics Interface as specified by Khronos Group:
+<http://www.khronos.org/egl/>.
 
 %description libEGL -l pl.UTF-8
-Implementacja SGI biblioteki libEGL ze standardu OpenGL.
+Ten pakiet zawiera bibliotekę współdzieloną libEGL - implementację
+Mesa standardu EGL Native Platform Graphics Interface (interfejsu
+graficznego platformy natywnej) wg specyfikacji Khronos Group:
+<http://www.khronos.org/egl/>.
 
 %package libEGL-devel
-Summary:	Header files for SGI libEGL library
-Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki SGI libEGL
-License:	SGI Free Software License B v2.0 (MIT-like)
+Summary:	Header files for Mesa implementation of EGL library
+Summary(pl.UTF-8):	Pliki nagłówkowe implementacji Mesa biblioteki EGL
+License:	MIT
 Group:		Development/Libraries
 Requires:	%{name}-libEGL = %{version}-%{release}
 Requires:	OpenGL-devel >= 1.2
 Requires:	libstdc++-devel
-Provides:	OpenGL-EGL-devel = 1.0
+Provides:	EGL-devel = 1.4
 
 %description libEGL-devel
-Header files for SGI libEGL library.
+Header files for Mesa implementation of EGL library.
 
 %description libEGL-devel -l pl.UTF-8
-Pliki nagłówkowe biblioteki SGI libEGL.
+Pliki nagłówkowe implementacji Mesa biblioteki EGL.
 
 %package libEGL-static
 Summary:	Static SGI libEGL library
 Summary(pl.UTF-8):	Statyczna biblioteka SGI libEGL
-License:	SGI Free Software License B v2.0 (MIT-like)
+License:	MIT
 Group:		Development/Libraries
 Requires:	%{name}-libEGL-devel = %{version}-%{release}
-Provides:	OpenGL-EGL-static = 1.0
+Provides:	EGL-static = 1.4
 
 %description libEGL-static
-Static SGI libEGL library.
+Static Mesa libEGL library.
 
 %description libEGL-static -l pl.UTF-8
-Statyczna biblioteka SGI libEGL.
+Statyczna biblioteka Mesa libEGL.
 
 %package libGLES
 Summary:	Mesa libGLES runtime libraries
@@ -881,13 +885,7 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium}
 %dir %{_libdir}/egl
 %attr(755,root,root) %{_libdir}/egl/egl_gallium.so
-#%attr(755,root,root) %{_libdir}/egl/pipe_swrast.so
-#%attr(755,root,root) %{_libdir}/egl/pipe_vmwgfx.so
 %attr(755,root,root) %{_libdir}/egl/st_GL.so
-#%attr(755,root,root) %{_libdir}/egl/st_OpenVG.so
-%if %{with gallium_nouveau}
-#%attr(755,root,root) %{_libdir}/egl/pipe_nouveau.so
-%endif
 %if %{with gallium_radeon}
 %attr(755,root,root) %{_libdir}/egl/pipe_r300.so
 %attr(755,root,root) %{_libdir}/egl/pipe_r600.so
@@ -1045,10 +1043,6 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-ati-radeon-R100
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/radeon_dri.so
-#if %{with gallium}
-# this file conflicts with xorg-driver-video-ati
-#attr(755,root,root) %{_libdir}/xorg/modules/drivers/radeon_drv.so
-#endif
 
 %files dri-driver-ati-radeon-R200
 %defattr(644,root,root,755)
@@ -1103,7 +1097,6 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium_nouveau}
 %files dri-driver-nouveau
 %defattr(644,root,root,755)
-#%attr(755,root,root) %{_libdir}/xorg/modules/drivers/modesetting_drv.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
 %endif
 %endif
@@ -1134,5 +1127,4 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-vmwgfx
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/vmwgfx_dri.so
-#%attr(755,root,root) %{_libdir}/xorg/modules/drivers/vmwgfx_drv.so
 %endif
