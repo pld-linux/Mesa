@@ -21,37 +21,38 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver	7.1.0
 #
-%define		libdrm_ver	2.4.24
-%define		dri2proto_ver	2.1
+%define		libdrm_ver	2.4.25
+%define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.11
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	7.10.3
+Version:	7.11
 Release:	1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	8c38fe8266be8e1ed1d84076ba5a703b
+# Source0-md5:	ff03aca82d0560009a076a87c888cf13
 Patch0:		%{name}-realclean.patch
-Patch1:		%{name}-selinux.patch
-Patch2:		%{name}-git.patch
-Patch3:		%{name}-nouveau-updates.patch
-Patch4:		%{name}-nouveau-revert.patch
-Patch5:		%{name}-nouveau-classic-libdrm.patch
+Patch1:		%{name}-git.patch
+Patch2:		%{name}-selinux.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake
 BuildRequires:	expat-devel
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
+# drop when 2.4.24 is released
+%{?with_nouveau:BuildRequires:	libdrm-devel >= 2.4.24}
 BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= 5:3.3.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:1.4d
+BuildRequires:	llvm-devel >= 2.9
 %{?with_motif:BuildRequires:	motif-devel}
 BuildRequires:	pixman-devel
 BuildRequires:	pkgconfig
+BuildRequires:	pkgconfig(talloc) >= 2.0.1
 BuildRequires:	python
 BuildRequires:	python-libxml2
 BuildRequires:	python-modules
@@ -79,6 +80,9 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %undefine	with_gallium_intel
 %undefine	with_gallium_radeon
 %endif
+
+# unresolved symbol _glapi_tls_Dispatch
+%define		skip_post_check_so	libGLESv1_CM.so.1.* libGLESv2.so.2.*
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
@@ -132,8 +136,8 @@ Header files for Mesa implementation of EGL library.
 Pliki nagłówkowe implementacji Mesa biblioteki EGL.
 
 %package libEGL-static
-Summary:	Static Mesa libEGL library
-Summary(pl.UTF-8):	Statyczna biblioteka Mesa libEGL
+Summary:	Static SGI libEGL library
+Summary(pl.UTF-8):	Statyczna biblioteka SGI libEGL
 License:	MIT
 Group:		Development/Libraries
 Requires:	%{name}-libEGL-devel = %{version}-%{release}
@@ -144,6 +148,27 @@ Static Mesa libEGL library.
 
 %description libEGL-static -l pl.UTF-8
 Statyczna biblioteka Mesa libEGL.
+
+%package libGLES
+Summary:	Mesa libGLES runtime libraries
+Group:		Libraries
+
+%description libGLES
+Mesa GLES runtime libraries.
+
+%description libGLES -l pl.UTF-8
+Biblioteka Mesa GLES.
+
+%package libGLES-devel
+Summary:	Header files for libGLES library
+Group:		Development/Libraries
+Requires:	%{name}-libGLES = %{version}-%{release}
+
+%description libGLES-devel
+Header files for libGLES library.
+
+%description libGLES-devel -l pl.UTF-8
+Pliki nagłówkowe biblioteki libGLES.
 
 %package libGL
 Summary:	Free Mesa3D implementation of libGL OpenGL library
@@ -363,6 +388,34 @@ Static OSMesa (off-screen renderer) library.
 
 %description libOSMesa-static -l pl.UTF-8
 Biblioteka statyczna OSMesa (renderująca bitmapy w pamięci).
+
+%package libOpenVG
+Summary:	OpenVG API implementation
+Summary(pl.UTF-8):	Implementacja API OpenVG
+License:	MIT
+Group:		Libraries
+# doesn't require base
+
+%description libOpenVG
+OpenVG API implementation.
+
+%description libOpenVG -l pl.UTF-8
+Implementacja API OpenVG.
+
+%package libOpenVG-devel
+Summary:	Header file for libOpenVG library
+Summary(pl.UTF-8):	Plik nagłówkowy biblioteki libOpenVG
+License:	MIT
+Group:		Development/Libraries
+# for <KHR/khrplatform.h>
+Requires:	%{name}-libEGL-devel = %{version}-%{release}
+Requires:	%{name}-libOpenVG = %{version}-%{release}
+
+%description libOpenVG-devel
+Header file for libOpenVG library.
+
+%description libOpenVG-devel -l pl.UTF-8
+Plik nagłówkowy biblioteki libOpenVG.
 
 %package utils
 Summary:	OpenGL utilities from Mesa3D
@@ -681,22 +734,19 @@ Sterownik X.org DRI dla VMware.
 %setup -q
 %patch0 -p0
 %patch1 -p1
-#patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
+%patch2 -p1
 
 %build
 %{__aclocal}
 %{__autoconf}
 
-dri_drivers="i810 i965 mach64 mga r128 \
+dri_drivers="i810 mach64 mga r128 r200 radeon \
 %if %{without gallium_radeon}
-r200 r300 r600 radeon \
+r300 r600 \
 %endif
 savage \
 %if %{without gallium_intel}
-i915 \
+i915 i965 \
 %endif
 %ifarch sparc sparcv9 sparc64
 ffb \
@@ -708,49 +758,54 @@ swrast tdfx unichrome"
 
 dri_drivers=$(echo $dri_drivers | xargs | tr ' ' ',')
 
+gallium_drivers="svga swrast \
+%if %{with gallium_intel}
+i915 \
+i965 \
+%endif
+%if %{with gallium_radeon}
+radeon \
+r600 \
+%endif
+%if %{with gallium_nouveau}
+nouveau \
+%endif
+"
+
+gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
+
 common_flags="\
 	--enable-shared \
 	--enable-selinux \
 	--enable-pic \
 	--enable-glx-tls \
 	--disable-glut \
-	--disable-os-mesa \
-	--%{?with_egl:en}%{!?with_egl:dis}able-egl"
+%if %{with egl}
+	--enable-egl \
+	--enable-gles1 \
+	--enable-gles2 \
+%endif
+"
 
 osmesa_common_flags="\
 	--with-driver=osmesa \
 	--disable-asm \
-	--disable-glu"
+	--disable-glu \
+	--disable-egl"
 
 %if %{with osmesa}
-# osmesa variants
 %configure $common_flags $osmesa_common_flags \
 	--with-osmesa-bits=8
 %{__make}
 mv %{_lib} osmesa8
 %{__make} clean
-
-%configure $common_flags $osmesa_common_flags \
-	--with-osmesa-bits=16
-%{__make}
-mv %{_lib} osmesa16
-%{__make} clean
-
-%configure $common_flags $osmesa_common_flags \
-	--with-osmesa-bits=32
-%{__make}
-mv %{_lib} osmesa32
-%{__make} clean
 %endif
 
 %configure $common_flags \
 %if %{with gallium}
-	--enable-gallium \
-	--%{?with_gallium_intel:en}%{!?with_gallium_intel:dis}able-gallium-intel \
-	--%{?with_gallium_radeon:en}%{!?with_gallium_radeon:dis}able-gallium-radeon \
-	--enable-gallium-svga \
-	%{?with_gallium_nouveau:--enable-gallium-nouveau} \
-	--with-state-trackers=dri,glx \
+	--enable-openvg \
+	--enable-gallium-egl \
+	--with-gallium-drivers=${gallium_drivers} \
 %else
 	--disable-gallium \
 %endif
@@ -770,7 +825,7 @@ install -d $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 	DESTDIR=$RPM_BUILD_ROOT
 
 %if %{with osmesa}
-install osmesa*/*OSMesa* $RPM_BUILD_ROOT%{_libdir}
+cp -Pp osmesa*/*OSMesa* $RPM_BUILD_ROOT%{_libdir}
 %endif
 
 rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{BeOS*,win,cygnus,DJ,dja}}
@@ -781,6 +836,11 @@ cd $RPM_BUILD_ROOT%{_includedir}/GL
 rm [a-fh-np-wyz]*.h glf*.h
 cd $RPM_BUILD_ROOT%{_libdir}
 cd $olddir
+
+%if %{with gallium}
+# use gallium swrastg as swrast
+mv $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/swrastg_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/swrast_dri.so
+%endif
 
 %if %{with multigl}
 install -d $RPM_BUILD_ROOT{%{_libdir}/Mesa,%{_sysconfdir}/ld.so.conf.d}
@@ -800,24 +860,46 @@ rm -rf $RPM_BUILD_ROOT
 %post	libGL -p /sbin/ldconfig
 %postun	libGL -p /sbin/ldconfig
 
+%post	libGLES -p /sbin/ldconfig
+%postun	libGLES -p /sbin/ldconfig
+
 %post	libGLU -p /sbin/ldconfig
 %postun	libGLU -p /sbin/ldconfig
 
 %post	libGLw -p /sbin/ldconfig
 %postun	libGLw -p /sbin/ldconfig
 
+%post	libOSMesa -p /sbin/ldconfig
+%postun	libOSMesa -p /sbin/ldconfig
+
+%post	libOpenVG -p /sbin/ldconfig
+%postun	libOpenVG -p /sbin/ldconfig
+
 %if %{with egl}
 %files libEGL
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libEGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libEGL.so.1
+%attr(755,root,root) %{_libdir}/libglapi.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libglapi.so.0
+%if %{with gallium}
 %dir %{_libdir}/egl
-%attr(755,root,root) %{_libdir}/egl/egl_dri2.so
-%attr(755,root,root) %{_libdir}/egl/egl_glx.so
+%attr(755,root,root) %{_libdir}/egl/egl_gallium.so
+%attr(755,root,root) %{_libdir}/egl/st_GL.so
+%if %{with gallium_radeon}
+%attr(755,root,root) %{_libdir}/egl/pipe_r300.so
+%attr(755,root,root) %{_libdir}/egl/pipe_r600.so
+%endif
+%if %{with gallium_intel}
+%attr(755,root,root) %{_libdir}/egl/pipe_i915.so
+%attr(755,root,root) %{_libdir}/egl/pipe_i965.so
+%endif
+%endif
 
 %files libEGL-devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libEGL.so
+%attr(755,root,root) %{_libdir}/libglapi.so
 %dir %{_includedir}/EGL
 %{_includedir}/EGL/egl.h
 %{_includedir}/EGL/eglext.h
@@ -866,6 +948,18 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/internal/dri_interface.h
 %{_pkgconfigdir}/dri.pc
 %{_pkgconfigdir}/gl.pc
+
+%files libGLES
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libGLES*.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libGLES*.so.[0-9]
+
+%files libGLES-devel
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libGLES*.so
+%{_includedir}/GLES
+%{_includedir}/GLES2
+%{_pkgconfigdir}/gles*.pc
 
 %if %{with static}
 %files libGL-static
@@ -929,6 +1023,19 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %endif
 
+%if %{with gallium}
+%files libOpenVG
+%defattr(644,root,root,755)
+%attr(755,root,root) %ghost %{_libdir}/libOpenVG.so.1
+%attr(755,root,root) %{_libdir}/libOpenVG.so.1.0.0
+
+%files libOpenVG-devel
+%defattr(644,root,root,755)
+%{_includedir}/VG
+%{_libdir}/libOpenVG.so
+%{_pkgconfigdir}/vg.pc
+%endif
+
 %files dri-driver-ati-mach64
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mach64_dri.so
@@ -978,6 +1085,9 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-intel-i965
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i965_dri.so
+%if %{with gallium_intel}
+%attr(755,root,root) %{_libdir}/xorg/modules/drivers/i965g_drv.so
+%endif
 
 %files dri-driver-matrox
 %defattr(644,root,root,755)
@@ -987,7 +1097,6 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium_nouveau}
 %files dri-driver-nouveau
 %defattr(644,root,root,755)
-#%attr(755,root,root) %{_libdir}/xorg/modules/drivers/modesetting_drv.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
 %endif
 %endif
@@ -1005,7 +1114,6 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-swrast
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/swrastg_dri.so
 
 %files dri-driver-tdfx
 %defattr(644,root,root,755)
