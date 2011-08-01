@@ -9,3 +9,14 @@
  AC_SUBST([GLAPI_LIB_DEPS])
  
  
+--- Mesa-7.11/configure.ac~	2011-08-01 13:49:24.000000000 +0200
++++ Mesa-7.11/configure.ac	2011-08-01 13:50:55.554153435 +0200
+@@ -893,7 +893,7 @@
+     fi
+ 
+     # need DRM libs, -lpthread, etc.
+-    GL_LIB_DEPS="$GL_LIB_DEPS $LIBDRM_LIBS -lm -lpthread $DLOPEN_LIBS"
++    GL_LIB_DEPS="$GL_LIB_DEPS $LIBDRM_LIBS -lm -lpthread $DLOPEN_LIBS $GL_LIB_DEPS"
+     GL_PC_LIB_PRIV="-lm -lpthread $DLOPEN_LIBS"
+     GLESv1_CM_LIB_DEPS="$LIBDRM_LIBS -lm -lpthread $DLOPEN_LIBS"
+     GLESv1_CM_PC_LIB_PRIV="-lm -lpthread $DLOPEN_LIBS"
