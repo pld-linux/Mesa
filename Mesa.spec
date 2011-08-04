@@ -157,7 +157,6 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm >= %{libdrm_ver}
 Provides:	OpenGL = 2.1
-# reports version 1.3, but supports glXGetProcAddress() from 1.4
 Provides:	OpenGL-GLX = 1.4
 Obsoletes:	Mesa
 Obsoletes:	Mesa-dri
@@ -241,14 +240,16 @@ Group:		Libraries
 This package contains shared libraries of Mesa implementation of GLES
 (OpenGL ES) - cross-platform API for full-function 2D and 3D graphics
 on embedded systems. OpenGL ES specification can be found on Khronos
-Group site: <http://www.khronos.org/opengles/>.
+Group site: <http://www.khronos.org/opengles/>. Mesa implements OpenGL
+ES 1.1 and 2.0.
 
 %description libGLES -l pl.UTF-8
 Ten pakiet zawiera biblioteki współdzielone implementacji Mesa
 standardu GLES (OpenGL ES) - wieloplatformowego API do w pełni
 funkcjonalnej grafiki 2D i 3D na systemach wbudowanych. Specyfikację
 OpenGL ES można znaleźć na stronie Khronos Group:
-<http://www.khronos.org/opengles/>.
+<http://www.khronos.org/opengles/>. Mesa zawiera implementacją OpenGL
+ES 1.1 i 2.0.
 
 %package libGLES-devel
 Summary:	Header files for Mesa GLES libraries
@@ -411,13 +412,15 @@ This package contains Mesa implementation of OpenVG - cross-platform
 API that provides a low-level hardware acceleration interface for
 vector graphics libraries such as Flash and SVG. OpenVG specification
 can be found on Khronos Group site: <http://www.khronos.org/openvg/>.
+Mesa implements OpenVG 1.1.
 
 %description libOpenVG -l pl.UTF-8
 Ten pakiet zawiera implementację Mesa standardu OpenVG -
 wieloplatfomowego API zapewniającego niskopoziomowy interfejs
 akceleracji sprzętowej dla bibliotek grafiki wektorowej, takiej
 jak Flash czy SVG. Specyfikację OpenVG można znaleźć na stronie
-Khronos Group: <http://www.khronos.org/openvg/>.
+Khronos Group: <http://www.khronos.org/openvg/>. Mesa zawiera
+implementację OpenVG w wersji 1.1.
 
 %package libOpenVG-devel
 Summary:	Header file for Mesa OpenVG library
@@ -974,15 +977,19 @@ rm -rf $RPM_BUILD_ROOT
 
 %files libGLES
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libGLES*.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libGLES*.so.[0-9]
+%attr(755,root,root) %{_libdir}/libGLESv1_CM.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libGLESv1_CM.so.1
+%attr(755,root,root) %{_libdir}/libGLESv2.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libGLESv2.so.2
 
 %files libGLES-devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libGLES*.so
+%attr(755,root,root) %{_libdir}/libGLESv1_CM.so
+%attr(755,root,root) %{_libdir}/libGLESv2.so
 %{_includedir}/GLES
 %{_includedir}/GLES2
-%{_pkgconfigdir}/gles*.pc
+%{_pkgconfigdir}/glesv1_cm.pc
+%{_pkgconfigdir}/glesv2.pc
 
 %files libGLU
 %defattr(644,root,root,755)
@@ -1025,25 +1032,25 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with osmesa}
 %files libOSMesa
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libOSMesa*.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libOSMesa*.so.7
+%attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libOSMesa.so.7
 
 %files libOSMesa-devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libOSMesa*.so
+%attr(755,root,root) %{_libdir}/libOSMesa.so
 %{_includedir}/GL/osmesa.h
 
 %if %{with static}
 %files libOSMesa-static
 %defattr(644,root,root,755)
-%{_libdir}/libOSMesa*.a
+%{_libdir}/libOSMesa.a
 %endif
 %endif
 
 %if %{with gallium}
 %files libOpenVG
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libOpenVG.so.1.0.0
+%attr(755,root,root) %{_libdir}/libOpenVG.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libOpenVG.so.1
 
 %files libOpenVG-devel
