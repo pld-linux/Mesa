@@ -44,12 +44,11 @@ BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake
 BuildRequires:	expat-devel
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
-# drop when 2.4.24 is released
-%{?with_nouveau:BuildRequires:	libdrm-devel >= 2.4.24}
 BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= 5:3.3.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:1.4d
+# for Gallium R300
 BuildRequires:	llvm-devel >= 2.9
 %{?with_motif:BuildRequires:	motif-devel}
 BuildRequires:	pixman-devel
@@ -138,39 +137,18 @@ Header files for Mesa implementation of EGL library.
 Pliki nagłówkowe implementacji Mesa biblioteki EGL.
 
 %package libEGL-static
-Summary:	Mesa libEGL library
-Summary(pl.UTF-8):	Statyczna biblioteka Mesa libEGL
+Summary:	Static Mesa EGL library
+Summary(pl.UTF-8):	Statyczna biblioteka Mesa EGL
 License:	MIT
 Group:		Development/Libraries
 Requires:	%{name}-libEGL-devel = %{version}-%{release}
 Provides:	EGL-static = 1.4
 
 %description libEGL-static
-Static Mesa libEGL library.
+Static Mesa EGL library.
 
 %description libEGL-static -l pl.UTF-8
-Statyczna biblioteka Mesa libEGL.
-
-%package libGLES
-Summary:	Mesa libGLES runtime libraries
-Group:		Libraries
-
-%description libGLES
-Mesa GLES runtime libraries.
-
-%description libGLES -l pl.UTF-8
-Biblioteka Mesa GLES.
-
-%package libGLES-devel
-Summary:	Header files for libGLES library
-Group:		Development/Libraries
-Requires:	%{name}-libGLES = %{version}-%{release}
-
-%description libGLES-devel
-Header files for libGLES library.
-
-%description libGLES-devel -l pl.UTF-8
-Pliki nagłówkowe biblioteki libGLES.
+Statyczna biblioteka Mesa EGL.
 
 %package libGL
 Summary:	Free Mesa3D implementation of libGL OpenGL library
@@ -253,6 +231,36 @@ Static Mesa3D libGL library. It uses software renderer.
 %description libGL-static -l pl.UTF-8
 Statyczna biblioteka libGL z projektu Mesa3D. Używa programowego
 renderingu.
+
+%package libGLES
+Summary:	Mesa implementation of GLES (OpenGL ES) libraries
+Summary(pl.UTF-8):	Implementacja Mesa bibliotek GLES (OpenGL ES)
+Group:		Libraries
+
+%description libGLES
+This package contains shared libraries of Mesa implementation of GLES
+(OpenGL ES) - cross-platform API for full-function 2D and 3D graphics
+on embedded systems. OpenGL ES specification can be found on Khronos
+Group site: <http://www.khronos.org/opengles/>.
+
+%description libGLES -l pl.UTF-8
+Ten pakiet zawiera biblioteki współdzielone implementacji Mesa
+standardu GLES (OpenGL ES) - wieloplatformowego API do w pełni
+funkcjonalnej grafiki 2D i 3D na systemach wbudowanych. Specyfikację
+OpenGL ES można znaleźć na stronie Khronos Group:
+<http://www.khronos.org/opengles/>.
+
+%package libGLES-devel
+Summary:	Header files for Mesa GLES libraries
+Summary(pl.UTF-8):	Pliki nagłówkowe bibliotek Mesa GLES
+Group:		Development/Libraries
+Requires:	%{name}-libGLES = %{version}-%{release}
+
+%description libGLES-devel
+Header files for Mesa GLES libraries.
+
+%description libGLES-devel -l pl.UTF-8
+Pliki nagłówkowe bibliotek Mesa GLES.
 
 %package libGLU
 Summary:	SGI implementation of libGLU OpenGL library
@@ -392,21 +400,28 @@ Static OSMesa (off-screen renderer) library.
 Biblioteka statyczna OSMesa (renderująca bitmapy w pamięci).
 
 %package libOpenVG
-Summary:	OpenVG API implementation
-Summary(pl.UTF-8):	Implementacja API OpenVG
+Summary:	Mesa implementation of OpenVG (Vector Graphics Accelleration) API
+Summary(pl.UTF-8):	Implementacja Mesa API OpenVG (akceleracji grafiki wektorowej)
 License:	MIT
 Group:		Libraries
 # doesn't require base
 
 %description libOpenVG
-OpenVG API implementation.
+This package contains Mesa implementation of OpenVG - cross-platform
+API that provides a low-level hardware acceleration interface for
+vector graphics libraries such as Flash and SVG. OpenVG specification
+can be found on Khronos Group site: <http://www.khronos.org/openvg/>.
 
 %description libOpenVG -l pl.UTF-8
-Implementacja API OpenVG.
+Ten pakiet zawiera implementację Mesa standardu OpenVG -
+wieloplatfomowego API zapewniającego niskopoziomowy interfejs
+akceleracji sprzętowej dla bibliotek grafiki wektorowej, takiej
+jak Flash czy SVG. Specyfikację OpenVG można znaleźć na stronie
+Khronos Group: <http://www.khronos.org/openvg/>.
 
 %package libOpenVG-devel
-Summary:	Header file for libOpenVG library
-Summary(pl.UTF-8):	Plik nagłówkowy biblioteki libOpenVG
+Summary:	Header file for Mesa OpenVG library
+Summary(pl.UTF-8):	Plik nagłówkowy biblioteki Mesa OpenVG
 License:	MIT
 Group:		Development/Libraries
 # for <KHR/khrplatform.h>
@@ -414,10 +429,10 @@ Requires:	%{name}-libEGL-devel = %{version}-%{release}
 Requires:	%{name}-libOpenVG = %{version}-%{release}
 
 %description libOpenVG-devel
-Header file for libOpenVG library.
+Header file for Mesa OpenVG library.
 
 %description libOpenVG-devel -l pl.UTF-8
-Plik nagłówkowy biblioteki libOpenVG.
+Plik nagłówkowy biblioteki Mesa OpenVG.
 
 %package utils
 Summary:	OpenGL utilities from Mesa3D
@@ -951,6 +966,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/dri.pc
 %{_pkgconfigdir}/gl.pc
 
+%if %{with static}
+%files libGL-static
+%defattr(644,root,root,755)
+%{_libdir}/libGL.a
+%endif
+
 %files libGLES
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libGLES*.so.*.*
@@ -962,12 +983,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GLES
 %{_includedir}/GLES2
 %{_pkgconfigdir}/gles*.pc
-
-%if %{with static}
-%files libGL-static
-%defattr(644,root,root,755)
-%{_libdir}/libGL.a
-%endif
 
 %files libGLU
 %defattr(644,root,root,755)
@@ -1028,13 +1043,13 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium}
 %files libOpenVG
 %defattr(644,root,root,755)
-%attr(755,root,root) %ghost %{_libdir}/libOpenVG.so.1
 %attr(755,root,root) %{_libdir}/libOpenVG.so.1.0.0
+%attr(755,root,root) %ghost %{_libdir}/libOpenVG.so.1
 
 %files libOpenVG-devel
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libOpenVG.so
 %{_includedir}/VG
-%{_libdir}/libOpenVG.so
 %{_pkgconfigdir}/vg.pc
 %endif
 
