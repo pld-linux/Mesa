@@ -12,7 +12,7 @@
 %bcond_without	motif	# build static libGLw without Motif interface
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
 %bcond_without	osmesa	# don't build osmesa
-%bcond_with	static	# static libraries
+%bcond_with	static_libs	# static libraries
 #
 # minimal supported xserver version
 %define		xserver_ver	1.5.0
@@ -79,6 +79,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %if %{without gallium}
 %undefine	with_gallium_intel
+%undefine	with_gallium_nouveau
 %undefine	with_gallium_radeon
 %endif
 
@@ -795,16 +796,11 @@ nouveau \
 gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 
 common_flags="\
-	--enable-shared \
-	--enable-selinux \
-	--enable-pic \
 	--enable-glx-tls \
+	--enable-pic \
+	--enable-selinux \
+	%{?with_static_libs:--enable-static} \
 	--disable-glut \
-%if %{with egl}
-	--enable-egl \
-	--enable-gles1 \
-	--enable-gles2 \
-%endif
 "
 
 osmesa_common_flags="\
@@ -822,6 +818,11 @@ mv %{_lib} osmesa8
 %endif
 
 %configure $common_flags \
+%if %{with egl}
+	--enable-egl \
+	--enable-gles1 \
+	--enable-gles2 \
+%endif
 %if %{with gallium}
 	--enable-openvg \
 	--enable-gallium-egl \
@@ -838,24 +839,16 @@ mv %{_lib} osmesa8
 %install
 rm -rf $RPM_BUILD_ROOT
 
-install -d $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
-
 # libs without drivers
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
 %if %{with osmesa}
-cp -Pp osmesa*/*OSMesa* $RPM_BUILD_ROOT%{_libdir}
+cp -Pp osmesa*/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
 %endif
 
-rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{BeOS*,win,cygnus,DJ,dja}}
-
 # strip out undesirable headers
-olddir=$(pwd)
-cd $RPM_BUILD_ROOT%{_includedir}/GL
-rm [a-fh-np-wyz]*.h glf*.h
-cd $RPM_BUILD_ROOT%{_libdir}
-cd $olddir
+%{__rm} $RPM_BUILD_ROOT%{_includedir}/GL/{glfbdev,mesa_wgl,vms_x_fix,wglext,wmesa}.h
 
 %if %{with gallium}
 # use gallium swrastg as swrast
@@ -928,7 +921,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/KHR/khrplatform.h
 %{_pkgconfigdir}/egl.pc
 
-%if %{with static}
+%if %{with static_libs}
 %files libEGL-static
 %defattr(644,root,root,755)
 %{_libdir}/libEGL.a
@@ -969,7 +962,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/dri.pc
 %{_pkgconfigdir}/gl.pc
 
-%if %{with static}
+%if %{with static_libs}
 %files libGL-static
 %defattr(644,root,root,755)
 %{_libdir}/libGL.a
@@ -1003,7 +996,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/glu_mangle.h
 %{_pkgconfigdir}/glu.pc
 
-%if %{with static}
+%if %{with static_libs}
 %files libGLU-static
 %defattr(644,root,root,755)
 %{_libdir}/libGLU.a
@@ -1023,7 +1016,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/GLwMDrawAP.h
 %{_pkgconfigdir}/glw.pc
 
-%if %{with static}
+%if %{with static_libs}
 %files libGLw-static
 %defattr(644,root,root,755)
 %{_libdir}/libGLw.a
@@ -1040,7 +1033,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libOSMesa.so
 %{_includedir}/GL/osmesa.h
 
-%if %{with static}
+%if %{with static_libs}
 %files libOSMesa-static
 %defattr(644,root,root,755)
 %{_libdir}/libOSMesa.a
@@ -1117,12 +1110,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mga_dri.so
 
-%if %{with gallium}
 %if %{with gallium_nouveau}
 %files dri-driver-nouveau
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
-%endif
 %endif
 
 %files dri-driver-savage
