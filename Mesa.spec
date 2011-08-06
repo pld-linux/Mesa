@@ -1,5 +1,8 @@
 #
 # TODO:
+# - consider:
+#   --enable-shared-glapi (for libGL; required if the same app uses GL and GLES)
+#   --enable-shared-dricore
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
 # - resurrect static if it's useful
 #
@@ -83,7 +86,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %undefine	with_gallium_radeon
 %endif
 
-# unresolved symbol _glapi_tls_Dispatch
+# _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
 %define		skip_post_check_so	libGLESv1_CM.so.1.* libGLESv2.so.2.*
 
 %description
@@ -106,8 +109,14 @@ Summary:	Mesa implementation of EGL Native Platform Graphics Interface library
 Summary(pl.UTF-8):	Implementacja Mesa biblioteki interfejsu EGL
 License:	MIT
 Group:		Libraries
+# glx driver in libEGL dlopens libGL.so
 Requires:	OpenGL >= 1.2
+Requires:	libdrm >= %{libdrm_ver}
+%if %{with gallium}
+# for egl_gallium.so
+Requires:	Mesa-libOpenVG = %{version}-%{release}
 Requires:	udev-libs >= 150
+%endif
 Provides:	EGL = 1.4
 
 %description libEGL
@@ -127,8 +136,14 @@ Summary(pl.UTF-8):	Pliki nagłówkowe implementacji Mesa biblioteki EGL
 License:	MIT
 Group:		Development/Libraries
 Requires:	%{name}-libEGL = %{version}-%{release}
-Requires:	OpenGL-devel >= 1.2
-Requires:	libstdc++-devel
+Requires:	libdrm-devel >= %{libdrm_ver}
+Requires:	xorg-lib-libX11-devel
+Requires:	xorg-lib-libXdamage-devel
+Requires:	xorg-lib-libXext-devel
+Requires:	xorg-lib-libXfixes-devel
+Requires:	xorg-lib-libXxf86vm-devel
+Requires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
+Requires:	xorg-proto-glproto-devel >= %{glproto_ver}
 Provides:	EGL-devel = 1.4
 
 %description libEGL-devel
@@ -236,6 +251,8 @@ renderingu.
 Summary:	Mesa implementation of GLES (OpenGL ES) libraries
 Summary(pl.UTF-8):	Implementacja Mesa bibliotek GLES (OpenGL ES)
 Group:		Libraries
+# only for libglapi.so.0
+Requires:	%{name}-libEGL = %{version}-%{release}
 
 %description libGLES
 This package contains shared libraries of Mesa implementation of GLES
@@ -256,6 +273,8 @@ ES 1.1 i 2.0.
 Summary:	Header files for Mesa GLES libraries
 Summary(pl.UTF-8):	Pliki nagłówkowe bibliotek Mesa GLES
 Group:		Development/Libraries
+# EGL for libglapi.so, <KHR/khrplatform.h> always required, <EGL/egl.h> for <GLES/egl.h>
+Requires:	%{name}-libEGL-devel = %{version}-%{release}
 Requires:	%{name}-libGLES = %{version}-%{release}
 
 %description libGLES-devel
@@ -336,6 +355,8 @@ License:	SGI MIT-like
 Group:		Development/Libraries
 Requires:	%{name}-libGLw = %{version}-%{release}
 Requires:	OpenGL-devel >= 1.2
+Requires:	xorg-lib-libX11-devel
+Requires:	xorg-lib-libXt-devel
 Provides:	OpenGL-GLw-devel
 
 %description libGLw-devel
@@ -379,6 +400,7 @@ Group:		Development/Libraries
 Requires:	%{name}-libOSMesa = %{version}-%{release}
 # for <GL/gl.h> only
 Requires:	OpenGL-devel
+Requires:	libselinux-devel
 
 %description libOSMesa-devel
 Header file for OSMesa (off-screen renderer) library.
@@ -428,7 +450,7 @@ Summary:	Header file for Mesa OpenVG library
 Summary(pl.UTF-8):	Plik nagłówkowy biblioteki Mesa OpenVG
 License:	MIT
 Group:		Development/Libraries
-# for <KHR/khrplatform.h>
+# EGL headers for <KHR/khrplatform.h>
 Requires:	%{name}-libEGL-devel = %{version}-%{release}
 Requires:	%{name}-libOpenVG = %{version}-%{release}
 
@@ -437,19 +459,6 @@ Header file for Mesa OpenVG library.
 
 %description libOpenVG-devel -l pl.UTF-8
 Plik nagłówkowy biblioteki Mesa OpenVG.
-
-%package utils
-Summary:	OpenGL utilities from Mesa3D
-Summary(pl.UTF-8):	Programy narzędziowe OpenGL z projektu Mesa3D
-License:	MIT
-Group:		X11/Applications/Graphics
-# loose deps on libGL/libGLU
-
-%description utils
-OpenGL utilities from Mesa3D: glxgears and glxinfo.
-
-%description utils -l pl.UTF-8
-Programy narzędziowe OpenGL z projektu Mesa3D: glxgears i glxinfo.
 
 %package dri-driver-ati-mach64
 Summary:	X.org DRI driver for ATI Mach64 card family
@@ -806,14 +815,16 @@ common_flags="\
 osmesa_common_flags="\
 	--with-driver=osmesa \
 	--disable-asm \
-	--disable-glu \
-	--disable-egl"
+	--disable-egl \
+	--disable-glu"
 
 %if %{with osmesa}
 %configure $common_flags $osmesa_common_flags \
 	--with-osmesa-bits=8
 %{__make}
+%{__make} -C src/mesa osmesa.pc
 mv %{_lib} osmesa8
+cp -p src/mesa/osmesa.pc osmesa8
 %{__make} clean
 %endif
 
@@ -844,7 +855,8 @@ rm -rf $RPM_BUILD_ROOT
 	DESTDIR=$RPM_BUILD_ROOT
 
 %if %{with osmesa}
-cp -Pp osmesa*/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
+cp -p osmesa8/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
+cp -p osmesa8/osmesa.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
 %endif
 
 # strip out undesirable headers
@@ -940,7 +952,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libGL.so.1
 # symlink for binary apps which fail to conform Linux OpenGL ABI
-# (and dlopen libGL.so instead of libGL.so.1)
+# (and dlopen libGL.so instead of libGL.so.1; the same does Mesa libEGL)
 %attr(755,root,root) %{_libdir}/libGL.so
 %endif
 
@@ -1032,6 +1044,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libOSMesa.so
 %{_includedir}/GL/osmesa.h
+%{_pkgconfigdir}/osmesa.pc
 
 %if %{with static_libs}
 %files libOSMesa-static
