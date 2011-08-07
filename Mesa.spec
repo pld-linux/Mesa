@@ -25,7 +25,7 @@
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.11
 #
-%define		snap		20110805
+%define		snap		20110807
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
@@ -35,7 +35,7 @@ Release:	0.%{snap}.1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	b454306ccfd7510643e0fe1100b392f8
+# Source0-md5:	ac8bb3c15b4e98205cc9b5df22cbd207
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-git.patch
 Patch2:		%{name}-selinux.patch
