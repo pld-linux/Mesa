@@ -794,7 +794,7 @@ i915 \
 i965 \
 %endif
 %if %{with gallium_radeon}
-radeon \
+r300 \
 r600 \
 %endif
 %if %{with gallium_nouveau}
@@ -911,10 +911,6 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/egl
 %attr(755,root,root) %{_libdir}/egl/egl_gallium.so
 %attr(755,root,root) %{_libdir}/egl/st_GL.so
-%if %{with gallium_radeon}
-%attr(755,root,root) %{_libdir}/egl/pipe_r300.so
-%attr(755,root,root) %{_libdir}/egl/pipe_r600.so
-%endif
 %if %{with gallium_intel}
 %attr(755,root,root) %{_libdir}/egl/pipe_i915.so
 %attr(755,root,root) %{_libdir}/egl/pipe_i965.so
