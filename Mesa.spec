@@ -25,17 +25,17 @@
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.11
 #
-%define		snap		20110807
+%define		snap		20110819
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.12
 Release:	0.%{snap}.1%{?with_multigl:.mgl}
-License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
+License:	MIT (core), SGI (GLU) and others - see license.html file
 Group:		X11/Libraries
 Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	ac8bb3c15b4e98205cc9b5df22cbd207
+# Source0-md5:	13dfbaeba51d9f6dec24316e88905277
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-git.patch
 Patch2:		%{name}-selinux.patch
@@ -303,50 +303,6 @@ Static SGI libGLU library.
 
 %description libGLU-static -l pl.UTF-8
 Statyczna biblioteka SGI libGLU.
-
-%package libGLw
-Summary:	SGI OpenGL Xt widgets library
-Summary(pl.UTF-8):	Biblioteka SGI widgetów Xt dla OpenGL-a
-License:	SGI MIT-like
-Group:		Libraries
-# loose dependency on libGL.so.1 to use with other libGL binaries
-Requires:	OpenGL >= 1.1
-Provides:	OpenGL-GLw
-
-%description libGLw
-SGI OpenGL Xt widgets library.
-
-%description libGLw -l pl.UTF-8
-Biblioteka SGI widgetów Xt dla OpenGL-a.
-
-%package libGLw-devel
-Summary:	Header files for SGI libGLw library
-Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki SGI libGLw
-License:	SGI MIT-like
-Group:		Development/Libraries
-Requires:	%{name}-libGLw = %{version}-%{release}
-Requires:	OpenGL-devel >= 1.2
-Provides:	OpenGL-GLw-devel
-
-%description libGLw-devel
-Header files for SGI libGLw library.
-
-%description libGLw-devel -l pl.UTF-8
-Pliki nagłówkowe biblioteki SGI libGLw.
-
-%package libGLw-static
-Summary:	Static SGI libGLw library
-Summary(pl.UTF-8):	Statyczna biblioteka SGI libGLw
-License:	SGI MIT-like
-Group:		Development/Libraries
-Requires:	%{name}-libGLw-devel = %{version}-%{release}
-Provides:	OpenGL-GLw-static
-
-%description libGLw-static
-Static SGI libGLw library.
-
-%description libGLw-static -l pl.UTF-8
-Statyczna biblioteka SGI libGLw.
 
 %package libOSMesa
 Summary:	OSMesa (off-screen renderer) library
@@ -862,9 +818,6 @@ rm -rf $RPM_BUILD_ROOT
 %post	libGLU -p /sbin/ldconfig
 %postun	libGLU -p /sbin/ldconfig
 
-%post	libGLw -p /sbin/ldconfig
-%postun	libGLw -p /sbin/ldconfig
-
 %post	libOSMesa -p /sbin/ldconfig
 %postun	libOSMesa -p /sbin/ldconfig
 
@@ -979,26 +932,6 @@ rm -rf $RPM_BUILD_ROOT
 %files libGLU-static
 %defattr(644,root,root,755)
 %{_libdir}/libGLU.a
-%endif
-
-%files libGLw
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libGLw.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libGLw.so.1
-
-%files libGLw-devel
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libGLw.so
-%{_includedir}/GL/GLwDrawA.h
-%{_includedir}/GL/GLwDrawAP.h
-%{_includedir}/GL/GLwMDrawA.h
-%{_includedir}/GL/GLwMDrawAP.h
-%{_pkgconfigdir}/glw.pc
-
-%if %{with static}
-%files libGLw-static
-%defattr(644,root,root,755)
-%{_libdir}/libGLw.a
 %endif
 
 %if %{with osmesa}
