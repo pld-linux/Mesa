@@ -1,0 +1,270 @@
+diff --git a/docs/news.html b/docs/news.html
+index eea6cd6..70b38c6 100644
+--- a/docs/news.html
++++ b/docs/news.html
+@@ -11,6 +11,13 @@
+ <H1>News</H1>
+ 
+ 
++<h2>July 31, 2011</h2>
++
++<p>
++<a href="relnotes-7.11.html">Mesa 7.11</a> is released.  This is a new
++release with many new features.
++</p>
++
+ <h2>June 13, 2011</h2>
+ 
+ <p>
+diff --git a/docs/relnotes-7.11.html b/docs/relnotes-7.11.html
+index 79776d3..52033cf 100644
+--- a/docs/relnotes-7.11.html
++++ b/docs/relnotes-7.11.html
+@@ -30,7 +30,12 @@ for DRI hardware acceleration.
+ 
+ <h2>MD5 checksums</h2>
+ <pre>
+-tbd
++fa2c7068503133fb2453244cda11cb2a  MesaLib-7.11.tar.gz
++ff03aca82d0560009a076a87c888cf13  MesaLib-7.11.tar.bz2
++ede1ac0976f6f05df586093fc17d63ed  MesaLib-7.11.zip
++b4fb81a47c5caedaefad49af7702c23d  MesaGLUT-7.11.tar.gz
++77a9a0bbd7f8bca882aa5709b88cb071  MesaGLUT-7.11.tar.bz2
++c19ef0c6eb61188c96ed4ccedd70717c  MesaGLUT-7.11.zip
+ </pre>
+ 
+ 
+diff --git a/src/gallium/drivers/i915/i915_state_dynamic.c b/src/gallium/drivers/i915/i915_state_dynamic.c
+index 204cee6..1a21433 100644
+--- a/src/gallium/drivers/i915/i915_state_dynamic.c
++++ b/src/gallium/drivers/i915/i915_state_dynamic.c
+@@ -268,8 +268,8 @@ static void upload_SCISSOR_RECT(struct i915_context *i915)
+ {
+    unsigned x1 = i915->scissor.minx;
+    unsigned y1 = i915->scissor.miny;
+-   unsigned x2 = i915->scissor.maxx;
+-   unsigned y2 = i915->scissor.maxy;
++   unsigned x2 = i915->scissor.maxx - 1;
++   unsigned y2 = i915->scissor.maxy - 1;
+    unsigned sc[3];
+ 
+    sc[0] = _3DSTATE_SCISSOR_RECT_0_CMD;
+diff --git a/src/gallium/drivers/r300/r300_emit.c b/src/gallium/drivers/r300/r300_emit.c
+index d214af4..09ce470 100644
+--- a/src/gallium/drivers/r300/r300_emit.c
++++ b/src/gallium/drivers/r300/r300_emit.c
+@@ -1237,13 +1237,12 @@ validate:
+         r300->rws->cs_add_reloc(r300->cs, r300_resource(index_buffer)->cs_buf,
+                                 r300_resource(index_buffer)->domain, 0);
+ 
+-    /* Now do the validation. */
++    /* Now do the validation (flush is called inside cs_validate on failure). */
+     if (!r300->rws->cs_validate(r300->cs)) {
+         /* Ooops, an infinite loop, give up. */
+         if (flushed)
+             return FALSE;
+ 
+-        r300_flush(&r300->context, RADEON_FLUSH_ASYNC, NULL);
+         flushed = TRUE;
+         goto validate;
+     }
+diff --git a/src/gallium/winsys/radeon/drm/radeon_drm_cs.c b/src/gallium/winsys/radeon/drm/radeon_drm_cs.c
+index 0139de1..1dcc7e1 100644
+--- a/src/gallium/winsys/radeon/drm/radeon_drm_cs.c
++++ b/src/gallium/winsys/radeon/drm/radeon_drm_cs.c
+@@ -115,6 +115,7 @@ static void radeon_cs_context_cleanup(struct radeon_cs_context *csc)
+     }
+ 
+     csc->crelocs = 0;
++    csc->validated_crelocs = 0;
+     csc->chunks[0].length_dw = 0;
+     csc->chunks[1].length_dw = 0;
+     csc->used_gart = 0;
+@@ -307,9 +308,37 @@ static void radeon_drm_cs_add_reloc(struct radeon_winsys_cs *rcs,
+ static boolean radeon_drm_cs_validate(struct radeon_winsys_cs *rcs)
+ {
+     struct radeon_drm_cs *cs = radeon_drm_cs(rcs);
++    boolean status =
++        cs->csc->used_gart < cs->ws->gart_size * 0.8 &&
++        cs->csc->used_vram < cs->ws->vram_size * 0.8;
+ 
+-    return cs->csc->used_gart < cs->ws->gart_size * 0.8 &&
+-           cs->csc->used_vram < cs->ws->vram_size * 0.8;
++    if (status) {
++        cs->csc->validated_crelocs = cs->csc->crelocs;
++    } else {
++        /* Remove lately-added relocations. The validation failed with them
++         * and the CS is about to be flushed because of that. Keep only
++         * the already-validated relocations. */
++        unsigned i;
++
++        for (i = cs->csc->validated_crelocs; i < cs->csc->crelocs; i++) {
++            p_atomic_dec(&cs->csc->relocs_bo[i]->num_cs_references);
++            radeon_bo_reference(&cs->csc->relocs_bo[i], NULL);
++        }
++        cs->csc->crelocs = cs->csc->validated_crelocs;
++
++        /* Flush if there are any relocs. Clean up otherwise. */
++        if (cs->csc->crelocs) {
++            cs->flush_cs(cs->flush_data, RADEON_FLUSH_ASYNC);
++        } else {
++            radeon_cs_context_cleanup(cs->csc);
++
++            assert(cs->base.cdw == 0);
++            if (cs->base.cdw != 0) {
++                fprintf(stderr, "radeon: Unexpected error in %s.\n", __func__);
++            }
++        }
++    }
++    return status;
+ }
+ 
+ static void radeon_drm_cs_write_reloc(struct radeon_winsys_cs *rcs,
+diff --git a/src/gallium/winsys/radeon/drm/radeon_drm_cs.h b/src/gallium/winsys/radeon/drm/radeon_drm_cs.h
+index 339beed..fc51f45 100644
+--- a/src/gallium/winsys/radeon/drm/radeon_drm_cs.h
++++ b/src/gallium/winsys/radeon/drm/radeon_drm_cs.h
+@@ -41,6 +41,7 @@ struct radeon_cs_context {
+     /* Relocs. */
+     unsigned                    nrelocs;
+     unsigned                    crelocs;
++    unsigned			validated_crelocs;
+     struct radeon_bo            **relocs_bo;
+     struct drm_radeon_cs_reloc  *relocs;
+ 
+diff --git a/src/gallium/winsys/radeon/drm/radeon_winsys.h b/src/gallium/winsys/radeon/drm/radeon_winsys.h
+index 3a64e4a..41c26c6 100644
+--- a/src/gallium/winsys/radeon/drm/radeon_winsys.h
++++ b/src/gallium/winsys/radeon/drm/radeon_winsys.h
+@@ -271,7 +271,9 @@ struct radeon_winsys {
+ 
+     /**
+      * Return TRUE if there is enough memory in VRAM and GTT for the relocs
+-     * added so far.
++     * added so far. If the validation fails, all the relocations which have
++     * been added since the last call of cs_validate will be removed and
++     * the CS will be flushed (provided there are still any relocations).
+      *
+      * \param cs        A command stream to validate.
+      */
+diff --git a/src/glx/drisw_glx.c b/src/glx/drisw_glx.c
+index 07d4955..a57b327 100644
+--- a/src/glx/drisw_glx.c
++++ b/src/glx/drisw_glx.c
+@@ -100,6 +100,13 @@ XCreateDrawable(struct drisw_drawable * pdp,
+                               32,                     /* bitmap_pad */
+                               0);                     /* bytes_per_line */
+ 
++  /**
++   * swrast does not handle 24-bit depth with 24 bpp, so let X do the
++   * the conversion for us.
++   */
++  if (pdp->ximage->bits_per_pixel == 24)
++     pdp->ximage->bits_per_pixel = 32;
++
+    return True;
+ }
+ 
+diff --git a/src/mesa/drivers/dri/r300/compiler/radeon_dataflow.c b/src/mesa/drivers/dri/r300/compiler/radeon_dataflow.c
+index b0deb75..a8decac 100644
+--- a/src/mesa/drivers/dri/r300/compiler/radeon_dataflow.c
++++ b/src/mesa/drivers/dri/r300/compiler/radeon_dataflow.c
+@@ -687,7 +687,7 @@ static void get_readers_for_single_write(
+ 	struct rc_instruction * tmp;
+ 	unsigned int branch_depth = 0;
+ 	struct rc_instruction * endloop = NULL;
+-	unsigned int abort_on_read_at_endloop;
++	unsigned int abort_on_read_at_endloop = 0;
+ 	struct get_readers_callback_data * d = userdata;
+ 
+ 	d->ReaderData->Writer = writer;
+diff --git a/src/mesa/drivers/dri/r300/compiler/radeon_optimize.c b/src/mesa/drivers/dri/r300/compiler/radeon_optimize.c
+index ac73608..39dcb21 100644
+--- a/src/mesa/drivers/dri/r300/compiler/radeon_optimize.c
++++ b/src/mesa/drivers/dri/r300/compiler/radeon_optimize.c
+@@ -560,32 +560,30 @@ static int peephole_add_presub_add(
+ 	struct radeon_compiler * c,
+ 	struct rc_instruction * inst_add)
+ {
+-	struct rc_src_register * src0 = NULL;
+-	struct rc_src_register * src1 = NULL;
+-	unsigned int i;
+-
+-	if (!is_presub_candidate(c, inst_add))
+-		return 0;
++	unsigned dstmask = inst_add->U.I.DstReg.WriteMask;
++        unsigned src0_neg = inst_add->U.I.SrcReg[0].Negate & dstmask;
++        unsigned src1_neg = inst_add->U.I.SrcReg[1].Negate & dstmask;
+ 
+ 	if (inst_add->U.I.SrcReg[0].Swizzle != inst_add->U.I.SrcReg[1].Swizzle)
+ 		return 0;
+ 
+-	/* src0 and src1 can't have absolute values only one can be negative and they must be all negative or all positive. */
+-	for (i = 0; i < 2; i++) {
+-		if (inst_add->U.I.SrcReg[i].Abs)
+-			return 0;
+-		if ((inst_add->U.I.SrcReg[i].Negate
+-					& inst_add->U.I.DstReg.WriteMask) ==
+-						inst_add->U.I.DstReg.WriteMask) {
+-			src0 = &inst_add->U.I.SrcReg[i];
+-		} else if (!src1) {
+-			src1 = &inst_add->U.I.SrcReg[i];
+-		} else {
+-			src0 = &inst_add->U.I.SrcReg[i];
+-		}
+-	}
++	/* src0 and src1 can't have absolute values */
++	if (inst_add->U.I.SrcReg[0].Abs || inst_add->U.I.SrcReg[1].Abs)
++	        return 0;
++
++	/* presub_replace_add() assumes only one is negative */
++	if (inst_add->U.I.SrcReg[0].Negate && inst_add->U.I.SrcReg[1].Negate)
++	        return 0;
++
++        /* if src0 is negative, at least all bits of dstmask have to be set */
++        if (inst_add->U.I.SrcReg[0].Negate && src0_neg != dstmask)
++	        return 0;
+ 
+-	if (!src1)
++        /* if src1 is negative, at least all bits of dstmask have to be set */
++        if (inst_add->U.I.SrcReg[1].Negate && src1_neg != dstmask)
++	        return 0;
++
++	if (!is_presub_candidate(c, inst_add))
+ 		return 0;
+ 
+ 	if (presub_helper(c, inst_add, RC_PRESUB_ADD, presub_replace_add)) {
+@@ -618,7 +616,7 @@ static void presub_replace_inv(
+  * of the add instruction must have the constatnt 1 swizzle.  This function
+  * does not check const registers to see if their value is 1.0, so it should
+  * be called after the constant_folding optimization.
+- * @return 
++ * @return
+  * 	0 if the ADD instruction is still part of the program.
+  * 	1 if the ADD instruction is no longer part of the program.
+  */
+diff --git a/src/mesa/vbo/vbo_exec_array.c b/src/mesa/vbo/vbo_exec_array.c
+index 7959337..5903ae23 100644
+--- a/src/mesa/vbo/vbo_exec_array.c
++++ b/src/mesa/vbo/vbo_exec_array.c
+@@ -909,11 +909,10 @@ vbo_exec_DrawRangeElementsBaseVertex(GLenum mode,
+       if (0)
+          _mesa_print_arrays(ctx);
+ 
+-#ifdef DEBUG
+       /* 'end' was out of bounds, but now let's check the actual array
+        * indexes to see if any of them are out of bounds.
+        */
+-      {
++      if (0) {
+          GLuint max = _mesa_max_buffer_index(ctx, count, type, indices,
+                                              ctx->Array.ElementArrayBufferObj);
+          if (max >= ctx->Array.ArrayObj->_MaxElement) {
+@@ -934,7 +933,6 @@ vbo_exec_DrawRangeElementsBaseVertex(GLenum mode,
+           * upper bound wrong.
+           */
+       }
+-#endif
+ 
+       /* Set 'end' to the max possible legal value */
+       assert(ctx->Array.ArrayObj->_MaxElement >= 1);
