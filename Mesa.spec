@@ -25,7 +25,7 @@
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.11
 #
-%define		snap		20110826
+%define		snap		20110901
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
@@ -35,9 +35,8 @@ Release:	0.%{snap}.1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU) and others - see license.html file
 Group:		X11/Libraries
 Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	7d2c76f20855f9f4bde8b9fa35b5df1a
+# Source0-md5:	2b4e889af7e86cbd0f8718263d5b1a11
 Patch0:		%{name}-realclean.patch
-Patch1:		%{name}-git.patch
 Patch2:		%{name}-selinux.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.59
@@ -50,6 +49,7 @@ BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= 5:3.3.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:1.4d
+BuildRequires:	libvdpau-devel
 BuildRequires:	llvm-devel >= 2.9
 %{?with_motif:BuildRequires:	motif-devel}
 BuildRequires:	pixman-devel
@@ -388,21 +388,6 @@ OpenGL utilities from Mesa3D: glxgears and glxinfo.
 %description utils -l pl.UTF-8
 Programy narzędziowe OpenGL z projektu Mesa3D: glxgears i glxinfo.
 
-%package dri-driver-ati-mach64
-Summary:	X.org DRI driver for ATI Mach64 card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI Mach64
-License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-driver-video-mach64
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
-
-%description dri-driver-ati-mach64
-X.org DRI driver for ATI Mach64 card family.
-
-%description dri-driver-ati-mach64 -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart ATI Mach64.
-
 %package dri-driver-ati-radeon-R100
 Summary:	X.org DRI driver for ATI R100 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R100
@@ -467,22 +452,6 @@ X.org DRI driver for ATI R600 card family.
 %description dri-driver-ati-radeon-R600 -l pl.UTF-8
 Sterownik X.org DRI dla rodziny kart ATI R600.
 
-%package dri-driver-ati-rage128
-Summary:	X.org DRI driver for ATI Rage128 card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI Rage128
-License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-driver-video-r128
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
-Obsoletes:	X11-driver-r128-dri < 1:7.0.0
-
-%description dri-driver-ati-rage128
-X.org DRI driver for ATI Rage128 card family.
-
-%description dri-driver-ati-rage128 -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart ATI Rage128.
-
 %package dri-driver-ffb
 Summary:	X.org DRI driver for Sun FFB card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Sun FFB
@@ -513,22 +482,6 @@ X.org DRI driver for GLINT/Permedia card family.
 
 %description dri-driver-glint -l pl.UTF-8
 Sterownik X.org DRI dla rodziny kart GLINT/Permedia.
-
-%package dri-driver-intel-i810
-Summary:	X.org DRI driver for Intel i810 card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i810
-License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-driver-video-intel
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
-Obsoletes:	X11-driver-i810-dri < 1:7.0.0
-
-%description dri-driver-intel-i810
-X.org DRI driver for Intel i810 card family.
-
-%description dri-driver-intel-i810 -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart Intel i810.
 
 %package dri-driver-intel-i915
 Summary:	X.org DRI driver for Intel i915 card family
@@ -564,22 +517,6 @@ X.org DRI driver for Intel i965 card family.
 %description dri-driver-intel-i965 -l pl.UTF-8
 Sterownik X.org DRI dla rodziny kart Intel i965.
 
-%package dri-driver-matrox
-Summary:	X.org DRI driver for Matrox G card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Matrox G
-License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-driver-video-mga
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
-Obsoletes:	X11-driver-mga-dri < 1:7.0.0
-
-%description dri-driver-matrox
-X.org DRI drivers for Matrox G card family.
-
-%description dri-driver-matrox -l pl.UTF-8
-Sterowniki X.org DRI dla rodziny kart Matrox G.
-
 %package dri-driver-nouveau
 Summary:	X.org DRI driver for NVIDIA card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart NVIDIA
@@ -595,37 +532,6 @@ X.org DRI drivers for NVIDIA card family.
 %description dri-driver-nouveau -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart NVIDIA.
 
-%package dri-driver-savage
-Summary:	X.org DRI driver for S3 Savage card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart S3 Savage
-License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-driver-video-savage
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
-
-%description dri-driver-savage
-X.org DRI driver for S3 Savage card family.
-
-%description dri-driver-savage -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart S3 Savage.
-
-%package dri-driver-sis
-Summary:	X.org DRI driver for SiS card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart SiS
-License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-driver-video-sis
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
-Obsoletes:	X11-driver-sis-dri < 1:7.0.0
-
-%description dri-driver-sis
-X.org DRI driver for SiS card family.
-
-%description dri-driver-sis -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart SiS.
-
 %package dri-driver-swrast
 Summary:	X.org DRI software rasterizer driver
 Summary(pl.UTF-8):	Sterownik X.org DRI obsługujący rysowanie programowe
@@ -639,40 +545,6 @@ X.org DRI software rasterizer driver.
 
 %description dri-driver-swrast -l pl.UTF-8
 Sterownik X.org DRI obsługujący rysowanie programowe.
-
-%package dri-driver-tdfx
-Summary:	X.org DRI driver for 3DFX Voodoo card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart 3DFX Voodoo
-License:	MIT
-Group:		X11/Libraries
-Requires:	Glide3-DRI
-Requires:	xorg-driver-video-tdfx
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
-Obsoletes:	X11-driver-tdfx-dri < 1:7.0.0
-
-%description dri-driver-tdfx
-X.org DRI driver for 3DFX Voodoo card family (Voodoo 3,4,5, Banshee
-and Velocity 100/200).
-
-%description dri-driver-tdfx -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart 3DFX Voodoo. (Voodoo 3,4,5,
-Banshee i Velocity 100/200).
-
-%package dri-driver-via-unichrome
-Summary:	X.org DRI driver for VIA Unichrome card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart VIA Unichrome
-License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-driver-video-openchrome
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
-
-%description dri-driver-via-unichrome
-X.org DRI driver for VIA Unichrome card family.
-
-%description dri-driver-via-unichrome -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart VIA Unichrome.
 
 %package dri-driver-vmwgfx
 Summary:	X.org DRI driver for VMware
@@ -688,31 +560,38 @@ X.org DRI driver for VMWare.
 %description dri-driver-vmwgfx -l pl.UTF-8
 Sterownik X.org DRI dla VMware.
 
+%package -n libvdpau-driver-mesa
+Summary:	Mesa driver for the vdpau API
+Summary(pl.UTF-8):	Sterownik Mesa dla API vdpau
+License:	MIT
+Group:		X11/Libraries
+
+%description -n libvdpau-driver-mesa
+Mesa driver for the vdpau API.
+
+%description -n libvdpau-driver-mesa -l pl.UTF-8
+Sterownik Mesa dla API vdpau.
+
 %prep
 %setup -q
 %patch0 -p0
-%patch1 -p1
 %patch2 -p1
 
 %build
 %{__aclocal}
 %{__autoconf}
 
-dri_drivers="i810 mach64 mga r128 r200 radeon \
+dri_drivers="r200 radeon \
 %if %{without gallium_radeon}
 r300 r600 \
 %endif
-savage \
 %if %{without gallium_intel}
 i915 i965 \
 %endif
 %ifarch sparc sparcv9 sparc64
 ffb \
 %endif
-%ifarch %{ix86} %{x8664}
-sis \
-%endif
-swrast tdfx unichrome"
+swrast"
 
 dri_drivers=$(echo $dri_drivers | xargs | tr ' ' ',')
 
@@ -762,6 +641,7 @@ mv %{_lib} osmesa8
 %if %{with gallium}
 	--enable-openvg \
 	--enable-gallium-egl \
+	--enable-vdpau \
 	--with-gallium-drivers=${gallium_drivers} \
 %else
 	--disable-gallium \
@@ -965,10 +845,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/vg.pc
 %endif
 
-%files dri-driver-ati-mach64
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/mach64_dri.so
-
 %files dri-driver-ati-radeon-R100
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/radeon_dri.so
@@ -985,10 +861,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/r600_dri.so
 
-%files dri-driver-ati-rage128
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/r128_dri.so
-
 # sunffb (sparc only)
 %ifarch sparc sparcv9 sparc64
 %files dri-driver-ffb
@@ -1003,10 +875,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/gamma_dri.so
 %endif
 
-%files dri-driver-intel-i810
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/i810_dri.so
-
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
@@ -1018,10 +886,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/drivers/i965g_drv.so
 %endif
 
-%files dri-driver-matrox
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/mga_dri.so
-
 %if %{with gallium}
 %if %{with gallium_nouveau}
 %files dri-driver-nouveau
@@ -1030,30 +894,19 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %endif
 
-%files dri-driver-savage
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/savage_dri.so
-
-%ifarch %{ix86} %{x8664}
-%files dri-driver-sis
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/sis_dri.so
-%endif
-
 %files dri-driver-swrast
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
-
-%files dri-driver-tdfx
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/tdfx_dri.so
-
-%files dri-driver-via-unichrome
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/unichrome_dri.so
 
 %if %{with gallium}
 %files dri-driver-vmwgfx
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/vmwgfx_dri.so
 %endif
+
+%files -n libvdpau-driver-mesa
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so.1.0
+# there is no ldconfig here
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so.1
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so
