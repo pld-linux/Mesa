@@ -6,13 +6,14 @@
 # Conditional build:
 %bcond_without	egl	# build egl
 %bcond_without	gallium	# don't build gallium
-%bcond_with	gallium_intel	# gallium i915 driver (but doesn't work with AIGLX)
-%bcond_with	gallium_radeon	# gallium radeon driver
+%bcond_without	gallium_intel	# gallium i915 driver (but doesn't work with AIGLX)
+%bcond_without	gallium_radeon	# gallium radeon driver
 %bcond_without	gallium_nouveau	# gallium nouveau driver
 %bcond_without	motif	# build static libGLw without Motif interface
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
 %bcond_without	osmesa	# don't build osmesa
-%bcond_with	static	# static libraries
+%bcond_without	gbm	# with Graphics Buffer Manager
+%bcond_with	static_libs	# static libraries
 #
 # minimal supported xserver version
 %define		xserver_ver	1.5.0
@@ -83,8 +84,12 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %undefine	with_gallium_radeon
 %endif
 
-# unresolved symbol _glapi_tls_Dispatch
-%define		skip_post_check_so	libGLESv1_CM.so.1.* libGLESv2.so.2.*
+%if %{without egl}
+%undefine	with_gbm
+%endif
+
+# _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
+%define		skip_post_check_so	libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.*
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
@@ -601,7 +606,7 @@ i915 \
 i965 \
 %endif
 %if %{with gallium_radeon}
-radeon \
+r300 \
 r600 \
 %endif
 %if %{with gallium_nouveau}
@@ -638,9 +643,17 @@ mv %{_lib} osmesa8
 %endif
 
 %configure $common_flags \
+	--enable-shared-glapi \
+%if %{with egl}
+	--enable-egl \
+	--enable-gles1 \
+	--enable-gles2 \
+	%{__enable gbm} \
+%endif
 %if %{with gallium}
 	--enable-openvg \
-	--enable-gallium-egl \
+	%{__enable egl gallium-egl} \
+	%{__enable gbm gallium-gbm} \
 	--enable-vdpau \
 	--with-gallium-drivers=${gallium_drivers} \
 %else
@@ -662,7 +675,7 @@ install -d $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
 	DESTDIR=$RPM_BUILD_ROOT
 
 %if %{with osmesa}
-cp -Pp osmesa*/*OSMesa* $RPM_BUILD_ROOT%{_libdir}
+cp -dp osmesa8/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
 %endif
 
 rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{BeOS*,win,cygnus,DJ,dja}}
@@ -709,26 +722,34 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libEGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libEGL.so.1
-%attr(755,root,root) %{_libdir}/libglapi.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libglapi.so.0
+%if %{with gbm}
+%attr(755,root,root) %{_libdir}/libgbm.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libgbm.so.1
+%endif
 %if %{with gallium}
 %dir %{_libdir}/egl
 %attr(755,root,root) %{_libdir}/egl/egl_gallium.so
-%attr(755,root,root) %{_libdir}/egl/st_GL.so
+#%attr(755,root,root) %{_libdir}/egl/st_GL.so
+%if %{with gbm}
+%attr(755,root,root) %{_libdir}/gbm/gbm_gallium_drm.so
+%attr(755,root,root) %{_libdir}/gbm/pipe_vmwgfx.so
+%if %{with gallium_nouveau}
+%attr(755,root,root) %{_libdir}/gbm/pipe_nouveau.so
+%endif
 %if %{with gallium_radeon}
-%attr(755,root,root) %{_libdir}/egl/pipe_r300.so
-%attr(755,root,root) %{_libdir}/egl/pipe_r600.so
+%attr(755,root,root) %{_libdir}/gbm/pipe_r300.so
+%attr(755,root,root) %{_libdir}/gbm/pipe_r600.so
 %endif
 %if %{with gallium_intel}
-%attr(755,root,root) %{_libdir}/egl/pipe_i915.so
-%attr(755,root,root) %{_libdir}/egl/pipe_i965.so
+%attr(755,root,root) %{_libdir}/gbm/pipe_i915.so
+%attr(755,root,root) %{_libdir}/gbm/pipe_i965.so
+%endif
 %endif
 %endif
 
 %files libEGL-devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libEGL.so
-%attr(755,root,root) %{_libdir}/libglapi.so
 %dir %{_includedir}/EGL
 %{_includedir}/EGL/egl.h
 %{_includedir}/EGL/eglext.h
@@ -736,8 +757,13 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_includedir}/KHR
 %{_includedir}/KHR/khrplatform.h
 %{_pkgconfigdir}/egl.pc
+%if %{with gbm}
+%attr(755,root,root) %{_libdir}/libgbm.so
+%{_includedir}/gbm.h
+%{_pkgconfigdir}/gbm.pc
+%endif
 
-%if %{with static}
+%if %{with static_libs}
 %files libEGL-static
 %defattr(644,root,root,755)
 %{_libdir}/libEGL.a
@@ -747,6 +773,8 @@ rm -rf $RPM_BUILD_ROOT
 %files libGL
 %defattr(644,root,root,755)
 %doc docs/{*.html,README.{3DFX,GGI,MITS,QUAKE,THREADS},RELNOTES*}
+%attr(755,root,root) %{_libdir}/libglapi.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libglapi.so.0
 %if %{with multigl}
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/ld.so.conf.d/Mesa.conf
 %dir %{_libdir}/Mesa
@@ -763,6 +791,7 @@ rm -rf $RPM_BUILD_ROOT
 %files libGL-devel
 %defattr(644,root,root,755)
 %doc docs/*.spec
+%attr(755,root,root) %{_libdir}/libglapi.so
 %if %{with multigl}
 %attr(755,root,root) %{_libdir}/libGL.so
 %endif
@@ -790,7 +819,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GLES2
 %{_pkgconfigdir}/gles*.pc
 
-%if %{with static}
+%if %{with static_libs}
 %files libGL-static
 %defattr(644,root,root,755)
 %{_libdir}/libGL.a
@@ -808,7 +837,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/glu_mangle.h
 %{_pkgconfigdir}/glu.pc
 
-%if %{with static}
+%if %{with static_libs}
 %files libGLU-static
 %defattr(644,root,root,755)
 %{_libdir}/libGLU.a
@@ -825,7 +854,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libOSMesa*.so
 %{_includedir}/GL/osmesa.h
 
-%if %{with static}
+%if %{with static_libs}
 %files libOSMesa-static
 %defattr(644,root,root,755)
 %{_libdir}/libOSMesa*.a
@@ -883,7 +912,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i965_dri.so
 %if %{with gallium_intel}
-%attr(755,root,root) %{_libdir}/xorg/modules/drivers/i965g_drv.so
+#%attr(755,root,root) %{_libdir}/xorg/modules/drivers/i965g_drv.so
 %endif
 
 %if %{with gallium}
@@ -906,7 +935,13 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -n libvdpau-driver-mesa
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so.1.0
 # there is no ldconfig here
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so.1.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so
