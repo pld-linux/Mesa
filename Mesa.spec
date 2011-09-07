@@ -26,7 +26,7 @@
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.11
 #
-%define		snap		20110901
+%define		snap		20110907
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
@@ -36,7 +36,7 @@ Release:	0.%{snap}.1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU) and others - see license.html file
 Group:		X11/Libraries
 Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	2b4e889af7e86cbd0f8718263d5b1a11
+# Source0-md5:	cd699279249570dbd8ba9888539631b8
 Patch0:		%{name}-realclean.patch
 Patch2:		%{name}-selinux.patch
 URL:		http://www.mesa3d.org/
@@ -64,6 +64,7 @@ BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libXdamage-devel
 BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXt-devel
+BuildRequires:	xorg-lib-libXvMC-devel
 BuildRequires:	xorg-lib-libXxf86vm-devel
 BuildRequires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 BuildRequires:	xorg-proto-glproto-devel >= %{glproto_ver}
@@ -89,7 +90,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %endif
 
 # _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
-%define		skip_post_check_so	libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.*
+%define		skip_post_check_so	libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libXvMCnouveau.so.1.* libXvMCr300.so.1.*  libXvMCr600.so.1.* libXvMCsoftpipe.so.1.*
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
@@ -655,6 +656,7 @@ mv %{_lib} osmesa8
 	%{__enable egl gallium-egl} \
 	%{__enable gbm gallium-gbm} \
 	--enable-vdpau \
+	--enable-xvmc \
 	--with-gallium-drivers=${gallium_drivers} \
 %else
 	--disable-gallium \
@@ -683,7 +685,7 @@ rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{
 # strip out undesirable headers
 olddir=$(pwd)
 cd $RPM_BUILD_ROOT%{_includedir}/GL
-rm [a-fh-np-wyz]*.h glf*.h
+rm [a-fh-np-wyz]*.h
 cd $RPM_BUILD_ROOT%{_libdir}
 cd $olddir
 
@@ -723,6 +725,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libEGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libEGL.so.1
 %if %{with gbm}
+%dir %{_libdir}/gbm
 %attr(755,root,root) %{_libdir}/libgbm.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libgbm.so.1
 %endif
@@ -735,6 +738,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/gbm/pipe_vmwgfx.so
 %if %{with gallium_nouveau}
 %attr(755,root,root) %{_libdir}/gbm/pipe_nouveau.so
+%attr(755,root,root) %{_libdir}/libXvMCnouveau.so.*.*
+%attr(755,root,root) %{_libdir}/libXvMCnouveau.so.1
 %endif
 %if %{with gallium_radeon}
 %attr(755,root,root) %{_libdir}/gbm/pipe_r300.so
@@ -772,7 +777,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files libGL
 %defattr(644,root,root,755)
-%doc docs/{*.html,README.{3DFX,GGI,MITS,QUAKE,THREADS},RELNOTES*}
+%doc docs/{*.html,README.{MITS,QUAKE,THREADS},RELNOTES*}
 %attr(755,root,root) %{_libdir}/libglapi.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libglapi.so.0
 %if %{with multigl}
