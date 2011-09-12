@@ -6,7 +6,7 @@
 # Conditional build:
 %bcond_without	egl	# build egl
 %bcond_without	gallium	# don't build gallium
-%bcond_without	gallium_intel	# gallium i915 driver (but doesn't work with AIGLX)
+%bcond_with	gallium_intel	# gallium i915 driver (but doesn't work with AIGLX)
 %bcond_without	gallium_radeon	# gallium radeon driver
 %bcond_without	gallium_nouveau	# gallium nouveau driver
 %bcond_without	motif	# build static libGLw without Motif interface
