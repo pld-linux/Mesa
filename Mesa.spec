@@ -26,7 +26,7 @@
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.11
 #
-%define		snap		20110907
+%define		snap		20110912
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
@@ -36,7 +36,7 @@ Release:	0.%{snap}.1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU) and others - see license.html file
 Group:		X11/Libraries
 Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	cd699279249570dbd8ba9888539631b8
+# Source0-md5:	e03c80194279a30a4f8fe96377028dea
 Patch0:		%{name}-realclean.patch
 Patch2:		%{name}-selinux.patch
 URL:		http://www.mesa3d.org/
@@ -381,6 +381,19 @@ Header file for libOpenVG library.
 %description libOpenVG-devel -l pl.UTF-8
 Plik nagłówkowy biblioteki libOpenVG.
 
+%package libXvMC
+Summary:	XvMC implementations
+Summary(pl.UTF-8):	Implementacje API XvMC
+License:	MIT
+Group:		Libraries
+# doesn't require base
+
+%description libXvMC
+libXvMC implementations.
+
+%description libXvMC -l pl.UTF-8
+Implementacje API libXvMC.
+
 %package utils
 Summary:	OpenGL utilities from Mesa3D
 Summary(pl.UTF-8):	Programy narzędziowe OpenGL z projektu Mesa3D
@@ -719,6 +732,9 @@ rm -rf $RPM_BUILD_ROOT
 %post	libOpenVG -p /sbin/ldconfig
 %postun	libOpenVG -p /sbin/ldconfig
 
+%post	libXvMC -p /sbin/ldconfig
+%postun	libXvMC -p /sbin/ldconfig
+
 %if %{with egl}
 %files libEGL
 %defattr(644,root,root,755)
@@ -738,8 +754,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/gbm/pipe_vmwgfx.so
 %if %{with gallium_nouveau}
 %attr(755,root,root) %{_libdir}/gbm/pipe_nouveau.so
-%attr(755,root,root) %{_libdir}/libXvMCnouveau.so.*.*
-%attr(755,root,root) %{_libdir}/libXvMCnouveau.so.1
 %endif
 %if %{with gallium_radeon}
 %attr(755,root,root) %{_libdir}/gbm/pipe_r300.so
@@ -878,6 +892,17 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libOpenVG.so
 %{_pkgconfigdir}/vg.pc
 %endif
+
+%files libXvMC
+%defattr(644,root,root,755)
+%attr(755,root,root) %ghost %{_libdir}/libXvMCnouveau.so.1
+%attr(755,root,root) %{_libdir}/libXvMCnouveau.so.1.0
+%attr(755,root,root) %ghost %{_libdir}/libXvMCr300.so.1
+%attr(755,root,root) %{_libdir}/libXvMCr300.so.1.0
+%attr(755,root,root) %ghost %{_libdir}/libXvMCr600.so.1
+%attr(755,root,root) %{_libdir}/libXvMCr600.so.1.0
+%attr(755,root,root) %ghost %{_libdir}/libXvMCsoftpipe.so.1
+%attr(755,root,root) %{_libdir}/libXvMCsoftpipe.so.1.0
 
 %files dri-driver-ati-radeon-R100
 %defattr(644,root,root,755)
