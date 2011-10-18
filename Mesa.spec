@@ -10,7 +10,7 @@
 %bcond_without	egl	# build egl
 %bcond_without	gallium	# don't build gallium
 %bcond_with	gallium_intel	# gallium i915 driver (but doesn't work with AIGLX)
-%bcond_with	gallium_radeon	# gallium radeon driver
+%bcond_without	gallium_radeon	# gallium radeon driver
 %bcond_without	gallium_nouveau	# gallium nouveau driver
 %bcond_without	motif	# build static libGLw without Motif interface
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
@@ -28,7 +28,7 @@
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.11
 #
-%define		rel 5
+%define		rel 6
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
