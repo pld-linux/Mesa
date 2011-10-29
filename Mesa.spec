@@ -7,7 +7,6 @@
 %bcond_without	egl	# build egl
 %bcond_without	gallium	# don't build gallium
 %bcond_with	gallium_intel	# gallium i915 driver (but doesn't work with AIGLX)
-%bcond_without	gallium_radeon	# gallium radeon driver
 %bcond_without	gallium_nouveau	# gallium nouveau driver
 %bcond_without	motif	# build static libGLw without Motif interface
 %bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
@@ -26,7 +25,7 @@
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.11
 #
-%define		snap		20111018
+%define		snap		20111029
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
@@ -36,7 +35,7 @@ Release:	0.%{snap}.1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU) and others - see license.html file
 Group:		X11/Libraries
 Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	3ebdabe90bd9cd6cb39897d4c7fe664e
+# Source0-md5:	a6b3c9209d5882284b812c36a688f249
 Patch0:		%{name}-realclean.patch
 Patch2:		%{name}-selinux.patch
 URL:		http://www.mesa3d.org/
@@ -82,7 +81,6 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %if %{without gallium}
 %undefine	with_gallium_intel
-%undefine	with_gallium_radeon
 %endif
 
 %if %{without egl}
@@ -90,7 +88,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %endif
 
 # _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
-%define		skip_post_check_so	libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libXvMCnouveau.so.1.* libXvMCr300.so.1.*  libXvMCr600.so.1.* libXvMCsoftpipe.so.1.*
+%define		skip_post_check_so	libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libXvMCnouveau.so.1.* libXvMCr300.so.1.*  libXvMCr600.so.1.* libXvMCsoftpipe.so.1.* libvdpau_nouveau.so.1.*
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
@@ -591,6 +589,9 @@ Mesa driver for the vdpau API.
 %description -n libvdpau-driver-mesa -l pl.UTF-8
 Sterownik Mesa dla API vdpau.
 
+# llvm build broken
+%define		filterout_ld	-Wl,--as-needed
+
 %prep
 %setup -q
 %patch0 -p0
@@ -601,9 +602,6 @@ Sterownik Mesa dla API vdpau.
 %{__autoconf}
 
 dri_drivers="r200 radeon \
-%if %{without gallium_radeon}
-r300 r600 \
-%endif
 %if %{without gallium_intel}
 i915 i965 \
 %endif
@@ -619,10 +617,8 @@ gallium_drivers="svga swrast \
 i915 \
 i965 \
 %endif
-%if %{with gallium_radeon}
 r300 \
 r600 \
-%endif
 %if %{with gallium_nouveau}
 nouveau \
 %endif
@@ -749,15 +745,13 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/egl
 %attr(755,root,root) %{_libdir}/egl/egl_gallium.so
 #%attr(755,root,root) %{_libdir}/egl/st_GL.so
+%attr(755,root,root) %{_libdir}/gbm/pipe_r300.so
+%attr(755,root,root) %{_libdir}/gbm/pipe_r600.so
 %if %{with gbm}
 %attr(755,root,root) %{_libdir}/gbm/gbm_gallium_drm.so
 %attr(755,root,root) %{_libdir}/gbm/pipe_vmwgfx.so
 %if %{with gallium_nouveau}
 %attr(755,root,root) %{_libdir}/gbm/pipe_nouveau.so
-%endif
-%if %{with gallium_radeon}
-%attr(755,root,root) %{_libdir}/gbm/pipe_r300.so
-%attr(755,root,root) %{_libdir}/gbm/pipe_r600.so
 %endif
 %if %{with gallium_intel}
 %attr(755,root,root) %{_libdir}/gbm/pipe_i915.so
@@ -975,3 +969,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so
