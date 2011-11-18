@@ -28,17 +28,17 @@
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.11
 #
-%define		rel 6
+%define		rel 1
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	7.11
+Version:	7.11.1
 Release:	%{rel}%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	ff03aca82d0560009a076a87c888cf13
+# Source0-md5:	a77307102cee844ff6544ffa8fafeac1
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-git.patch
 Patch2:		%{name}-selinux.patch
@@ -760,10 +760,13 @@ X.org DRI driver for VMWare.
 %description dri-driver-vmwgfx -l pl.UTF-8
 Sterownik X.org DRI dla VMware.
 
+# llvm build broken
+%define		filterout_ld    -Wl,--as-needed
+
 %prep
 %setup -q
 %patch0 -p0
-%patch1 -p1
+#%patch1 -p1
 %patch2 -p1
 
 %build
