@@ -21,29 +21,27 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver	7.1.0
 #
-%define		libdrm_ver	2.4.29
+%define		libdrm_ver	2.4.30
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.11
 #
-%define		snap		20111214
+%define		snap		20120115
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	7.12
+Version:	8.0
 Release:	0.%{snap}.1%{?with_multigl:.mgl}
 License:	MIT (core), SGI (GLU) and others - see license.html file
 Group:		X11/Libraries
 Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	660ae0341787ad957cb19d7beafa008d
+# Source0-md5:	a66edeee8d05c1361cdc3e7b6c033e85
 Patch0:		%{name}-realclean.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake
 BuildRequires:	expat-devel
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
-# drop when 2.4.24 is released
-%{?with_nouveau:BuildRequires:	libdrm-devel >= 2.4.24}
 BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= 5:3.3.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
@@ -596,8 +594,12 @@ Sterownik Mesa dla API vdpau.
 %patch0 -p0
 
 %build
-%{__aclocal}
-%{__autoconf}
+if [ -x autogen.sh ]; then
+	./autogen.sh
+else
+	%{__aclocal}
+	%{__autoconf}
+fi
 
 dri_drivers="r200 radeon \
 %if %{without gallium_intel}
@@ -764,6 +766,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_includedir}/EGL
 %{_includedir}/EGL/egl.h
 %{_includedir}/EGL/eglext.h
+%{_includedir}/EGL/eglmesaext.h
 %{_includedir}/EGL/eglplatform.h
 %dir %{_includedir}/KHR
 %{_includedir}/KHR/khrplatform.h
@@ -858,7 +861,7 @@ rm -rf $RPM_BUILD_ROOT
 %files libOSMesa
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libOSMesa*.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libOSMesa*.so.7
+%attr(755,root,root) %ghost %{_libdir}/libOSMesa*.so.8
 
 %files libOSMesa-devel
 %defattr(644,root,root,755)
