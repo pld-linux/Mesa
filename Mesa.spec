@@ -13,7 +13,6 @@
 %bcond_without	gallium_radeon	# gallium radeon driver
 %bcond_without	gallium_nouveau	# gallium nouveau driver
 %bcond_without	motif	# build static libGLw without Motif interface
-%bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
 %bcond_without	osmesa	# don't build osmesa
 %bcond_with	static_libs	# static libraries
 #
@@ -34,7 +33,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.11.2
-Release:	%{rel}%{?with_multigl:.mgl}
+Release:	%{rel}
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
@@ -871,15 +870,6 @@ cp -p osmesa8/osmesa.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
 mv $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/swrastg_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/swrast_dri.so
 %endif
 
-%if %{with multigl}
-install -d $RPM_BUILD_ROOT{%{_libdir}/Mesa,%{_sysconfdir}/ld.so.conf.d}
-
-mv -f $RPM_BUILD_ROOT%{_libdir}/libGL.so.* $RPM_BUILD_ROOT%{_libdir}/Mesa
-ln -sf Mesa/libGL.so.1 $RPM_BUILD_ROOT%{_libdir}/libGL.so
-
-echo %{_libdir}/Mesa >$RPM_BUILD_ROOT%{_sysconfdir}/ld.so.conf.d/Mesa.conf
-%endif
-
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -943,25 +933,15 @@ rm -rf $RPM_BUILD_ROOT
 %files libGL
 %defattr(644,root,root,755)
 %doc docs/{*.html,README.{3DFX,GGI,MITS,QUAKE,THREADS},RELNOTES*}
-%if %{with multigl}
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/ld.so.conf.d/Mesa.conf
-%dir %{_libdir}/Mesa
-%attr(755,root,root) %{_libdir}/Mesa/libGL.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/Mesa/libGL.so.1
-%else
 %attr(755,root,root) %{_libdir}/libGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libGL.so.1
 # symlink for binary apps which fail to conform Linux OpenGL ABI
 # (and dlopen libGL.so instead of libGL.so.1; the same does Mesa libEGL)
 %attr(755,root,root) %{_libdir}/libGL.so
-%endif
 
 %files libGL-devel
 %defattr(644,root,root,755)
 %doc docs/*.spec
-%if %{with multigl}
-%attr(755,root,root) %{_libdir}/libGL.so
-%endif
 %dir %{_includedir}/GL
 %{_includedir}/GL/gl.h
 %{_includedir}/GL/glext.h
