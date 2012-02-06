@@ -27,13 +27,11 @@
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.11
 #
-%define		rel 1
-#
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.11.2
-Release:	%{rel}
+Release:	1
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
