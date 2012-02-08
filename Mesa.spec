@@ -31,7 +31,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	7.11.2
-Release:	2
+Release:	3
 License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
@@ -867,6 +867,10 @@ cp -p osmesa8/osmesa.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
 # use gallium swrastg as swrast
 mv $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/swrastg_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/swrast_dri.so
 %endif
+
+# remove "OS ABI: Linux 2.4.20" tag, so private copies (nvidia or fglrx),
+# set up via /etc/ld.so.conf.d/*.conf will be preferred over this
+strip -R .note.ABI-tag $RPM_BUILD_ROOT%{_libdir}/libGL.so.*.*
 
 %clean
 rm -rf $RPM_BUILD_ROOT
