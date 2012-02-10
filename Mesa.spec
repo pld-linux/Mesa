@@ -1,5 +1,8 @@
 #
 # TODO:
+# - consider:
+#   --enable-shared-glapi (for libGL; required if the same app uses GL and GLES)
+#   --enable-shared-dricore
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
 # - resurrect static if it's useful
 #
@@ -8,8 +11,6 @@
 %bcond_without	gallium	# don't build gallium
 %bcond_with	gallium_intel	# gallium i915 driver (but doesn't work with AIGLX)
 %bcond_without	gallium_nouveau	# gallium nouveau driver
-%bcond_without	motif	# build static libGLw without Motif interface
-%bcond_with	multigl	# package libGL in a way allowing concurrent install with nvidia/fglrx drivers
 %bcond_without	osmesa	# don't build osmesa
 %bcond_without	gbm	# with Graphics Buffer Manager
 %bcond_with	static_libs	# static libraries
@@ -31,9 +32,10 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	8.0
-Release:	0.%{snap}.1%{?with_multigl:.mgl}
+Release:	1
 License:	MIT (core), SGI (GLU) and others - see license.html file
 Group:		X11/Libraries
+#Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
 Source0:	%{name}Lib-%{snap}.tar.bz2
 # Source0-md5:	8c2f1afb5fcae32ebfd5e3153ed7111b
 Patch0:		%{name}-realclean.patch
@@ -41,6 +43,7 @@ URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake
 BuildRequires:	expat-devel
+BuildRequires:	gcc >= 5:3.3
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
 BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= 5:3.3.0
@@ -48,7 +51,6 @@ BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:1.4d
 BuildRequires:	libvdpau-devel
 BuildRequires:	llvm-devel >= 2.9
-%{?with_motif:BuildRequires:	motif-devel}
 BuildRequires:	pixman-devel
 BuildRequires:	pkgconfig
 BuildRequires:	pkgconfig(talloc) >= 2.0.1
@@ -85,7 +87,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %endif
 
 # _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
-%define		skip_post_check_so	libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libXvMCnouveau.so.1.* libXvMCr300.so.1.*  libXvMCr600.so.1.* libXvMCsoftpipe.so.1.* libvdpau_nouveau.so.1.*
+%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libXvMCnouveau.so.1.* libXvMCr300.so.1.*  libXvMCr600.so.1.* libXvMCsoftpipe.so.1.* libvdpau_nouveau.so.1.*
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
@@ -107,8 +109,14 @@ Summary:	Mesa implementation of EGL Native Platform Graphics Interface library
 Summary(pl.UTF-8):	Implementacja Mesa biblioteki interfejsu EGL
 License:	MIT
 Group:		Libraries
+# glx driver in libEGL dlopens libGL.so
 Requires:	OpenGL >= 1.2
+Requires:	libdrm >= %{libdrm_ver}
+%if %{with gallium}
+# for egl_gallium.so
+Requires:	Mesa-libOpenVG = %{version}-%{release}
 Requires:	udev-libs >= 150
+%endif
 Provides:	EGL = 1.4
 
 %description libEGL
@@ -128,8 +136,14 @@ Summary(pl.UTF-8):	Pliki nagłówkowe implementacji Mesa biblioteki EGL
 License:	MIT
 Group:		Development/Libraries
 Requires:	%{name}-libEGL = %{version}-%{release}
-Requires:	OpenGL-devel >= 1.2
-Requires:	libstdc++-devel
+Requires:	libdrm-devel >= %{libdrm_ver}
+Requires:	xorg-lib-libX11-devel
+Requires:	xorg-lib-libXdamage-devel
+Requires:	xorg-lib-libXext-devel
+Requires:	xorg-lib-libXfixes-devel
+Requires:	xorg-lib-libXxf86vm-devel
+Requires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
+Requires:	xorg-proto-glproto-devel >= %{glproto_ver}
 Provides:	EGL-devel = 1.4
 
 %description libEGL-devel
@@ -139,39 +153,18 @@ Header files for Mesa implementation of EGL library.
 Pliki nagłówkowe implementacji Mesa biblioteki EGL.
 
 %package libEGL-static
-Summary:	Static SGI libEGL library
-Summary(pl.UTF-8):	Statyczna biblioteka SGI libEGL
+Summary:	Static Mesa EGL library
+Summary(pl.UTF-8):	Statyczna biblioteka Mesa EGL
 License:	MIT
 Group:		Development/Libraries
 Requires:	%{name}-libEGL-devel = %{version}-%{release}
 Provides:	EGL-static = 1.4
 
 %description libEGL-static
-Static Mesa libEGL library.
+Static Mesa EGL library.
 
 %description libEGL-static -l pl.UTF-8
-Statyczna biblioteka Mesa libEGL.
-
-%package libGLES
-Summary:	Mesa libGLES runtime libraries
-Group:		Libraries
-
-%description libGLES
-Mesa GLES runtime libraries.
-
-%description libGLES -l pl.UTF-8
-Biblioteka Mesa GLES.
-
-%package libGLES-devel
-Summary:	Header files for libGLES library
-Group:		Development/Libraries
-Requires:	%{name}-libGLES = %{version}-%{release}
-
-%description libGLES-devel
-Header files for libGLES library.
-
-%description libGLES-devel -l pl.UTF-8
-Pliki nagłówkowe biblioteki libGLES.
+Statyczna biblioteka Mesa EGL.
 
 %package libGL
 Summary:	Free Mesa3D implementation of libGL OpenGL library
@@ -180,7 +173,6 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm >= %{libdrm_ver}
 Provides:	OpenGL = 2.1
-# reports version 1.3, but supports glXGetProcAddress() from 1.4
 Provides:	OpenGL-GLX = 1.4
 Obsoletes:	Mesa
 Obsoletes:	Mesa-dri
@@ -255,6 +247,42 @@ Static Mesa3D libGL library. It uses software renderer.
 Statyczna biblioteka libGL z projektu Mesa3D. Używa programowego
 renderingu.
 
+%package libGLES
+Summary:	Mesa implementation of GLES (OpenGL ES) libraries
+Summary(pl.UTF-8):	Implementacja Mesa bibliotek GLES (OpenGL ES)
+Group:		Libraries
+# only for libglapi.so.0
+Requires:	%{name}-libEGL = %{version}-%{release}
+
+%description libGLES
+This package contains shared libraries of Mesa implementation of GLES
+(OpenGL ES) - cross-platform API for full-function 2D and 3D graphics
+on embedded systems. OpenGL ES specification can be found on Khronos
+Group site: <http://www.khronos.org/opengles/>. Mesa implements OpenGL
+ES 1.1 and 2.0.
+
+%description libGLES -l pl.UTF-8
+Ten pakiet zawiera biblioteki współdzielone implementacji Mesa
+standardu GLES (OpenGL ES) - wieloplatformowego API do w pełni
+funkcjonalnej grafiki 2D i 3D na systemach wbudowanych. Specyfikację
+OpenGL ES można znaleźć na stronie Khronos Group:
+<http://www.khronos.org/opengles/>. Mesa zawiera implementacją OpenGL
+ES 1.1 i 2.0.
+
+%package libGLES-devel
+Summary:	Header files for Mesa GLES libraries
+Summary(pl.UTF-8):	Pliki nagłówkowe bibliotek Mesa GLES
+Group:		Development/Libraries
+# EGL for libglapi.so, <KHR/khrplatform.h> always required, <EGL/egl.h> for <GLES/egl.h>
+Requires:	%{name}-libEGL-devel = %{version}-%{release}
+Requires:	%{name}-libGLES = %{version}-%{release}
+
+%description libGLES-devel
+Header files for Mesa GLES libraries.
+
+%description libGLES-devel -l pl.UTF-8
+Pliki nagłówkowe bibliotek Mesa GLES.
+
 %package libGLU
 Summary:	SGI implementation of libGLU OpenGL library
 Summary(pl.UTF-8):	Implementacja SGI biblioteki libGLU ze standardu OpenGL
@@ -326,6 +354,7 @@ Group:		Development/Libraries
 Requires:	%{name}-libOSMesa = %{version}-%{release}
 # for <GL/gl.h> only
 Requires:	OpenGL-devel
+Requires:	libselinux-devel
 
 %description libOSMesa-devel
 Header file for OSMesa (off-screen renderer) library.
@@ -349,32 +378,41 @@ Static OSMesa (off-screen renderer) library.
 Biblioteka statyczna OSMesa (renderująca bitmapy w pamięci).
 
 %package libOpenVG
-Summary:	OpenVG API implementation
-Summary(pl.UTF-8):	Implementacja API OpenVG
+Summary:	Mesa implementation of OpenVG (Vector Graphics Accelleration) API
+Summary(pl.UTF-8):	Implementacja Mesa API OpenVG (akceleracji grafiki wektorowej)
 License:	MIT
 Group:		Libraries
 # doesn't require base
 
 %description libOpenVG
-OpenVG API implementation.
+This package contains Mesa implementation of OpenVG - cross-platform
+API that provides a low-level hardware acceleration interface for
+vector graphics libraries such as Flash and SVG. OpenVG specification
+can be found on Khronos Group site: <http://www.khronos.org/openvg/>.
+Mesa implements OpenVG 1.1.
 
 %description libOpenVG -l pl.UTF-8
-Implementacja API OpenVG.
+Ten pakiet zawiera implementację Mesa standardu OpenVG -
+wieloplatfomowego API zapewniającego niskopoziomowy interfejs
+akceleracji sprzętowej dla bibliotek grafiki wektorowej, takiej jak
+Flash czy SVG. Specyfikację OpenVG można znaleźć na stronie Khronos
+Group: <http://www.khronos.org/openvg/>. Mesa zawiera implementację
+OpenVG w wersji 1.1.
 
 %package libOpenVG-devel
-Summary:	Header file for libOpenVG library
-Summary(pl.UTF-8):	Plik nagłówkowy biblioteki libOpenVG
+Summary:	Header file for Mesa OpenVG library
+Summary(pl.UTF-8):	Plik nagłówkowy biblioteki Mesa OpenVG
 License:	MIT
 Group:		Development/Libraries
-# for <KHR/khrplatform.h>
+# EGL headers for <KHR/khrplatform.h>
 Requires:	%{name}-libEGL-devel = %{version}-%{release}
 Requires:	%{name}-libOpenVG = %{version}-%{release}
 
 %description libOpenVG-devel
-Header file for libOpenVG library.
+Header file for Mesa OpenVG library.
 
 %description libOpenVG-devel -l pl.UTF-8
-Plik nagłówkowy biblioteki libOpenVG.
+Plik nagłówkowy biblioteki Mesa OpenVG.
 
 %package libXvMC
 Summary:	XvMC implementations
@@ -388,19 +426,6 @@ libXvMC implementations.
 
 %description libXvMC -l pl.UTF-8
 Implementacje API libXvMC.
-
-%package utils
-Summary:	OpenGL utilities from Mesa3D
-Summary(pl.UTF-8):	Programy narzędziowe OpenGL z projektu Mesa3D
-License:	MIT
-Group:		X11/Applications/Graphics
-# loose deps on libGL/libGLU
-
-%description utils
-OpenGL utilities from Mesa3D: glxgears and glxinfo.
-
-%description utils -l pl.UTF-8
-Programy narzędziowe OpenGL z projektu Mesa3D: glxgears i glxinfo.
 
 %package dri-driver-ati-radeon-R100
 Summary:	X.org DRI driver for ATI R100 card family
@@ -587,7 +612,7 @@ Mesa driver for the vdpau API.
 Sterownik Mesa dla API vdpau.
 
 # llvm build broken
-%define		filterout_ld	-Wl,--as-needed
+%define		filterout_ld    -Wl,--as-needed
 
 %prep
 %setup -q
@@ -595,7 +620,7 @@ Sterownik Mesa dla API vdpau.
 
 %build
 if [ -x autogen.sh ]; then
-	./autogen.sh
+        ./autogen.sh
 else
 	%{__aclocal}
 	%{__autoconf}
@@ -628,40 +653,39 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 
 common_flags="\
 	--enable-shared \
-	--enable-selinux \
-	--enable-pic \
 	--enable-glx-tls \
-%if %{with egl}
-	--enable-egl \
-	--enable-gles1 \
-	--enable-gles2 \
-%endif
+	--enable-pic \
+	--enable-selinux \
+	%{?with_static_libs:--enable-static} \
 "
 
 osmesa_common_flags="\
 	--with-driver=osmesa \
 	--disable-asm \
-	--disable-glu \
-	--disable-egl"
+	--disable-egl \
+	--disable-glu"
 
 %if %{with osmesa}
 %configure $common_flags $osmesa_common_flags \
 	--with-osmesa-bits=8
 %{__make}
+%{__make} -C src/mesa osmesa.pc
 mv %{_lib} osmesa8
+cp -p src/mesa/osmesa.pc osmesa8
 %{__make} clean
 %endif
 
 %configure $common_flags \
 	--enable-shared-glapi \
+	%{__enable gbm} \
 %if %{with egl}
 	--enable-egl \
 	--enable-gles1 \
 	--enable-gles2 \
-	%{__enable gbm} \
 %endif
 %if %{with gallium}
 	--enable-openvg \
+	--enable-gallium-llvm \
 	%{__enable egl gallium-egl} \
 	%{__enable gbm gallium-gbm} \
 	--enable-vdpau \
@@ -679,33 +703,21 @@ mv %{_lib} osmesa8
 %install
 rm -rf $RPM_BUILD_ROOT
 
-install -d $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}
-
 # libs without drivers
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
 %if %{with osmesa}
-cp -dp osmesa8/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
+cp -p osmesa8/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
+cp -p osmesa8/osmesa.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
 %endif
-
-rm -rf $RPM_BUILD_ROOT%{_examplesdir}/%{name}-%{version}/*/{.deps,CVS,Makefile.{BeOS*,win,cygnus,DJ,dja}}
 
 # strip out undesirable headers
-olddir=$(pwd)
-cd $RPM_BUILD_ROOT%{_includedir}/GL
-rm [a-fh-np-wyz]*.h
-cd $RPM_BUILD_ROOT%{_libdir}
-cd $olddir
+%{__rm} $RPM_BUILD_ROOT%{_includedir}/GL/{vms_x_fix,wglext,wmesa}.h
 
-%if %{with multigl}
-install -d $RPM_BUILD_ROOT{%{_libdir}/Mesa,%{_sysconfdir}/ld.so.conf.d}
-
-mv -f $RPM_BUILD_ROOT%{_libdir}/libGL.so.* $RPM_BUILD_ROOT%{_libdir}/Mesa
-ln -sf Mesa/libGL.so.1 $RPM_BUILD_ROOT%{_libdir}/libGL.so
-
-echo %{_libdir}/Mesa >$RPM_BUILD_ROOT%{_sysconfdir}/ld.so.conf.d/Mesa.conf
-%endif
+# remove "OS ABI: Linux 2.4.20" tag, so private copies (nvidia or fglrx),
+# set up via /etc/ld.so.conf.d/*.conf will be preferred over this
+strip -R .note.ABI-tag $RPM_BUILD_ROOT%{_libdir}/libGL.so.*.*
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -736,6 +748,8 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libEGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libEGL.so.1
+%attr(755,root,root) %{_libdir}/libglapi.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libglapi.so.0
 %if %{with gbm}
 %dir %{_libdir}/gbm
 %attr(755,root,root) %{_libdir}/libgbm.so.*.*
@@ -744,7 +758,6 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium}
 %dir %{_libdir}/egl
 %attr(755,root,root) %{_libdir}/egl/egl_gallium.so
-#%attr(755,root,root) %{_libdir}/egl/st_GL.so
 %attr(755,root,root) %{_libdir}/gbm/pipe_r300.so
 %attr(755,root,root) %{_libdir}/gbm/pipe_r600.so
 %if %{with gbm}
@@ -754,8 +767,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/gbm/pipe_nouveau.so
 %endif
 %if %{with gallium_intel}
-%attr(755,root,root) %{_libdir}/gbm/pipe_i915.so
-%attr(755,root,root) %{_libdir}/gbm/pipe_i965.so
+%attr(755,root,root) %{_libdir}/egl/pipe_i915.so
+%attr(755,root,root) %{_libdir}/egl/pipe_i965.so
 %endif
 %endif
 %endif
@@ -763,6 +776,7 @@ rm -rf $RPM_BUILD_ROOT
 %files libEGL-devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libEGL.so
+%attr(755,root,root) %{_libdir}/libglapi.so
 %dir %{_includedir}/EGL
 %{_includedir}/EGL/egl.h
 %{_includedir}/EGL/eglext.h
@@ -787,28 +801,15 @@ rm -rf $RPM_BUILD_ROOT
 %files libGL
 %defattr(644,root,root,755)
 %doc docs/{*.html,README.{MITS,QUAKE,THREADS},RELNOTES*}
-%attr(755,root,root) %{_libdir}/libglapi.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libglapi.so.0
-%if %{with multigl}
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/ld.so.conf.d/Mesa.conf
-%dir %{_libdir}/Mesa
-%attr(755,root,root) %{_libdir}/Mesa/libGL.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/Mesa/libGL.so.1
-%else
 %attr(755,root,root) %{_libdir}/libGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libGL.so.1
 # symlink for binary apps which fail to conform Linux OpenGL ABI
-# (and dlopen libGL.so instead of libGL.so.1)
+# (and dlopen libGL.so instead of libGL.so.1; the same does Mesa libEGL)
 %attr(755,root,root) %{_libdir}/libGL.so
-%endif
 
 %files libGL-devel
 %defattr(644,root,root,755)
 %doc docs/*.spec
-%attr(755,root,root) %{_libdir}/libglapi.so
-%if %{with multigl}
-%attr(755,root,root) %{_libdir}/libGL.so
-%endif
 %dir %{_includedir}/GL
 %{_includedir}/GL/gl.h
 %{_includedir}/GL/glext.h
@@ -821,23 +822,27 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/dri.pc
 %{_pkgconfigdir}/gl.pc
 
-%files libGLES
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libGLES*.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libGLES*.so.[0-9]
-
-%files libGLES-devel
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libGLES*.so
-%{_includedir}/GLES
-%{_includedir}/GLES2
-%{_pkgconfigdir}/gles*.pc
-
 %if %{with static_libs}
 %files libGL-static
 %defattr(644,root,root,755)
 %{_libdir}/libGL.a
 %endif
+
+%files libGLES
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libGLESv1_CM.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libGLESv1_CM.so.1
+%attr(755,root,root) %{_libdir}/libGLESv2.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libGLESv2.so.2
+
+%files libGLES-devel
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libGLESv1_CM.so
+%attr(755,root,root) %{_libdir}/libGLESv2.so
+%{_includedir}/GLES
+%{_includedir}/GLES2
+%{_pkgconfigdir}/glesv1_cm.pc
+%{_pkgconfigdir}/glesv2.pc
 
 %files libGLU
 %defattr(644,root,root,755)
@@ -860,31 +865,32 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with osmesa}
 %files libOSMesa
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libOSMesa*.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libOSMesa*.so.8
+%attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libOSMesa.so.8
 
 %files libOSMesa-devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libOSMesa*.so
+%attr(755,root,root) %{_libdir}/libOSMesa.so
 %{_includedir}/GL/osmesa.h
+%{_pkgconfigdir}/osmesa.pc
 
 %if %{with static_libs}
 %files libOSMesa-static
 %defattr(644,root,root,755)
-%{_libdir}/libOSMesa*.a
+%{_libdir}/libOSMesa.a
 %endif
 %endif
 
 %if %{with gallium}
 %files libOpenVG
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libOpenVG.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libOpenVG.so.1
-%attr(755,root,root) %{_libdir}/libOpenVG.so.1.0.0
 
 %files libOpenVG-devel
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libOpenVG.so
 %{_includedir}/VG
-%{_libdir}/libOpenVG.so
 %{_pkgconfigdir}/vg.pc
 %endif
 
@@ -937,15 +943,13 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i965_dri.so
 %if %{with gallium_intel}
-#%attr(755,root,root) %{_libdir}/xorg/modules/drivers/i965g_drv.so
+%attr(755,root,root) %{_libdir}/xorg/modules/drivers/i965g_drv.so
 %endif
 
-%if %{with gallium}
 %if %{with gallium_nouveau}
 %files dri-driver-nouveau
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
-%endif
 %endif
 
 %files dri-driver-swrast
