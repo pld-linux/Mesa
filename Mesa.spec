@@ -10,10 +10,9 @@
 %bcond_without	egl	# build egl
 %bcond_without	gallium	# don't build gallium
 %bcond_with	gallium_intel	# gallium i915 driver (but doesn't work with AIGLX)
-%bcond_without	gallium_radeon	# gallium radeon driver
 %bcond_without	gallium_nouveau	# gallium nouveau driver
-%bcond_without	motif	# build static libGLw without Motif interface
 %bcond_without	osmesa	# don't build osmesa
+%bcond_without	gbm	# with Graphics Buffer Manager
 %bcond_with	static_libs	# static libraries
 #
 # minimal supported xserver version
@@ -23,22 +22,20 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver	7.1.0
 #
-%define		libdrm_ver	2.4.25
+%define		libdrm_ver	2.4.30
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.11
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	7.11.2
-Release:	3
-License:	MIT (core), SGI (GLU,libGLw) and others - see license.html file
+Version:	8.0
+Release:	1
+License:	MIT (core), SGI (GLU) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	0837c52698fe3252369c3fdb5195afcc
+# Source0-md5:	1a5668fe72651a670611164cefc703b2
 Patch0:		%{name}-realclean.patch
-Patch1:		%{name}-git.patch
-Patch2:		%{name}-selinux.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake
@@ -49,9 +46,8 @@ BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= 5:3.3.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:1.4d
-# for Gallium R300
+BuildRequires:	libvdpau-devel
 BuildRequires:	llvm-devel >= 2.9
-%{?with_motif:BuildRequires:	motif-devel}
 BuildRequires:	pixman-devel
 BuildRequires:	pkgconfig
 BuildRequires:	pkgconfig(talloc) >= 2.0.1
@@ -63,6 +59,7 @@ BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libXdamage-devel
 BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXt-devel
+BuildRequires:	xorg-lib-libXvMC-devel
 BuildRequires:	xorg-lib-libXxf86vm-devel
 BuildRequires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 BuildRequires:	xorg-proto-glproto-devel >= %{glproto_ver}
@@ -80,12 +77,14 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %if %{without gallium}
 %undefine	with_gallium_intel
-%undefine	with_gallium_nouveau
-%undefine	with_gallium_radeon
+%endif
+
+%if %{without egl}
+%undefine	with_gbm
 %endif
 
 # _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
-%define		skip_post_check_so	libGLESv1_CM.so.1.* libGLESv2.so.2.*
+%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libXvMCnouveau.so.1.* libXvMCr300.so.1.*  libXvMCr600.so.1.* libXvMCsoftpipe.so.1.* libvdpau_nouveau.so.1.*
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
@@ -331,52 +330,6 @@ Static SGI libGLU library.
 %description libGLU-static -l pl.UTF-8
 Statyczna biblioteka SGI libGLU.
 
-%package libGLw
-Summary:	SGI OpenGL Xt widgets library
-Summary(pl.UTF-8):	Biblioteka SGI widgetów Xt dla OpenGL-a
-License:	SGI MIT-like
-Group:		Libraries
-# loose dependency on libGL.so.1 to use with other libGL binaries
-Requires:	OpenGL >= 1.1
-Provides:	OpenGL-GLw
-
-%description libGLw
-SGI OpenGL Xt widgets library.
-
-%description libGLw -l pl.UTF-8
-Biblioteka SGI widgetów Xt dla OpenGL-a.
-
-%package libGLw-devel
-Summary:	Header files for SGI libGLw library
-Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki SGI libGLw
-License:	SGI MIT-like
-Group:		Development/Libraries
-Requires:	%{name}-libGLw = %{version}-%{release}
-Requires:	OpenGL-devel >= 1.2
-Requires:	xorg-lib-libX11-devel
-Requires:	xorg-lib-libXt-devel
-Provides:	OpenGL-GLw-devel
-
-%description libGLw-devel
-Header files for SGI libGLw library.
-
-%description libGLw-devel -l pl.UTF-8
-Pliki nagłówkowe biblioteki SGI libGLw.
-
-%package libGLw-static
-Summary:	Static SGI libGLw library
-Summary(pl.UTF-8):	Statyczna biblioteka SGI libGLw
-License:	SGI MIT-like
-Group:		Development/Libraries
-Requires:	%{name}-libGLw-devel = %{version}-%{release}
-Provides:	OpenGL-GLw-static
-
-%description libGLw-static
-Static SGI libGLw library.
-
-%description libGLw-static -l pl.UTF-8
-Statyczna biblioteka SGI libGLw.
-
 %package libOSMesa
 Summary:	OSMesa (off-screen renderer) library
 Summary(pl.UTF-8):	Biblioteka OSMesa (renderująca bitmapy w pamięci)
@@ -438,10 +391,10 @@ Mesa implements OpenVG 1.1.
 %description libOpenVG -l pl.UTF-8
 Ten pakiet zawiera implementację Mesa standardu OpenVG -
 wieloplatfomowego API zapewniającego niskopoziomowy interfejs
-akceleracji sprzętowej dla bibliotek grafiki wektorowej, takiej
-jak Flash czy SVG. Specyfikację OpenVG można znaleźć na stronie
-Khronos Group: <http://www.khronos.org/openvg/>. Mesa zawiera
-implementację OpenVG w wersji 1.1.
+akceleracji sprzętowej dla bibliotek grafiki wektorowej, takiej jak
+Flash czy SVG. Specyfikację OpenVG można znaleźć na stronie Khronos
+Group: <http://www.khronos.org/openvg/>. Mesa zawiera implementację
+OpenVG w wersji 1.1.
 
 %package libOpenVG-devel
 Summary:	Header file for Mesa OpenVG library
@@ -458,20 +411,18 @@ Header file for Mesa OpenVG library.
 %description libOpenVG-devel -l pl.UTF-8
 Plik nagłówkowy biblioteki Mesa OpenVG.
 
-%package dri-driver-ati-mach64
-Summary:	X.org DRI driver for ATI Mach64 card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI Mach64
+%package libXvMC
+Summary:	XvMC implementations
+Summary(pl.UTF-8):	Implementacje API XvMC
 License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-driver-video-mach64
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
+Group:		Libraries
+# doesn't require base
 
-%description dri-driver-ati-mach64
-X.org DRI driver for ATI Mach64 card family.
+%description libXvMC
+libXvMC implementations.
 
-%description dri-driver-ati-mach64 -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart ATI Mach64.
+%description libXvMC -l pl.UTF-8
+Implementacje API libXvMC.
 
 %package dri-driver-ati-radeon-R100
 Summary:	X.org DRI driver for ATI R100 card family
@@ -537,22 +488,6 @@ X.org DRI driver for ATI R600 card family.
 %description dri-driver-ati-radeon-R600 -l pl.UTF-8
 Sterownik X.org DRI dla rodziny kart ATI R600.
 
-%package dri-driver-ati-rage128
-Summary:	X.org DRI driver for ATI Rage128 card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI Rage128
-License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-driver-video-r128
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
-Obsoletes:	X11-driver-r128-dri < 1:7.0.0
-
-%description dri-driver-ati-rage128
-X.org DRI driver for ATI Rage128 card family.
-
-%description dri-driver-ati-rage128 -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart ATI Rage128.
-
 %package dri-driver-ffb
 Summary:	X.org DRI driver for Sun FFB card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Sun FFB
@@ -583,22 +518,6 @@ X.org DRI driver for GLINT/Permedia card family.
 
 %description dri-driver-glint -l pl.UTF-8
 Sterownik X.org DRI dla rodziny kart GLINT/Permedia.
-
-%package dri-driver-intel-i810
-Summary:	X.org DRI driver for Intel i810 card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i810
-License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-driver-video-intel
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
-Obsoletes:	X11-driver-i810-dri < 1:7.0.0
-
-%description dri-driver-intel-i810
-X.org DRI driver for Intel i810 card family.
-
-%description dri-driver-intel-i810 -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart Intel i810.
 
 %package dri-driver-intel-i915
 Summary:	X.org DRI driver for Intel i915 card family
@@ -634,22 +553,6 @@ X.org DRI driver for Intel i965 card family.
 %description dri-driver-intel-i965 -l pl.UTF-8
 Sterownik X.org DRI dla rodziny kart Intel i965.
 
-%package dri-driver-matrox
-Summary:	X.org DRI driver for Matrox G card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Matrox G
-License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-driver-video-mga
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
-Obsoletes:	X11-driver-mga-dri < 1:7.0.0
-
-%description dri-driver-matrox
-X.org DRI drivers for Matrox G card family.
-
-%description dri-driver-matrox -l pl.UTF-8
-Sterowniki X.org DRI dla rodziny kart Matrox G.
-
 %package dri-driver-nouveau
 Summary:	X.org DRI driver for NVIDIA card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart NVIDIA
@@ -665,37 +568,6 @@ X.org DRI drivers for NVIDIA card family.
 %description dri-driver-nouveau -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart NVIDIA.
 
-%package dri-driver-savage
-Summary:	X.org DRI driver for S3 Savage card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart S3 Savage
-License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-driver-video-savage
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
-
-%description dri-driver-savage
-X.org DRI driver for S3 Savage card family.
-
-%description dri-driver-savage -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart S3 Savage.
-
-%package dri-driver-sis
-Summary:	X.org DRI driver for SiS card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart SiS
-License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-driver-video-sis
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
-Obsoletes:	X11-driver-sis-dri < 1:7.0.0
-
-%description dri-driver-sis
-X.org DRI driver for SiS card family.
-
-%description dri-driver-sis -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart SiS.
-
 %package dri-driver-swrast
 Summary:	X.org DRI software rasterizer driver
 Summary(pl.UTF-8):	Sterownik X.org DRI obsługujący rysowanie programowe
@@ -709,40 +581,6 @@ X.org DRI software rasterizer driver.
 
 %description dri-driver-swrast -l pl.UTF-8
 Sterownik X.org DRI obsługujący rysowanie programowe.
-
-%package dri-driver-tdfx
-Summary:	X.org DRI driver for 3DFX Voodoo card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart 3DFX Voodoo
-License:	MIT
-Group:		X11/Libraries
-Requires:	Glide3-DRI
-Requires:	xorg-driver-video-tdfx
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
-Obsoletes:	X11-driver-tdfx-dri < 1:7.0.0
-
-%description dri-driver-tdfx
-X.org DRI driver for 3DFX Voodoo card family (Voodoo 3,4,5, Banshee
-and Velocity 100/200).
-
-%description dri-driver-tdfx -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart 3DFX Voodoo. (Voodoo 3,4,5,
-Banshee i Velocity 100/200).
-
-%package dri-driver-via-unichrome
-Summary:	X.org DRI driver for VIA Unichrome card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart VIA Unichrome
-License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-driver-video-openchrome
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
-
-%description dri-driver-via-unichrome
-X.org DRI driver for VIA Unichrome card family.
-
-%description dri-driver-via-unichrome -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart VIA Unichrome.
 
 %package dri-driver-vmwgfx
 Summary:	X.org DRI driver for VMware
@@ -758,34 +596,37 @@ X.org DRI driver for VMWare.
 %description dri-driver-vmwgfx -l pl.UTF-8
 Sterownik X.org DRI dla VMware.
 
+%package -n libvdpau-driver-mesa
+Summary:	Mesa driver for the vdpau API
+Summary(pl.UTF-8):	Sterownik Mesa dla API vdpau
+License:	MIT
+Group:		X11/Libraries
+
+%description -n libvdpau-driver-mesa
+Mesa driver for the vdpau API.
+
+%description -n libvdpau-driver-mesa -l pl.UTF-8
+Sterownik Mesa dla API vdpau.
+
 # llvm build broken
 %define		filterout_ld    -Wl,--as-needed
 
 %prep
 %setup -q
 %patch0 -p0
-#%patch1 -p1
-%patch2 -p1
 
 %build
 %{__aclocal}
 %{__autoconf}
 
-dri_drivers="i810 mach64 mga r128 r200 radeon \
-%if %{without gallium_radeon}
-r300 r600 \
-%endif
-savage \
+dri_drivers="r200 radeon \
 %if %{without gallium_intel}
 i915 i965 \
 %endif
 %ifarch sparc sparcv9 sparc64
 ffb \
 %endif
-%ifarch %{ix86} %{x8664}
-sis \
-%endif
-swrast tdfx unichrome"
+swrast"
 
 dri_drivers=$(echo $dri_drivers | xargs | tr ' ' ',')
 
@@ -794,10 +635,8 @@ gallium_drivers="svga swrast \
 i915 \
 i965 \
 %endif
-%if %{with gallium_radeon}
 r300 \
 r600 \
-%endif
 %if %{with gallium_nouveau}
 nouveau \
 %endif
@@ -806,11 +645,11 @@ nouveau \
 gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 
 common_flags="\
+	--enable-shared \
 	--enable-glx-tls \
 	--enable-pic \
 	--enable-selinux \
 	%{?with_static_libs:--enable-static} \
-	--disable-glut \
 "
 
 osmesa_common_flags="\
@@ -830,6 +669,8 @@ cp -p src/mesa/osmesa.pc osmesa8
 %endif
 
 %configure $common_flags \
+	--enable-shared-glapi \
+	%{__enable gbm} \
 %if %{with egl}
 	--enable-egl \
 	--enable-gles1 \
@@ -837,7 +678,11 @@ cp -p src/mesa/osmesa.pc osmesa8
 %endif
 %if %{with gallium}
 	--enable-openvg \
-	--enable-gallium-egl \
+	--enable-gallium-llvm \
+	%{__enable egl gallium-egl} \
+	%{__enable gbm gallium-gbm} \
+	--enable-vdpau \
+	--enable-xvmc \
 	--with-gallium-drivers=${gallium_drivers} \
 %else
 	--disable-gallium \
@@ -861,12 +706,7 @@ cp -p osmesa8/osmesa.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
 %endif
 
 # strip out undesirable headers
-%{__rm} $RPM_BUILD_ROOT%{_includedir}/GL/{glfbdev,mesa_wgl,vms_x_fix,wglext,wmesa}.h
-
-%if %{with gallium}
-# use gallium swrastg as swrast
-mv $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/swrastg_dri.so $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/swrast_dri.so
-%endif
+%{__rm} $RPM_BUILD_ROOT%{_includedir}/GL/{vms_x_fix,wglext,wmesa}.h
 
 # remove "OS ABI: Linux 2.4.20" tag, so private copies (nvidia or fglrx),
 # set up via /etc/ld.so.conf.d/*.conf will be preferred over this
@@ -887,14 +727,14 @@ rm -rf $RPM_BUILD_ROOT
 %post	libGLU -p /sbin/ldconfig
 %postun	libGLU -p /sbin/ldconfig
 
-%post	libGLw -p /sbin/ldconfig
-%postun	libGLw -p /sbin/ldconfig
-
 %post	libOSMesa -p /sbin/ldconfig
 %postun	libOSMesa -p /sbin/ldconfig
 
 %post	libOpenVG -p /sbin/ldconfig
 %postun	libOpenVG -p /sbin/ldconfig
+
+%post	libXvMC -p /sbin/ldconfig
+%postun	libXvMC -p /sbin/ldconfig
 
 %if %{with egl}
 %files libEGL
@@ -903,13 +743,26 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %ghost %{_libdir}/libEGL.so.1
 %attr(755,root,root) %{_libdir}/libglapi.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libglapi.so.0
+%if %{with gbm}
+%dir %{_libdir}/gbm
+%attr(755,root,root) %{_libdir}/libgbm.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libgbm.so.1
+%endif
 %if %{with gallium}
 %dir %{_libdir}/egl
 %attr(755,root,root) %{_libdir}/egl/egl_gallium.so
-%attr(755,root,root) %{_libdir}/egl/st_GL.so
+%attr(755,root,root) %{_libdir}/gbm/pipe_r300.so
+%attr(755,root,root) %{_libdir}/gbm/pipe_r600.so
+%if %{with gbm}
+%attr(755,root,root) %{_libdir}/gbm/gbm_gallium_drm.so
+%attr(755,root,root) %{_libdir}/gbm/pipe_vmwgfx.so
+%if %{with gallium_nouveau}
+%attr(755,root,root) %{_libdir}/gbm/pipe_nouveau.so
+%endif
 %if %{with gallium_intel}
 %attr(755,root,root) %{_libdir}/egl/pipe_i915.so
 %attr(755,root,root) %{_libdir}/egl/pipe_i965.so
+%endif
 %endif
 %endif
 
@@ -920,10 +773,16 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_includedir}/EGL
 %{_includedir}/EGL/egl.h
 %{_includedir}/EGL/eglext.h
+%{_includedir}/EGL/eglmesaext.h
 %{_includedir}/EGL/eglplatform.h
 %dir %{_includedir}/KHR
 %{_includedir}/KHR/khrplatform.h
 %{_pkgconfigdir}/egl.pc
+%if %{with gbm}
+%attr(755,root,root) %{_libdir}/libgbm.so
+%{_includedir}/gbm.h
+%{_pkgconfigdir}/gbm.pc
+%endif
 
 %if %{with static_libs}
 %files libEGL-static
@@ -934,7 +793,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files libGL
 %defattr(644,root,root,755)
-%doc docs/{*.html,README.{3DFX,GGI,MITS,QUAKE,THREADS},RELNOTES*}
+%doc docs/{*.html,README.{MITS,QUAKE,THREADS},RELNOTES*}
 %attr(755,root,root) %{_libdir}/libGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libGL.so.1
 # symlink for binary apps which fail to conform Linux OpenGL ABI
@@ -996,31 +855,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libGLU.a
 %endif
 
-%files libGLw
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libGLw.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libGLw.so.1
-
-%files libGLw-devel
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libGLw.so
-%{_includedir}/GL/GLwDrawA.h
-%{_includedir}/GL/GLwDrawAP.h
-%{_includedir}/GL/GLwMDrawA.h
-%{_includedir}/GL/GLwMDrawAP.h
-%{_pkgconfigdir}/glw.pc
-
-%if %{with static_libs}
-%files libGLw-static
-%defattr(644,root,root,755)
-%{_libdir}/libGLw.a
-%endif
-
 %if %{with osmesa}
 %files libOSMesa
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libOSMesa.so.7
+%attr(755,root,root) %ghost %{_libdir}/libOSMesa.so.8
 
 %files libOSMesa-devel
 %defattr(644,root,root,755)
@@ -1048,9 +887,16 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/vg.pc
 %endif
 
-%files dri-driver-ati-mach64
+%files libXvMC
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/mach64_dri.so
+%attr(755,root,root) %ghost %{_libdir}/libXvMCnouveau.so.1
+%attr(755,root,root) %{_libdir}/libXvMCnouveau.so.1.0
+%attr(755,root,root) %ghost %{_libdir}/libXvMCr300.so.1
+%attr(755,root,root) %{_libdir}/libXvMCr300.so.1.0
+%attr(755,root,root) %ghost %{_libdir}/libXvMCr600.so.1
+%attr(755,root,root) %{_libdir}/libXvMCr600.so.1.0
+%attr(755,root,root) %ghost %{_libdir}/libXvMCsoftpipe.so.1
+%attr(755,root,root) %{_libdir}/libXvMCsoftpipe.so.1.0
 
 %files dri-driver-ati-radeon-R100
 %defattr(644,root,root,755)
@@ -1068,10 +914,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/r600_dri.so
 
-%files dri-driver-ati-rage128
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/r128_dri.so
-
 # sunffb (sparc only)
 %ifarch sparc sparcv9 sparc64
 %files dri-driver-ffb
@@ -1086,10 +928,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/gamma_dri.so
 %endif
 
-%files dri-driver-intel-i810
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/i810_dri.so
-
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
@@ -1101,40 +939,34 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/drivers/i965g_drv.so
 %endif
 
-%files dri-driver-matrox
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/mga_dri.so
-
 %if %{with gallium_nouveau}
 %files dri-driver-nouveau
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
 %endif
 
-%files dri-driver-savage
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/savage_dri.so
-
-%ifarch %{ix86} %{x8664}
-%files dri-driver-sis
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/sis_dri.so
-%endif
-
 %files dri-driver-swrast
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
-
-%files dri-driver-tdfx
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/tdfx_dri.so
-
-%files dri-driver-via-unichrome
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/unichrome_dri.so
 
 %if %{with gallium}
 %files dri-driver-vmwgfx
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/vmwgfx_dri.so
 %endif
+
+%files -n libvdpau-driver-mesa
+%defattr(644,root,root,755)
+# there is no ldconfig here
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so.1.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so.1
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so
