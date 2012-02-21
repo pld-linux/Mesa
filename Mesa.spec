@@ -1,18 +1,17 @@
 #
 # TODO:
 # - consider:
-#   --enable-shared-glapi (for libGL; required if the same app uses GL and GLES)
 #   --enable-shared-dricore
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
 # - resurrect static if it's useful
 #
 # Conditional build:
-%bcond_without	egl	# build egl
-%bcond_without	gallium	# don't build gallium
+%bcond_without	egl		# EGL libraries
+%bcond_without	gallium		# gallium drivers
 %bcond_with	gallium_intel	# gallium i915 driver (but doesn't work with AIGLX)
 %bcond_without	gallium_nouveau	# gallium nouveau driver
-%bcond_without	osmesa	# don't build osmesa
-%bcond_without	gbm	# with Graphics Buffer Manager
+%bcond_without	osmesa		# OSMesa libraries
+%bcond_without	gbm		# with Graphics Buffer Manager
 %bcond_with	static_libs	# static libraries
 #
 # minimal supported xserver version
@@ -685,7 +684,7 @@ cp -p src/mesa/osmesa.pc osmesa8
 	--enable-xvmc \
 	--with-gallium-drivers=${gallium_drivers} \
 %else
-	--disable-gallium \
+	--without-gallium-drivers \
 %endif
 	--with-driver=dri \
 	--with-dri-drivers=${dri_drivers} \
