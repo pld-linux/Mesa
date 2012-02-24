@@ -411,17 +411,17 @@ Header file for Mesa OpenVG library.
 Plik nagłówkowy biblioteki Mesa OpenVG.
 
 %package libXvMC
-Summary:	XvMC implementations
-Summary(pl.UTF-8):	Implementacje API XvMC
+Summary:	Mesa implementations of XvMC API
+Summary(pl.UTF-8):	Implementacje Mesa API XvMC
 License:	MIT
 Group:		Libraries
 # doesn't require base
 
 %description libXvMC
-libXvMC implementations.
+Mesa implementations of XvMC API.
 
 %description libXvMC -l pl.UTF-8
-Implementacje API libXvMC.
+Implementacje Mesa API XvMC.
 
 %package dri-driver-ati-radeon-R100
 Summary:	X.org DRI driver for ATI R100 card family
@@ -486,37 +486,6 @@ X.org DRI driver for ATI R600 card family.
 
 %description dri-driver-ati-radeon-R600 -l pl.UTF-8
 Sterownik X.org DRI dla rodziny kart ATI R600.
-
-%package dri-driver-ffb
-Summary:	X.org DRI driver for Sun FFB card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Sun FFB
-License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-driver-video-sunffb
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
-
-%description dri-driver-ffb
-X.org DRI driver for SUN Creator3D and Elite3D card family.
-
-%description dri-driver-ffb -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart SUN Creator3D i Elite3D.
-
-%package dri-driver-glint
-Summary:	X.org DRI driver for GLINT/Permedia card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart GLINT/Permedia
-License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-driver-video-glint
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
-Obsoletes:	X11-driver-glint-dri < 1:7.0.0
-
-%description dri-driver-glint
-X.org DRI driver for GLINT/Permedia card family.
-
-%description dri-driver-glint -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart GLINT/Permedia.
 
 %package dri-driver-intel-i915
 Summary:	X.org DRI driver for Intel i915 card family
@@ -596,16 +565,16 @@ X.org DRI driver for VMWare.
 Sterownik X.org DRI dla VMware.
 
 %package -n libvdpau-driver-mesa
-Summary:	Mesa driver for the vdpau API
-Summary(pl.UTF-8):	Sterownik Mesa dla API vdpau
+Summary:	Mesa drivers for the vdpau API
+Summary(pl.UTF-8):	Sterowniki Mesa dla API vdpau
 License:	MIT
 Group:		X11/Libraries
 
 %description -n libvdpau-driver-mesa
-Mesa driver for the vdpau API.
+Mesa drivers for the vdpau API.
 
 %description -n libvdpau-driver-mesa -l pl.UTF-8
-Sterownik Mesa dla API vdpau.
+Sterowniki Mesa dla API vdpau.
 
 # llvm build broken
 %define		filterout_ld    -Wl,--as-needed
@@ -912,20 +881,6 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-ati-radeon-R600
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/r600_dri.so
-
-# sunffb (sparc only)
-%ifarch sparc sparcv9 sparc64
-%files dri-driver-ffb
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/ffb_dri.so
-%endif
-
-# glint (requires update)
-%if 0
-%files dri-driver-glint
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/gamma_dri.so
-%endif
 
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
