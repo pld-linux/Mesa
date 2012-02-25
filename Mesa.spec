@@ -555,6 +555,7 @@ Summary:	X.org DRI driver for VMware
 Summary(pl.UTF-8):	Sterownik X.org DRI dla VMware
 License:	MIT
 Group:		X11/Libraries
+Requires:	xorg-driver-video-vmware
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 
