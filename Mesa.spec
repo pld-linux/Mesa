@@ -23,7 +23,7 @@
 #
 %define		libdrm_ver	2.4.30
 %define		dri2proto_ver	2.6
-%define		glproto_ver	1.4.11
+%define		glproto_ver	1.4.14
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
@@ -45,7 +45,7 @@ BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= 5:3.3.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:1.4d
-BuildRequires:	libvdpau-devel
+BuildRequires:	libvdpau-devel >= 0.4.1
 BuildRequires:	llvm-devel >= 2.9
 BuildRequires:	pixman-devel
 BuildRequires:	pkgconfig
@@ -58,7 +58,7 @@ BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libXdamage-devel
 BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXt-devel
-BuildRequires:	xorg-lib-libXvMC-devel
+BuildRequires:	xorg-lib-libXvMC-devel >= 1.0.6
 BuildRequires:	xorg-lib-libXxf86vm-devel
 BuildRequires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 BuildRequires:	xorg-proto-glproto-devel >= %{glproto_ver}
@@ -66,7 +66,7 @@ BuildRequires:	xorg-util-makedepend
 BuildRequires:	xorg-xserver-server-devel
 %if %{with egl}
 BuildRequires:	libxcb-devel
-BuildRequires:	udev-devel >= 150
+BuildRequires:	udev-devel >= 1:150
 %endif
 %if %{with gallium}
 BuildRequires:	xorg-proto-xextproto-devel >= 7.0.99.1
@@ -111,7 +111,7 @@ Requires:	libdrm >= %{libdrm_ver}
 %if %{with gallium}
 # for egl_gallium.so
 Requires:	Mesa-libOpenVG = %{version}-%{release}
-Requires:	udev-libs >= 150
+Requires:	udev-libs >= 1:150
 %endif
 Provides:	EGL = 1.4
 
@@ -415,6 +415,7 @@ Summary:	Mesa implementations of XvMC API
 Summary(pl.UTF-8):	Implementacje Mesa API XvMC
 License:	MIT
 Group:		Libraries
+Requires:	libdrm >= %{libdrm_ver}
 # doesn't require base
 
 %description libXvMC
@@ -570,6 +571,8 @@ Summary:	Mesa drivers for the vdpau API
 Summary(pl.UTF-8):	Sterowniki Mesa dla API vdpau
 License:	MIT
 Group:		X11/Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	libvdpau >= 0.4.1
 
 %description -n libvdpau-driver-mesa
 Mesa drivers for the vdpau API.
