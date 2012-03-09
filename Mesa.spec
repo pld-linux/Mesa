@@ -641,18 +641,18 @@ cp -p src/mesa/osmesa.pc osmesa8
 %endif
 
 %configure $common_flags \
-	--enable-shared-glapi \
 	%{__enable gbm} \
+	--enable-shared-glapi \
 %if %{with egl}
 	--enable-egl \
 	--enable-gles1 \
 	--enable-gles2 \
 %endif
 %if %{with gallium}
-	--enable-openvg \
 	--enable-gallium-llvm \
 	%{__enable egl gallium-egl} \
 	%{__enable gbm gallium-gbm} \
+	--enable-openvg \
 	--enable-vdpau \
 	--enable-xvmc \
 	--with-gallium-drivers=${gallium_drivers} \
@@ -673,7 +673,7 @@ rm -rf $RPM_BUILD_ROOT
 	DESTDIR=$RPM_BUILD_ROOT
 
 %if %{with osmesa}
-cp -p osmesa8/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
+cp -dp osmesa8/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
 cp -p osmesa8/osmesa.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
 %endif
 
@@ -716,17 +716,17 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libglapi.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libglapi.so.0
 %if %{with gbm}
-%dir %{_libdir}/gbm
 %attr(755,root,root) %{_libdir}/libgbm.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libgbm.so.1
+%dir %{_libdir}/gbm
 %endif
 %if %{with gallium}
 %dir %{_libdir}/egl
 %attr(755,root,root) %{_libdir}/egl/egl_gallium.so
-%attr(755,root,root) %{_libdir}/gbm/pipe_r300.so
-%attr(755,root,root) %{_libdir}/gbm/pipe_r600.so
 %if %{with gbm}
 %attr(755,root,root) %{_libdir}/gbm/gbm_gallium_drm.so
+%attr(755,root,root) %{_libdir}/gbm/pipe_r300.so
+%attr(755,root,root) %{_libdir}/gbm/pipe_r600.so
 %attr(755,root,root) %{_libdir}/gbm/pipe_vmwgfx.so
 %if %{with gallium_nouveau}
 %attr(755,root,root) %{_libdir}/gbm/pipe_nouveau.so
