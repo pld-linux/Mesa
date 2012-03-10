@@ -717,12 +717,12 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gbm}
 %attr(755,root,root) %{_libdir}/libgbm.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libgbm.so.1
-%dir %{_libdir}/gbm
 %endif
 %if %{with gallium}
 %dir %{_libdir}/egl
 %attr(755,root,root) %{_libdir}/egl/egl_gallium.so
 %if %{with gbm}
+%dir %{_libdir}/gbm
 %attr(755,root,root) %{_libdir}/gbm/gbm_gallium_drm.so
 %attr(755,root,root) %{_libdir}/gbm/pipe_r300.so
 %attr(755,root,root) %{_libdir}/gbm/pipe_r600.so
@@ -857,6 +857,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/vg.pc
 %endif
 
+%if %{with gallium}
 %files libXvMC
 %defattr(644,root,root,755)
 %attr(755,root,root) %ghost %{_libdir}/libXvMCnouveau.so.1
@@ -867,6 +868,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libXvMCr600.so.1.0
 %attr(755,root,root) %ghost %{_libdir}/libXvMCsoftpipe.so.1
 %attr(755,root,root) %{_libdir}/libXvMCsoftpipe.so.1.0
+%endif
 
 %files dri-driver-ati-radeon-R100
 %defattr(644,root,root,755)
@@ -876,6 +878,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/r200_dri.so
 
+%if %{with gallium}
 %files dri-driver-ati-radeon-R300
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/r300_dri.so
@@ -883,6 +886,7 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-ati-radeon-R600
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/r600_dri.so
+%endif
 
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
@@ -908,6 +912,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/vmwgfx_dri.so
 %endif
 
+%if %{with gallium}
 %files -n libvdpau-driver-mesa
 %defattr(644,root,root,755)
 # there is no ldconfig here, so package all symlinks
@@ -920,6 +925,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so
+%if %{with gallium_nouveau}
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so
+%endif
+%endif
