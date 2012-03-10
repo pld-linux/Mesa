@@ -76,6 +76,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %if %{without gallium}
 %undefine	with_gallium_intel
+%undefine	with_gallium_nouveau
 %endif
 
 %if %{without egl}
@@ -605,7 +606,6 @@ dri_drivers=$(echo $dri_drivers | xargs | tr ' ' ',')
 gallium_drivers="svga swrast \
 %if %{with gallium_intel}
 i915 \
-i965 \
 %endif
 r300 \
 r600 \
@@ -668,7 +668,6 @@ cp -p src/mesa/osmesa.pc osmesa8
 %install
 rm -rf $RPM_BUILD_ROOT
 
-# libs without drivers
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
@@ -728,12 +727,11 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/gbm/pipe_r300.so
 %attr(755,root,root) %{_libdir}/gbm/pipe_r600.so
 %attr(755,root,root) %{_libdir}/gbm/pipe_vmwgfx.so
+%if %{with gallium_intel}
+%attr(755,root,root) %{_libdir}/gbm/pipe_i915.so
+%endif
 %if %{with gallium_nouveau}
 %attr(755,root,root) %{_libdir}/gbm/pipe_nouveau.so
-%endif
-%if %{with gallium_intel}
-%attr(755,root,root) %{_libdir}/egl/pipe_i915.so
-%attr(755,root,root) %{_libdir}/egl/pipe_i965.so
 %endif
 %endif
 %endif
@@ -893,9 +891,6 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-intel-i965
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i965_dri.so
-%if %{with gallium_intel}
-%attr(755,root,root) %{_libdir}/xorg/modules/drivers/i965g_drv.so
-%endif
 
 %if %{with gallium_nouveau}
 %files dri-driver-nouveau
@@ -915,7 +910,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -n libvdpau-driver-mesa
 %defattr(644,root,root,755)
-# there is no ldconfig here
+# there is no ldconfig here, so package all symlinks
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so.1.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so
