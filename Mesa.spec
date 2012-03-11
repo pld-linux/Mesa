@@ -113,12 +113,13 @@ Summary:	Mesa implementation of EGL Native Platform Graphics Interface library
 Summary(pl.UTF-8):	Implementacja Mesa biblioteki interfejsu EGL
 License:	MIT
 Group:		Libraries
+Requires:	%{name}-libglapi = %{version}-%{release}
 # glx driver in libEGL dlopens libGL.so
 Requires:	OpenGL >= 1.2
 Requires:	libdrm >= %{libdrm_ver}
 %if %{with gallium}
 # for egl_gallium.so
-Requires:	Mesa-libOpenVG = %{version}-%{release}
+Requires:	%{name}-libOpenVG = %{version}-%{release}
 Requires:	udev-libs >= 1:150
 %endif
 Provides:	EGL = 1.4
@@ -253,6 +254,7 @@ Summary:	Free Mesa3D implementation of libGL OpenGL library
 Summary(pl.UTF-8):	Wolnodostępna implementacja Mesa3D biblioteki libGL ze standardu OpenGL
 License:	MIT
 Group:		X11/Libraries
+Requires:	%{name}-libglapi = %{version}-%{release}
 Requires:	libdrm >= %{libdrm_ver}
 Provides:	OpenGL = 2.1
 Provides:	OpenGL-GLX = 1.4
@@ -333,8 +335,7 @@ renderingu.
 Summary:	Mesa implementation of GLES (OpenGL ES) libraries
 Summary(pl.UTF-8):	Implementacja Mesa bibliotek GLES (OpenGL ES)
 Group:		Libraries
-# only for libglapi.so.0
-Requires:	%{name}-libEGL = %{version}-%{release}
+Requires:	%{name}-libglapi = %{version}-%{release}
 
 %description libGLES
 This package contains shared libraries of Mesa implementation of GLES
@@ -355,7 +356,7 @@ ES 1.1 i 2.0.
 Summary:	Header files for Mesa GLES libraries
 Summary(pl.UTF-8):	Pliki nagłówkowe bibliotek Mesa GLES
 Group:		Development/Libraries
-# EGL for libglapi.so, <KHR/khrplatform.h> always required, <EGL/egl.h> for <GLES/egl.h>
+# EGL for <KHR/khrplatform.h> always required, <EGL/egl.h> for <GLES/egl.h>
 Requires:	%{name}-libEGL-devel = %{version}-%{release}
 Requires:	%{name}-libGLES = %{version}-%{release}
 
@@ -420,7 +421,6 @@ Summary:	OSMesa (off-screen renderer) library
 Summary(pl.UTF-8):	Biblioteka OSMesa (renderująca bitmapy w pamięci)
 License:	MIT
 Group:		Libraries
-# doesn't require base
 
 %description libOSMesa
 OSMesa (off-screen renderer) library.
@@ -464,7 +464,6 @@ Summary:	Mesa implementation of OpenVG (Vector Graphics Accelleration) API
 Summary(pl.UTF-8):	Implementacja Mesa API OpenVG (akceleracji grafiki wektorowej)
 License:	MIT
 Group:		Libraries
-# doesn't require base
 
 %description libOpenVG
 This package contains Mesa implementation of OpenVG - cross-platform
@@ -560,11 +559,23 @@ Mesa softpipe implementation of XvMC API.
 %description libXvMC-softpipe -l pl.UTF-8
 Implementacja Mesa softpipe API XvMC.
 
+%package libglapi
+Summary:	Mesa GL API shared library
+Summary(pl.UTF-8):	Biblioteka współdzielona Mesa GL API
+Group:		Libraries
+
+%description libglapi
+Mesa GL API shared library, common for various APIs (EGL, GL, GLES).
+
+%description libglapi -l pl.UTF-8
+Biblioteka współdzielona Mesa GL API, wspólna dla różnych API (EGL,
+GL, GLES).
+
 %package libxatracker
 Summary:	Xorg Gallium3D accelleration library
 Summary(pl.UTF-8):	Biblioteka akceleracji Gallium3D dla Xorg
 Group:		X11/Libraries
-#Requires:	
+Requires:	libdrm >= %{libdrm_ver}
 
 %description libxatracker
 Xorg Gallium3D accelleration library (used by new vmwgfx driver).
@@ -578,7 +589,7 @@ Summary:	Header files for Xorg Gallium3D accelleration library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki akceleracji Gallium3D dla Xorg
 Group:		X11/Development/Libraries
 Requires:	%{name}-libxatracker = %{version}-%{release}
-#Requires:	
+Requires:	libdrm-devel >= %{libdrm_ver}
 
 %description libxatracker-devel
 Header files for Xorg Gallium3D accelleration library.
@@ -897,6 +908,8 @@ cp -p osmesa8/osmesa.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
 %{__rm} $RPM_BUILD_ROOT%{_includedir}/GL/{vms_x_fix,wglext,wmesa}.h
 # dlopened by soname
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so
+# not used externally
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/libglapi.so
 
 # remove "OS ABI: Linux 2.4.20" tag, so private copies (nvidia or fglrx),
 # set up via /etc/ld.so.conf.d/*.conf will be preferred over this
@@ -932,6 +945,9 @@ rm -rf $RPM_BUILD_ROOT
 %post	libXvMC-softpipe -p /sbin/ldconfig
 %postun	libXvMC-softpipe -p /sbin/ldconfig
 
+%post	libglapi -p /sbin/ldconfig
+%postun	libglapi -p /sbin/ldconfig
+
 %post	libxatracker -p /sbin/ldconfig
 %postun	libxatracker -p /sbin/ldconfig
 
@@ -940,8 +956,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libEGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libEGL.so.1
-%attr(755,root,root) %{_libdir}/libglapi.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libglapi.so.0
 %if %{with gbm}
 %attr(755,root,root) %{_libdir}/libgbm.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libgbm.so.1
@@ -958,7 +972,6 @@ rm -rf $RPM_BUILD_ROOT
 %files libEGL-devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libEGL.so
-%attr(755,root,root) %{_libdir}/libglapi.so
 %dir %{_includedir}/EGL
 %{_includedir}/EGL/egl.h
 %{_includedir}/EGL/eglext.h
@@ -1125,6 +1138,13 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libXvMCsoftpipe.so.1.0
 %attr(755,root,root) %ghost %{_libdir}/libXvMCsoftpipe.so.1
 %endif
+
+%files libglapi
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libglapi.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libglapi.so.0
+# libglapi-devel? nothing seems to need it atm.
+#%attr(755,root,root) %{_libdir}/libglapi.so
 
 %if %{with xa}
 %files libxatracker
