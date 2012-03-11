@@ -859,6 +859,8 @@ cp -p osmesa8/osmesa.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
 
 # strip out undesirable headers
 %{__rm} $RPM_BUILD_ROOT%{_includedir}/GL/{vms_x_fix,wglext,wmesa}.h
+# dlopened by soname
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so
 
 # remove "OS ABI: Linux 2.4.20" tag, so private copies (nvidia or fglrx),
 # set up via /etc/ld.so.conf.d/*.conf will be preferred over this
@@ -1062,10 +1064,12 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %if %{with gallium}
+%if %{with gallium_nouveau}
 %files libXvMC-nouveau
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libXvMCnouveau.so.1.0
 %attr(755,root,root) %ghost %{_libdir}/libXvMCnouveau.so.1
+%endif
 
 %files libXvMC-r300
 %defattr(644,root,root,755)
