@@ -86,6 +86,9 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 # _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
 %define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libXvMCnouveau.so.1.* libXvMCr300.so.1.*  libXvMCr600.so.1.* libXvMCsoftpipe.so.1.* libvdpau_nouveau.so.1.*
 
+# llvm build broken
+%define		filterout_ld    -Wl,--as-needed
+
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
 that of OpenGL(R). To the extent that Mesa utilizes the OpenGL command
@@ -162,6 +165,84 @@ Static Mesa EGL library.
 
 %description libEGL-static -l pl.UTF-8
 Statyczna biblioteka Mesa EGL.
+
+%package gbm-driver-i915
+Summary:	i915 driver for Mesa GBM framework (used by EGL and OpenVG APIs)
+Summary(pl.UTF-8):	Sterownik i915 dla szkieletu Mesa GBM (wykorzystywanego przez API EGL i OpenVG)
+Group:		Libraries
+Requires:	%{name}-libEGL = %{version}-%{release}
+
+%description gbm-driver-i915
+i915 driver for Mesa Graphics Buffer Manager (used by EGL and OpenVG
+APIs). It supports Intel 915/945/G33/Q33/Q35/Pineview chips.
+
+%description gbm-driver-i915 -l pl.UTF-8
+Sterownik i915 dla szkieletu Mesa Graphics Buffer Manager (zarządcy
+bufora graficznego, wykorzystywanego przez API EGL i OpenVG).
+Obsługuje układy Intel 915/945/G33/Q33/Q35/Pineview.
+
+%package gbm-driver-nouveau
+Summary:	nouveau driver for Mesa GBM framework (used by EGL and OpenVG APIs)
+Summary(pl.UTF-8):	Sterownik nouveau dla szkieletu Mesa GBM (wykorzystywanego przez API EGL i OpenVG)
+Group:		Libraries
+Requires:	%{name}-libEGL = %{version}-%{release}
+
+%description gbm-driver-nouveau
+nouveau driver for Mesa Graphics Buffer Manager (used by EGL and
+OpenVG APIs). It supports NVidia adapters.
+
+%description gbm-driver-nouveau -l pl.UTF-8
+Sterownik nouveau dla szkieletu Mesa Graphics Buffer Manager (zarządcy
+bufora graficznego, wykorzystywanego przez API EGL i OpenVG).
+Obsługuje karty graficzne firmy NVidia.
+
+%package gbm-driver-r300
+Summary:	r300 driver for Mesa GBM framework (used by EGL and OpenVG APIs)
+Summary(pl.UTF-8):	Sterownik r300 dla szkieletu Mesa GBM (wykorzystywanego przez API EGL i OpenVG)
+Group:		Libraries
+Requires:	%{name}-libEGL = %{version}-%{release}
+
+%description gbm-driver-r300
+r300 driver for Mesa Graphics Buffer Manager (used by EGL and
+OpenVG APIs). It supports ATI Radeon adapters based on
+R300/R400/RS690/R500 chips.
+
+%description gbm-driver-r300 -l pl.UTF-8
+Sterownik r300 dla szkieletu Mesa Graphics Buffer Manager (zarządcy
+bufora graficznego, wykorzystywanego przez API EGL i OpenVG).
+Obsługuje karty graficzne ATI Radeon oparte na układach
+R300/R400/RS690/R500.
+
+%package gbm-driver-r600
+Summary:	r600 driver for Mesa GBM framework (used by EGL and OpenVG APIs)
+Summary(pl.UTF-8):	Sterownik r600 dla szkieletu Mesa GBM (wykorzystywanego przez API EGL i OpenVG)
+Group:		Libraries
+Requires:	%{name}-libEGL = %{version}-%{release}
+
+%description gbm-driver-r600
+r600 driver for Mesa Graphics Buffer Manager (used by EGL and
+OpenVG APIs). It supports ATI Radeon adapters based on R600/R700
+chips.
+
+%description gbm-driver-r600 -l pl.UTF-8
+Sterownik r600 dla szkieletu Mesa Graphics Buffer Manager (zarządcy
+bufora graficznego, wykorzystywanego przez API EGL i OpenVG).
+Obsługuje karty graficzne ATI Radeon oparte na układach R600/R700.
+
+%package gbm-driver-vmwgfx
+Summary:	vmwgfx driver for Mesa GBM framework (used by EGL and OpenVG APIs)
+Summary(pl.UTF-8):	Sterownik vmwgfx dla szkieletu Mesa GBM (wykorzystywanego przez API EGL i OpenVG)
+Group:		Libraries
+Requires:	%{name}-libEGL = %{version}-%{release}
+
+%description gbm-driver-vmwgfx
+vmwgfx driver for Mesa Graphics Buffer Manager (used by EGL and
+OpenVG APIs). It supports VMware virtual video adapter.
+
+%description gbm-driver-vmwgfx -l pl.UTF-8
+Sterownik vmwgfx dla szkieletu Mesa Graphics Buffer Manager (zarządcy
+bufora graficznego, wykorzystywanego przez API EGL i OpenVG).
+Obsługuje wirtualną kartę graficzną VMware.
 
 %package libGL
 Summary:	Free Mesa3D implementation of libGL OpenGL library
@@ -411,19 +492,65 @@ Header file for Mesa OpenVG library.
 %description libOpenVG-devel -l pl.UTF-8
 Plik nagłówkowy biblioteki Mesa OpenVG.
 
-%package libXvMC
-Summary:	Mesa implementations of XvMC API
-Summary(pl.UTF-8):	Implementacje Mesa API XvMC
+%package libXvMC-nouveau
+Summary:	Mesa implementation of XvMC API for NVidia adapters
+Summary(pl.UTF-8):	Implementacja Mesa API XvMC dla kart NVidia
 License:	MIT
 Group:		Libraries
 Requires:	libdrm >= %{libdrm_ver}
-# doesn't require base
+Conflicts:	Mesa-libXvMC
 
-%description libXvMC
-Mesa implementations of XvMC API.
+%description libXvMC-nouveau
+Mesa implementation of XvMC API for NVidia adapters (NV40-NV96, NVa0).
 
-%description libXvMC -l pl.UTF-8
-Implementacje Mesa API XvMC.
+%description libXvMC-nouveau -l pl.UTF-8
+Implementacja Mesa API XvMC dla kart NVidia (NV40-NV96, NVa0).
+
+%package libXvMC-r300
+Summary:	Mesa implementation of XvMC API for ATI Radeon R300 series adapters
+Summary(pl.UTF-8):	Implementacja Mesa API XvMC dla kart ATI Radeon z serii R300
+License:	MIT
+Group:		Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Conflicts:	Mesa-libXvMC
+
+%description libXvMC-r300
+Mesa implementation of XvMC API for ATI Radeon adapters based on
+R300/R400/RS690/R500 chips.
+
+%description libXvMC-r300 -l pl.UTF-8
+Implementacja Mesa API XvMC dla kart ATI Radeon opartych na układach
+R300/R400/RS690/R500.
+
+%package libXvMC-r600
+Summary:	Mesa implementation of XvMC API for ATI Radeon R600 series adapters
+Summary(pl.UTF-8):	Implementacja Mesa API XvMC dla kart ATI Radeon z serii R600
+License:	MIT
+Group:		Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Conflicts:	Mesa-libXvMC
+
+%description libXvMC-r600
+Mesa implementation of XvMC API for ATI Radeon adapters based on
+R600/R700 chips.
+
+%description libXvMC-r600 -l pl.UTF-8
+Implementacja Mesa API XvMC dla kart ATI Radeon opartych na układach
+R600/R700.
+
+%package libXvMC-softpipe
+Summary:	Mesa softpipe implementation of XvMC API
+Summary(pl.UTF-8):	Implementacja Mesa softpipe API XvMC
+License:	MIT
+Group:		Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Conflicts:	Mesa-libXvMC
+
+%description libXvMC-softpipe
+Mesa softpipe implementation of XvMC API.
+
+%description libXvMC-softpipe -l pl.UTF-8
+Implementacja Mesa softpipe API XvMC.
 
 %package dri-driver-ati-radeon-R100
 Summary:	X.org DRI driver for ATI R100 card family
@@ -468,10 +595,10 @@ Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 
 %description dri-driver-ati-radeon-R300
-X.org DRI driver for ATI R300 card family.
+X.org DRI driver for ATI R300/R400/RS690/R500 card family.
 
 %description dri-driver-ati-radeon-R300 -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart ATI R300.
+Sterownik X.org DRI dla rodziny kart ATI R300/R400/RS690/R500.
 
 %package dri-driver-ati-radeon-R600
 Summary:	X.org DRI driver for ATI R600 card family
@@ -484,10 +611,10 @@ Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 
 %description dri-driver-ati-radeon-R600
-X.org DRI driver for ATI R600 card family.
+X.org DRI driver for ATI R600/R700 card family.
 
 %description dri-driver-ati-radeon-R600 -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart ATI R600.
+Sterownik X.org DRI dla rodziny kart ATI R600/R700.
 
 %package dri-driver-intel-i915
 Summary:	X.org DRI driver for Intel i915 card family
@@ -501,10 +628,12 @@ Obsoletes:	Mesa-dri-driver-intel-i830
 Obsoletes:	X11-driver-i810-dri < 1:7.0.0
 
 %description dri-driver-intel-i915
-X.org DRI driver for Intel i915 card family.
+X.org DRI driver for Intel i915 card family (915, 945, G33, Q33, Q35,
+Pineview).
 
 %description dri-driver-intel-i915 -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart Intel i915.
+Sterownik X.org DRI dla rodziny kart Intel i915 (915, 945, G33, Q33,
+Q35, Pineview).
 
 %package dri-driver-intel-i965
 Summary:	X.org DRI driver for Intel i965 card family
@@ -518,10 +647,12 @@ Obsoletes:	Mesa-dri-driver-intel-i830
 Obsoletes:	X11-driver-i810-dri < 1:7.0.0
 
 %description dri-driver-intel-i965
-X.org DRI driver for Intel i965 card family.
+X.org DRI driver for Intel i965 card family (946GZ, 965G, 965Q, 965GM,
+965GME, GM45, G41, B43, Q45, G45);
 
 %description dri-driver-intel-i965 -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart Intel i965.
+Sterownik X.org DRI dla rodziny kart Intel i965 (946GZ, 965G, 965Q,
+965GM, 965GME, GM45, G41, B43, Q45, G45).
 
 %package dri-driver-nouveau
 Summary:	X.org DRI driver for NVIDIA card family
@@ -567,22 +698,71 @@ X.org DRI driver for VMWare.
 %description dri-driver-vmwgfx -l pl.UTF-8
 Sterownik X.org DRI dla VMware.
 
-%package -n libvdpau-driver-mesa
-Summary:	Mesa drivers for the vdpau API
-Summary(pl.UTF-8):	Sterowniki Mesa dla API vdpau
+%package -n libvdpau-driver-mesa-nouveau
+Summary:	Mesa nouveau driver for the vdpau API
+Summary(pl.UTF-8):	Sterownik Mesa nouveau dla API vdpau
 License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libvdpau >= 0.4.1
+Conflicts:	libvdpau-driver-mesa
 
-%description -n libvdpau-driver-mesa
-Mesa drivers for the vdpau API.
+%description -n libvdpau-driver-mesa-nouveau
+Mesa nouveau driver for the vdpau API. It supports NVidia adapters
+(NV40-NV96, NVa0).
 
-%description -n libvdpau-driver-mesa -l pl.UTF-8
-Sterowniki Mesa dla API vdpau.
+%description -n libvdpau-driver-mesa-nouveau -l pl.UTF-8
+Sterownik Mesa nouveau dla API vdpau. Obsługuje karty NVidia
+(NV40-NV96, NVa0).
 
-# llvm build broken
-%define		filterout_ld    -Wl,--as-needed
+%package -n libvdpau-driver-mesa-r300
+Summary:	Mesa r300 driver for the vdpau API
+Summary(pl.UTF-8):	Sterownik Mesa r300 dla API vdpau
+License:	MIT
+Group:		X11/Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	libvdpau >= 0.4.1
+Conflicts:	libvdpau-driver-mesa
+
+%description -n libvdpau-driver-mesa-r300
+Mesa r300 driver for the vdpau API. It supports ATI Radeon adapters
+based on R300/R400/RS690/R500 chips.
+
+%description -n libvdpau-driver-mesa-r300 -l pl.UTF-8
+Sterownik Mesa r300 dla API vdpau. Obsługuje karty ATI Radeon oparte
+na układach R300/R400/RS690/R500.
+
+%package -n libvdpau-driver-mesa-r600
+Summary:	Mesa r600 driver for the vdpau API
+Summary(pl.UTF-8):	Sterownik Mesa r600 dla API vdpau
+License:	MIT
+Group:		X11/Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	libvdpau >= 0.4.1
+Conflicts:	libvdpau-driver-mesa
+
+%description -n libvdpau-driver-mesa-r600
+Mesa r600 driver for the vdpau API. It supports ATI Radeon adapters
+based on R600/R700 chips.
+
+%description -n libvdpau-driver-mesa-r600 -l pl.UTF-8
+Sterownik Mesa r600 dla API vdpau. Obsługuje karty ATI Radeon oparte
+na układach R600/R700.
+
+%package -n libvdpau-driver-mesa-softpipe
+Summary:	Mesa softpipe driver for the vdpau API
+Summary(pl.UTF-8):	Sterownik Mesa softpipe dla API vdpau
+License:	MIT
+Group:		X11/Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	libvdpau >= 0.4.1
+Conflicts:	libvdpau-driver-mesa
+
+%description -n libvdpau-driver-mesa-softpipe
+Mesa softpipe driver for the vdpau API.
+
+%description -n libvdpau-driver-mesa-softpipe -l pl.UTF-8
+Sterownik Mesa softpipe dla API vdpau.
 
 %prep
 %setup -q
@@ -594,8 +774,9 @@ Sterowniki Mesa dla API vdpau.
 
 dri_drivers="r200 radeon \
 %if %{without gallium_intel}
-i915 i965 \
+i915 \
 %endif
+i965
 %ifarch sparc sparcv9 sparc64
 ffb \
 %endif
@@ -704,8 +885,14 @@ rm -rf $RPM_BUILD_ROOT
 %post	libOpenVG -p /sbin/ldconfig
 %postun	libOpenVG -p /sbin/ldconfig
 
-%post	libXvMC -p /sbin/ldconfig
-%postun	libXvMC -p /sbin/ldconfig
+%post	libXvMC-nouveau -p /sbin/ldconfig
+%postun	libXvMC-nouveau -p /sbin/ldconfig
+%post	libXvMC-r300 -p /sbin/ldconfig
+%postun	libXvMC-r300 -p /sbin/ldconfig
+%post	libXvMC-r600 -p /sbin/ldconfig
+%postun	libXvMC-r600 -p /sbin/ldconfig
+%post	libXvMC-softpipe -p /sbin/ldconfig
+%postun	libXvMC-softpipe -p /sbin/ldconfig
 
 %if %{with egl}
 %files libEGL
@@ -724,15 +911,6 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gbm}
 %dir %{_libdir}/gbm
 %attr(755,root,root) %{_libdir}/gbm/gbm_gallium_drm.so
-%attr(755,root,root) %{_libdir}/gbm/pipe_r300.so
-%attr(755,root,root) %{_libdir}/gbm/pipe_r600.so
-%attr(755,root,root) %{_libdir}/gbm/pipe_vmwgfx.so
-%if %{with gallium_intel}
-%attr(755,root,root) %{_libdir}/gbm/pipe_i915.so
-%endif
-%if %{with gallium_nouveau}
-%attr(755,root,root) %{_libdir}/gbm/pipe_nouveau.so
-%endif
 %endif
 %endif
 
@@ -759,6 +937,32 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %{_libdir}/libEGL.a
 %endif
+%endif
+
+%if %{with gallium}
+%if %{with gallium_intel}
+%files gbm-driver-i915
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gbm/pipe_i915.so
+%endif
+
+%if %{with gallium_nouveau}
+%files gbm-driver-nouveau
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gbm/pipe_nouveau.so
+%endif
+
+%files gbm-driver-r300
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gbm/pipe_r300.so
+
+%files gbm-driver-r600
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gbm/pipe_r600.so
+
+%files gbm-driver-vmwgfx
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gbm/pipe_vmwgfx.so
 %endif
 
 %files libGL
@@ -858,16 +1062,25 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %if %{with gallium}
-%files libXvMC
+%files libXvMC-nouveau
 %defattr(644,root,root,755)
-%attr(755,root,root) %ghost %{_libdir}/libXvMCnouveau.so.1
 %attr(755,root,root) %{_libdir}/libXvMCnouveau.so.1.0
-%attr(755,root,root) %ghost %{_libdir}/libXvMCr300.so.1
+%attr(755,root,root) %ghost %{_libdir}/libXvMCnouveau.so.1
+
+%files libXvMC-r300
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libXvMCr300.so.1.0
-%attr(755,root,root) %ghost %{_libdir}/libXvMCr600.so.1
+%attr(755,root,root) %ghost %{_libdir}/libXvMCr300.so.1
+
+%files libXvMC-r600
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libXvMCr600.so.1.0
-%attr(755,root,root) %ghost %{_libdir}/libXvMCsoftpipe.so.1
+%attr(755,root,root) %ghost %{_libdir}/libXvMCr600.so.1
+
+%files libXvMC-softpipe
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libXvMCsoftpipe.so.1.0
+%attr(755,root,root) %ghost %{_libdir}/libXvMCsoftpipe.so.1
 %endif
 
 %files dri-driver-ati-radeon-R100
@@ -886,22 +1099,20 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-ati-radeon-R600
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/r600_dri.so
-%endif
 
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
 
-%if %{without gallium}
 %files dri-driver-intel-i965
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i965_dri.so
-%endif
 
 %if %{with gallium_nouveau}
 %files dri-driver-nouveau
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
+%endif
 %endif
 
 %files dri-driver-swrast
@@ -915,21 +1126,30 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %if %{with gallium}
-%files -n libvdpau-driver-mesa
-%defattr(644,root,root,755)
-# there is no ldconfig here, so package all symlinks
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so.1.0
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so.1
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1.0
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so
+# ldconfig is not used in vdpau tree, so package all symlinks
 %if %{with gallium_nouveau}
+%files -n libvdpau-driver-mesa-nouveau
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so
 %endif
+
+%files -n libvdpau-driver-mesa-r300
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so
+
+%files -n libvdpau-driver-mesa-r600
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so
+
+%files -n libvdpau-driver-mesa-softpipe
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so.1.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so.1
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so
 %endif
