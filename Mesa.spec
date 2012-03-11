@@ -31,7 +31,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	8.0.1
-Release:	1
+Release:	2
 License:	MIT (core), SGI (GLU) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
@@ -491,6 +491,7 @@ Summary:	Mesa Graphics Buffer Manager library
 Summary(pl.UTF-8):	Biblioteka Mesa Graphics Buffer Manager
 Group:		Libraries
 Requires:	udev-libs >= 1:150
+Conflicts:	Mesa-libEGL < 8.0.1-2
 
 %description libgbm
 Mesa Graphics Buffer Manager library.
@@ -589,6 +590,7 @@ bufora graficznego). Obsługuje wirtualną kartę graficzną VMware.
 Summary:	Mesa GL API shared library
 Summary(pl.UTF-8):	Biblioteka współdzielona Mesa GL API
 Group:		Libraries
+Conflicts:	Mesa-libEGL < 8.0.1-2
 
 %description libglapi
 Mesa GL API shared library, common for various APIs (EGL, GL, GLES).
@@ -627,6 +629,7 @@ Pliki nagłówkowe biblioteki akceleracji Gallium3D dla Xorg.
 Summary:	Khronos platform header file
 Summary(pl.UTF-8):	Plik nagłówkowy platformy Khronos
 Group:		Development/Libraries
+Conflicts:	Mesa-libEGL-devel < 8.0.1-2
 
 %description khrplatform-devel
 Khronos platform header file.
