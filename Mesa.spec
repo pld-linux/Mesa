@@ -2,6 +2,7 @@
 # TODO:
 # - consider:
 #   --enable-shared-dricore
+#   --with-egl-platforms=...,wayland (BR: pkgconfig(wayland-{client,server}))
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
 # - resurrect static if it's useful (using plain xorg target? DRI doesn't support static)
 #
@@ -122,6 +123,9 @@ Requires:	libdrm >= %{libdrm_ver}
 Requires:	%{name}-libOpenVG = %{version}-%{release}
 Requires:	udev-libs >= 1:150
 %endif
+%if %{with gbm}
+Requires:	%{name}-libgbm = %{version}-%{release}
+%endif
 Provides:	EGL = 1.4
 
 %description libEGL
@@ -140,6 +144,7 @@ Summary:	Header files for Mesa implementation of EGL library
 Summary(pl.UTF-8):	Pliki nagłówkowe implementacji Mesa biblioteki EGL
 License:	MIT
 Group:		Development/Libraries
+Requires:	%{name}-khrplatform-devel = %{version}-%{release}
 Requires:	%{name}-libEGL = %{version}-%{release}
 Requires:	libdrm-devel >= %{libdrm_ver}
 Requires:	xorg-lib-libX11-devel
@@ -278,7 +283,8 @@ ES 1.1 i 2.0.
 Summary:	Header files for Mesa GLES libraries
 Summary(pl.UTF-8):	Pliki nagłówkowe bibliotek Mesa GLES
 Group:		Development/Libraries
-# EGL for <KHR/khrplatform.h> always required, <EGL/egl.h> for <GLES/egl.h>
+Requires:	%{name}-khrplatform-devel = %{version}-%{release}
+# <EGL/egl.h> for <GLES/egl.h>
 Requires:	%{name}-libEGL-devel = %{version}-%{release}
 Requires:	%{name}-libGLES = %{version}-%{release}
 
@@ -407,8 +413,7 @@ Summary:	Header file for Mesa OpenVG library
 Summary(pl.UTF-8):	Plik nagłówkowy biblioteki Mesa OpenVG
 License:	MIT
 Group:		Development/Libraries
-# EGL headers for <KHR/khrplatform.h>
-Requires:	%{name}-libEGL-devel = %{version}-%{release}
+Requires:	%{name}-khrplatform-devel = %{version}-%{release}
 Requires:	%{name}-libOpenVG = %{version}-%{release}
 
 %description libOpenVG-devel
@@ -617,6 +622,17 @@ Header files for Xorg Gallium3D accelleration library.
 
 %description libxatracker-devel -l pl.UTF-8
 Pliki nagłówkowe biblioteki akceleracji Gallium3D dla Xorg.
+
+%package khrplatform-devel
+Summary:	Khronos platform header file
+Summary(pl.UTF-8):	Plik nagłówkowy platformy Khronos
+Group:		Development/Libraries
+
+%description khrplatform-devel
+Khronos platform header file.
+
+%description khrplatform-devel -l pl.UTF-8
+Plik nagłówkowy platformy Khronos.
 
 %package dri-driver-ati-radeon-R100
 Summary:	X.org DRI driver for ATI R100 card family
@@ -895,12 +911,13 @@ cp -p src/mesa/osmesa.pc osmesa8
 	--enable-egl \
 	--enable-gles1 \
 	--enable-gles2 \
+	--with-egl-platforms=x11%{?with_gbm:,drm} \
 %endif
 %if %{with gallium}
 	--enable-gallium-llvm \
 	%{__enable egl gallium-egl} \
 	%{__enable gbm gallium-gbm} \
-	--enable-openvg \
+	%{?with_egl:--enable-openvg} \
 	--enable-vdpau \
 	%{?with_xa:--enable-xa} \
 	--enable-xvmc \
@@ -993,8 +1010,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/EGL/eglext.h
 %{_includedir}/EGL/eglmesaext.h
 %{_includedir}/EGL/eglplatform.h
-%dir %{_includedir}/KHR
-%{_includedir}/KHR/khrplatform.h
 %{_pkgconfigdir}/egl.pc
 
 %if %{with static_libs}
@@ -1087,7 +1102,7 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %endif
 
-%if %{with gallium}
+%if %{with egl} && %{with gallium}
 %files libOpenVG
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libOpenVG.so.*.*.*
@@ -1187,6 +1202,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/xa_context.h
 %{_includedir}/xa_tracker.h
 %{_pkgconfigdir}/xatracker.pc
+%endif
+
+%if %{with egl}
+%files khrplatform-devel
+%defattr(644,root,root,755)
+%dir %{_includedir}/KHR
+%{_includedir}/KHR/khrplatform.h
 %endif
 
 %files dri-driver-ati-radeon-R100
