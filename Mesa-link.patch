@@ -1,0 +1,76 @@
+--- Mesa-8.0.1/src/gallium/targets/vdpau-nouveau/Makefile.orig	2012-02-15 00:44:00.000000000 +0100
++++ Mesa-8.0.1/src/gallium/targets/vdpau-nouveau/Makefile	2012-03-11 12:26:44.906377873 +0100
+@@ -19,7 +19,7 @@
+ 	$(COMMON_GALLIUM_SOURCES) \
+ 	$(DRIVER_SOURCES)
+ 
+-DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm_nouveau --libs) -lXfixes
++DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm_nouveau libdrm --libs) -lXfixes
+ 
+ LINK_WITH_CXX=1
+ 
+--- Mesa-8.0.1/src/gallium/targets/xvmc-nouveau/Makefile.orig	2012-02-15 00:44:00.000000000 +0100
++++ Mesa-8.0.1/src/gallium/targets/xvmc-nouveau/Makefile	2012-03-11 12:34:15.799733412 +0100
+@@ -19,7 +19,7 @@
+ 	$(COMMON_GALLIUM_SOURCES) \
+ 	$(DRIVER_SOURCES)
+ 
+-DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm_nouveau --libs) -lXfixes
++DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm_nouveau libdrm --libs) -lXfixes -lXvMC
+ 
+ LINK_WITH_CXX=1
+ 
+--- Mesa-8.0.1/src/gallium/targets/xvmc-r300/Makefile.orig	2012-02-15 00:44:00.000000000 +0100
++++ Mesa-8.0.1/src/gallium/targets/xvmc-r300/Makefile	2012-03-11 12:34:46.519728247 +0100
+@@ -15,7 +15,7 @@
+ 	$(COMMON_GALLIUM_SOURCES) \
+ 	$(DRIVER_SOURCES)
+ 
+-DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm --libs) -lXfixes
++DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm --libs) -lXfixes -lXvMC
+ 
+ include ../Makefile.xvmc
+ 
+--- Mesa-8.0.1/src/gallium/targets/xvmc-r600/Makefile.orig	2012-02-15 00:44:00.000000000 +0100
++++ Mesa-8.0.1/src/gallium/targets/xvmc-r600/Makefile	2012-03-11 12:35:23.323061190 +0100
+@@ -15,7 +15,7 @@
+ 	$(COMMON_GALLIUM_SOURCES) \
+ 	$(DRIVER_SOURCES)
+ 
+-DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm --libs) -lXfixes
++DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm --libs) -lXfixes -lXvMC
+ 
+ include ../Makefile.xvmc
+ 
+--- Mesa-8.0.1/src/gallium/targets/xvmc-softpipe/Makefile.orig	2012-02-15 00:44:00.000000000 +0100
++++ Mesa-8.0.1/src/gallium/targets/xvmc-softpipe/Makefile	2012-03-11 12:35:53.273062913 +0100
+@@ -14,7 +14,7 @@
+ C_SOURCES = \
+ 	$(TOP)/src/gallium/winsys/g3dvl/xlib/xsp_winsys.c
+ 
+-DRIVER_LIBS =
++DRIVER_LIBS = -lXvMC -lXext
+ 
+ include ../Makefile.xvmc
+ 
+--- Mesa-8.0.1/src/gallium/targets/xa-vmwgfx/Makefile.orig	2012-02-15 00:44:00.000000000 +0100
++++ Mesa-8.0.1/src/gallium/targets/xa-vmwgfx/Makefile	2012-03-11 12:43:05.479747729 +0100
+@@ -30,6 +30,9 @@
+ SOURCES = vmw_target.c
+ OBJECTS = $(SOURCES:.c=.o)
+ 
++XA_LIBS = $(shell $(PKG_CONFIG) libdrm --libs)
++XA_PC_REQ_PRIV = libdrm
++
+ ifeq ($(MESA_LLVM),1)
+ LDFLAGS += $(LLVM_LDFLAGS)
+ GALLIUM_AUXILIARIES += $(LLVM_LIBS)
+@@ -64,7 +67,7 @@
+ 		$(MKLIB_OPTIONS) \
+ 		-exports xa_symbols \
+ 		 -install $(TOP)/$(LIB_DIR)/gallium \
+-		$(OBJECTS) $(XA_LIB_DEPS) $(GALLIUM_AUXILIARIES)
++		$(OBJECTS) $(XA_LIB_DEPS) $(GALLIUM_AUXILIARIES) $(XA_LIBS)
+ 
+ # xa pkgconfig file
+ pcedit = sed \

@@ -11,7 +11,8 @@
 %bcond_with	gallium_intel	# gallium i915 driver (but doesn't work with AIGLX)
 %bcond_without	gallium_nouveau	# gallium nouveau driver
 %bcond_without	osmesa		# OSMesa libraries
-%bcond_without	gbm		# with Graphics Buffer Manager
+%bcond_without	gbm		# Graphics Buffer Manager
+%bcond_with	xa		# XA state tracker (for future vmwgfx xorg driver)
 %bcond_with	static_libs	# static libraries
 #
 # minimal supported xserver version
@@ -35,6 +36,7 @@ Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
 # Source0-md5:	24eeebf66971809d8f40775a379b36c9
 Patch0:		%{name}-realclean.patch
+Patch1:		%{name}-link.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake
@@ -57,6 +59,7 @@ BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libXdamage-devel
 BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
+BuildRequires:	xorg-lib-libXfixes-devel
 BuildRequires:	xorg-lib-libXt-devel
 BuildRequires:	xorg-lib-libXvMC-devel >= 1.0.6
 BuildRequires:	xorg-lib-libXxf86vm-devel
@@ -77,6 +80,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %if %{without gallium}
 %undefine	with_gallium_intel
 %undefine	with_gallium_nouveau
+%undefine	with_xa
 %endif
 
 %if %{without egl}
@@ -84,7 +88,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %endif
 
 # _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
-%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libXvMCnouveau.so.1.* libXvMCr300.so.1.*  libXvMCr600.so.1.* libXvMCsoftpipe.so.1.* libvdpau_nouveau.so.1.*
+%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.*
 
 # llvm build broken
 %define		filterout_ld    -Wl,--as-needed
@@ -498,6 +502,7 @@ Summary(pl.UTF-8):	Implementacja Mesa API XvMC dla kart NVidia
 License:	MIT
 Group:		Libraries
 Requires:	libdrm >= %{libdrm_ver}
+Requires:	xorg-lib-libXvMC >= 1.0.6
 Conflicts:	Mesa-libXvMC
 
 %description libXvMC-nouveau
@@ -512,6 +517,7 @@ Summary(pl.UTF-8):	Implementacja Mesa API XvMC dla kart ATI Radeon z serii R300
 License:	MIT
 Group:		Libraries
 Requires:	libdrm >= %{libdrm_ver}
+Requires:	xorg-lib-libXvMC >= 1.0.6
 Conflicts:	Mesa-libXvMC
 
 %description libXvMC-r300
@@ -528,6 +534,7 @@ Summary(pl.UTF-8):	Implementacja Mesa API XvMC dla kart ATI Radeon z serii R600
 License:	MIT
 Group:		Libraries
 Requires:	libdrm >= %{libdrm_ver}
+Requires:	xorg-lib-libXvMC >= 1.0.6
 Conflicts:	Mesa-libXvMC
 
 %description libXvMC-r600
@@ -544,6 +551,7 @@ Summary(pl.UTF-8):	Implementacja Mesa softpipe API XvMC
 License:	MIT
 Group:		Libraries
 Requires:	libdrm >= %{libdrm_ver}
+Requires:	xorg-lib-libXvMC >= 1.0.6
 Conflicts:	Mesa-libXvMC
 
 %description libXvMC-softpipe
@@ -551,6 +559,32 @@ Mesa softpipe implementation of XvMC API.
 
 %description libXvMC-softpipe -l pl.UTF-8
 Implementacja Mesa softpipe API XvMC.
+
+%package libxatracker
+Summary:	Xorg Gallium3D accelleration library
+Summary(pl.UTF-8):	Biblioteka akceleracji Gallium3D dla Xorg
+Group:		X11/Libraries
+#Requires:	
+
+%description libxatracker
+Xorg Gallium3D accelleration library (used by new vmwgfx driver).
+
+%description libxatracker -l pl.UTF-8
+Biblioteka akceleracji Gallium3D dla Xorg (używana przez nowy
+sterownik vmwgfx).
+
+%package libxatracker-devel
+Summary:	Header files for Xorg Gallium3D accelleration library
+Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki akceleracji Gallium3D dla Xorg
+Group:		X11/Development/Libraries
+Requires:	%{name}-libxatracker = %{version}-%{release}
+#Requires:	
+
+%description libxatracker-devel
+Header files for Xorg Gallium3D accelleration library.
+
+%description libxatracker-devel -l pl.UTF-8
+Pliki nagłówkowe biblioteki akceleracji Gallium3D dla Xorg.
 
 %package dri-driver-ati-radeon-R100
 Summary:	X.org DRI driver for ATI R100 card family
@@ -767,6 +801,7 @@ Sterownik Mesa softpipe dla API vdpau.
 %prep
 %setup -q
 %patch0 -p0
+%patch1 -p1
 
 %build
 %{__aclocal}
@@ -835,6 +870,7 @@ cp -p src/mesa/osmesa.pc osmesa8
 	%{__enable gbm gallium-gbm} \
 	--enable-openvg \
 	--enable-vdpau \
+	%{?with_xa:--enable-xa} \
 	--enable-xvmc \
 	--with-gallium-drivers=${gallium_drivers} \
 %else
@@ -895,6 +931,9 @@ rm -rf $RPM_BUILD_ROOT
 %postun	libXvMC-r600 -p /sbin/ldconfig
 %post	libXvMC-softpipe -p /sbin/ldconfig
 %postun	libXvMC-softpipe -p /sbin/ldconfig
+
+%post	libxatracker -p /sbin/ldconfig
+%postun	libxatracker -p /sbin/ldconfig
 
 %if %{with egl}
 %files libEGL
@@ -1085,6 +1124,21 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libXvMCsoftpipe.so.1.0
 %attr(755,root,root) %ghost %{_libdir}/libXvMCsoftpipe.so.1
+%endif
+
+%if %{with xa}
+%files libxatracker
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libxatracker.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libxatracker.so.1
+
+%files libxatracker-devel
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libxatracker.so
+%{_includedir}/xa_composite.h
+%{_includedir}/xa_context.h
+%{_includedir}/xa_tracker.h
+%{_pkgconfigdir}/xatracker.pc
 %endif
 
 %files dri-driver-ati-radeon-R100
