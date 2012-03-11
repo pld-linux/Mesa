@@ -3,7 +3,7 @@
 # - consider:
 #   --enable-shared-dricore
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
-# - resurrect static if it's useful
+# - resurrect static if it's useful (using plain xorg target? DRI doesn't support static)
 #
 # Conditional build:
 %bcond_without	egl		# EGL libraries
@@ -13,7 +13,7 @@
 %bcond_without	osmesa		# OSMesa libraries
 %bcond_without	gbm		# Graphics Buffer Manager
 %bcond_with	xa		# XA state tracker (for future vmwgfx xorg driver)
-%bcond_with	static_libs	# static libraries
+%bcond_with	static_libs	# static libraries [not supported for DRI, thus broken currently]
 #
 # minimal supported xserver version
 %define		xserver_ver	1.5.0
