@@ -171,84 +171,6 @@ Static Mesa EGL library.
 %description libEGL-static -l pl.UTF-8
 Statyczna biblioteka Mesa EGL.
 
-%package gbm-driver-i915
-Summary:	i915 driver for Mesa GBM framework (used by EGL and OpenVG APIs)
-Summary(pl.UTF-8):	Sterownik i915 dla szkieletu Mesa GBM (wykorzystywanego przez API EGL i OpenVG)
-Group:		Libraries
-Requires:	%{name}-libEGL = %{version}-%{release}
-
-%description gbm-driver-i915
-i915 driver for Mesa Graphics Buffer Manager (used by EGL and OpenVG
-APIs). It supports Intel 915/945/G33/Q33/Q35/Pineview chips.
-
-%description gbm-driver-i915 -l pl.UTF-8
-Sterownik i915 dla szkieletu Mesa Graphics Buffer Manager (zarządcy
-bufora graficznego, wykorzystywanego przez API EGL i OpenVG).
-Obsługuje układy Intel 915/945/G33/Q33/Q35/Pineview.
-
-%package gbm-driver-nouveau
-Summary:	nouveau driver for Mesa GBM framework (used by EGL and OpenVG APIs)
-Summary(pl.UTF-8):	Sterownik nouveau dla szkieletu Mesa GBM (wykorzystywanego przez API EGL i OpenVG)
-Group:		Libraries
-Requires:	%{name}-libEGL = %{version}-%{release}
-
-%description gbm-driver-nouveau
-nouveau driver for Mesa Graphics Buffer Manager (used by EGL and
-OpenVG APIs). It supports NVidia adapters.
-
-%description gbm-driver-nouveau -l pl.UTF-8
-Sterownik nouveau dla szkieletu Mesa Graphics Buffer Manager (zarządcy
-bufora graficznego, wykorzystywanego przez API EGL i OpenVG).
-Obsługuje karty graficzne firmy NVidia.
-
-%package gbm-driver-r300
-Summary:	r300 driver for Mesa GBM framework (used by EGL and OpenVG APIs)
-Summary(pl.UTF-8):	Sterownik r300 dla szkieletu Mesa GBM (wykorzystywanego przez API EGL i OpenVG)
-Group:		Libraries
-Requires:	%{name}-libEGL = %{version}-%{release}
-
-%description gbm-driver-r300
-r300 driver for Mesa Graphics Buffer Manager (used by EGL and
-OpenVG APIs). It supports ATI Radeon adapters based on
-R300/R400/RS690/R500 chips.
-
-%description gbm-driver-r300 -l pl.UTF-8
-Sterownik r300 dla szkieletu Mesa Graphics Buffer Manager (zarządcy
-bufora graficznego, wykorzystywanego przez API EGL i OpenVG).
-Obsługuje karty graficzne ATI Radeon oparte na układach
-R300/R400/RS690/R500.
-
-%package gbm-driver-r600
-Summary:	r600 driver for Mesa GBM framework (used by EGL and OpenVG APIs)
-Summary(pl.UTF-8):	Sterownik r600 dla szkieletu Mesa GBM (wykorzystywanego przez API EGL i OpenVG)
-Group:		Libraries
-Requires:	%{name}-libEGL = %{version}-%{release}
-
-%description gbm-driver-r600
-r600 driver for Mesa Graphics Buffer Manager (used by EGL and
-OpenVG APIs). It supports ATI Radeon adapters based on R600/R700
-chips.
-
-%description gbm-driver-r600 -l pl.UTF-8
-Sterownik r600 dla szkieletu Mesa Graphics Buffer Manager (zarządcy
-bufora graficznego, wykorzystywanego przez API EGL i OpenVG).
-Obsługuje karty graficzne ATI Radeon oparte na układach R600/R700.
-
-%package gbm-driver-vmwgfx
-Summary:	vmwgfx driver for Mesa GBM framework (used by EGL and OpenVG APIs)
-Summary(pl.UTF-8):	Sterownik vmwgfx dla szkieletu Mesa GBM (wykorzystywanego przez API EGL i OpenVG)
-Group:		Libraries
-Requires:	%{name}-libEGL = %{version}-%{release}
-
-%description gbm-driver-vmwgfx
-vmwgfx driver for Mesa Graphics Buffer Manager (used by EGL and
-OpenVG APIs). It supports VMware virtual video adapter.
-
-%description gbm-driver-vmwgfx -l pl.UTF-8
-Sterownik vmwgfx dla szkieletu Mesa Graphics Buffer Manager (zarządcy
-bufora graficznego, wykorzystywanego przez API EGL i OpenVG).
-Obsługuje wirtualną kartę graficzną VMware.
-
 %package libGL
 Summary:	Free Mesa3D implementation of libGL OpenGL library
 Summary(pl.UTF-8):	Wolnodostępna implementacja Mesa3D biblioteki libGL ze standardu OpenGL
@@ -558,6 +480,105 @@ Mesa softpipe implementation of XvMC API.
 
 %description libXvMC-softpipe -l pl.UTF-8
 Implementacja Mesa softpipe API XvMC.
+
+%package libgbm
+Summary:	Mesa Graphics Buffer Manager library
+Summary(pl.UTF-8):	Biblioteka Mesa Graphics Buffer Manager
+Group:		Libraries
+Requires:	udev-libs >= 1:150
+
+%description libgbm
+Mesa Graphics Buffer Manager library.
+
+%description libgbm -l pl.UTF-8
+Biblioteka Mesa Graphics Buffer Manager (zarządcy bufora graficznego).
+
+%package libgbm-devel
+Summary:	Header file for Mesa Graphics Buffer Manager library
+Summary(pl.UTF-8):	Plik nagłówkowy biblioteki Mesa Graphics Buffer Manager
+Group:		Development/Libraries
+Requires:	%{name}-libgbm = %{version}-%{release}
+Requires:	udev-devel >= 1:150
+
+%description libgbm-devel
+Header file for Mesa Graphics Buffer Manager library.
+
+%description libgbm-devel -l pl.UTF-8
+Plik nagłówkowy biblioteki Mesa Graphics Buffer Manager (zarządcy
+bufora graficznego).
+
+%package gbm-driver-i915
+Summary:	i915 driver for Mesa GBM framework
+Summary(pl.UTF-8):	Sterownik i915 dla szkieletu Mesa GBM
+Group:		Libraries
+Requires:	%{name}-libgbm = %{version}-%{release}
+
+%description gbm-driver-i915
+i915 driver for Mesa Graphics Buffer Manager. It supports Intel
+915/945/G33/Q33/Q35/Pineview chips.
+
+%description gbm-driver-i915 -l pl.UTF-8
+Sterownik i915 dla szkieletu Mesa Graphics Buffer Manager (zarządcy
+bufora graficznego). Obsługuje układy Intela z serii
+915/945/G33/Q33/Q35/Pineview.
+
+%package gbm-driver-nouveau
+Summary:	nouveau driver for Mesa GBM framework
+Summary(pl.UTF-8):	Sterownik nouveau dla szkieletu Mesa GBM
+Group:		Libraries
+Requires:	%{name}-libgbm = %{version}-%{release}
+
+%description gbm-driver-nouveau
+nouveau driver for Mesa Graphics Buffer Manager. It supports NVidia
+adapters.
+
+%description gbm-driver-nouveau -l pl.UTF-8
+Sterownik nouveau dla szkieletu Mesa Graphics Buffer Manager (zarządcy
+bufora graficznego). Obsługuje karty graficzne firmy NVidia.
+
+%package gbm-driver-r300
+Summary:	r300 driver for Mesa GBM framework
+Summary(pl.UTF-8):	Sterownik r300 dla szkieletu Mesa GBM
+Group:		Libraries
+Requires:	%{name}-libgbm = %{version}-%{release}
+
+%description gbm-driver-r300
+r300 driver for Mesa Graphics Buffer Manager. It supports ATI Radeon
+adapters based on R300/R400/RS690/R500 chips.
+
+%description gbm-driver-r300 -l pl.UTF-8
+Sterownik r300 dla szkieletu Mesa Graphics Buffer Manager (zarządcy
+bufora graficznego). Obsługuje karty graficzne ATI Radeon oparte na
+układach R300/R400/RS690/R500.
+
+%package gbm-driver-r600
+Summary:	r600 driver for Mesa GBM framework
+Summary(pl.UTF-8):	Sterownik r600 dla szkieletu Mesa GBM
+Group:		Libraries
+Requires:	%{name}-libgbm = %{version}-%{release}
+
+%description gbm-driver-r600
+r600 driver for Mesa Graphics Buffer Manager. It supports ATI Radeon
+adapters based on R600/R700 chips.
+
+%description gbm-driver-r600 -l pl.UTF-8
+Sterownik r600 dla szkieletu Mesa Graphics Buffer Manager (zarządcy
+bufora graficznego). Obsługuje karty graficzne ATI Radeon oparte na
+układach R600/R700.
+
+%package gbm-driver-vmwgfx
+Summary:	vmwgfx driver for Mesa GBM framework
+Summary(pl.UTF-8):	Sterownik vmwgfx dla szkieletu Mesa GBM
+Group:		Libraries
+Requires:	%{name}-libgbm = %{version}-%{release}
+
+%description gbm-driver-vmwgfx
+vmwgfx driver for Mesa Graphics Buffer Manager. It supports VMware
+virtual video adapter.
+
+%description gbm-driver-vmwgfx -l pl.UTF-8
+Sterownik vmwgfx dla szkieletu Mesa Graphics Buffer Manager (zarządcy
+bufora graficznego). Obsługuje wirtualną kartę graficzną VMware.
 
 %package libglapi
 Summary:	Mesa GL API shared library
@@ -945,6 +966,9 @@ rm -rf $RPM_BUILD_ROOT
 %post	libXvMC-softpipe -p /sbin/ldconfig
 %postun	libXvMC-softpipe -p /sbin/ldconfig
 
+%post	libgbm -p /sbin/ldconfig
+%postun	libgbm -p /sbin/ldconfig
+
 %post	libglapi -p /sbin/ldconfig
 %postun	libglapi -p /sbin/ldconfig
 
@@ -956,17 +980,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libEGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libEGL.so.1
-%if %{with gbm}
-%attr(755,root,root) %{_libdir}/libgbm.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libgbm.so.1
-%endif
 %if %{with gallium}
 %dir %{_libdir}/egl
 %attr(755,root,root) %{_libdir}/egl/egl_gallium.so
-%if %{with gbm}
-%dir %{_libdir}/gbm
-%attr(755,root,root) %{_libdir}/gbm/gbm_gallium_drm.so
-%endif
 %endif
 
 %files libEGL-devel
@@ -980,43 +996,12 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_includedir}/KHR
 %{_includedir}/KHR/khrplatform.h
 %{_pkgconfigdir}/egl.pc
-%if %{with gbm}
-%attr(755,root,root) %{_libdir}/libgbm.so
-%{_includedir}/gbm.h
-%{_pkgconfigdir}/gbm.pc
-%endif
 
 %if %{with static_libs}
 %files libEGL-static
 %defattr(644,root,root,755)
 %{_libdir}/libEGL.a
 %endif
-%endif
-
-%if %{with gallium}
-%if %{with gallium_intel}
-%files gbm-driver-i915
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gbm/pipe_i915.so
-%endif
-
-%if %{with gallium_nouveau}
-%files gbm-driver-nouveau
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gbm/pipe_nouveau.so
-%endif
-
-%files gbm-driver-r300
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gbm/pipe_r300.so
-
-%files gbm-driver-r600
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gbm/pipe_r600.so
-
-%files gbm-driver-vmwgfx
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gbm/pipe_vmwgfx.so
 %endif
 
 %files libGL
@@ -1137,6 +1122,49 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libXvMCsoftpipe.so.1.0
 %attr(755,root,root) %ghost %{_libdir}/libXvMCsoftpipe.so.1
+%endif
+
+%if %{with gbm}
+%files libgbm
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libgbm.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libgbm.so.1
+%if %{with gallium}
+%dir %{_libdir}/gbm
+%attr(755,root,root) %{_libdir}/gbm/gbm_gallium_drm.so
+%endif
+
+%files libgbm-devel
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libgbm.so
+%{_includedir}/gbm.h
+%{_pkgconfigdir}/gbm.pc
+%endif
+
+%if %{with gallium}
+%if %{with gallium_intel}
+%files gbm-driver-i915
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gbm/pipe_i915.so
+%endif
+
+%if %{with gallium_nouveau}
+%files gbm-driver-nouveau
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gbm/pipe_nouveau.so
+%endif
+
+%files gbm-driver-r300
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gbm/pipe_r300.so
+
+%files gbm-driver-r600
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gbm/pipe_r600.so
+
+%files gbm-driver-vmwgfx
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gbm/pipe_vmwgfx.so
 %endif
 
 %files libglapi
