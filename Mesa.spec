@@ -2,7 +2,6 @@
 # TODO:
 # - consider:
 #   --enable-shared-dricore
-#   --with-egl-platforms=...,wayland (BR: pkgconfig(wayland-{client,server}))
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
 # - resurrect static if it's useful (using plain xorg target? DRI doesn't support static)
 #
@@ -13,6 +12,7 @@
 %bcond_without	gallium_nouveau	# gallium nouveau driver
 %bcond_without	osmesa		# OSMesa libraries
 %bcond_without	gbm		# Graphics Buffer Manager
+%bcond_without	wayland		# Wayland EGL
 %bcond_with	xa		# XA state tracker (for future vmwgfx xorg driver)
 %bcond_with	static_libs	# static libraries [not supported for DRI, thus broken currently]
 #
@@ -38,6 +38,7 @@ Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar
 # Source0-md5:	24eeebf66971809d8f40775a379b36c9
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-link.patch
+Patch2:		%{name}-wayland.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake
@@ -58,6 +59,8 @@ BuildRequires:	python-libxml2
 BuildRequires:	python-modules
 BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
+# wayland-{client,server}
+%{?with_wayland:BuildRequires:	wayland-devel}
 BuildRequires:	xorg-lib-libXdamage-devel
 BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXfixes-devel
@@ -86,6 +89,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %if %{without egl}
 %undefine	with_gbm
+%undefine	with_wayland
 %endif
 
 # _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
@@ -599,6 +603,32 @@ Mesa GL API shared library, common for various APIs (EGL, GL, GLES).
 Biblioteka współdzielona Mesa GL API, wspólna dla różnych API (EGL,
 GL, GLES).
 
+%package libwayland-egl
+Summary:	Wayland EGL library
+Summary(pl.UTF-8):	Biblioteka Wayland EGL
+Group:		Libraries
+Requires:	libdrm >= %{libdrm_ver}
+
+%description libwayland-egl
+Wayland EGL platform library.
+
+%description libwayland-egl -l pl.UTF-8
+Biblioteka platformy EGL Wayland.
+
+%package libwayland-egl-devel
+Summary:	Development files for Wayland EGL library
+Summary(pl.UTF-8):	Pliki programistyczne biblioteki Wayland EGL
+Group:		Development/Libraries
+Requires:	%{name}-libwayland-egl = %{version}-%{release}
+Requires:	libdrm-devel >= %{libdrm_ver}
+Requires:	wayland-devel
+
+%description libwayland-egl-devel
+Development files for Wayland EGL platform library.
+
+%description libwayland-egl-devel -l pl.UTF-8
+Pliki programistyczne biblioteki platformy EGL Wayland.
+
 %package libxatracker
 Summary:	Xorg Gallium3D accelleration library
 Summary(pl.UTF-8):	Biblioteka akceleracji Gallium3D dla Xorg
@@ -853,6 +883,7 @@ Sterownik Mesa softpipe dla API vdpau.
 %setup -q
 %patch0 -p0
 %patch1 -p1
+%patch2 -p1
 
 %build
 %{__aclocal}
@@ -914,7 +945,7 @@ cp -p src/mesa/osmesa.pc osmesa8
 	--enable-egl \
 	--enable-gles1 \
 	--enable-gles2 \
-	--with-egl-platforms=x11%{?with_gbm:,drm} \
+	--with-egl-platforms=x11%{?with_gbm:,drm}%{?with_wayland:,wayland} \
 %endif
 %if %{with gallium}
 	--enable-gallium-llvm \
@@ -991,6 +1022,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %post	libglapi -p /sbin/ldconfig
 %postun	libglapi -p /sbin/ldconfig
+
+%post	libwayland-egl -p /sbin/ldconfig
+%postun	libwayland-egl -p /sbin/ldconfig
 
 %post	libxatracker -p /sbin/ldconfig
 %postun	libxatracker -p /sbin/ldconfig
@@ -1191,6 +1225,18 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %ghost %{_libdir}/libglapi.so.0
 # libglapi-devel? nothing seems to need it atm.
 #%attr(755,root,root) %{_libdir}/libglapi.so
+
+%if %{with wayland}
+%files libwayland-egl
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libwayland-egl.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libwayland-egl.so.1
+
+%files libwayland-egl-devel
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libwayland-egl.so
+%{_pkgconfigdir}/wayland-egl.pc
+%endif
 
 %if %{with xa}
 %files libxatracker
