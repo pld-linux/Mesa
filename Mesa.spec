@@ -13,7 +13,7 @@
 %bcond_without	osmesa		# OSMesa libraries
 %bcond_without	gbm		# Graphics Buffer Manager
 %bcond_without	wayland		# Wayland EGL
-%bcond_with	xa		# XA state tracker (for future vmwgfx xorg driver)
+%bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
 %bcond_with	static_libs	# static libraries [not supported for DRI, thus broken currently]
 #
 # minimal supported xserver version
