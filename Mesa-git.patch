@@ -1,0 +1,994 @@
+diff --git a/configs/darwin b/configs/darwin
+index e2ca70a..721fbc7 100644
+--- a/configs/darwin
++++ b/configs/darwin
+@@ -9,8 +9,8 @@ INSTALL_DIR = /usr/X11
+ X11_DIR = $(INSTALL_DIR)
+ 
+ # Compiler and flags
+-CC = gcc
+-CXX = g++
++CC = $(shell xcrun -find cc)
++CXX = $(shell xcrun -find c++)
+ PIC_FLAGS = -fPIC
+ DEFINES =  -D_DARWIN_C_SOURCE -DPTHREADS -D_GNU_SOURCE \
+ 	   -DGLX_ALIAS_UNSUPPORTED \
+@@ -24,11 +24,14 @@ DEFINES =  -D_DARWIN_C_SOURCE -DPTHREADS -D_GNU_SOURCE \
+ # -DIN_DRI_DRIVER
+ 
+ ARCH_FLAGS += $(RC_CFLAGS)
++INCLUDE_FLAGS = -I$(INSTALL_DIR)/include -I$(X11_DIR)/include
++OPT_FLAGS = -g3 -gdwarf-2 -Os -ffast-math -fno-strict-aliasing
++WARN_FLAGS = -Wall -Wmissing-prototypes
+ 
+-CFLAGS =  -ggdb3 -Os -Wall -Wmissing-prototypes -std=c99 -ffast-math -fno-strict-aliasing -fvisibility=hidden \
+-	-I$(INSTALL_DIR)/include -I$(X11_DIR)/include $(OPT_FLAGS) $(PIC_FLAGS) $(ARCH_FLAGS) $(ASM_FLAGS) $(DEFINES)
+-CXXFLAGS =  -ggdb3 -Os -Wall -fno-strict-aliasing -fvisibility=hidden \
+-	-I$(INSTALL_DIR)/include -I$(X11_DIR)/include $(OPT_FLAGS) $(PIC_FLAGS) $(ARCH_FLAGS) $(ASM_FLAGS) $(DEFINES)
++CFLAGS = -std=c99 -fvisibility=hidden \
++	$(OPT_FLAGS) $(WARN_FLAGS) $(INCLUDE_FLAGS) $(PIC_FLAGS) $(ARCH_FLAGS) $(ASM_FLAGS) $(DEFINES) $(EXTRA_CFLAGS)
++CXXFLAGS = -fvisibility=hidden \
++	$(OPT_FLAGS) $(WARN_FLAGS) $(INCLUDE_FLAGS) $(PIC_FLAGS) $(ARCH_FLAGS) $(ASM_FLAGS) $(DEFINES) $(EXTRA_CFLAGS)
+ 
+ # Library names (actual file names)
+ GL_LIB_NAME = lib$(GL_LIB).dylib
+@@ -44,10 +47,10 @@ GLW_LIB_GLOB = lib$(GLW_LIB).*dylib
+ OSMESA_LIB_GLOB = lib$(OSMESA_LIB).*dylib
+ VG_LIB_GLOB = lib$(VG_LIB).*dylib
+ 
+-GL_LIB_DEPS = -L$(INSTALL_DIR)/$(LIB_DIR) -L$(X11_DIR)/$(LIB_DIR) -lX11 -lXext -lm -lpthread
+-OSMESA_LIB_DEPS =
+-GLU_LIB_DEPS = -L$(TOP)/$(LIB_DIR) -l$(GL_LIB)
+-GLW_LIB_DEPS = -L$(TOP)/$(LIB_DIR) -l$(GL_LIB) -L$(INSTALL_DIR)/$(LIB_DIR) -L$(X11_DIR)/$(LIB_DIR) -lX11 -lXt
++GL_LIB_DEPS = -L$(INSTALL_DIR)/$(LIB_DIR) -L$(X11_DIR)/$(LIB_DIR) -lX11-xcb -lxcb -lX11 -lXext $(EXTRA_LDFLAGS)
++OSMESA_LIB_DEPS = $(EXTRA_LDFLAGS)
++GLU_LIB_DEPS = -L$(TOP)/$(LIB_DIR) -l$(GL_LIB) $(EXTRA_LDFLAGS)
++GLW_LIB_DEPS = -L$(TOP)/$(LIB_DIR) -l$(GL_LIB) -L$(INSTALL_DIR)/$(LIB_DIR) -L$(X11_DIR)/$(LIB_DIR) -lX11 -lXt $(EXTRA_LDFLAGS)
+ 
+ SRC_DIRS = glsl mapi/glapi mapi/vgapi glx/apple mesa gallium glu
+ GLU_DIRS = sgi
+diff --git a/configs/darwin-fat-intel b/configs/darwin-fat-intel
+new file mode 100644
+index 0000000..273ae3d
+--- /dev/null
++++ b/configs/darwin-fat-intel
+@@ -0,0 +1,7 @@
++# Configuration for Darwin / MacOS X, making 32bit and 64bit fat dynamic libs for intel
++
++RC_CFLAGS=-arch i386 -arch x86_64
++
++include $(TOP)/configs/darwin
++
++CONFIG_NAME = darwin-fat-intel
+diff --git a/docs/relnotes-8.0.1.html b/docs/relnotes-8.0.1.html
+index 8c8cd3f..29a314c 100644
+--- a/docs/relnotes-8.0.1.html
++++ b/docs/relnotes-8.0.1.html
+@@ -28,7 +28,9 @@ for DRI hardware acceleration.
+ 
+ <h2>MD5 checksums</h2>
+ <pre>
+-tdb
++4855c2d93bd2ebd43f384bdcc92c9a27  MesaLib-8.0.1.tar.gz
++24eeebf66971809d8f40775a379b36c9  MesaLib-8.0.1.tar.bz2
++54e745d14dac5717f7f65b4e2d5c1df2  MesaLib-8.0.1.zip
+ </pre>
+ 
+ <h2>New features</h2>
+diff --git a/src/gallium/auxiliary/draw/draw_context.h b/src/gallium/auxiliary/draw/draw_context.h
+index 02c176e..f3a3f23 100644
+--- a/src/gallium/auxiliary/draw/draw_context.h
++++ b/src/gallium/auxiliary/draw/draw_context.h
+@@ -80,6 +80,21 @@ void draw_set_viewport_state( struct draw_context *draw,
+ void draw_set_clip_state( struct draw_context *pipe,
+                           const struct pipe_clip_state *clip );
+ 
++/**
++ * Sets the rasterization state used by the draw module.
++ * The rast_handle is used to pass the driver specific representation
++ * of the rasterization state. It's going to be used when the
++ * draw module sets the state back on the driver itself using the
++ * pipe::bind_rasterizer_state method.
++ *
++ * NOTE: if you're calling this function from within the pipe's
++ * bind_rasterizer_state you should always call it before binding
++ * the actual state - that's because the draw module can try to
++ * bind its own rasterizer state which would reset your newly
++ * set state. i.e. always do
++ * draw_set_rasterizer_state(driver->draw, state->pipe_state, state);
++ * driver->state.raster = state;
++ */
+ void draw_set_rasterizer_state( struct draw_context *draw,
+                                 const struct pipe_rasterizer_state *raster,
+                                 void *rast_handle );
+diff --git a/src/gallium/auxiliary/rtasm/rtasm_cpu.c b/src/gallium/auxiliary/rtasm/rtasm_cpu.c
+index 0461c81..7afcf14 100644
+--- a/src/gallium/auxiliary/rtasm/rtasm_cpu.c
++++ b/src/gallium/auxiliary/rtasm/rtasm_cpu.c
+@@ -25,43 +25,43 @@
+  *
+  **************************************************************************/
+ 
++#include "pipe/p_config.h"
++#include "rtasm_cpu.h"
++
++#if defined(PIPE_ARCH_X86) || defined(PIPE_ARCH_X86_64)
+ 
+ #include "util/u_debug.h"
+-#include "rtasm_cpu.h"
++#include "util/u_cpu_detect.h"
+ 
++DEBUG_GET_ONCE_BOOL_OPTION(nosse, "GALLIUM_NOSSE", FALSE);
+ 
+-#if defined(PIPE_ARCH_X86) || defined(PIPE_ARCH_X86_64)
+-static boolean rtasm_sse_enabled(void)
++static struct util_cpu_caps *get_cpu_caps(void)
+ {
+-   static boolean firsttime = 1;
+-   static boolean enabled;
+-   
+-   /* This gets called quite often at the moment:
+-    */
+-   if (firsttime) {
+-      enabled =  !debug_get_bool_option("GALLIUM_NOSSE", FALSE);
+-      firsttime = FALSE;
+-   }
+-   return enabled;
++   util_cpu_detect();
++   return &util_cpu_caps;
+ }
+-#endif
+ 
+ int rtasm_cpu_has_sse(void)
+ {
+-   /* FIXME: actually detect this at run-time */
+-#if defined(PIPE_ARCH_X86) || defined(PIPE_ARCH_X86_64)
+-   return rtasm_sse_enabled();
+-#else
+-   return 0;
+-#endif
++   return !debug_get_option_nosse() && get_cpu_caps()->has_sse;
+ }
+ 
+ int rtasm_cpu_has_sse2(void) 
+ {
+-   /* FIXME: actually detect this at run-time */
+-#if defined(PIPE_ARCH_X86) || defined(PIPE_ARCH_X86_64)
+-   return rtasm_sse_enabled();
++   return !debug_get_option_nosse() && get_cpu_caps()->has_sse2;
++}
++
++
+ #else
++
++int rtasm_cpu_has_sse(void)
++{
+    return 0;
+-#endif
+ }
++
++int rtasm_cpu_has_sse2(void)
++{
++   return 0;
++}
++
++#endif
+diff --git a/src/gallium/auxiliary/util/u_debug_memory.c b/src/gallium/auxiliary/util/u_debug_memory.c
+index f1baa62..e24a8bc 100644
+--- a/src/gallium/auxiliary/util/u_debug_memory.c
++++ b/src/gallium/auxiliary/util/u_debug_memory.c
+@@ -38,6 +38,7 @@
+ 
+ #include "os/os_memory.h"
+ #include "os/os_memory_debug.h"
++#include "os/os_thread.h"
+ 
+ #include "util/u_debug.h" 
+ #include "util/u_debug_stack.h" 
+@@ -72,6 +73,8 @@ struct debug_memory_footer
+ 
+ static struct list_head list = { &list, &list };
+ 
++pipe_static_mutex(list_mutex);
++
+ static unsigned long last_no = 0;
+ 
+ 
+@@ -132,7 +135,9 @@ debug_malloc(const char *file, unsigned line, const char *function,
+    ftr = footer_from_header(hdr);
+    ftr->magic = DEBUG_MEMORY_MAGIC;
+    
++   pipe_mutex_lock(list_mutex);
+    LIST_ADDTAIL(&hdr->head, &list);
++   pipe_mutex_unlock(list_mutex);
+    
+    return data_from_header(hdr);
+ }
+@@ -164,7 +169,9 @@ debug_free(const char *file, unsigned line, const char *function,
+       debug_assert(0);
+    }
+ 
++   pipe_mutex_lock(list_mutex);
+    LIST_DEL(&hdr->head);
++   pipe_mutex_unlock(list_mutex);
+    hdr->magic = 0;
+    ftr->magic = 0;
+    
+@@ -232,7 +239,9 @@ debug_realloc(const char *file, unsigned line, const char *function,
+    new_ftr = footer_from_header(new_hdr);
+    new_ftr->magic = DEBUG_MEMORY_MAGIC;
+    
++   pipe_mutex_lock(list_mutex);
+    LIST_REPLACE(&old_hdr->head, &new_hdr->head);
++   pipe_mutex_unlock(list_mutex);
+ 
+    /* copy data */
+    new_ptr = data_from_header(new_hdr);
+diff --git a/src/gallium/drivers/r300/compiler/radeon_program_alu.c b/src/gallium/drivers/r300/compiler/radeon_program_alu.c
+index dd1dfb3..c48f936 100644
+--- a/src/gallium/drivers/r300/compiler/radeon_program_alu.c
++++ b/src/gallium/drivers/r300/compiler/radeon_program_alu.c
+@@ -1165,35 +1165,79 @@ int radeonTransformDeriv(struct radeon_compiler* c,
+ }
+ 
+ /**
++ * IF Temp[0].x -> IF Temp[0].x
++ * ...          -> ...
++ * KILP         -> KIL -abs(Temp[0].x)
++ * ...          -> ...
++ * ENDIF        -> ENDIF
++ *
++ * === OR ===
++ *
+  * IF Temp[0].x -\
+  * KILP         - > KIL -abs(Temp[0].x)
+  * ENDIF        -/
+  *
+- * This needs to be done in its own pass, because it modifies the instructions
+- * before and after KILP.
++ * === OR ===
++ *
++ * IF Temp[0].x -> IF Temp[0].x
++ * ...          -> ...
++ * ELSE         -> ELSE
++ * ...	        -> ...
++ * KILP	        -> KIL -abs(Temp[0].x)
++ * ...          -> ...
++ * ENDIF        -> ENDIF
++ *
++ * === OR ===
++ *
++ * KILP         -> KIL -none.1111
++ *
++ * This needs to be done in its own pass, because it might modify the
++ * instructions before and after KILP.
+  */
+ void rc_transform_KILP(struct radeon_compiler * c, void *user)
+ {
+ 	struct rc_instruction * inst;
+ 	for (inst = c->Program.Instructions.Next;
+ 			inst != &c->Program.Instructions; inst = inst->Next) {
++		struct rc_instruction * if_inst;
++		unsigned in_if = 0;
+ 
+ 		if (inst->U.I.Opcode != RC_OPCODE_KILP)
+ 			continue;
+ 
++		for (if_inst = inst->Prev; if_inst != &c->Program.Instructions;
++						if_inst = if_inst->Prev) {
++
++			if (if_inst->U.I.Opcode == RC_OPCODE_IF) {
++				in_if = 1;
++				break;
++			}
++		}
++
+ 		inst->U.I.Opcode = RC_OPCODE_KIL;
+ 
+-		if (inst->Prev->U.I.Opcode != RC_OPCODE_IF
+-				|| inst->Next->U.I.Opcode != RC_OPCODE_ENDIF) {
++		if (!in_if) {
+ 			inst->U.I.SrcReg[0] = negate(builtin_one);
+ 		} else {
+-
++			/* This should work even if the KILP is inside the ELSE
++			 * block, because -0.0 is considered negative. */
+ 			inst->U.I.SrcReg[0] =
+-				negate(absolute(inst->Prev->U.I.SrcReg[0]));
+-			/* Remove IF */
+-			rc_remove_instruction(inst->Prev);
+-			/* Remove ENDIF */
+-			rc_remove_instruction(inst->Next);
++				negate(absolute(if_inst->U.I.SrcReg[0]));
++
++			if (inst->Prev->U.I.Opcode != RC_OPCODE_IF
++				&& inst->Next->U.I.Opcode != RC_OPCODE_ENDIF) {
++
++				/* Optimize the special case:
++				 * IF Temp[0].x
++				 * KILP
++				 * ENDIF
++				 */
++
++				/* Remove IF */
++				rc_remove_instruction(inst->Prev);
++				/* Remove ENDIF */
++				rc_remove_instruction(inst->Next);
++			}
+ 		}
+ 	}
+ }
+diff --git a/src/gallium/drivers/svga/svga_pipe_depthstencil.c b/src/gallium/drivers/svga/svga_pipe_depthstencil.c
+index c84615a..cb07dbe 100644
+--- a/src/gallium/drivers/svga/svga_pipe_depthstencil.c
++++ b/src/gallium/drivers/svga/svga_pipe_depthstencil.c
+@@ -57,10 +57,10 @@ svga_translate_stencil_op(unsigned op)
+    case PIPE_STENCIL_OP_KEEP:      return SVGA3D_STENCILOP_KEEP;
+    case PIPE_STENCIL_OP_ZERO:      return SVGA3D_STENCILOP_ZERO;
+    case PIPE_STENCIL_OP_REPLACE:   return SVGA3D_STENCILOP_REPLACE;
+-   case PIPE_STENCIL_OP_INCR:      return SVGA3D_STENCILOP_INCR;
+-   case PIPE_STENCIL_OP_DECR:      return SVGA3D_STENCILOP_DECR;
+-   case PIPE_STENCIL_OP_INCR_WRAP: return SVGA3D_STENCILOP_INCRSAT; /* incorrect? */
+-   case PIPE_STENCIL_OP_DECR_WRAP: return SVGA3D_STENCILOP_DECRSAT; /* incorrect? */
++   case PIPE_STENCIL_OP_INCR:      return SVGA3D_STENCILOP_INCRSAT;
++   case PIPE_STENCIL_OP_DECR:      return SVGA3D_STENCILOP_DECRSAT;
++   case PIPE_STENCIL_OP_INCR_WRAP: return SVGA3D_STENCILOP_INCR;
++   case PIPE_STENCIL_OP_DECR_WRAP: return SVGA3D_STENCILOP_DECR;
+    case PIPE_STENCIL_OP_INVERT:    return SVGA3D_STENCILOP_INVERT;
+    default:
+       assert(0);
+diff --git a/src/gallium/drivers/svga/svga_pipe_rasterizer.c b/src/gallium/drivers/svga/svga_pipe_rasterizer.c
+index a18845e..3342800 100644
+--- a/src/gallium/drivers/svga/svga_pipe_rasterizer.c
++++ b/src/gallium/drivers/svga/svga_pipe_rasterizer.c
+@@ -237,11 +237,11 @@ static void svga_bind_rasterizer_state( struct pipe_context *pipe,
+    struct svga_context *svga = svga_context(pipe);
+    struct svga_rasterizer_state *raster = (struct svga_rasterizer_state *)state;
+ 
+-   svga->curr.rast = raster;
+ 
+    draw_set_rasterizer_state(svga->swtnl.draw, raster ? &raster->templ : NULL,
+                              state);
+-   
++   svga->curr.rast = raster;
++
+    svga->dirty |= SVGA_NEW_RAST;
+ }
+ 
+diff --git a/src/gallium/drivers/svga/svga_screen.c b/src/gallium/drivers/svga/svga_screen.c
+index 82a3ff2..e22deb4 100644
+--- a/src/gallium/drivers/svga/svga_screen.c
++++ b/src/gallium/drivers/svga/svga_screen.c
+@@ -235,7 +235,7 @@ static int svga_get_shader_param(struct pipe_screen *screen, unsigned shader, en
+       case PIPE_SHADER_CAP_MAX_TEMPS:
+          if (!sws->get_cap(sws, SVGA3D_DEVCAP_MAX_FRAGMENT_SHADER_TEMPS, &result))
+             return 32;
+-         return result.u;
++         return MIN2(result.u, SVGA3D_TEMPREG_MAX);
+       case PIPE_SHADER_CAP_MAX_ADDRS:
+       case PIPE_SHADER_CAP_INDIRECT_INPUT_ADDR:
+ 	 /* 
+@@ -286,7 +286,7 @@ static int svga_get_shader_param(struct pipe_screen *screen, unsigned shader, en
+       case PIPE_SHADER_CAP_MAX_TEMPS:
+          if (!sws->get_cap(sws, SVGA3D_DEVCAP_MAX_VERTEX_SHADER_TEMPS, &result))
+             return 32;
+-         return result.u;
++         return MIN2(result.u, SVGA3D_TEMPREG_MAX);
+       case PIPE_SHADER_CAP_MAX_ADDRS:
+          return 1;
+       case PIPE_SHADER_CAP_MAX_PREDS:
+diff --git a/src/gallium/drivers/svga/svga_state_need_swtnl.c b/src/gallium/drivers/svga/svga_state_need_swtnl.c
+index 8c39a4b..ce4db8d 100644
+--- a/src/gallium/drivers/svga/svga_state_need_swtnl.c
++++ b/src/gallium/drivers/svga/svga_state_need_swtnl.c
+@@ -136,7 +136,7 @@ update_need_pipeline( struct svga_context *svga,
+ 
+    /* EDGEFLAGS
+     */
+-    if (vs->base.info.writes_edgeflag) {
++    if (vs && vs->base.info.writes_edgeflag) {
+       SVGA_DBG(DEBUG_SWTNL, "%s: edgeflags\n", __FUNCTION__);
+       need_pipeline = TRUE;
+    }
+@@ -145,7 +145,8 @@ update_need_pipeline( struct svga_context *svga,
+     */
+    if (svga->curr.reduced_prim == PIPE_PRIM_POINTS) {
+       unsigned sprite_coord_gen = svga->curr.rast->templ.sprite_coord_enable;
+-      unsigned generic_inputs = svga->curr.fs->generic_inputs;
++      unsigned generic_inputs =
++         svga->curr.fs ? svga->curr.fs->generic_inputs : 0;
+ 
+       if (sprite_coord_gen &&
+           (generic_inputs & ~sprite_coord_gen)) {
+diff --git a/src/glx/apple/Makefile b/src/glx/apple/Makefile
+index 66e6658..dc64295 100644
+--- a/src/glx/apple/Makefile
++++ b/src/glx/apple/Makefile
+@@ -35,6 +35,7 @@ SOURCES = \
+ 	apple_xgl_api_stereo.c \
+ 	apple_xgl_api_viewport.c \
+ 	appledri.c \
++	../create_context.c \
+ 	../clientattrib.c \
+ 	../compsize.c \
+ 	../glxconfig.c \
+diff --git a/src/glx/create_context.c b/src/glx/create_context.c
+index 714f0e5..a1a55b3 100644
+--- a/src/glx/create_context.c
++++ b/src/glx/create_context.c
+@@ -80,8 +80,13 @@ glXCreateContextAttribsARB(Display *dpy, GLXFBConfig config,
+ 					       &dummy_err);
+    }
+ 
+-   if (gc == NULL)
++   if (gc == NULL) {
++#ifdef GLX_USE_APPLEGL
++      gc = applegl_create_context(psc, cfg, share, 0);
++#else
+       gc = indirect_create_context(psc, cfg, share, 0);
++#endif
++   }
+ 
+    gc->xid = xcb_generate_id(c);
+    gc->share_xid = (share != NULL) ? share->xid : 0;
+diff --git a/src/mesa/drivers/dri/i915/i915_fragprog.c b/src/mesa/drivers/dri/i915/i915_fragprog.c
+index 4f016a3..5b7e93e 100644
+--- a/src/mesa/drivers/dri/i915/i915_fragprog.c
++++ b/src/mesa/drivers/dri/i915/i915_fragprog.c
+@@ -1361,6 +1361,10 @@ i915ValidateFragmentProgram(struct i915_context *i915)
+       EMIT_ATTR(_TNL_ATTRIB_POS, EMIT_3F_VIEWPORT, S4_VFMT_XYZ, 12);
+    }
+ 
++   /* Handle gl_PointSize builtin var here */
++   if (ctx->Point._Attenuated || ctx->VertexProgram.PointSizeEnabled)
++      EMIT_ATTR(_TNL_ATTRIB_POINTSIZE, EMIT_1F, S4_VFMT_POINT_WIDTH, 4);
++
+    if (inputsRead & FRAG_BIT_COL0) {
+       intel->coloroffset = offset / 4;
+       EMIT_ATTR(_TNL_ATTRIB_COLOR0, EMIT_4UB_4F_BGRA, S4_VFMT_COLOR, 4);
+diff --git a/src/mesa/drivers/dri/i915/i915_vtbl.c b/src/mesa/drivers/dri/i915/i915_vtbl.c
+index 11e8a35..e78dbc8 100644
+--- a/src/mesa/drivers/dri/i915/i915_vtbl.c
++++ b/src/mesa/drivers/dri/i915/i915_vtbl.c
+@@ -665,12 +665,11 @@ i915_set_draw_region(struct intel_context *intel,
+ 
+    draw_offset = (draw_y << 16) | draw_x;
+ 
++   FALLBACK(intel, I915_FALLBACK_DRAW_OFFSET,
++            (ctx->DrawBuffer->Width + draw_x > 2048) ||
++            (ctx->DrawBuffer->Height + draw_y > 2048));
+    /* When changing drawing rectangle offset, an MI_FLUSH is first required. */
+    if (draw_offset != i915->last_draw_offset) {
+-      FALLBACK(intel, I915_FALLBACK_DRAW_OFFSET,
+-               (ctx->DrawBuffer->Width + draw_x > 2048) ||
+-               (ctx->DrawBuffer->Height + draw_y > 2048));
+-
+       state->Buffer[I915_DESTREG_DRAWRECT0] = MI_FLUSH | INHIBIT_FLUSH_RENDER_CACHE;
+       i915->last_draw_offset = draw_offset;
+    } else
+diff --git a/src/mesa/drivers/dri/i965/brw_context.h b/src/mesa/drivers/dri/i965/brw_context.h
+index 72e5059..3cfc54b 100644
+--- a/src/mesa/drivers/dri/i965/brw_context.h
++++ b/src/mesa/drivers/dri/i965/brw_context.h
+@@ -290,6 +290,12 @@ typedef enum
+    BRW_VERT_RESULT_NDC = VERT_RESULT_MAX,
+    BRW_VERT_RESULT_HPOS_DUPLICATE,
+    BRW_VERT_RESULT_PAD,
++   /*
++    * It's actually not a vert_result but just a _mark_ to let sf aware that
++    * he need do something special to handle gl_PointCoord builtin variable
++    * correctly. see compile_sf_prog() for more info.
++    */
++   BRW_VERT_RESULT_PNTC,
+    BRW_VERT_RESULT_MAX
+ } brw_vert_result;
+ 
+diff --git a/src/mesa/drivers/dri/i965/brw_eu_emit.c b/src/mesa/drivers/dri/i965/brw_eu_emit.c
+index 3347157..b2581da 100644
+--- a/src/mesa/drivers/dri/i965/brw_eu_emit.c
++++ b/src/mesa/drivers/dri/i965/brw_eu_emit.c
+@@ -2188,7 +2188,7 @@ void brw_fb_WRITE(struct brw_compile *p,
+ 			    msg_type,
+ 			    msg_length,
+ 			    header_present,
+-			    1, /* last render target write */
++			    eot, /* last render target write */
+ 			    response_length,
+ 			    eot,
+ 			    0 /* send_commit_msg */);
+diff --git a/src/mesa/drivers/dri/i965/brw_fs.cpp b/src/mesa/drivers/dri/i965/brw_fs.cpp
+index 0de1eef..20b57bd 100644
+--- a/src/mesa/drivers/dri/i965/brw_fs.cpp
++++ b/src/mesa/drivers/dri/i965/brw_fs.cpp
+@@ -710,6 +710,15 @@ fs_visitor::calculate_urb_setup()
+ 	       urb_setup[fp_index] = urb_next++;
+ 	 }
+       }
++
++      /*
++       * It's a FS only attribute, and we did interpolation for this attribute
++       * in SF thread. So, count it here, too.
++       *
++       * See compile_sf_prog() for more info.
++       */
++      if (brw->fragment_program->Base.InputsRead & BITFIELD64_BIT(FRAG_ATTRIB_PNTC))
++         urb_setup[FRAG_ATTRIB_PNTC] = urb_next++;
+    }
+ 
+    /* Each attribute is 4 setup channels, each of which is half a reg. */
+diff --git a/src/mesa/drivers/dri/i965/brw_sf.c b/src/mesa/drivers/dri/i965/brw_sf.c
+index 54c27f9..ccef3e83 100644
+--- a/src/mesa/drivers/dri/i965/brw_sf.c
++++ b/src/mesa/drivers/dri/i965/brw_sf.c
+@@ -64,6 +64,16 @@ static void compile_sf_prog( struct brw_context *brw,
+ 
+    c.key = *key;
+    brw_compute_vue_map(&c.vue_map, intel, c.key.userclip_active, c.key.attrs);
++   if (c.key.do_point_coord) {
++      /*
++       * gl_PointCoord is a FS instead of VS builtin variable, thus it's
++       * not included in c.vue_map generated in VS stage. Here we add
++       * it manually to let SF shader generate the needed interpolation
++       * coefficient for FS shader.
++       */
++      c.vue_map.vert_result_to_slot[BRW_VERT_RESULT_PNTC] = c.vue_map.num_slots;
++      c.vue_map.slot_to_vert_result[c.vue_map.num_slots++] = BRW_VERT_RESULT_PNTC;
++   }
+    c.urb_entry_read_offset = brw_sf_compute_urb_entry_read_offset(intel);
+    c.nr_attr_regs = (c.vue_map.num_slots + 1)/2 - c.urb_entry_read_offset;
+    c.nr_setup_regs = c.nr_attr_regs;
+@@ -125,6 +135,8 @@ brw_upload_sf_prog(struct brw_context *brw)
+ {
+    struct gl_context *ctx = &brw->intel.ctx;
+    struct brw_sf_prog_key key;
++   /* _NEW_BUFFERS */
++   bool render_to_fbo = ctx->DrawBuffer->Name != 0;
+ 
+    memset(&key, 0, sizeof(key));
+ 
+@@ -167,7 +179,15 @@ brw_upload_sf_prog(struct brw_context *brw)
+ 	    key.point_sprite_coord_replace |= (1 << i);
+       }
+    }
+-   key.sprite_origin_lower_left = (ctx->Point.SpriteOrigin == GL_LOWER_LEFT);
++   if (brw->fragment_program->Base.InputsRead & BITFIELD64_BIT(FRAG_ATTRIB_PNTC))
++      key.do_point_coord = 1;
++   /*
++    * Window coordinates in a FBO are inverted, which means point
++    * sprite origin must be inverted, too.
++    */
++   if ((ctx->Point.SpriteOrigin == GL_LOWER_LEFT) != render_to_fbo)
++      key.sprite_origin_lower_left = true;
++
+    /* _NEW_LIGHT */
+    key.do_flat_shading = (ctx->Light.ShadeModel == GL_FLAT);
+    key.do_twoside_color = (ctx->Light.Enabled && ctx->Light.Model.TwoSide);
+@@ -176,10 +196,9 @@ brw_upload_sf_prog(struct brw_context *brw)
+    if (key.do_twoside_color) {
+       /* If we're rendering to a FBO, we have to invert the polygon
+        * face orientation, just as we invert the viewport in
+-       * sf_unit_create_from_key().  ctx->DrawBuffer->Name will be
+-       * nonzero if we're rendering to such an FBO.
++       * sf_unit_create_from_key().
+        */
+-      key.frontface_ccw = (ctx->Polygon.FrontFace == GL_CCW) ^ (ctx->DrawBuffer->Name != 0);
++      key.frontface_ccw = (ctx->Polygon.FrontFace == GL_CCW) != render_to_fbo;
+    }
+ 
+    if (!brw_search_cache(&brw->cache, BRW_SF_PROG,
+@@ -192,7 +211,8 @@ brw_upload_sf_prog(struct brw_context *brw)
+ 
+ const struct brw_tracked_state brw_sf_prog = {
+    .dirty = {
+-      .mesa  = (_NEW_HINT | _NEW_LIGHT | _NEW_POLYGON | _NEW_POINT | _NEW_TRANSFORM),
++      .mesa  = (_NEW_HINT | _NEW_LIGHT | _NEW_POLYGON | _NEW_POINT |
++                _NEW_TRANSFORM | _NEW_BUFFERS),
+       .brw   = (BRW_NEW_REDUCED_PRIMITIVE),
+       .cache = CACHE_NEW_VS_PROG
+    },
+diff --git a/src/mesa/drivers/dri/i965/brw_sf.h b/src/mesa/drivers/dri/i965/brw_sf.h
+index 4ef0240..f908fc0 100644
+--- a/src/mesa/drivers/dri/i965/brw_sf.h
++++ b/src/mesa/drivers/dri/i965/brw_sf.h
+@@ -52,6 +52,7 @@ struct brw_sf_prog_key {
+    GLuint do_flat_shading:1;
+    GLuint frontface_ccw:1;
+    GLuint do_point_sprite:1;
++   GLuint do_point_coord:1;
+    GLuint sprite_origin_lower_left:1;
+    GLuint userclip_active:1;
+ };
+diff --git a/src/mesa/drivers/dri/i965/brw_sf_emit.c b/src/mesa/drivers/dri/i965/brw_sf_emit.c
+index 1ee0098..ff6383b 100644
+--- a/src/mesa/drivers/dri/i965/brw_sf_emit.c
++++ b/src/mesa/drivers/dri/i965/brw_sf_emit.c
+@@ -386,6 +386,8 @@ calculate_point_sprite_mask(struct brw_sf_compile *c, GLuint reg)
+       if (c->key.point_sprite_coord_replace & (1 << (vert_result1 - VERT_RESULT_TEX0)))
+ 	 pc |= 0x0f;
+    }
++   if (vert_result1 == BRW_VERT_RESULT_PNTC)
++      pc |= 0x0f;
+ 
+    vert_result2 = vert_reg_to_vert_result(c, reg, 1);
+    if (vert_result2 >= VERT_RESULT_TEX0 && vert_result2 <= VERT_RESULT_TEX7) {
+@@ -393,6 +395,8 @@ calculate_point_sprite_mask(struct brw_sf_compile *c, GLuint reg)
+                                                      VERT_RESULT_TEX0)))
+          pc |= 0xf0;
+    }
++   if (vert_result2 == BRW_VERT_RESULT_PNTC)
++      pc |= 0xf0;
+ 
+    return pc;
+ }
+diff --git a/src/mesa/main/bufferobj.c b/src/mesa/main/bufferobj.c
+index a2959a8..4b27e06 100644
+--- a/src/mesa/main/bufferobj.c
++++ b/src/mesa/main/bufferobj.c
+@@ -1159,17 +1159,17 @@ _mesa_GetBufferParameterivARB(GLenum target, GLenum pname, GLint *params)
+       *params = _mesa_bufferobj_mapped(bufObj);
+       return;
+    case GL_BUFFER_ACCESS_FLAGS:
+-      if (ctx->VersionMajor < 3)
++      if (!ctx->Extensions.ARB_map_buffer_range)
+          goto invalid_pname;
+       *params = bufObj->AccessFlags;
+       return;
+    case GL_BUFFER_MAP_OFFSET:
+-      if (ctx->VersionMajor < 3)
++      if (!ctx->Extensions.ARB_map_buffer_range)
+          goto invalid_pname;
+       *params = (GLint) bufObj->Offset;
+       return;
+    case GL_BUFFER_MAP_LENGTH:
+-      if (ctx->VersionMajor < 3)
++      if (!ctx->Extensions.ARB_map_buffer_range)
+          goto invalid_pname;
+       *params = (GLint) bufObj->Length;
+       return;
+@@ -1210,7 +1210,7 @@ _mesa_GetBufferParameteri64v(GLenum target, GLenum pname, GLint64 *params)
+       *params = simplified_access_mode(bufObj->AccessFlags);
+       return;
+    case GL_BUFFER_ACCESS_FLAGS:
+-      if (ctx->VersionMajor < 3)
++      if (!ctx->Extensions.ARB_map_buffer_range)
+          goto invalid_pname;
+       *params = bufObj->AccessFlags;
+       return;
+@@ -1218,12 +1218,12 @@ _mesa_GetBufferParameteri64v(GLenum target, GLenum pname, GLint64 *params)
+       *params = _mesa_bufferobj_mapped(bufObj);
+       return;
+    case GL_BUFFER_MAP_OFFSET:
+-      if (ctx->VersionMajor < 3)
++      if (!ctx->Extensions.ARB_map_buffer_range)
+          goto invalid_pname;
+       *params = bufObj->Offset;
+       return;
+    case GL_BUFFER_MAP_LENGTH:
+-      if (ctx->VersionMajor < 3)
++      if (!ctx->Extensions.ARB_map_buffer_range)
+          goto invalid_pname;
+       *params = bufObj->Length;
+       return;
+diff --git a/src/mesa/main/pack.c b/src/mesa/main/pack.c
+index ee983f9..4b0ee79 100644
+--- a/src/mesa/main/pack.c
++++ b/src/mesa/main/pack.c
+@@ -5254,3 +5254,94 @@ _mesa_unpack_image( GLuint dimensions,
+    }
+ }
+ 
++
++
++/**
++ * If we unpack colors from a luminance surface, we'll get pixel colors
++ * such as (l, l, l, a).
++ * When we call _mesa_pack_rgba_span_float(format=GL_LUMINANCE), that
++ * function will compute L=R+G+B before packing.  The net effect is we'll
++ * accidentally store luminance values = 3*l.
++ * This function compensates for that by converting (aka rebasing) (l,l,l,a)
++ * to be (l,0,0,a).
++ * It's a similar story for other formats such as LUMINANCE_ALPHA, ALPHA
++ * and INTENSITY.
++ *
++ * Finally, we also need to do this when the actual surface format does
++ * not match the logical surface format.  For example, suppose the user
++ * requests a GL_LUMINANCE texture but the driver stores it as RGBA.
++ * Again, we'll get pixel values like (l,l,l,a).
++ */
++void
++_mesa_rebase_rgba_float(GLuint n, GLfloat rgba[][4], GLenum baseFormat)
++{
++   GLuint i;
++
++   switch (baseFormat) {
++   case GL_ALPHA:
++      for (i = 0; i < n; i++) {
++         rgba[i][RCOMP] = 0.0F;
++         rgba[i][GCOMP] = 0.0F;
++         rgba[i][BCOMP] = 0.0F;
++      }
++      break;
++   case GL_INTENSITY:
++      /* fall-through */
++   case GL_LUMINANCE:
++      for (i = 0; i < n; i++) {
++         rgba[i][GCOMP] = 0.0F;
++         rgba[i][BCOMP] = 0.0F;
++         rgba[i][ACOMP] = 1.0F;
++      }
++      break;
++   case GL_LUMINANCE_ALPHA:
++      for (i = 0; i < n; i++) {
++         rgba[i][GCOMP] = 0.0F;
++         rgba[i][BCOMP] = 0.0F;
++      }
++      break;
++   default:
++      /* no-op */
++      ;
++   }
++}
++
++
++/**
++ * As above, but GLuint components.
++ */
++void
++_mesa_rebase_rgba_uint(GLuint n, GLuint rgba[][4], GLenum baseFormat)
++{
++   GLuint i;
++
++   switch (baseFormat) {
++   case GL_ALPHA:
++      for (i = 0; i < n; i++) {
++         rgba[i][RCOMP] = 0;
++         rgba[i][GCOMP] = 0;
++         rgba[i][BCOMP] = 0;
++      }
++      break;
++   case GL_INTENSITY:
++      /* fall-through */
++   case GL_LUMINANCE:
++      for (i = 0; i < n; i++) {
++         rgba[i][GCOMP] = 0;
++         rgba[i][BCOMP] = 0;
++         rgba[i][ACOMP] = 1;
++      }
++      break;
++   case GL_LUMINANCE_ALPHA:
++      for (i = 0; i < n; i++) {
++         rgba[i][GCOMP] = 0;
++         rgba[i][BCOMP] = 0;
++      }
++      break;
++   default:
++      /* no-op */
++      ;
++   }
++}
++
++
+diff --git a/src/mesa/main/pack.h b/src/mesa/main/pack.h
+index b1853cd..cd49c74 100644
+--- a/src/mesa/main/pack.h
++++ b/src/mesa/main/pack.h
+@@ -149,4 +149,11 @@ _mesa_pack_rgba_span_int(struct gl_context *ctx, GLuint n, GLuint rgba[][4],
+                          GLenum dstFormat, GLenum dstType,
+                          GLvoid *dstAddr);
+ 
++
++extern void
++_mesa_rebase_rgba_float(GLuint n, GLfloat rgba[][4], GLenum baseFormat);
++
++extern void
++_mesa_rebase_rgba_uint(GLuint n, GLuint rgba[][4], GLenum baseFormat);
++
+ #endif
+diff --git a/src/mesa/main/readpix.c b/src/mesa/main/readpix.c
+index c1489d2..5b3c246 100644
+--- a/src/mesa/main/readpix.c
++++ b/src/mesa/main/readpix.c
+@@ -218,6 +218,16 @@ fast_read_rgba_pixels_memcpy( struct gl_context *ctx,
+       return GL_FALSE;
+    }
+ 
++   /* If the format is unsigned normalized then we can ignore clamping
++    * because the values are already in the range [0,1] so it won't
++    * have any effect anyway.
++    */
++   if (_mesa_get_format_datatype(rb->Format) == GL_UNSIGNED_NORMALIZED)
++      transferOps &= ~IMAGE_CLAMP_BIT;
++
++   if (transferOps)
++      return GL_FALSE;
++
+    dstStride = _mesa_image_row_stride(packing, width, format, type);
+    dst = (GLubyte *) _mesa_image_address2d(packing, pixels, width, height,
+ 					   format, type, 0, 0);
+@@ -274,10 +284,14 @@ slow_read_rgba_pixels( struct gl_context *ctx,
+    for (j = 0; j < height; j++) {
+       if (_mesa_is_integer_format(format)) {
+ 	 _mesa_unpack_uint_rgba_row(rbFormat, width, map, (GLuint (*)[4]) rgba);
++         _mesa_rebase_rgba_uint(width, (GLuint (*)[4]) rgba,
++                                rb->_BaseFormat);
+ 	 _mesa_pack_rgba_span_int(ctx, width, (GLuint (*)[4]) rgba, format,
+                                   type, dst);
+       } else {
+ 	 _mesa_unpack_rgba_row(rbFormat, width, map, (GLfloat (*)[4]) rgba);
++         _mesa_rebase_rgba_float(width, (GLfloat (*)[4]) rgba,
++                                 rb->_BaseFormat);
+ 	 _mesa_pack_rgba_span_float(ctx, width, (GLfloat (*)[4]) rgba, format,
+                                     type, dst, packing, transferOps);
+       }
+@@ -313,13 +327,11 @@ read_rgba_pixels( struct gl_context *ctx,
+       transferOps |= IMAGE_CLAMP_BIT;
+    }
+ 
+-   if (!transferOps) {
+-      /* Try the optimized paths first. */
+-      if (fast_read_rgba_pixels_memcpy(ctx, x, y, width, height,
+-				       format, type, pixels, packing,
+-				       transferOps)) {
+-	 return;
+-      }
++   /* Try the optimized paths first. */
++   if (fast_read_rgba_pixels_memcpy(ctx, x, y, width, height,
++                                    format, type, pixels, packing,
++                                    transferOps)) {
++      return;
+    }
+ 
+    slow_read_rgba_pixels(ctx, x, y, width, height,
+diff --git a/src/mesa/main/texgetimage.c b/src/mesa/main/texgetimage.c
+index 8362199..76ac5a2 100644
+--- a/src/mesa/main/texgetimage.c
++++ b/src/mesa/main/texgetimage.c
+@@ -275,13 +275,8 @@ get_tex_rgba_compressed(struct gl_context *ctx, GLuint dimensions,
+ 
+    if (baseFormat == GL_LUMINANCE ||
+        baseFormat == GL_LUMINANCE_ALPHA) {
+-      /* Set green and blue to zero since the pack function here will
+-       * compute L=R+G+B.
+-       */
+-      GLuint i;
+-      for (i = 0; i < width * height; i++) {
+-         tempImage[i * 4 + GCOMP] = tempImage[i * 4 + BCOMP] = 0.0f;
+-      }
++      _mesa_rebase_rgba_float(width * height, (GLfloat (*)[4]) tempImage,
++                              baseFormat);
+    }
+ 
+    srcRow = tempImage;
+@@ -312,6 +307,8 @@ get_tex_rgba_uncompressed(struct gl_context *ctx, GLuint dimensions,
+    const gl_format texFormat =
+       _mesa_get_srgb_format_linear(texImage->TexFormat);
+    const GLuint width = texImage->Width;
++   const GLenum destBaseFormat = _mesa_base_tex_format(ctx, format);
++   GLenum rebaseFormat = GL_NONE;
+    GLuint height = texImage->Height;
+    GLuint depth = texImage->Depth;
+    GLuint img, row;
+@@ -332,6 +329,28 @@ get_tex_rgba_uncompressed(struct gl_context *ctx, GLuint dimensions,
+       height = 1;
+    }
+ 
++   if (texImage->_BaseFormat == GL_LUMINANCE ||
++       texImage->_BaseFormat == GL_INTENSITY ||
++       texImage->_BaseFormat == GL_LUMINANCE_ALPHA) {
++      /* If a luminance (or intensity) texture is read back as RGB(A), the
++       * returned value should be (L,0,0,1), not (L,L,L,1).  Set rebaseFormat
++       * here to get G=B=0.
++       */
++      rebaseFormat = texImage->_BaseFormat;
++   }
++   else if ((texImage->_BaseFormat == GL_RGBA ||
++             texImage->_BaseFormat == GL_RGB) &&
++            (destBaseFormat == GL_LUMINANCE ||
++             destBaseFormat == GL_LUMINANCE_ALPHA ||
++             destBaseFormat == GL_LUMINANCE_INTEGER_EXT ||
++             destBaseFormat == GL_LUMINANCE_ALPHA_INTEGER_EXT)) {
++      /* If we're reading back an RGB(A) texture as luminance then we need
++       * to return L=tex(R).  Note, that's different from glReadPixels which
++       * returns L=R+G+B.
++       */
++      rebaseFormat = GL_LUMINANCE_ALPHA; /* this covers GL_LUMINANCE too */
++   }
++
+    for (img = 0; img < depth; img++) {
+       GLubyte *srcMap;
+       GLint rowstride;
+@@ -349,76 +368,14 @@ get_tex_rgba_uncompressed(struct gl_context *ctx, GLuint dimensions,
+ 
+ 	    if (is_integer) {
+ 	       _mesa_unpack_uint_rgba_row(texFormat, width, src, rgba_uint);
+-
+-	       if (texImage->_BaseFormat == GL_ALPHA) {
+-		  GLint col;
+-		  for (col = 0; col < width; col++) {
+-		     rgba_uint[col][RCOMP] = 0;
+-		     rgba_uint[col][GCOMP] = 0;
+-		     rgba_uint[col][BCOMP] = 0;
+-		  }
+-	       }
+-	       else if (texImage->_BaseFormat == GL_LUMINANCE) {
+-		  GLint col;
+-		  for (col = 0; col < width; col++) {
+-		     rgba_uint[col][GCOMP] = 0;
+-		     rgba_uint[col][BCOMP] = 0;
+-		     rgba_uint[col][ACOMP] = 1;
+-		  }
+-	       }
+-	       else if (texImage->_BaseFormat == GL_LUMINANCE_ALPHA) {
+-		  GLint col;
+-		  for (col = 0; col < width; col++) {
+-		     rgba_uint[col][GCOMP] = 0;
+-		     rgba_uint[col][BCOMP] = 0;
+-		  }
+-	       }
+-	       else if (texImage->_BaseFormat == GL_INTENSITY) {
+-		  GLint col;
+-		  for (col = 0; col < width; col++) {
+-		     rgba_uint[col][GCOMP] = 0;
+-		     rgba_uint[col][BCOMP] = 0;
+-		     rgba_uint[col][ACOMP] = 1;
+-		  }
+-	       }
+-
++               if (rebaseFormat)
++                  _mesa_rebase_rgba_uint(width, rgba_uint, rebaseFormat);
+ 	       _mesa_pack_rgba_span_int(ctx, width, rgba_uint,
+ 					format, type, dest);
+ 	    } else {
+ 	       _mesa_unpack_rgba_row(texFormat, width, src, rgba);
+-
+-	       if (texImage->_BaseFormat == GL_ALPHA) {
+-		  GLint col;
+-		  for (col = 0; col < width; col++) {
+-		     rgba[col][RCOMP] = 0.0F;
+-		     rgba[col][GCOMP] = 0.0F;
+-		     rgba[col][BCOMP] = 0.0F;
+-		  }
+-	       }
+-	       else if (texImage->_BaseFormat == GL_LUMINANCE) {
+-		  GLint col;
+-		  for (col = 0; col < width; col++) {
+-		     rgba[col][GCOMP] = 0.0F;
+-		     rgba[col][BCOMP] = 0.0F;
+-		     rgba[col][ACOMP] = 1.0F;
+-		  }
+-	       }
+-	       else if (texImage->_BaseFormat == GL_LUMINANCE_ALPHA) {
+-		  GLint col;
+-		  for (col = 0; col < width; col++) {
+-		     rgba[col][GCOMP] = 0.0F;
+-		     rgba[col][BCOMP] = 0.0F;
+-		  }
+-	       }
+-	       else if (texImage->_BaseFormat == GL_INTENSITY) {
+-		  GLint col;
+-		  for (col = 0; col < width; col++) {
+-		     rgba[col][GCOMP] = 0.0F;
+-		     rgba[col][BCOMP] = 0.0F;
+-		     rgba[col][ACOMP] = 1.0F;
+-		  }
+-	       }
+-
++               if (rebaseFormat)
++                  _mesa_rebase_rgba_float(width, rgba, rebaseFormat);
+ 	       _mesa_pack_rgba_span_float(ctx, width, (GLfloat (*)[4]) rgba,
+ 					  format, type, dest,
+ 					  &ctx->Pack, transferOps);
+diff --git a/src/mesa/tnl/t_context.c b/src/mesa/tnl/t_context.c
+index 1ded44c..e38c0a3 100644
+--- a/src/mesa/tnl/t_context.c
++++ b/src/mesa/tnl/t_context.c
+@@ -151,8 +151,7 @@ _tnl_InvalidateState( struct gl_context *ctx, GLuint new_state )
+    if (ctx->RenderMode == GL_FEEDBACK)
+       tnl->render_inputs_bitset |= BITFIELD64_BIT(_TNL_ATTRIB_TEX0);
+ 
+-   if (ctx->Point._Attenuated ||
+-       (ctx->VertexProgram._Enabled && ctx->VertexProgram.PointSizeEnabled))
++   if (ctx->Point._Attenuated || ctx->VertexProgram.PointSizeEnabled)
+       tnl->render_inputs_bitset |= BITFIELD64_BIT(_TNL_ATTRIB_POINTSIZE);
+ 
+    /* check for varying vars which are written by the vertex program */
