@@ -41,7 +41,7 @@ Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-link.patch
 Patch2:		%{name}-wayland.patch
 URL:		http://www.mesa3d.org/
-BuildRequires:	autoconf >= 2.59
+BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
 BuildRequires:	expat-devel
 BuildRequires:	gcc >= 5:3.3
@@ -71,7 +71,7 @@ BuildRequires:	xorg-lib-libXxf86vm-devel
 BuildRequires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 BuildRequires:	xorg-proto-glproto-devel >= %{glproto_ver}
 BuildRequires:	xorg-util-makedepend
-BuildRequires:	xorg-xserver-server-devel
+BuildRequires:	xorg-xserver-server-devel >= %{xserver_ver}
 %if %{with egl}
 BuildRequires:	libxcb-devel
 BuildRequires:	udev-devel >= 1:150
