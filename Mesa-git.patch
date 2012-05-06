@@ -13,6 +13,109 @@ index ad1818c..d73ba9f 100644
  </pre>
  
  <h2>New features</h2>
+diff --git a/src/egl/main/eglimage.c b/src/egl/main/eglimage.c
+index d5deae7..1174d0a 100644
+--- a/src/egl/main/eglimage.c
++++ b/src/egl/main/eglimage.c
+@@ -45,7 +45,7 @@ _eglParseImageAttribList(_EGLImageAttribs *attrs, _EGLDisplay *dpy,
+ 
+    (void) dpy;
+ 
+-   memset(attrs, 0, sizeof(attrs));
++   memset(attrs, 0, sizeof(*attrs));
+    attrs->ImagePreserved = EGL_FALSE;
+    attrs->GLTextureLevel = 0;
+    attrs->GLTextureZOffset = 0;
+diff --git a/src/gallium/auxiliary/util/u_double_list.h b/src/gallium/auxiliary/util/u_double_list.h
+index 2384c36..9d1129b 100644
+--- a/src/gallium/auxiliary/util/u_double_list.h
++++ b/src/gallium/auxiliary/util/u_double_list.h
+@@ -105,6 +105,11 @@ static INLINE void list_delinit(struct list_head *item)
+ #define LIST_IS_EMPTY(__list)                   \
+     ((__list)->next == (__list))
+ 
++/**
++ * Cast from a pointer to a member of a struct back to the containing struct.
++ *
++ * 'sample' MUST be initialized, or else the result is undefined!
++ */
+ #ifndef container_of
+ #define container_of(ptr, sample, member)				\
+     (void *)((char *)(ptr)						\
+@@ -112,29 +117,29 @@ static INLINE void list_delinit(struct list_head *item)
+ #endif
+ 
+ #define LIST_FOR_EACH_ENTRY(pos, head, member)				\
+-   for (pos = container_of((head)->next, pos, member);			\
++   for (pos = NULL, pos = container_of((head)->next, pos, member);	\
+ 	&pos->member != (head);						\
+ 	pos = container_of(pos->member.next, pos, member))
+ 
+ #define LIST_FOR_EACH_ENTRY_SAFE(pos, storage, head, member)	\
+-   for (pos = container_of((head)->next, pos, member),			\
++   for (pos = NULL, pos = container_of((head)->next, pos, member),	\
+ 	storage = container_of(pos->member.next, pos, member);	\
+ 	&pos->member != (head);						\
+ 	pos = storage, storage = container_of(storage->member.next, storage, member))
+ 
+ #define LIST_FOR_EACH_ENTRY_SAFE_REV(pos, storage, head, member)	\
+-   for (pos = container_of((head)->prev, pos, member),			\
++   for (pos = NULL, pos = container_of((head)->prev, pos, member),	\
+ 	storage = container_of(pos->member.prev, pos, member);		\
+ 	&pos->member != (head);						\
+ 	pos = storage, storage = container_of(storage->member.prev, storage, member))
+ 
+ #define LIST_FOR_EACH_ENTRY_FROM(pos, start, head, member)		\
+-   for (pos = container_of((start), pos, member);			\
++   for (pos = NULL, pos = container_of((start), pos, member);		\
+ 	&pos->member != (head);						\
+ 	pos = container_of(pos->member.next, pos, member))
+ 
+ #define LIST_FOR_EACH_ENTRY_FROM_REV(pos, start, head, member)		\
+-   for (pos = container_of((start), pos, member);			\
++   for (pos = NULL, pos = container_of((start), pos, member);		\
+ 	&pos->member != (head);						\
+ 	pos = container_of(pos->member.prev, pos, member))
+ 
+diff --git a/src/gallium/auxiliary/util/u_linkage.h b/src/gallium/auxiliary/util/u_linkage.h
+index 43ec917..7b23123 100644
+--- a/src/gallium/auxiliary/util/u_linkage.h
++++ b/src/gallium/auxiliary/util/u_linkage.h
+@@ -49,15 +49,16 @@ unsigned util_semantic_set_from_program_file(struct util_semantic_set *set, cons
+  *
+  * num_slots is the size of the layout array and hardware limit instead.
+  *
+- * efficient_slots == 0 or efficient_solts == num_slots are typical settings.
++ * efficient_slots == 0 or efficient_slots == num_slots are typical settings.
+  */
+ void util_semantic_layout_from_set(unsigned char *layout, const struct util_semantic_set *set, unsigned efficient_slots, unsigned num_slots);
+ 
+ static INLINE void
+-util_semantic_table_from_layout(unsigned char *table, unsigned char *layout, unsigned char first_slot_value, unsigned char num_slots)
++util_semantic_table_from_layout(unsigned char *table, size_t table_size, unsigned char *layout,
++                                unsigned char first_slot_value, unsigned char num_slots)
+ {
+-   int i;
+-   memset(table, 0xff, sizeof(table));
++   unsigned char i;
++   memset(table, 0xff, table_size);
+ 
+    for(i = 0; i < num_slots; ++i)
+       table[layout[i]] = first_slot_value + i;
+diff --git a/src/gallium/drivers/nvfx/nvfx_fragprog.c b/src/gallium/drivers/nvfx/nvfx_fragprog.c
+index dbd7c77..0babcbb 100644
+--- a/src/gallium/drivers/nvfx/nvfx_fragprog.c
++++ b/src/gallium/drivers/nvfx/nvfx_fragprog.c
+@@ -977,7 +977,8 @@ nvfx_fragprog_prepare(struct nvfx_context* nvfx, struct nvfx_fpc *fpc)
+ 	if(fpc->fp->num_slots > num_texcoords)
+ 		return FALSE;
+ 	util_semantic_layout_from_set(fpc->fp->slot_to_generic, &set, 0, num_texcoords);
+-	util_semantic_table_from_layout(fpc->generic_to_slot, fpc->fp->slot_to_generic, 0, num_texcoords);
++	util_semantic_table_from_layout(fpc->generic_to_slot, sizeof fpc->generic_to_slot,
++                                        fpc->fp->slot_to_generic, 0, num_texcoords);
+ 
+ 	memset(fpc->fp->slot_to_fp_input, 0xff, sizeof(fpc->fp->slot_to_fp_input));
+ 
 diff --git a/src/gallium/drivers/r300/r300_blit.c b/src/gallium/drivers/r300/r300_blit.c
 index d132638..920612b 100644
 --- a/src/gallium/drivers/r300/r300_blit.c
@@ -558,6 +661,36 @@ index 2939963..69d6758 100644
  
      /* Make the last generic be WPOS. */
      vs->outputs.wpos = vs->outputs.generic[transform.last_generic + 1];
+diff --git a/src/gallium/state_trackers/vega/text.c b/src/gallium/state_trackers/vega/text.c
+index a183933..27d461c 100644
+--- a/src/gallium/state_trackers/vega/text.c
++++ b/src/gallium/state_trackers/vega/text.c
+@@ -73,8 +73,8 @@ static void add_glyph(struct vg_font *font,
+    glyph = CALLOC_STRUCT(vg_glyph);
+    glyph->object = obj;
+    glyph->is_hinted = isHinted;
+-   memcpy(glyph->glyph_origin, glyphOrigin, sizeof(glyphOrigin));
+-   memcpy(glyph->escapement, escapement, sizeof(escapement));
++   memcpy(glyph->glyph_origin, glyphOrigin, sizeof(glyph->glyph_origin));
++   memcpy(glyph->escapement, escapement, sizeof(glyph->glyph_origin));
+ 
+    cso_hash_insert(font->glyphs, (unsigned) glyphIndex, glyph);
+ }
+diff --git a/src/gallium/targets/egl-static/egl_st.c b/src/gallium/targets/egl-static/egl_st.c
+index 81d7bb4..67e3c29 100644
+--- a/src/gallium/targets/egl-static/egl_st.c
++++ b/src/gallium/targets/egl-static/egl_st.c
+@@ -54,8 +54,9 @@ dlopen_gl_lib_cb(const char *dir, size_t len, void *callback_data)
+    int ret;
+ 
+    if (len) {
++      assert(len <= INT_MAX && "path is insanely long!");
+       ret = util_snprintf(path, sizeof(path), "%.*s/%s" UTIL_DL_EXT,
+-            len, dir, name);
++            (int)len, dir, name);
+    }
+    else {
+       ret = util_snprintf(path, sizeof(path), "%s" UTIL_DL_EXT, name);
 diff --git a/src/glsl/Android.mk b/src/glsl/Android.mk
 index d7d17dd..84a8655 100644
 --- a/src/glsl/Android.mk
@@ -570,11 +703,148 @@ index d7d17dd..84a8655 100644
  	$(MESA_TOP)/src/mapi \
  	$(MESA_TOP)/src/mesa
  
+diff --git a/src/glx/apple/Makefile b/src/glx/apple/Makefile
+index dc64295..68fe6ad 100644
+--- a/src/glx/apple/Makefile
++++ b/src/glx/apple/Makefile
+@@ -26,6 +26,7 @@ SOURCES = \
+ 	apple_glx.c \
+ 	apple_glx_context.c \
+ 	apple_glx_drawable.c \
++	apple_glx_log.c \
+ 	apple_glx_pbuffer.c \
+ 	apple_glx_pixmap.c \
+ 	apple_glx_surface.c \
+diff --git a/src/glx/apple/apple_glx.c b/src/glx/apple/apple_glx.c
+index d94c1e0..56cff64 100644
+--- a/src/glx/apple/apple_glx.c
++++ b/src/glx/apple/apple_glx.c
+@@ -33,6 +33,8 @@
+ #include <assert.h>
+ #include <stdarg.h>
+ #include <dlfcn.h>
++#include <pthread.h>
++#include <inttypes.h>
+ #include "appledri.h"
+ #include "apple_glx.h"
+ #include "apple_glx_context.h"
+@@ -43,22 +45,6 @@ static int dri_event_base = 0;
+ 
+ const GLuint __glXDefaultPixelStore[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 1 };
+ 
+-static bool diagnostic = false;
+-
+-void
+-apple_glx_diagnostic(const char *fmt, ...)
+-{
+-   va_list vl;
+-
+-   if (diagnostic) {
+-      fprintf(stderr, "DIAG: ");
+-
+-      va_start(vl, fmt);
+-      vfprintf(stderr, fmt, vl);
+-      va_end(vl);
+-   }
+-}
+-
+ int
+ apple_get_dri_event_base(void)
+ {
+@@ -125,10 +111,9 @@ apple_init_glx(Display * dpy)
+    if (initialized)
+       return false;
+ 
+-   if (getenv("LIBGL_DIAGNOSTIC")) {
+-      printf("initializing libGL in %s\n", __func__);
+-      diagnostic = true;
+-   }
++   apple_glx_log_init();
++
++   apple_glx_log(ASL_LEVEL_INFO, "Initializing libGL.");
+ 
+    apple_cgl_init();
+    (void) apple_glx_get_client_id();
+diff --git a/src/glx/apple/apple_glx.h b/src/glx/apple/apple_glx.h
+index ce8c488..0967f18 100644
+--- a/src/glx/apple/apple_glx.h
++++ b/src/glx/apple/apple_glx.h
+@@ -38,7 +38,8 @@
+ #define XP_NO_X_HEADERS
+ #include <Xplugin.h>
+ 
+-void apple_glx_diagnostic(const char *fmt, ...);
++#include "apple_glx_log.h"
++
+ xp_client_id apple_glx_get_client_id(void);
+ bool apple_init_glx(Display * dpy);
+ void apple_glx_swap_buffers(void *ptr);
+diff --git a/src/glx/apple/apple_glx_context.c b/src/glx/apple/apple_glx_context.c
+index c58d05a..0bb25b4 100644
+--- a/src/glx/apple/apple_glx_context.c
++++ b/src/glx/apple/apple_glx_context.c
+@@ -421,7 +421,7 @@ apple_glx_make_current_context(Display * dpy, void *oldptr, void *ptr,
+     */
+ 
+    if (same_drawable && ac->is_current) {
+-      apple_glx_diagnostic("%s: same_drawable and ac->is_current\n");
++      apple_glx_diagnostic("same_drawable and ac->is_current\n");
+       return false;
+    }
+ 
 diff --git a/src/glx/apple/apple_glx_drawable.c b/src/glx/apple/apple_glx_drawable.c
-index 5530224..db28302 100644
+index 5530224..3f84d56 100644
 --- a/src/glx/apple/apple_glx_drawable.c
 +++ b/src/glx/apple/apple_glx_drawable.c
-@@ -135,6 +135,7 @@ release_drawable(struct apple_glx_drawable *d)
+@@ -32,6 +32,7 @@
+ #include <stdlib.h>
+ #include <assert.h>
+ #include <pthread.h>
++#include <string.h>
+ #include "apple_glx.h"
+ #include "apple_glx_context.h"
+ #include "apple_glx_drawable.h"
+@@ -48,8 +49,8 @@ lock_drawables_list(void)
+    err = pthread_mutex_lock(&drawables_lock);
+ 
+    if (err) {
+-      fprintf(stderr, "pthread_mutex_lock failure in %s: %d\n",
+-              __func__, err);
++      fprintf(stderr, "pthread_mutex_lock failure in %s: %s\n",
++              __func__, strerror(err));
+       abort();
+    }
+ }
+@@ -62,8 +63,8 @@ unlock_drawables_list(void)
+    err = pthread_mutex_unlock(&drawables_lock);
+ 
+    if (err) {
+-      fprintf(stderr, "pthread_mutex_unlock failure in %s: %d\n",
+-              __func__, err);
++      fprintf(stderr, "pthread_mutex_unlock failure in %s: %s\n",
++              __func__, strerror(err));
+       abort();
+    }
+ }
+@@ -95,7 +96,7 @@ drawable_lock(struct apple_glx_drawable *agd)
+    err = pthread_mutex_lock(&agd->mutex);
+ 
+    if (err) {
+-      fprintf(stderr, "pthread_mutex_lock error: %d\n", err);
++      fprintf(stderr, "pthread_mutex_lock error: %s\n", strerror(err));
+       abort();
+    }
+ }
+@@ -108,7 +109,7 @@ drawable_unlock(struct apple_glx_drawable *d)
+    err = pthread_mutex_unlock(&d->mutex);
+ 
+    if (err) {
+-      fprintf(stderr, "pthread_mutex_unlock error: %d\n", err);
++      fprintf(stderr, "pthread_mutex_unlock error: %s\n", strerror(err));
+       abort();
+    }
+ }
+@@ -135,6 +136,7 @@ release_drawable(struct apple_glx_drawable *d)
  static bool
  destroy_drawable(struct apple_glx_drawable *d)
  {
@@ -582,7 +852,7 @@ index 5530224..db28302 100644
  
     d->lock(d);
  
-@@ -172,6 +173,12 @@ destroy_drawable(struct apple_glx_drawable *d)
+@@ -172,6 +174,12 @@ destroy_drawable(struct apple_glx_drawable *d)
  
     apple_glx_diagnostic("%s: freeing %p\n", __func__, (void *) d);
  
@@ -595,6 +865,219 @@ index 5530224..db28302 100644
     free(d);
  
     /* So that the locks are balanced and the caller correctly unlocks. */
+@@ -238,7 +246,7 @@ common_init(Display * dpy, GLXDrawable drawable, struct apple_glx_drawable *d)
+    err = pthread_mutexattr_init(&attr);
+ 
+    if (err) {
+-      fprintf(stderr, "pthread_mutexattr_init error: %d\n", err);
++      fprintf(stderr, "pthread_mutexattr_init error: %s\n", strerror(err));
+       abort();
+    }
+ 
+@@ -250,14 +258,14 @@ common_init(Display * dpy, GLXDrawable drawable, struct apple_glx_drawable *d)
+    err = pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+ 
+    if (err) {
+-      fprintf(stderr, "error: setting pthread mutex type: %d\n", err);
++      fprintf(stderr, "error: setting pthread mutex type: %s\n", strerror(err));
+       abort();
+    }
+ 
+    err = pthread_mutex_init(&d->mutex, &attr);
+ 
+    if (err) {
+-      fprintf(stderr, "pthread_mutex_init error: %d\n", err);
++      fprintf(stderr, "pthread_mutex_init error: %s\n", strerror(err));
+       abort();
+    }
+ 
+diff --git a/src/glx/apple/apple_glx_log.c b/src/glx/apple/apple_glx_log.c
+new file mode 100644
+index 0000000..9ebf666
+--- /dev/null
++++ b/src/glx/apple/apple_glx_log.c
+@@ -0,0 +1,118 @@
++/*
++ * Copyright (c) 2012 Apple Inc.
++ *
++ * Permission is hereby granted, free of charge, to any person
++ * obtaining a copy of this software and associated documentation files
++ * (the "Software"), to deal in the Software without restriction,
++ * including without limitation the rights to use, copy, modify, merge,
++ * publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so,
++ * subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be
++ * included in all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ * NONINFRINGEMENT.  IN NO EVENT SHALL THE ABOVE LISTED COPYRIGHT
++ * HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
++ * DEALINGS IN THE SOFTWARE.
++ *
++ * Except as contained in this notice, the name(s) of the above
++ * copyright holders shall not be used in advertising or otherwise to
++ * promote the sale, use or other dealings in this Software without
++ * prior written authorization.
++ */
++
++#include <sys/cdefs.h>
++#include <asl.h>
++#include <stdio.h>
++#include <stdbool.h>
++#include <stdint.h>
++#include <stdlib.h>
++#include <inttypes.h>
++#include <pthread.h>
++#include "apple_glx_log.h"
++
++static bool diagnostic = false;
++static aslclient aslc;
++
++void apple_glx_log_init(void) {
++    if (getenv("LIBGL_DIAGNOSTIC")) {
++        diagnostic = true;
++    }
++
++    aslc = asl_open(NULL, NULL, 0);
++}
++
++void _apple_glx_log(int level, const char *file, const char *function,
++                    int line, const char *fmt, ...) {
++    va_list v;
++    va_start(v, fmt);
++    _apple_glx_vlog(level, file, function, line, fmt, v);
++    va_end(v);
++}
++
++static const char *
++_asl_level_string(int level)
++{
++        if (level == ASL_LEVEL_EMERG) return ASL_STRING_EMERG;
++        if (level == ASL_LEVEL_ALERT) return ASL_STRING_ALERT;
++        if (level == ASL_LEVEL_CRIT) return ASL_STRING_CRIT;
++        if (level == ASL_LEVEL_ERR) return ASL_STRING_ERR;
++        if (level == ASL_LEVEL_WARNING) return ASL_STRING_WARNING;
++        if (level == ASL_LEVEL_NOTICE) return ASL_STRING_NOTICE;
++        if (level == ASL_LEVEL_INFO) return ASL_STRING_INFO;
++        if (level == ASL_LEVEL_DEBUG) return ASL_STRING_DEBUG;
++        return "unknown";
++}
++
++void _apple_glx_vlog(int level, const char *file, const char *function,
++                     int line, const char *fmt, va_list args) {
++    aslmsg msg;
++    uint64_t thread = 0;
++
++    if (pthread_is_threaded_np()) {
++        pthread_threadid_np(NULL, &thread);
++    }
++
++    if (diagnostic) {
++        va_list args2;
++        va_copy(args2, args);
++
++        fprintf(stderr, "%-9s %24s:%-4d %s(%"PRIu64"): ",
++                _asl_level_string(level), file, line, function, thread);
++        vfprintf(stderr, fmt, args2);
++    }
++
++    msg = asl_new(ASL_TYPE_MSG);
++    if (msg) {
++        if (file)
++            asl_set(msg, "File", file);
++        if (function)
++            asl_set(msg, "Function", function);
++        if (line) {
++            char *_line;
++            asprintf(&_line, "%d", line);
++            if (_line) {
++                asl_set(msg, "Line", _line);
++                free(_line);
++            }
++        }
++        if (pthread_is_threaded_np()) {
++            char *_thread;
++            asprintf(&_thread, "%"PRIu64, thread);
++            if (_thread) {
++                asl_set(msg, "Thread", _thread);
++                free(_thread);
++            }
++        }
++    }
++
++    asl_vlog(aslc, msg, level, fmt, args);
++    if (msg)
++        asl_free(msg);
++}
+diff --git a/src/glx/apple/apple_glx_log.h b/src/glx/apple/apple_glx_log.h
+new file mode 100644
+index 0000000..4b1c531
+--- /dev/null
++++ b/src/glx/apple/apple_glx_log.h
+@@ -0,0 +1,57 @@
++/*
++ * Copyright (c) 2012 Apple Inc.
++ *
++ * Permission is hereby granted, free of charge, to any person
++ * obtaining a copy of this software and associated documentation files
++ * (the "Software"), to deal in the Software without restriction,
++ * including without limitation the rights to use, copy, modify, merge,
++ * publish, distribute, sublicense, and/or sell copies of the Software,
++ * and to permit persons to whom the Software is furnished to do so,
++ * subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be
++ * included in all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
++ * NONINFRINGEMENT.  IN NO EVENT SHALL THE ABOVE LISTED COPYRIGHT
++ * HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
++ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
++ * DEALINGS IN THE SOFTWARE.
++ *
++ * Except as contained in this notice, the name(s) of the above
++ * copyright holders shall not be used in advertising or otherwise to
++ * promote the sale, use or other dealings in this Software without
++ * prior written authorization.
++ */
++
++#ifndef APPLE_GLX_LOG_H
++#define APPLE_GLX_LOG_H
++
++#include <sys/cdefs.h>
++#include <asl.h>
++
++void apple_glx_log_init(void);
++
++__printflike(5, 6)
++void _apple_glx_log(int level, const char *file, const char *function,
++                    int line, const char *fmt, ...);
++#define apple_glx_log(l, f, args ...) \
++    _apple_glx_log(l, __FILE__, __FUNCTION__, __LINE__, f, ## args)
++
++
++__printflike(5, 0)
++void _apple_glx_vlog(int level, const char *file, const char *function,
++                     int line, const char *fmt, va_list v);
++#define apple_glx_vlog(l, f, v) \
++    _apple_glx_vlog(l, __FILE__, __FUNCTION__, __LINE__, f, v)
++
++/* This is just here to help the transition.
++ * TODO: Replace calls to apple_glx_diagnostic
++ */
++#define apple_glx_diagnostic(f, args ...) \
++    apple_glx_log(ASL_LEVEL_DEBUG, f, ## args)
++
++#endif
 diff --git a/src/glx/apple/apple_glx_surface.c b/src/glx/apple/apple_glx_surface.c
 index 39f5130..d42fa3b 100644
 --- a/src/glx/apple/apple_glx_surface.c
@@ -749,6 +1232,241 @@ index a36011a..68f0e05 100644
  };
  
  
+diff --git a/src/mesa/drivers/dri/i965/brw_eu.h b/src/mesa/drivers/dri/i965/brw_eu.h
+index f660222..5064c18 100644
+--- a/src/mesa/drivers/dri/i965/brw_eu.h
++++ b/src/mesa/drivers/dri/i965/brw_eu.h
+@@ -1048,6 +1048,7 @@ struct brw_instruction *brw_WHILE(struct brw_compile *p);
+ struct brw_instruction *brw_BREAK(struct brw_compile *p);
+ struct brw_instruction *brw_CONT(struct brw_compile *p);
+ struct brw_instruction *gen6_CONT(struct brw_compile *p);
++struct brw_instruction *gen6_HALT(struct brw_compile *p);
+ /* Forward jumps:
+  */
+ void brw_land_fwd_jump(struct brw_compile *p, int jmp_insn_idx);
+diff --git a/src/mesa/drivers/dri/i965/brw_eu_emit.c b/src/mesa/drivers/dri/i965/brw_eu_emit.c
+index b2581da..21d3c5a 100644
+--- a/src/mesa/drivers/dri/i965/brw_eu_emit.c
++++ b/src/mesa/drivers/dri/i965/brw_eu_emit.c
+@@ -1339,6 +1339,20 @@ struct brw_instruction *brw_CONT(struct brw_compile *p)
+    return insn;
+ }
+ 
++struct brw_instruction *gen6_HALT(struct brw_compile *p)
++{
++   struct brw_instruction *insn;
++
++   insn = next_insn(p, BRW_OPCODE_HALT);
++   brw_set_dest(p, insn, retype(brw_null_reg(), BRW_REGISTER_TYPE_D));
++   brw_set_src0(p, insn, retype(brw_null_reg(), BRW_REGISTER_TYPE_D));
++   brw_set_src1(p, insn, brw_imm_d(0x0)); /* UIP and JIP, updated later. */
++
++   insn->header.compression_control = BRW_COMPRESSION_NONE;
++   insn->header.execution_size = BRW_EXECUTE_8;
++   return insn;
++}
++
+ /* DO/WHILE loop:
+  *
+  * The DO/WHILE is just an unterminated loop -- break or continue are
+@@ -2395,8 +2409,8 @@ brw_find_next_block_end(struct brw_compile *p, int start)
+ 	 return ip;
+       }
+    }
+-   assert(!"not reached");
+-   return start + 1;
++
++   return 0;
+ }
+ 
+ /* There is no DO instruction on gen6, so to find the end of the loop
+@@ -2425,7 +2439,7 @@ brw_find_loop_end(struct brw_compile *p, int start)
+ }
+ 
+ /* After program generation, go back and update the UIP and JIP of
+- * BREAK and CONT instructions to their correct locations.
++ * BREAK, CONT, and HALT instructions to their correct locations.
+  */
+ void
+ brw_set_uip_jip(struct brw_compile *p)
+@@ -2439,21 +2453,50 @@ brw_set_uip_jip(struct brw_compile *p)
+ 
+    for (ip = 0; ip < p->nr_insn; ip++) {
+       struct brw_instruction *insn = &p->store[ip];
++      int block_end_ip = 0;
++
++      if (insn->header.opcode == BRW_OPCODE_BREAK ||
++	  insn->header.opcode == BRW_OPCODE_CONTINUE ||
++	  insn->header.opcode == BRW_OPCODE_HALT) {
++	 block_end_ip = brw_find_next_block_end(p, ip);
++      }
+ 
+       switch (insn->header.opcode) {
+       case BRW_OPCODE_BREAK:
+-	 insn->bits3.break_cont.jip = br * (brw_find_next_block_end(p, ip) - ip);
++	 assert(block_end_ip != 0);
++	 insn->bits3.break_cont.jip = br * (block_end_ip - ip);
+ 	 /* Gen7 UIP points to WHILE; Gen6 points just after it */
+ 	 insn->bits3.break_cont.uip =
+ 	    br * (brw_find_loop_end(p, ip) - ip + (intel->gen == 6 ? 1 : 0));
+ 	 break;
+       case BRW_OPCODE_CONTINUE:
+-	 insn->bits3.break_cont.jip = br * (brw_find_next_block_end(p, ip) - ip);
++	 assert(block_end_ip != 0);
++	 insn->bits3.break_cont.jip = br * (block_end_ip - ip);
+ 	 insn->bits3.break_cont.uip = br * (brw_find_loop_end(p, ip) - ip);
+ 
+ 	 assert(insn->bits3.break_cont.uip != 0);
+ 	 assert(insn->bits3.break_cont.jip != 0);
+ 	 break;
++      case BRW_OPCODE_HALT:
++	 /* From the Sandy Bridge PRM (volume 4, part 2, section 8.3.19):
++	  *
++	  *    "In case of the halt instruction not inside any conditional code
++	  *     block, the value of <JIP> and <UIP> should be the same. In case
++	  *     of the halt instruction inside conditional code block, the <UIP>
++	  *     should be the end of the program, and the <JIP> should be end of
++	  *     the most inner conditional code block."
++	  *
++	  * The uip will have already been set by whoever set up the
++	  * instruction.
++	  */
++	 if (block_end_ip == 0) {
++	    insn->bits3.break_cont.jip = insn->bits3.break_cont.uip;
++	 } else {
++	    insn->bits3.break_cont.jip = br * (block_end_ip - ip);
++	 }
++	 assert(insn->bits3.break_cont.uip != 0);
++	 assert(insn->bits3.break_cont.jip != 0);
++	 break;
+       }
+    }
+ }
+diff --git a/src/mesa/drivers/dri/i965/brw_fs.h b/src/mesa/drivers/dri/i965/brw_fs.h
+index 9a2cc08..b9cd42f 100644
+--- a/src/mesa/drivers/dri/i965/brw_fs.h
++++ b/src/mesa/drivers/dri/i965/brw_fs.h
+@@ -171,6 +171,26 @@ static const fs_reg reg_undef;
+ static const fs_reg reg_null_f(ARF, BRW_ARF_NULL, BRW_REGISTER_TYPE_F);
+ static const fs_reg reg_null_d(ARF, BRW_ARF_NULL, BRW_REGISTER_TYPE_D);
+ 
++class ip_record : public exec_node {
++public:
++   static void* operator new(size_t size, void *ctx)
++   {
++      void *node;
++
++      node = rzalloc_size(ctx, size);
++      assert(node != NULL);
++
++      return node;
++   }
++
++   ip_record(int ip)
++   {
++      this->ip = ip;
++   }
++
++   int ip;
++};
++
+ class fs_inst : public exec_node {
+ public:
+    /* Callers of this ralloc-based new need not call delete. It's
+@@ -489,6 +509,7 @@ public:
+    bool remove_duplicate_mrf_writes();
+    bool virtual_grf_interferes(int a, int b);
+    void schedule_instructions();
++   void patch_discard_jumps_to_fb_writes();
+    void fail(const char *msg, ...);
+ 
+    void push_force_uncompressed();
+@@ -571,6 +592,7 @@ public:
+    struct gl_shader_program *prog;
+    void *mem_ctx;
+    exec_list instructions;
++   exec_list discard_halt_patches;
+ 
+    /* Delayed setup of c->prog_data.params[] due to realloc of
+     * ParamValues[] during compile.
+diff --git a/src/mesa/drivers/dri/i965/brw_fs_emit.cpp b/src/mesa/drivers/dri/i965/brw_fs_emit.cpp
+index b68d8cb..cc70904 100644
+--- a/src/mesa/drivers/dri/i965/brw_fs_emit.cpp
++++ b/src/mesa/drivers/dri/i965/brw_fs_emit.cpp
+@@ -37,11 +37,55 @@ extern "C" {
+ #include "glsl/ir_print_visitor.h"
+ 
+ void
++fs_visitor::patch_discard_jumps_to_fb_writes()
++{
++   if (intel->gen < 6 || this->discard_halt_patches.is_empty())
++      return;
++
++   /* There is a somewhat strange undocumented requirement of using
++    * HALT, according to the simulator.  If some channel has HALTed to
++    * a particular UIP, then by the end of the program, every channel
++    * must have HALTed to that UIP.  Furthermore, the tracking is a
++    * stack, so you can't do the final halt of a UIP after starting
++    * halting to a new UIP.
++    *
++    * Symptoms of not emitting this instruction on actual hardware
++    * included GPU hangs and sparkly rendering on the piglit discard
++    * tests.
++    */
++   struct brw_instruction *last_halt = gen6_HALT(p);
++   last_halt->bits3.break_cont.uip = 2;
++   last_halt->bits3.break_cont.jip = 2;
++
++   int ip = p->nr_insn;
++
++   foreach_list(node, &this->discard_halt_patches) {
++      ip_record *patch_ip = (ip_record *)node;
++      struct brw_instruction *patch = &p->store[patch_ip->ip];
++      int br = (intel->gen >= 5) ? 2 : 1;
++
++      /* HALT takes a distance from the pre-incremented IP, so '1'
++       * would be the next instruction after jmpi.
++       */
++      assert(patch->header.opcode == BRW_OPCODE_HALT);
++      patch->bits3.break_cont.uip = (ip - patch_ip->ip) * br;
++   }
++
++   this->discard_halt_patches.make_empty();
++}
++
++void
+ fs_visitor::generate_fb_write(fs_inst *inst)
+ {
+    bool eot = inst->eot;
+    struct brw_reg implied_header;
+ 
++   /* Note that the jumps emitted to this point mean that the g0 ->
++    * base_mrf setup must be inside of this function, so that we jump
++    * to a point containing it.
++    */
++   patch_discard_jumps_to_fb_writes();
++
+    /* Header is 2 regs, g0 and g1 are the contents. g0 will be implied
+     * move, here's g1.
+     */
+@@ -482,6 +526,17 @@ fs_visitor::generate_discard(fs_inst *inst)
+       brw_set_mask_control(p, BRW_MASK_DISABLE);
+       brw_AND(p, g1, f0, g1);
+       brw_pop_insn_state(p);
++
++      /* GLSL 1.30+ say that discarded channels should stop executing
++       * (so, for example, an infinite loop that would otherwise in
++       * just that channel does not occur.
++       *
++       * This HALT will be patched up at FB write time to point UIP at
++       * the end of the program, and at brw_uip_jip() JIP will be set
++       * to the end of the current block (or the program).
++       */
++      this->discard_halt_patches.push_tail(new(mem_ctx) ip_record(p->nr_insn));
++      gen6_HALT(p);
+    } else {
+       struct brw_reg g0 = retype(brw_vec1_grf(0, 0), BRW_REGISTER_TYPE_UW);
+ 
 diff --git a/src/mesa/drivers/dri/i965/brw_fs_visitor.cpp b/src/mesa/drivers/dri/i965/brw_fs_visitor.cpp
 index 0632052..cec1e95 100644
 --- a/src/mesa/drivers/dri/i965/brw_fs_visitor.cpp
@@ -764,6 +1482,60 @@ index 0632052..cec1e95 100644
 +   int base_mrf = 1;
     int nr = base_mrf;
     int reg_width = c->dispatch_width / 8;
+ 
+diff --git a/src/mesa/drivers/dri/i965/brw_wm_surface_state.c b/src/mesa/drivers/dri/i965/brw_wm_surface_state.c
+index 51d3a46..97ae489 100644
+--- a/src/mesa/drivers/dri/i965/brw_wm_surface_state.c
++++ b/src/mesa/drivers/dri/i965/brw_wm_surface_state.c
+@@ -916,12 +916,48 @@ brw_update_renderbuffer_surface(struct brw_context *brw,
+    struct gl_context *ctx = &intel->ctx;
+    struct intel_renderbuffer *irb = intel_renderbuffer(rb);
+    struct intel_mipmap_tree *mt = irb->mt;
+-   struct intel_region *region = irb->mt->region;
++   struct intel_region *region;
+    uint32_t *surf;
+    uint32_t tile_x, tile_y;
+    uint32_t format = 0;
+    gl_format rb_format = intel_rb_format(irb);
+ 
++   if (irb->tex_image && !brw->has_surface_tile_offset) {
++      intel_renderbuffer_tile_offsets(irb, &tile_x, &tile_y);
++
++      if (tile_x != 0 || tile_y != 0) {
++	 /* Original gen4 hardware couldn't draw to a non-tile-aligned
++	  * destination in a miptree unless you actually setup your renderbuffer
++	  * as a miptree and used the fragile lod/array_index/etc. controls to
++	  * select the image.  So, instead, we just make a new single-level
++	  * miptree and render into that.
++	  */
++	 struct intel_context *intel = intel_context(ctx);
++	 struct intel_texture_image *intel_image =
++	    intel_texture_image(irb->tex_image);
++	 struct intel_mipmap_tree *new_mt;
++	 int width, height, depth;
++
++	 intel_miptree_get_dimensions_for_image(irb->tex_image, &width, &height, &depth);
++
++	 new_mt = intel_miptree_create(intel, irb->tex_image->TexObject->Target,
++				       intel_image->base.Base.TexFormat,
++				       intel_image->base.Base.Level,
++				       intel_image->base.Base.Level,
++				       width, height, depth,
++				       true);
++
++	 intel_miptree_copy_teximage(intel, intel_image, new_mt);
++	 intel_miptree_reference(&irb->mt, intel_image->mt);
++	 intel_renderbuffer_set_draw_offset(irb);
++	 intel_miptree_release(&new_mt);
++
++	 mt = irb->mt;
++      }
++   }
++
++   region = irb->mt->region;
++
+    surf = brw_state_batch(brw, AUB_TRACE_SURFACE_STATE,
+ 			  6 * 4, 32, &brw->bind.surf_offset[unit]);
  
 diff --git a/src/mesa/drivers/dri/i965/gen6_sampler_state.c b/src/mesa/drivers/dri/i965/gen6_sampler_state.c
 index 15cae0a..a9a9df5 100644
@@ -809,6 +1581,143 @@ index d3c0d70..9cdd804 100644
        rb->mt->hiz_mt = mt;
     } else {
        rb->mt = mt;
+diff --git a/src/mesa/drivers/dri/intel/intel_fbo.c b/src/mesa/drivers/dri/intel/intel_fbo.c
+index 185602a..c5097c3 100644
+--- a/src/mesa/drivers/dri/intel/intel_fbo.c
++++ b/src/mesa/drivers/dri/intel/intel_fbo.c
+@@ -553,22 +553,6 @@ intel_renderbuffer_tile_offsets(struct intel_renderbuffer *irb,
+    }
+ }
+ 
+-#ifndef I915
+-static bool
+-need_tile_offset_workaround(struct brw_context *brw,
+-			    struct intel_renderbuffer *irb)
+-{
+-   uint32_t tile_x, tile_y;
+-
+-   if (brw->has_surface_tile_offset)
+-      return false;
+-
+-   intel_renderbuffer_tile_offsets(irb, &tile_x, &tile_y);
+-
+-   return tile_x != 0 || tile_y != 0;
+-}
+-#endif
+-
+ /**
+  * Called by glFramebufferTexture[123]DEXT() (and other places) to
+  * prepare for rendering into texture memory.  This might be called
+@@ -626,42 +610,13 @@ intel_render_texture(struct gl_context * ctx,
+        return;
+    }
+ 
++   irb->tex_image = image;
++
+    DBG("Begin render %s texture tex=%u w=%d h=%d refcount=%d\n",
+        _mesa_get_format_name(image->TexFormat),
+        att->Texture->Name, image->Width, image->Height,
+        irb->Base.Base.RefCount);
+ 
+-   intel_image->used_as_render_target = true;
+-
+-#ifndef I915
+-   if (need_tile_offset_workaround(brw_context(ctx), irb)) {
+-      /* Original gen4 hardware couldn't draw to a non-tile-aligned
+-       * destination in a miptree unless you actually setup your
+-       * renderbuffer as a miptree and used the fragile
+-       * lod/array_index/etc. controls to select the image.  So,
+-       * instead, we just make a new single-level miptree and render
+-       * into that.
+-       */
+-      struct intel_context *intel = intel_context(ctx);
+-      struct intel_mipmap_tree *new_mt;
+-      int width, height, depth;
+-
+-      intel_miptree_get_dimensions_for_image(image, &width, &height, &depth);
+-
+-      new_mt = intel_miptree_create(intel, image->TexObject->Target,
+-				    intel_image->base.Base.TexFormat,
+-				    intel_image->base.Base.Level,
+-				    intel_image->base.Base.Level,
+-                                    width, height, depth,
+-				    true);
+-
+-      intel_miptree_copy_teximage(intel, intel_image, new_mt);
+-      intel_renderbuffer_set_draw_offset(irb);
+-
+-      intel_miptree_reference(&irb->mt, intel_image->mt);
+-      intel_miptree_release(&new_mt);
+-   }
+-#endif
+    /* update drawing region, etc */
+    intel_draw_buffer(ctx);
+ }
+@@ -678,14 +633,13 @@ intel_finish_render_texture(struct gl_context * ctx,
+    struct gl_texture_object *tex_obj = att->Texture;
+    struct gl_texture_image *image =
+       tex_obj->Image[att->CubeMapFace][att->TextureLevel];
+-   struct intel_texture_image *intel_image = intel_texture_image(image);
++   struct intel_renderbuffer *irb = intel_renderbuffer(att->Renderbuffer);
+ 
+    DBG("Finish render %s texture tex=%u\n",
+        _mesa_get_format_name(image->TexFormat), att->Texture->Name);
+ 
+-   /* Flag that this image may now be validated into the object's miptree. */
+-   if (intel_image)
+-      intel_image->used_as_render_target = false;
++   if (irb)
++      irb->tex_image = NULL;
+ 
+    /* Since we've (probably) rendered to the texture and will (likely) use
+     * it in the texture domain later on in this batchbuffer, flush the
+diff --git a/src/mesa/drivers/dri/intel/intel_fbo.h b/src/mesa/drivers/dri/intel/intel_fbo.h
+index a2c1b1a..724f141 100644
+--- a/src/mesa/drivers/dri/intel/intel_fbo.h
++++ b/src/mesa/drivers/dri/intel/intel_fbo.h
+@@ -47,6 +47,9 @@ struct intel_renderbuffer
+    struct intel_mipmap_tree *mt; /**< The renderbuffer storage. */
+    drm_intel_bo *map_bo;
+ 
++   /* Current texture image this renderbuffer is attached to. */
++   struct gl_texture_image *tex_image;
++
+    /**
+     * \name Miptree view
+     * \{
+diff --git a/src/mesa/drivers/dri/intel/intel_tex_obj.h b/src/mesa/drivers/dri/intel/intel_tex_obj.h
+index 8b278ba..d1a5f05 100644
+--- a/src/mesa/drivers/dri/intel/intel_tex_obj.h
++++ b/src/mesa/drivers/dri/intel/intel_tex_obj.h
+@@ -65,7 +65,6 @@ struct intel_texture_image
+     * Else there is no image data.
+     */
+    struct intel_mipmap_tree *mt;
+-   bool used_as_render_target;
+ };
+ 
+ static INLINE struct intel_texture_object *
+diff --git a/src/mesa/drivers/dri/intel/intel_tex_validate.c b/src/mesa/drivers/dri/intel/intel_tex_validate.c
+index b96f2a4..a63068b 100644
+--- a/src/mesa/drivers/dri/intel/intel_tex_validate.c
++++ b/src/mesa/drivers/dri/intel/intel_tex_validate.c
+@@ -97,14 +97,8 @@ intel_finalize_mipmap_tree(struct intel_context *intel, GLuint unit)
+ 	 /* skip too small size mipmap */
+  	 if (intelImage == NULL)
+ 		 break;
+-	 /* Need to import images in main memory or held in other trees.
+-	  * If it's a render target, then its data isn't needed to be in
+-	  * the object tree (otherwise we'd be FBO incomplete), and we need
+-	  * to keep track of the image's MT as needing to be pulled in still,
+-	  * or we'll lose the rendering that's done to it.
+-          */
+-         if (intelObj->mt != intelImage->mt &&
+-	     !intelImage->used_as_render_target) {
++
++         if (intelObj->mt != intelImage->mt) {
+             intel_miptree_copy_teximage(intel, intelImage, intelObj->mt);
+          }
+       }
 diff --git a/src/mesa/main/readpix.c b/src/mesa/main/readpix.c
 index 5b3c246..f3a0d10 100644
 --- a/src/mesa/main/readpix.c
