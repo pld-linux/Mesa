@@ -1,7 +1,6 @@
 #
 # TODO:
 # - consider:
-#   --enable-shared-dricore
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
 # - resurrect static if it's useful (using plain xorg target? DRI doesn't support static)
 #
@@ -671,6 +670,20 @@ Khronos platform header file.
 %description khrplatform-devel -l pl.UTF-8
 Plik nagłówkowy platformy Khronos.
 
+%package dri-core
+Summary:	X.org DRI core module
+Summary(pl.UTF-8):	Sterownik X.org DRI core
+License:	MIT
+Group:		X11/Libraries
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
+
+%description dri-core
+X.org DRI core library.
+
+%description dri-core -l pl.UTF-8
+Sterownik X.org DRI core.
+
 %package dri-driver-ati-radeon-R100
 Summary:	X.org DRI driver for ATI R100 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R100
@@ -925,6 +938,7 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 
 common_flags="\
 	--enable-shared \
+	--enable-shared-dricore \
 	--enable-glx-tls \
 	--enable-pic \
 	--enable-selinux \
@@ -1268,6 +1282,11 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_includedir}/KHR
 %{_includedir}/KHR/khrplatform.h
 %endif
+
+%files dri-core
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/libdricore.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/libglsl.so
 
 %files dri-driver-ati-radeon-R100
 %defattr(644,root,root,755)
