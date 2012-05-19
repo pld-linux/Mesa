@@ -9,7 +9,7 @@
 %bcond_without	egl		# EGL libraries
 %bcond_without	gallium		# gallium drivers
 %bcond_with	gallium_intel	# gallium i915 driver (but doesn't work with AIGLX)
-%bcond_without	gallium_nouveau	# gallium nouveau driver
+%bcond_with	gallium_nouveau	# gallium nouveau driver
 %bcond_without	osmesa		# OSMesa libraries
 %bcond_without	gbm		# Graphics Buffer Manager
 %bcond_without	wayland		# Wayland EGL
@@ -30,12 +30,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	8.0.2
-Release:	3
+Version:	8.0.3
+Release:	1
 License:	MIT (core), SGI (GLU) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	a368104e5700707048dc3e8691a9a7a1
+# Source0-md5:	cc5ee15e306b8c15da6a478923797171
 Patch100:	%{name}-git.patch
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-link.patch
@@ -882,7 +882,7 @@ Sterownik Mesa softpipe dla API vdpau.
 
 %prep
 %setup -q
-%patch100 -p1
+#%patch100 -p1
 %patch0 -p0
 %patch1 -p1
 %patch2 -p1
