@@ -31,7 +31,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	8.0.3
-Release:	2
+Release:	3
 License:	MIT (core), SGI (GLU) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
@@ -40,6 +40,7 @@ Patch100:	%{name}-git.patch
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-link.patch
 Patch2:		%{name}-wayland.patch
+Patch3:		llvm-3.1.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -886,6 +887,7 @@ Sterownik Mesa softpipe dla API vdpau.
 %patch0 -p0
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 %{__aclocal}
