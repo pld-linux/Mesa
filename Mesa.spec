@@ -26,7 +26,7 @@
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.14
 #
-%define		snap		20120510
+%define		snap		20120605
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
@@ -37,8 +37,8 @@ License:	MIT (core), SGI (GLU) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
 Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	8c004dda883dcb4449cf8f33e0d768d0
-#Patch100:	%{name}-git.patch
+# Source0-md5:	f15daf47602259139168e7e8565034d5
+#Patch100: %{name}-git.patch
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-link.patch
 Patch2:		%{name}-wayland.patch
@@ -520,6 +520,19 @@ Header file for Mesa Graphics Buffer Manager library.
 Plik nagłówkowy biblioteki Mesa Graphics Buffer Manager (zarządcy
 bufora graficznego).
 
+%package gbm-driver-swrast
+Summary:	Software (swrast) driver for Mesa GBM framework
+Summary(pl.UTF-8):	Sterownik programowy (swrast) dla szkieletu Mesa GBM
+Group:		Libraries
+Requires:	%{name}-libgbm = %{version}-%{release}
+
+%description gbm-driver-swrast
+Software (swrast) driver for Mesa Graphics Buffer Manager.
+
+%description gbm-driver-swrast -l pl.UTF-8
+Sterownik programowy (swrast) dla szkieletu Mesa Graphics Buffer
+Manager (zarządcy bufora graficznego).
+
 %package gbm-driver-i915
 Summary:	i915 driver for Mesa GBM framework
 Summary(pl.UTF-8):	Sterownik i915 dla szkieletu Mesa GBM
@@ -994,6 +1007,10 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
+# until upstream fixes it
+mv $RPM_BUILD_ROOT%{_libdir}/dri/libdricore.so \
+	$RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/libdricore.so
+
 %if %{with osmesa}
 cp -dp osmesa8/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
 cp -p osmesa8/osmesa.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
@@ -1217,6 +1234,10 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %if %{with gallium}
+%files gbm-driver-swrast
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gbm/pipe_swrast.so
+
 %if %{with gallium_intel}
 %files gbm-driver-i915
 %defattr(644,root,root,755)
