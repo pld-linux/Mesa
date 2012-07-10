@@ -31,7 +31,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	8.0.3
-Release:	3
+Release:	4
 License:	MIT (core), SGI (GLU) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
@@ -98,7 +98,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.*
 
 # llvm build broken
-%define		filterout_ld    -Wl,--as-needed
+%define		filterout_ld    -Wl,--as7-needed
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
@@ -269,6 +269,7 @@ Summary:	Mesa implementation of GLES (OpenGL ES) libraries
 Summary(pl.UTF-8):	Implementacja Mesa bibliotek GLES (OpenGL ES)
 Group:		Libraries
 Requires:	%{name}-libglapi = %{version}-%{release}
+Provides:	OpenGL-GLES
 
 %description libGLES
 This package contains shared libraries of Mesa implementation of GLES
@@ -293,6 +294,7 @@ Requires:	%{name}-khrplatform-devel = %{version}-%{release}
 # <EGL/egl.h> for <GLES/egl.h>
 Requires:	%{name}-libEGL-devel = %{version}-%{release}
 Requires:	%{name}-libGLES = %{version}-%{release}
+Provides:	OpenGL-GLES-devel
 
 %description libGLES-devel
 Header files for Mesa GLES libraries.
