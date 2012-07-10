@@ -269,7 +269,9 @@ Summary:	Mesa implementation of GLES (OpenGL ES) libraries
 Summary(pl.UTF-8):	Implementacja Mesa bibliotek GLES (OpenGL ES)
 Group:		Libraries
 Requires:	%{name}-libglapi = %{version}-%{release}
-Provides:	OpenGL-GLES
+Provides:	OpenGLES
+Provides:	OpenGLESv1 = 1.1
+Provides:	OpenGLESv2 = 2.0
 
 %description libGLES
 This package contains shared libraries of Mesa implementation of GLES
@@ -294,7 +296,9 @@ Requires:	%{name}-khrplatform-devel = %{version}-%{release}
 # <EGL/egl.h> for <GLES/egl.h>
 Requires:	%{name}-libEGL-devel = %{version}-%{release}
 Requires:	%{name}-libGLES = %{version}-%{release}
-Provides:	OpenGL-GLES-devel
+Provides:	OpenGLES-devel
+Provides:	OpenGLESv1-devel = 1.1
+Provides:	OpenGLESv2-devel = 2.0
 
 %description libGLES-devel
 Header files for Mesa GLES libraries.
@@ -400,6 +404,7 @@ Summary:	Mesa implementation of OpenVG (Vector Graphics Accelleration) API
 Summary(pl.UTF-8):	Implementacja Mesa API OpenVG (akceleracji grafiki wektorowej)
 License:	MIT
 Group:		Libraries
+Provides:	OpenVG = 1.1
 
 %description libOpenVG
 This package contains Mesa implementation of OpenVG - cross-platform
@@ -423,6 +428,7 @@ License:	MIT
 Group:		Development/Libraries
 Requires:	%{name}-khrplatform-devel = %{version}-%{release}
 Requires:	%{name}-libOpenVG = %{version}-%{release}
+Provides:	OpenVG-devel = 1.1
 
 %description libOpenVG-devel
 Header file for Mesa OpenVG library.
