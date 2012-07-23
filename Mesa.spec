@@ -31,12 +31,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	8.0.3
-Release:	5
+Version:	8.0.4
+Release:	1
 License:	MIT (core), SGI (GLU) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	cc5ee15e306b8c15da6a478923797171
+# Source0-md5:	d546f988adfdf986cff45b1efa2d8a46
 Patch100:	%{name}-git.patch
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-link.patch
