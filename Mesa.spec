@@ -6,10 +6,11 @@
 # - resurrect static if it's useful (using plain xorg target? DRI doesn't support static)
 #
 # Conditional build:
-%bcond_without	egl		# EGL libraries
 %bcond_without	gallium		# gallium drivers
-%bcond_with	gallium_intel	# gallium i915 driver (but doesn't work with AIGLX)
-%bcond_with	gallium_nouveau	# gallium nouveau driver
+%bcond_with	gallium_intel	# gallium i915 driver (instead of plain dri; doesn't work with AIGLX)
+%bcond_without	gallium_nouveau	# gallium nouveau driver (instead of plain dri)
+%bcond_with	dri_nouveau	# nouveau DRI driver (any kind; doesn't build with current libdrm)
+%bcond_without	egl		# EGL libraries
 %bcond_without	osmesa		# OSMesa libraries
 %bcond_without	gbm		# Graphics Buffer Manager
 %bcond_without	wayland		# Wayland EGL
@@ -906,6 +907,9 @@ dri_drivers="r200 radeon \
 i915 \
 %endif
 i965
+%if %{with dri_nouveau} && %{without gallium_nouveau}
+nouveau
+%endif
 %ifarch sparc sparcv9 sparc64
 ffb \
 %endif
@@ -919,7 +923,7 @@ i915 \
 %endif
 r300 \
 r600 \
-%if %{with gallium_nouveau}
+%if %{with dri_nouveau} && %{with gallium_nouveau}
 nouveau \
 %endif
 "
@@ -1288,6 +1292,7 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-ati-radeon-R600
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/r600_dri.so
+%endif
 
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
@@ -1297,11 +1302,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i965_dri.so
 
-%if %{with gallium_nouveau}
+%if %{with dri_nouveau}
 %files dri-driver-nouveau
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
-%endif
 %endif
 
 %files dri-driver-swrast
