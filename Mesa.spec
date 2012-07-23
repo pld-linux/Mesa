@@ -90,6 +90,10 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %undefine	with_xa
 %endif
 
+%if %{without dri_nouveau}
+%undefine	with_gallium_nouveau
+%endif
+
 %if %{without egl}
 %undefine	with_gbm
 %undefine	with_wayland
