@@ -9,7 +9,6 @@
 %bcond_without	gallium		# gallium drivers
 %bcond_with	gallium_intel	# gallium i915 driver (but doesn't work with AIGLX)
 %bcond_without	gallium_nouveau	# gallium nouveau driver
-%bcond_without	osmesa		# OSMesa libraries
 %bcond_without	gbm		# Graphics Buffer Manager
 %bcond_without	wayland		# Wayland EGL
 %bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
@@ -26,7 +25,7 @@
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.14
 #
-%define		snap		20120605
+%define		snap		20120806
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
@@ -37,7 +36,7 @@ License:	MIT (core), SGI (GLU) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
 Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	f15daf47602259139168e7e8565034d5
+# Source0-md5:	a7ed4d513a0996956ab6f8f707da8ab1
 #Patch100: %{name}-git.patch
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-link.patch
@@ -96,7 +95,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %endif
 
 # _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
-%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libXvMCnouveau.so.*
+%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libXvMCnouveau.so.* libdricore.*.so.* libOSMesa.so.* libdricore.*so.*
 
 # llvm build broken
 %define		filterout_ld    -Wl,--as-needed
@@ -684,8 +683,8 @@ Khronos platform header file.
 Plik nagłówkowy platformy Khronos.
 
 %package dri-core
-Summary:	X.org DRI core module
-Summary(pl.UTF-8):	Sterownik X.org DRI core
+Summary:	X.org DRI core library
+Summary(pl.UTF-8):	Biblioteka X.org DRI core
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
@@ -695,7 +694,7 @@ Requires:	xorg-xserver-server >= %{xserver_ver}
 X.org DRI core library.
 
 %description dri-core -l pl.UTF-8
-Sterownik X.org DRI core.
+Biblioteka X.org DRI core.
 
 %package dri-driver-ati-radeon-R100
 Summary:	X.org DRI driver for ATI R100 card family
@@ -912,7 +911,7 @@ Sterownik Mesa softpipe dla API vdpau.
 %prep
 %setup -q -n %{name}
 #%patch100 -p1
-%patch0 -p0
+#%patch0 -p0
 %patch1 -p1
 #%patch2 -p1
 
@@ -942,6 +941,10 @@ i915 \
 %endif
 r300 \
 r600 \
+%if 0
+# FIXME
+radeonsi \
+%endif
 %if %{with gallium_nouveau}
 nouveau \
 %endif
@@ -949,33 +952,14 @@ nouveau \
 
 gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 
-common_flags="\
+%configure \
 	--enable-shared \
-	--enable-shared-dricore \
 	--enable-glx-tls \
 	--enable-pic \
 	--enable-selinux \
 	%{?with_static_libs:--enable-static} \
-"
-
-osmesa_common_flags="\
-	--with-driver=osmesa \
-	--disable-asm \
-	--disable-egl \
-	--disable-glu"
-
-%if %{with osmesa}
-%configure $common_flags $osmesa_common_flags \
-	--with-osmesa-bits=8
-%{__make}
-%{__make} -C src/mesa osmesa.pc
-mv %{_lib} osmesa8
-cp -p src/mesa/osmesa.pc osmesa8
-%{__make} clean
-%endif
-
-%configure $common_flags \
 	%{__enable gbm} \
+	--enable-osmesa \
 	--enable-shared-glapi \
 %if %{with egl}
 	--enable-egl \
@@ -985,6 +969,7 @@ cp -p src/mesa/osmesa.pc osmesa8
 %endif
 %if %{with gallium}
 	--enable-gallium-llvm \
+	--with-llvm-shared-libs \ \
 	%{__enable egl gallium-egl} \
 	%{__enable gbm gallium-gbm} \
 	%{?with_egl:--enable-openvg} \
@@ -995,7 +980,6 @@ cp -p src/mesa/osmesa.pc osmesa8
 %else
 	--without-gallium-drivers \
 %endif
-	--with-driver=dri \
 	--with-dri-drivers=${dri_drivers} \
 	--with-dri-driverdir=%{_libdir}/xorg/modules/dri
 
@@ -1006,15 +990,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
-
-# until upstream fixes it
-mv $RPM_BUILD_ROOT%{_libdir}/dri/libdricore.so \
-	$RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/libdricore.so
-
-%if %{with osmesa}
-cp -dp osmesa8/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
-cp -p osmesa8/osmesa.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
-%endif
 
 # strip out undesirable headers
 %{__rm} $RPM_BUILD_ROOT%{_includedir}/GL/{vms_x_fix,wglext,wmesa}.h
@@ -1068,6 +1043,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %post	libxatracker -p /sbin/ldconfig
 %postun	libxatracker -p /sbin/ldconfig
+
+%post	dri-core -p /sbin/ldconfig
+%postun	dri-core -p /sbin/ldconfig
 
 %if %{with egl}
 %files libEGL
@@ -1160,7 +1138,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libGLU.a
 %endif
 
-%if %{with osmesa}
 %files libOSMesa
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
@@ -1176,7 +1153,6 @@ rm -rf $RPM_BUILD_ROOT
 %files libOSMesa-static
 %defattr(644,root,root,755)
 %{_libdir}/libOSMesa.a
-%endif
 %endif
 
 %if %{with egl} && %{with gallium}
@@ -1306,8 +1282,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files dri-core
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/libdricore.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/libglsl.so
+%attr(755,root,root) %{_libdir}/libdricore%{version}.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libdricore%{version}.so.1
 
 %files dri-driver-ati-radeon-R100
 %defattr(644,root,root,755)
