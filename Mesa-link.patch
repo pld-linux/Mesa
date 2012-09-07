@@ -119,3 +119,25 @@
  
  include $(GLAPI)/gen/glapi_gen.mk
  glapi_mapi_tmp.h : $(GLAPI)/gen/gl_and_es_API.xml $(glapi_gen_mapi_deps)
+--- p/src/gallium/targets/vdpau-radeonsi/Makefile~	2012-08-06 18:56:40.000000000 +0200
++++ p/src/gallium/targets/vdpau-radeonsi/Makefile	2012-09-07 22:44:07.304997361 +0200
+@@ -23,7 +23,7 @@
+ DRIVER_DEFINES = \
+ 	-DGALLIUM_RBUG -DGALLIUM_TRACE -DGALLIUM_NOOP
+ 
+-DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm --libs) -lXfixes -ldrm_radeon
++DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm --libs) -lXfixes -ldrm_radeon -lxcb
+ 
+ include ../Makefile.vdpau
+ 
+--- p/src/mesa/libdricore/Makefile.am~	2012-08-26 21:00:26.000000000 +0200
++++ p/src/mesa/libdricore/Makefile.am	2012-09-07 22:45:58.210981683 +0200
+@@ -46,7 +46,7 @@
+ 	$(BUILTIN_COMPILER_GENERATED_CXX_FILES) \
+ 	$(top_builddir)/src/glsl/builtin_function.cpp
+ libdricore@VERSION@_la_LDFLAGS = -version-number 1:0
+-libdricore@VERSION@_la_LIBADD = libdricore-asm.la
++libdricore@VERSION@_la_LIBADD = libdricore-asm.la -ldl
+ 
+ # This is separated from libdricore to avoid conflics in object
+ # outputs between main/clip.c and sparc/clip.c.  The documented way to
