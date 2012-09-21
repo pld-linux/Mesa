@@ -25,7 +25,7 @@
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.14
 #
-%define		snap		20120907
+%define		snap		20120921
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
@@ -36,7 +36,7 @@ License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
 Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	29c0196528032131896619ff1f9b3173
+# Source0-md5:	6a81ca41f8f131d98e95371ea0b6717e
 #Patch100: %{name}-git.patch
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-link.patch
@@ -948,6 +948,7 @@ nouveau \
 gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 
 %configure \
+	--disable-silent-rules \
 	--enable-shared \
 	--enable-glx-tls \
 	--enable-pic \
