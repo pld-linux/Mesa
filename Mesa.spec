@@ -25,18 +25,18 @@
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.14
 #
-%define		snap		20120921
+%define		snap		20120928
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	9.0.0
+Version:	9.1.0
 Release:	0.%{snap}.1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
 Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	6a81ca41f8f131d98e95371ea0b6717e
+# Source0-md5:	de4bf55f1ed7ab03d84cb1a194ba0b9c
 #Patch100: %{name}-git.patch
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-link.patch
