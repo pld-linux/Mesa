@@ -8,7 +8,7 @@
 %bcond_without	gallium		# gallium drivers
 %bcond_with	gallium_intel	# gallium i915 driver (instead of plain dri; doesn't work with AIGLX)
 %bcond_without	gallium_nouveau	# gallium nouveau driver (instead of plain dri)
-%bcond_with	dri_nouveau	# nouveau DRI driver (any kind; doesn't build with current libdrm)
+%bcond_without	dri_nouveau	# nouveau DRI driver (any kind)
 %bcond_without	egl		# EGL libraries
 %bcond_without	gbm		# Graphics Buffer Manager
 %bcond_without	wayland		# Wayland EGL
@@ -1273,8 +1273,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files dri-core
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libdricore%{version}.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libdricore%{version}.so.1
+%attr(755,root,root) %{_libdir}/libdricore9.0.0.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libdricore9.0.0.so.1
 
 %files dri-driver-ati-radeon-R100
 %defattr(644,root,root,755)
