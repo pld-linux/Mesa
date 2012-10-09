@@ -1,7 +1,6 @@
 #
 # TODO:
 # - consider:
-#   --enable-shared-dricore
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
 # - resurrect static if it's useful (using plain xorg target? DRI doesn't support static)
 #
@@ -11,7 +10,6 @@
 %bcond_without	gallium_nouveau	# gallium nouveau driver (instead of plain dri)
 %bcond_with	dri_nouveau	# nouveau DRI driver (any kind; doesn't build with current libdrm)
 %bcond_without	egl		# EGL libraries
-%bcond_without	osmesa		# OSMesa libraries
 %bcond_without	gbm		# Graphics Buffer Manager
 %bcond_without	wayland		# Wayland EGL
 %bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
@@ -24,24 +22,25 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver	7.1.0
 #
-%define		libdrm_ver	2.4.30
+%define		libdrm_ver	2.4.34
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.14
+#
+%define		snap		20120921
 #
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	8.0.4
-Release:	1
-License:	MIT (core), SGI (GLU) and others - see license.html file
+Version:	9.0.0
+Release:	0.%{snap}.1
+License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
-Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	d546f988adfdf986cff45b1efa2d8a46
-Patch100:	%{name}-git.patch
+#Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
+Source0:	%{name}Lib-%{snap}.tar.bz2
+# Source0-md5:	6a81ca41f8f131d98e95371ea0b6717e
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-link.patch
 Patch2:		%{name}-wayland.patch
-Patch3:		llvm-3.1.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -100,7 +99,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %endif
 
 # _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
-%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.*
+%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libXvMCnouveau.so.* libdricore.*.so.* libOSMesa.so.* libdricore.*so.*
 
 # llvm build broken
 %define		filterout_ld    -Wl,--as-needed
@@ -311,56 +310,6 @@ Header files for Mesa GLES libraries.
 %description libGLES-devel -l pl.UTF-8
 Pliki nagłówkowe bibliotek Mesa GLES.
 
-%package libGLU
-Summary:	SGI implementation of libGLU OpenGL library
-Summary(pl.UTF-8):	Implementacja SGI biblioteki libGLU ze standardu OpenGL
-License:	SGI Free Software License B v2.0 (MIT-like)
-Group:		Libraries
-# loose dependency on libGL.so.1 to use with other libGL binaries
-Requires:	OpenGL >= 1.2
-Provides:	OpenGL-GLU = 1.3
-Obsoletes:	Mesa-devel
-Obsoletes:	X11-OpenGL-libs < 1:7.0.0
-Obsoletes:	XFree86-OpenGL-libs < 1:7.0.0
-
-%description libGLU
-SGI implementation of libGLU OpenGL library. It implements OpenGL GLU
-1.3 specifications.
-
-%description libGLU -l pl.UTF-8
-Implementacja SGI biblioteki libGLU ze standardu OpenGL. Implementuje
-specyfikację OpenGL GLU 1.3.
-
-%package libGLU-devel
-Summary:	Header files for SGI libGLU library
-Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki SGI libGLU
-License:	SGI Free Software License B v2.0 (MIT-like)
-Group:		Development/Libraries
-Requires:	%{name}-libGLU = %{version}-%{release}
-Requires:	OpenGL-devel >= 1.2
-Requires:	libstdc++-devel
-Provides:	OpenGL-GLU-devel = 1.3
-
-%description libGLU-devel
-Header files for SGI libGLU library.
-
-%description libGLU-devel -l pl.UTF-8
-Pliki nagłówkowe biblioteki SGI libGLU.
-
-%package libGLU-static
-Summary:	Static SGI libGLU library
-Summary(pl.UTF-8):	Statyczna biblioteka SGI libGLU
-License:	SGI Free Software License B v2.0 (MIT-like)
-Group:		Development/Libraries
-Requires:	%{name}-libGLU-devel = %{version}-%{release}
-Provides:	OpenGL-GLU-static = 1.3
-
-%description libGLU-static
-Static SGI libGLU library.
-
-%description libGLU-static -l pl.UTF-8
-Statyczna biblioteka SGI libGLU.
-
 %package libOSMesa
 Summary:	OSMesa (off-screen renderer) library
 Summary(pl.UTF-8):	Biblioteka OSMesa (renderująca bitmapy w pamięci)
@@ -532,6 +481,19 @@ Header file for Mesa Graphics Buffer Manager library.
 Plik nagłówkowy biblioteki Mesa Graphics Buffer Manager (zarządcy
 bufora graficznego).
 
+%package gbm-driver-swrast
+Summary:	Software (swrast) driver for Mesa GBM framework
+Summary(pl.UTF-8):	Sterownik programowy (swrast) dla szkieletu Mesa GBM
+Group:		Libraries
+Requires:	%{name}-libgbm = %{version}-%{release}
+
+%description gbm-driver-swrast
+Software (swrast) driver for Mesa Graphics Buffer Manager.
+
+%description gbm-driver-swrast -l pl.UTF-8
+Sterownik programowy (swrast) dla szkieletu Mesa Graphics Buffer
+Manager (zarządcy bufora graficznego).
+
 %package gbm-driver-i915
 Summary:	i915 driver for Mesa GBM framework
 Summary(pl.UTF-8):	Sterownik i915 dla szkieletu Mesa GBM
@@ -590,6 +552,21 @@ adapters based on R600/R700 chips.
 Sterownik r600 dla szkieletu Mesa Graphics Buffer Manager (zarządcy
 bufora graficznego). Obsługuje karty graficzne ATI Radeon oparte na
 układach R600/R700.
+
+%package gbm-driver-radeonsi
+Summary:	radeonsi driver for Mesa GBM framework
+Summary(pl.UTF-8):	Sterownik radeonsi dla szkieletu Mesa GBM
+Group:		Libraries
+Requires:	%{name}-libgbm = %{version}-%{release}
+
+%description gbm-driver-radeonsi
+radeonsi driver for Mesa Graphics Buffer Manager. It supports ATI
+Radeon adapters based on Southern Islands chips.
+
+%description gbm-driver-radeonsi -l pl.UTF-8
+Sterownik radeonsi dla szkieletu Mesa Graphics Buffer Manager
+(zarządcy bufora graficznego). Obsługuje karty graficzne ATI Radeon
+oparte na układach Southern Islands.
 
 %package gbm-driver-vmwgfx
 Summary:	vmwgfx driver for Mesa GBM framework
@@ -682,6 +659,20 @@ Khronos platform header file.
 %description khrplatform-devel -l pl.UTF-8
 Plik nagłówkowy platformy Khronos.
 
+%package dri-core
+Summary:	X.org DRI core library
+Summary(pl.UTF-8):	Biblioteka X.org DRI core
+License:	MIT
+Group:		X11/Libraries
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
+
+%description dri-core
+X.org DRI core library.
+
+%description dri-core -l pl.UTF-8
+Biblioteka X.org DRI core.
+
 %package dri-driver-ati-radeon-R100
 Summary:	X.org DRI driver for ATI R100 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R100
@@ -745,6 +736,22 @@ X.org DRI driver for ATI R600/R700 card family.
 
 %description dri-driver-ati-radeon-R600 -l pl.UTF-8
 Sterownik X.org DRI dla rodziny kart ATI R600/R700.
+
+%package dri-driver-ati-radeon-SI
+Summary:	X.org DRI driver for ATI Southern Islands card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI Southern Islands
+License:	MIT
+Group:		X11/Libraries
+Requires:	radeon-ucode
+Requires:	xorg-driver-video-ati
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
+
+%description dri-driver-ati-radeon-SI
+X.org DRI driver for ATI Southern Islands card family.
+
+%description dri-driver-ati-radeon-SI -l pl.UTF-8
+Sterownik X.org DRI dla rodziny kart ATI Southern Islands.
 
 %package dri-driver-intel-i915
 Summary:	X.org DRI driver for Intel i915 card family
@@ -879,6 +886,23 @@ based on R600/R700 chips.
 Sterownik Mesa r600 dla API vdpau. Obsługuje karty ATI Radeon oparte
 na układach R600/R700.
 
+%package -n libvdpau-driver-mesa-radeonsi
+Summary:	Mesa radeonsi driver for the vdpau API
+Summary(pl.UTF-8):	Sterownik Mesa radeonsi dla API vdpau
+License:	MIT
+Group:		X11/Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	libvdpau >= 0.4.1
+Conflicts:	libvdpau-driver-mesa
+
+%description -n libvdpau-driver-mesa-radeonsi
+Mesa radeonsi driver for the vdpau API. It supports ATI Radeon
+adapters based on Southern Islands chips.
+
+%description -n libvdpau-driver-mesa-radeonsi -l pl.UTF-8
+Sterownik Mesa radeonsi dla API vdpau. Obsługuje karty ATI Radeon
+oparte na układach Southern Islands.
+
 %package -n libvdpau-driver-mesa-softpipe
 Summary:	Mesa softpipe driver for the vdpau API
 Summary(pl.UTF-8):	Sterownik Mesa softpipe dla API vdpau
@@ -895,16 +919,19 @@ Mesa softpipe driver for the vdpau API.
 Sterownik Mesa softpipe dla API vdpau.
 
 %prep
-%setup -q
+%setup -q -n %{name}
 #%patch100 -p1
-%patch0 -p0
+#patch0 -p0
 %patch1 -p1
-%patch2 -p1
-%patch3 -p1
+#patch2 -p1
 
 %build
+if [ -x autogen.sh ]; then
+	./autogen.sh
+else
 %{__aclocal}
 %{__autoconf}
+fi
 
 dri_drivers="r200 radeon \
 %if %{without gallium_intel}
@@ -927,39 +954,23 @@ i915 \
 %endif
 r300 \
 r600 \
-%if %{with dri_nouveau} && %{with gallium_nouveau}
-nouveau \
+radeonsi \
+%if %{with gallium_nouveau}
+nouveau
 %endif
 "
 
 gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 
-common_flags="\
+%configure \
+	--disable-silent-rules \
 	--enable-shared \
 	--enable-glx-tls \
 	--enable-pic \
 	--enable-selinux \
 	%{?with_static_libs:--enable-static} \
-"
-
-osmesa_common_flags="\
-	--with-driver=osmesa \
-	--disable-asm \
-	--disable-egl \
-	--disable-glu"
-
-%if %{with osmesa}
-%configure $common_flags $osmesa_common_flags \
-	--with-osmesa-bits=8
-%{__make}
-%{__make} -C src/mesa osmesa.pc
-mv %{_lib} osmesa8
-cp -p src/mesa/osmesa.pc osmesa8
-%{__make} clean
-%endif
-
-%configure $common_flags \
 	%{__enable gbm} \
+	--enable-osmesa \
 	--enable-shared-glapi \
 %if %{with egl}
 	--enable-egl \
@@ -969,6 +980,7 @@ cp -p src/mesa/osmesa.pc osmesa8
 %endif
 %if %{with gallium}
 	--enable-gallium-llvm \
+	--with-llvm-shared-libs \ \
 	%{__enable egl gallium-egl} \
 	%{__enable gbm gallium-gbm} \
 	%{?with_egl:--enable-openvg} \
@@ -979,7 +991,6 @@ cp -p src/mesa/osmesa.pc osmesa8
 %else
 	--without-gallium-drivers \
 %endif
-	--with-driver=dri \
 	--with-dri-drivers=${dri_drivers} \
 	--with-dri-driverdir=%{_libdir}/xorg/modules/dri
 
@@ -990,11 +1001,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
-
-%if %{with osmesa}
-cp -dp osmesa8/libOSMesa* $RPM_BUILD_ROOT%{_libdir}
-cp -p osmesa8/osmesa.pc $RPM_BUILD_ROOT%{_pkgconfigdir}
-%endif
 
 # strip out undesirable headers
 %{__rm} $RPM_BUILD_ROOT%{_includedir}/GL/{vms_x_fix,wglext,wmesa}.h
@@ -1018,9 +1024,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %post	libGLES -p /sbin/ldconfig
 %postun	libGLES -p /sbin/ldconfig
-
-%post	libGLU -p /sbin/ldconfig
-%postun	libGLU -p /sbin/ldconfig
 
 %post	libOSMesa -p /sbin/ldconfig
 %postun	libOSMesa -p /sbin/ldconfig
@@ -1048,6 +1051,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %post	libxatracker -p /sbin/ldconfig
 %postun	libxatracker -p /sbin/ldconfig
+
+%post	dri-core -p /sbin/ldconfig
+%postun	dri-core -p /sbin/ldconfig
 
 %if %{with egl}
 %files libEGL
@@ -1122,25 +1128,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/glesv1_cm.pc
 %{_pkgconfigdir}/glesv2.pc
 
-%files libGLU
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libGLU.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libGLU.so.1
-
-%files libGLU-devel
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libGLU.so
-%{_includedir}/GL/glu.h
-%{_includedir}/GL/glu_mangle.h
-%{_pkgconfigdir}/glu.pc
-
-%if %{with static_libs}
-%files libGLU-static
-%defattr(644,root,root,755)
-%{_libdir}/libGLU.a
-%endif
-
-%if %{with osmesa}
 %files libOSMesa
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
@@ -1156,7 +1143,6 @@ rm -rf $RPM_BUILD_ROOT
 %files libOSMesa-static
 %defattr(644,root,root,755)
 %{_libdir}/libOSMesa.a
-%endif
 %endif
 
 %if %{with egl} && %{with gallium}
@@ -1214,6 +1200,10 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %if %{with gallium}
+%files gbm-driver-swrast
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gbm/pipe_swrast.so
+
 %if %{with gallium_intel}
 %files gbm-driver-i915
 %defattr(644,root,root,755)
@@ -1233,6 +1223,10 @@ rm -rf $RPM_BUILD_ROOT
 %files gbm-driver-r600
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/gbm/pipe_r600.so
+
+%files gbm-driver-radeonsi
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gbm/pipe_radeonsi.so
 
 %files gbm-driver-vmwgfx
 %defattr(644,root,root,755)
@@ -1280,6 +1274,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/KHR/khrplatform.h
 %endif
 
+%files dri-core
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libdricore%{version}.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libdricore%{version}.so.1
+
 %files dri-driver-ati-radeon-R100
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/radeon_dri.so
@@ -1297,6 +1296,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/r600_dri.so
 %endif
+
+%files dri-driver-ati-radeon-SI
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/radeonsi_dri.so
 
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
@@ -1343,6 +1346,12 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so
+
+%files -n libvdpau-driver-mesa-radeonsi
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so
 
 %files -n libvdpau-driver-mesa-softpipe
 %defattr(644,root,root,755)

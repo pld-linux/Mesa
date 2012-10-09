@@ -5,7 +5,7 @@
  	$(DRIVER_SOURCES)
  
 -DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm_nouveau --libs) -lXfixes
-+DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm_nouveau libdrm --libs) -lXfixes
++DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm_nouveau libdrm --libs) -lXfixes -lxcb
  
  LINK_WITH_CXX=1
  
@@ -16,29 +16,29 @@
  	$(DRIVER_SOURCES)
  
 -DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm_nouveau --libs) -lXfixes
-+DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm_nouveau libdrm --libs) -lXfixes -lXvMC
++DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm_nouveau libdrm --libs) -lXfixes -lXvMC -lxcb -lX11
  
  LINK_WITH_CXX=1
  
 --- Mesa-8.0.1/src/gallium/targets/xvmc-r300/Makefile.orig	2012-02-15 00:44:00.000000000 +0100
 +++ Mesa-8.0.1/src/gallium/targets/xvmc-r300/Makefile	2012-03-11 12:34:46.519728247 +0100
-@@ -15,7 +15,7 @@
+@@ -17,7 +17,7 @@
  	$(COMMON_GALLIUM_SOURCES) \
  	$(DRIVER_SOURCES)
  
--DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm --libs) -lXfixes
-+DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm --libs) -lXfixes -lXvMC
+-DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm --libs) -lXfixes -ldrm_radeon
++DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm --libs) -lXfixes -lXvMC -ldrm_radeon -lX11 -lxcb
  
  include ../Makefile.xvmc
  
 --- Mesa-8.0.1/src/gallium/targets/xvmc-r600/Makefile.orig	2012-02-15 00:44:00.000000000 +0100
 +++ Mesa-8.0.1/src/gallium/targets/xvmc-r600/Makefile	2012-03-11 12:35:23.323061190 +0100
-@@ -15,7 +15,7 @@
+@@ -17,7 +17,7 @@
  	$(COMMON_GALLIUM_SOURCES) \
  	$(DRIVER_SOURCES)
  
--DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm --libs) -lXfixes
-+DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm --libs) -lXfixes -lXvMC
+-DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm --libs) -lXfixes -ldrm_radeon
++DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm --libs) -lXfixes -lXvMC -ldrm_radeon -lX11 -lxcb
  
  include ../Makefile.xvmc
  
@@ -49,7 +49,7 @@
  	$(TOP)/src/gallium/winsys/g3dvl/xlib/xsp_winsys.c
  
 -DRIVER_LIBS =
-+DRIVER_LIBS = -lXvMC -lXext
++DRIVER_LIBS = -lXvMC -lXext -lX11
  
  include ../Makefile.xvmc
  
@@ -74,3 +74,70 @@
  
  # xa pkgconfig file
  pcedit = sed \
+
+--- m/src/gallium/targets/vdpau-r300/Makefile~	2012-05-10 22:56:51.000000000 +0200
++++ m/src/gallium/targets/vdpau-r300/Makefile	2012-05-11 09:25:42.791993195 +0200
+@@ -21,7 +21,7 @@
+ 	$(COMMON_GALLIUM_SOURCES) \
+ 	$(DRIVER_SOURCES)
+ 
+-DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm --libs) -lXfixes -ldrm_radeon
++DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm --libs) -lXfixes -ldrm_radeon -lxcb
+ 
+ include ../Makefile.vdpau
+
+--- m/src/gallium/targets/vdpau-r600/Makefile~	2012-05-10 22:56:51.000000000 +0200
++++ m/src/gallium/targets/vdpau-r600/Makefile	2012-05-11 09:26:14.899501899 +0200
+@@ -17,7 +17,7 @@
+ 	$(COMMON_GALLIUM_SOURCES) \
+ 	$(DRIVER_SOURCES)
+ 
+-DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm --libs) -lXfixes -ldrm_radeon
++DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm --libs) -lXfixes -ldrm_radeon -lxcb
+ 
+ include ../Makefile.vdpau
+ 
+--- p/src/gallium/targets/vdpau-softpipe/Makefile~	2012-05-10 22:56:51.000000000 +0200
++++ p/src/gallium/targets/vdpau-softpipe/Makefile	2012-05-11 09:27:05.364159093 +0200
+@@ -14,7 +14,7 @@
+ C_SOURCES = \
+ 	$(TOP)/src/gallium/auxiliary/vl/vl_winsys_xsp.c
+ 
+-DRIVER_LIBS =
++DRIVER_LIBS = -lX11 -lXext
+ 
+ include ../Makefile.vdpau
+
+--- p/src/mapi/shared-glapi/Makefile.am~	2012-05-10 22:56:51.000000000 +0200
++++ p/src/mapi/shared-glapi/Makefile.am	2012-05-11 09:41:41.159294241 +0200
+@@ -6,7 +6,7 @@
+ 
+ lib_LTLIBRARIES = libglapi.la
+ libglapi_la_SOURCES = $(MAPI_GLAPI_FILES)
+-libglapi_la_LDFLAGS = -no-undefined
++libglapi_la_LDFLAGS = -no-undefined -pthread
+ 
+ include $(GLAPI)/gen/glapi_gen.mk
+ glapi_mapi_tmp.h : $(GLAPI)/gen/gl_and_es_API.xml $(glapi_gen_mapi_deps)
+--- p/src/gallium/targets/vdpau-radeonsi/Makefile~	2012-08-06 18:56:40.000000000 +0200
++++ p/src/gallium/targets/vdpau-radeonsi/Makefile	2012-09-07 22:44:07.304997361 +0200
+@@ -23,7 +23,7 @@
+ DRIVER_DEFINES = \
+ 	-DGALLIUM_RBUG -DGALLIUM_TRACE -DGALLIUM_NOOP
+ 
+-DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm --libs) -lXfixes -ldrm_radeon
++DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm --libs) -lXfixes -ldrm_radeon -lxcb
+ 
+ include ../Makefile.vdpau
+ 
+--- p/src/mesa/libdricore/Makefile.am~	2012-08-26 21:00:26.000000000 +0200
++++ p/src/mesa/libdricore/Makefile.am	2012-09-07 22:45:58.210981683 +0200
+@@ -46,7 +46,7 @@
+ 	$(BUILTIN_COMPILER_GENERATED_CXX_FILES) \
+ 	$(top_builddir)/src/glsl/builtin_function.cpp
+ libdricore@VERSION@_la_LDFLAGS = -version-number 1:0
+-libdricore@VERSION@_la_LIBADD = libdricore-asm.la
++libdricore@VERSION@_la_LIBADD = libdricore-asm.la -ldl
+ 
+ # This is separated from libdricore to avoid conflics in object
+ # outputs between main/clip.c and sparc/clip.c.  The documented way to
