@@ -22,7 +22,7 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver	7.1.0
 #
-%define		libdrm_ver	2.4.34
+%define		libdrm_ver	2.4.39
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.14
 #
@@ -31,13 +31,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	9.0.0
-Release:	0.%{snap}.1
+Version:	9.0
+Release:	0.1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
-#Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-Source0:	%{name}Lib-%{snap}.tar.bz2
-# Source0-md5:	6a81ca41f8f131d98e95371ea0b6717e
+Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
+# Source0-md5:	60e557ce407be3732711da484ab3db6c
 Patch0:		%{name}-realclean.patch
 Patch1:		%{name}-link.patch
 Patch2:		%{name}-wayland.patch
@@ -50,7 +49,7 @@ BuildRequires:	libdrm-devel >= %{libdrm_ver}
 BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= 5:3.3.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
-BuildRequires:	libtool >= 2:1.4d
+BuildRequires:	libtool >= 2:2.2
 BuildRequires:	libvdpau-devel >= 0.4.1
 BuildRequires:	llvm-devel >= 2.9
 BuildRequires:	pixman-devel
@@ -919,19 +918,17 @@ Mesa softpipe driver for the vdpau API.
 Sterownik Mesa softpipe dla API vdpau.
 
 %prep
-%setup -q -n %{name}
+%setup -q
 #%patch100 -p1
 #patch0 -p0
 %patch1 -p1
 #patch2 -p1
 
 %build
-if [ -x autogen.sh ]; then
-	./autogen.sh
-else
-%{__aclocal}
+%{__libtoolize}
+%{__aclocal} -I m4
 %{__autoconf}
-fi
+%{__automake}
 
 dri_drivers="r200 radeon \
 %if %{without gallium_intel}
