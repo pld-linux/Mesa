@@ -49,15 +49,18 @@ BuildRequires:	libstdc++-devel >= 5:3.3.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:2.2
 BuildRequires:	libvdpau-devel >= 0.4.1
+BuildRequires:	libxcb-devel >= 1.8.1
 BuildRequires:	llvm-devel >= 2.9
+BuildRequires:	perl-base
 BuildRequires:	pixman-devel
 BuildRequires:	pkgconfig
 BuildRequires:	pkgconfig(talloc) >= 2.0.1
-BuildRequires:	python
+BuildRequires:	python >= 2
 BuildRequires:	python-libxml2
-BuildRequires:	python-modules
+BuildRequires:	python-modules >= 2
 BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
+%{?with_egl:BuildRequires:	udev-devel >= 1:150}
 # wayland-{client,server}
 %{?with_wayland:BuildRequires:	wayland-devel}
 BuildRequires:	xorg-lib-libXdamage-devel
@@ -70,10 +73,6 @@ BuildRequires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 BuildRequires:	xorg-proto-glproto-devel >= %{glproto_ver}
 BuildRequires:	xorg-util-makedepend
 BuildRequires:	xorg-xserver-server-devel >= %{xserver_ver}
-%if %{with egl}
-BuildRequires:	libxcb-devel
-BuildRequires:	udev-devel >= 1:150
-%endif
 %if %{with gallium}
 BuildRequires:	xorg-proto-xextproto-devel >= 7.0.99.1
 BuildRequires:	xorg-xserver-server-devel >= 1.6.0
