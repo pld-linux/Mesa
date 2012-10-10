@@ -37,9 +37,7 @@ License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
 # Source0-md5:	60e557ce407be3732711da484ab3db6c
-Patch0:		%{name}-realclean.patch
-Patch1:		%{name}-link.patch
-Patch2:		%{name}-wayland.patch
+Patch0:		%{name}-link.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -192,7 +190,7 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	%{name}-libglapi = %{version}-%{release}
 Requires:	libdrm >= %{libdrm_ver}
-Provides:	OpenGL = 2.1
+Provides:	OpenGL = 3.1
 Provides:	OpenGL-GLX = 1.4
 Obsoletes:	Mesa
 Obsoletes:	Mesa-dri
@@ -236,7 +234,7 @@ Requires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 Requires:	xorg-proto-glproto-devel >= %{glproto_ver}
 Suggests:	OpenGL-doc-man
 Provides:	OpenGL-GLX-devel = 1.4
-Provides:	OpenGL-devel = 2.1
+Provides:	OpenGL-devel = 3.1
 Obsoletes:	Mesa-devel
 Obsoletes:	X11-OpenGL-devel < 1:7.0.0
 Obsoletes:	X11-OpenGL-devel-base < 1:7.0.0
@@ -255,7 +253,7 @@ Summary(pl.UTF-8):	Statyczna biblioteka libGL z projektu Mesa3D
 License:	MIT
 Group:		X11/Development/Libraries
 Requires:	%{name}-libGL-devel = %{version}-%{release}
-Provides:	OpenGL-static = 2.1
+Provides:	OpenGL-static = 3.1
 Obsoletes:	Mesa-static
 Obsoletes:	X11-OpenGL-static < 1:7.0.0
 Obsoletes:	XFree86-OpenGL-static < 1:7.0.0
@@ -677,6 +675,7 @@ Summary:	X.org DRI driver for ATI R100 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R100
 License:	MIT
 Group:		X11/Libraries
+Requires:	%{name}-dri-core = %{version}-%{release}
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
@@ -693,6 +692,7 @@ Summary:	X.org DRI driver for ATI R200 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R200
 License:	MIT
 Group:		X11/Libraries
+Requires:	%{name}-dri-core = %{version}-%{release}
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
@@ -757,6 +757,9 @@ Summary:	X.org DRI driver for Intel i915 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i915
 License:	MIT
 Group:		X11/Libraries
+%if %{without gallium_intel}
+Requires:	%{name}-dri-core = %{version}-%{release}
+%endif
 Requires:	xorg-driver-video-intel
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
@@ -776,6 +779,7 @@ Summary:	X.org DRI driver for Intel i965 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i965
 License:	MIT
 Group:		X11/Libraries
+Requires:	%{name}-dri-core = %{version}-%{release}
 Requires:	xorg-driver-video-intel
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
@@ -795,6 +799,9 @@ Summary:	X.org DRI driver for NVIDIA card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart NVIDIA
 License:	MIT
 Group:		X11/Libraries
+%if %{without gallium_nouveau}
+Requires:	%{name}-dri-core = %{version}-%{release}
+%endif
 Requires:	xorg-driver-video-nouveau
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
@@ -810,6 +817,7 @@ Summary:	X.org DRI software rasterizer driver
 Summary(pl.UTF-8):	Sterownik X.org DRI obsługujący rysowanie programowe
 License:	MIT
 Group:		X11/Libraries
+Requires:	%{name}-dri-core = %{version}-%{release}
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 
@@ -919,10 +927,7 @@ Sterownik Mesa softpipe dla API vdpau.
 
 %prep
 %setup -q
-#%patch100 -p1
-#patch0 -p0
-%patch1 -p1
-#patch2 -p1
+%patch0 -p1
 
 %build
 %{__libtoolize}
@@ -1004,7 +1009,11 @@ rm -rf $RPM_BUILD_ROOT
 # dlopened by soname
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so
 # not used externally
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/libglapi.so
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/lib{dricore9.0.0,glapi}.so
+# dlopened
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/*.la
+# not defined by standards; and not needed, there is pkg-config support
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/lib*.la
 
 # remove "OS ABI: Linux 2.4.20" tag, so private copies (nvidia or fglrx),
 # set up via /etc/ld.so.conf.d/*.conf will be preferred over this
@@ -1275,6 +1284,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libdricore9.0.0.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libdricore9.0.0.so.1
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/drirc
 
 %files dri-driver-ati-radeon-R100
 %defattr(644,root,root,755)
