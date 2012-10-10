@@ -10,6 +10,7 @@
 %bcond_without	gallium_nouveau	# gallium nouveau driver
 %bcond_without	egl		# EGL libraries
 %bcond_without	gbm		# Graphics Buffer Manager
+%bcond_without	opencl		# OpenCL library
 %bcond_without	wayland		# Wayland EGL
 %bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
 %bcond_with	static_libs	# static libraries [not supported for DRI, thus broken currently]
@@ -40,8 +41,10 @@ Patch0:		%{name}-link.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
+%{?with_opencl:BuildRequires:	clang-devel >= 3.1}
 BuildRequires:	expat-devel
 BuildRequires:	gcc >= 5:3.3
+%{?with_opencl:BuildRequires:	gcc >= 6:4.6}
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
 BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= 5:3.3.0
@@ -49,7 +52,7 @@ BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:2.2
 BuildRequires:	libvdpau-devel >= 0.4.1
 BuildRequires:	libxcb-devel >= 1.8.1
-BuildRequires:	llvm-devel >= 2.9
+BuildRequires:	llvm-devel >= 3.1
 BuildRequires:	perl-base
 BuildRequires:	pixman-devel
 BuildRequires:	pkgconfig
@@ -81,6 +84,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %if %{without gallium}
 %undefine	with_gallium_intel
 %undefine	with_gallium_nouveau
+%undefine	with_opencl
 %undefine	with_xa
 %endif
 
@@ -344,6 +348,140 @@ Static OSMesa (off-screen renderer) library.
 %description libOSMesa-static -l pl.UTF-8
 Biblioteka statyczna OSMesa (renderująca bitmapy w pamięci).
 
+%package libOpenCL
+Summary:	Mesa implementation of OpenCL (Compuing Language) API
+Summary(pl.UTF-8):	Implementacja Mesa API OpenCL (języka obliczeń)
+License:	MIT
+Group:		Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	udev-libs >= 1:150
+Provides:	OpenCL = 1.1
+
+%description libOpenCL
+This package contains Mesa implementation of OpenCL - standard for
+cross-platform, parallel programming of modern processors found in
+personal computers, servers and handheld/embedded devices. OpenCL
+specification can be found on Khronos Group site:
+<http://www.khronos.org/opencl/>. Mesa implements OpenCL 1.1.
+
+%description libOpenCL -l pl.UTF-8
+Ten pakiet zawiera implementację Mesa standardu OpenCL - standardu
+wieloplatformowego, równoległego programowania nowoczesnych
+procesorów, jakie znajdują się w komputerach osobistych, serwerach
+oraz urządzeniach przenośnych/wbudowanych. Specyfikację OpenCL można
+znaleźć na stronie Khronos Group: <http://www.khronos.org/opencl/>.
+Mesa zawiera implementację OpenCL w wersji 1.1.
+
+%package libOpenCL-devel
+Summary:	Header files for Mesa OpenCL library
+Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki Mesa OpenCL
+License:	MIT
+Group:		Development/Libraries
+Requires:	%{name}-libOpenCL = %{version}-%{release}
+Provides:	OpenCL-devel = 1.1
+
+%description libOpenCL-devel
+Header files for Mesa OpenCL library.
+
+%description libOpenCL-devel -l pl.UTF-8
+Pliki nagłówkowe biblioteki Mesa OpenCL.
+
+%package opencl-driver-i915
+Summary:	i915 driver for Mesa OpenCL implementation
+Summary(pl.UTF-8):	Sterownik i915 dla implementacji Mesa OpenCL
+Group:		Libraries
+Requires:	%{name}-libOpenCL = %{version}-%{release}
+
+%description opencl-driver-i915
+i915 driver for Mesa OpenCL implementation. It supports Intel
+915/945/G33/Q33/Q35/Pineview chips.
+
+%description opencl-driver-i915 -l pl.UTF-8
+Sterownik i915 dla implementacji Mesa standardu OpenCL. Obsługuje
+układy Intela z serii 915/945/G33/Q33/Q35/Pineview.
+
+%package opencl-driver-nouveau
+Summary:	nouveau driver for Mesa OpenCL implementation
+Summary(pl.UTF-8):	Sterownik nouveau dla implementacji Mesa OpenCL
+Group:		Libraries
+Requires:	%{name}-libOpenCL = %{version}-%{release}
+
+%description opencl-driver-nouveau
+nouveau driver for Mesa OpenCL implementation. It supports NVidia
+adapters.
+
+%description opencl-driver-nouveau -l pl.UTF-8
+Sterownik nouveau dla implementacji Mesa standardu OpenCL. Obsługuje
+karty graficzne firmy NVidia.
+
+%package opencl-driver-r300
+Summary:	r300 driver for Mesa OpenCL implementation
+Summary(pl.UTF-8):	Sterownik r300 dla implementacji Mesa OpenCL
+Group:		Libraries
+Requires:	%{name}-libOpenCL = %{version}-%{release}
+
+%description opencl-driver-r300
+r300 driver for Mesa OpenCL implementation. It supports ATI Radeon
+adapters based on R300/R400/RS690/R500 chips.
+
+%description opencl-driver-r300 -l pl.UTF-8
+Sterownik r300 dla implementacji Mesa standardu OpenCL. Obsługuje
+karty graficzne ATI Radeon oparte na układach R300/R400/RS690/R500.
+
+%package opencl-driver-r600
+Summary:	r600 driver for Mesa OpenCL implementation
+Summary(pl.UTF-8):	Sterownik r600 dla implementacji Mesa OpenCL
+Group:		Libraries
+Requires:	%{name}-libOpenCL = %{version}-%{release}
+
+%description opencl-driver-r600
+r600 driver for Mesa OpenCL implementation. It supports ATI Radeon
+adapters based on R600/R700 chips.
+
+%description opencl-driver-r600 -l pl.UTF-8
+Sterownik r600 dla implementacji Mesa standardu OpenCL. Obsługuje
+karty graficzne ATI Radeon oparte na układach R600/R700.
+
+%package opencl-driver-radeonsi
+Summary:	radeonsi driver for Mesa OpenCL implementation
+Summary(pl.UTF-8):	Sterownik radeonsi dla implementacji Mesa OpenCL
+Group:		Libraries
+Requires:	%{name}-libOpenCL = %{version}-%{release}
+
+%description opencl-driver-radeonsi
+radeonsi driver for Mesa OpenCL implementation. It supports ATI
+Radeon adapters based on Southern Islands chips.
+
+%description opencl-driver-radeonsi -l pl.UTF-8
+Sterownik radeonsi dla implementacji Mesa standardu OpenCL. Obsługuje
+karty graficzne ATI Radeon oparte na układach Southern Islands.
+
+%package opencl-driver-swrast
+Summary:	Software (swrast) driver for Mesa OpenCL implementation
+Summary(pl.UTF-8):	Sterownik programowy (swrast) dla implementacji Mesa OpenCL
+Group:		Libraries
+Requires:	%{name}-libOpenCL = %{version}-%{release}
+
+%description opencl-driver-swrast
+Software (swrast) driver for Mesa OpenCL implementation.
+
+%description opencl-driver-swrast -l pl.UTF-8
+Sterownik programowy (swrast) dla implementacji Mesa standardu OpenCL.
+
+%package opencl-driver-vmwgfx
+Summary:	vmwgfx driver for Mesa OpenCL implementation
+Summary(pl.UTF-8):	Sterownik vmwgfx dla implementacji Mesa OpenCL
+Group:		Libraries
+Requires:	%{name}-libOpenCL = %{version}-%{release}
+
+%description opencl-driver-vmwgfx
+vmwgfx driver for Mesa OpenCL implementation. It supports VMware
+virtual video adapter.
+
+%description opencl-driver-vmwgfx -l pl.UTF-8
+Sterownik vmwgfx dla implementacji Mesa standardu OpenCL. Obsługuje
+wirtualną kartę graficzną VMware.
+
 %package libOpenVG
 Summary:	Mesa implementation of OpenVG (Vector Graphics Accelleration) API
 Summary(pl.UTF-8):	Implementacja Mesa API OpenVG (akceleracji grafiki wektorowej)
@@ -472,19 +610,6 @@ Header file for Mesa Graphics Buffer Manager library.
 Plik nagłówkowy biblioteki Mesa Graphics Buffer Manager (zarządcy
 bufora graficznego).
 
-%package gbm-driver-swrast
-Summary:	Software (swrast) driver for Mesa GBM framework
-Summary(pl.UTF-8):	Sterownik programowy (swrast) dla szkieletu Mesa GBM
-Group:		Libraries
-Requires:	%{name}-libgbm = %{version}-%{release}
-
-%description gbm-driver-swrast
-Software (swrast) driver for Mesa Graphics Buffer Manager.
-
-%description gbm-driver-swrast -l pl.UTF-8
-Sterownik programowy (swrast) dla szkieletu Mesa Graphics Buffer
-Manager (zarządcy bufora graficznego).
-
 %package gbm-driver-i915
 Summary:	i915 driver for Mesa GBM framework
 Summary(pl.UTF-8):	Sterownik i915 dla szkieletu Mesa GBM
@@ -558,6 +683,19 @@ Radeon adapters based on Southern Islands chips.
 Sterownik radeonsi dla szkieletu Mesa Graphics Buffer Manager
 (zarządcy bufora graficznego). Obsługuje karty graficzne ATI Radeon
 oparte na układach Southern Islands.
+
+%package gbm-driver-swrast
+Summary:	Software (swrast) driver for Mesa GBM framework
+Summary(pl.UTF-8):	Sterownik programowy (swrast) dla szkieletu Mesa GBM
+Group:		Libraries
+Requires:	%{name}-libgbm = %{version}-%{release}
+
+%description gbm-driver-swrast
+Software (swrast) driver for Mesa Graphics Buffer Manager.
+
+%description gbm-driver-swrast -l pl.UTF-8
+Sterownik programowy (swrast) dla szkieletu Mesa Graphics Buffer
+Manager (zarządcy bufora graficznego).
 
 %package gbm-driver-vmwgfx
 Summary:	vmwgfx driver for Mesa GBM framework
@@ -975,6 +1113,7 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 	--with-llvm-shared-libs \ \
 	%{__enable egl gallium-egl} \
 	%{__enable gbm gallium-gbm} \
+	%{?with_opencl:--enable-opencl} \
 	%{?with_egl:--enable-openvg} \
 	--enable-vdpau \
 	%{?with_xa:--enable-xa} \
@@ -994,6 +1133,8 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
+# omitted by make install (as of 9.0)
+cp -pr include/CL $RPM_BUILD_ROOT%{_includedir}
 # strip out undesirable headers
 %{__rm} $RPM_BUILD_ROOT%{_includedir}/GL/{vms_x_fix,wglext,wmesa}.h
 # dlopened by soname
@@ -1023,6 +1164,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %post	libOSMesa -p /sbin/ldconfig
 %postun	libOSMesa -p /sbin/ldconfig
+
+%post	libOpenCL -p /sbin/ldconfig
+%postun	libOpenCL -p /sbin/ldconfig
 
 %post	libOpenVG -p /sbin/ldconfig
 %postun	libOpenVG -p /sbin/ldconfig
@@ -1141,6 +1285,45 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libOSMesa.a
 %endif
 
+%if %{with opencl}
+%files libOpenCL
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libOpenCL.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libOpenCL.so.1
+%dir %{_libdir}/opencl
+
+%files libOpenCL-devel
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libOpenCL.so
+%{_includedir}/CL
+
+%if %{with gallium_nouveau}
+%files opencl-driver-nouveau
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/opencl/pipe_nouveau.so
+%endif
+
+%files opencl-driver-r300
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/opencl/pipe_r300.so
+
+%files opencl-driver-r600
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/opencl/pipe_r600.so
+
+%files opencl-driver-radeonsi
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/opencl/pipe_radeonsi.so
+
+%files opencl-driver-swrast
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/opencl/pipe_swrast.so
+
+%files opencl-driver-vmwgfx
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/opencl/pipe_vmwgfx.so
+%endif
+
 %if %{with egl} && %{with gallium}
 %files libOpenVG
 %defattr(644,root,root,755)
@@ -1196,10 +1379,6 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %if %{with gallium}
-%files gbm-driver-swrast
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gbm/pipe_swrast.so
-
 %if %{with gallium_intel}
 %files gbm-driver-i915
 %defattr(644,root,root,755)
@@ -1223,6 +1402,10 @@ rm -rf $RPM_BUILD_ROOT
 %files gbm-driver-radeonsi
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/gbm/pipe_radeonsi.so
+
+%files gbm-driver-swrast
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gbm/pipe_swrast.so
 
 %files gbm-driver-vmwgfx
 %defattr(644,root,root,755)
