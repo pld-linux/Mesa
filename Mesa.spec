@@ -1297,6 +1297,12 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libOpenCL.so
 %{_includedir}/CL
 
+%if %{with gallium_intel}
+%files opencl-driver-i915
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/opencl/pipe_i915.so
+%endif
+
 %if %{with gallium_nouveau}
 %files opencl-driver-nouveau
 %defattr(644,root,root,755)
