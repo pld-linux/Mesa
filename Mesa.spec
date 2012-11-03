@@ -33,12 +33,13 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	9.0
-Release:	1
+Release:	2
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
 # Source0-md5:	60e557ce407be3732711da484ab3db6c
 Patch0:		%{name}-link.patch
+Patch1:		%{name}-wayland.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -65,7 +66,7 @@ BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
 %{?with_egl:BuildRequires:	udev-devel >= 1:150}
 # wayland-{client,server}
-%{?with_wayland:BuildRequires:	wayland-devel}
+%{?with_wayland:BuildRequires:	wayland-devel >= 1.0.0}
 BuildRequires:	xorg-lib-libXdamage-devel
 BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXfixes-devel
@@ -730,6 +731,7 @@ Summary:	Wayland EGL library
 Summary(pl.UTF-8):	Biblioteka Wayland EGL
 Group:		Libraries
 Requires:	libdrm >= %{libdrm_ver}
+Requires:	wayland >= 1.0.0
 
 %description libwayland-egl
 Wayland EGL platform library.
@@ -743,7 +745,7 @@ Summary(pl.UTF-8):	Pliki programistyczne biblioteki Wayland EGL
 Group:		Development/Libraries
 Requires:	%{name}-libwayland-egl = %{version}-%{release}
 Requires:	libdrm-devel >= %{libdrm_ver}
-Requires:	wayland-devel
+Requires:	wayland-devel >= 1.0.0
 
 %description libwayland-egl-devel
 Development files for Wayland EGL platform library.
@@ -1059,6 +1061,7 @@ Sterownik Mesa softpipe dla API vdpau.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 %{__libtoolize}
