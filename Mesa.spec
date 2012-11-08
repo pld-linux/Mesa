@@ -125,6 +125,7 @@ Requires:	%{name}-libglapi = %{version}-%{release}
 # glx driver in libEGL dlopens libGL.so
 Requires:	OpenGL >= 1.2
 Requires:	libdrm >= %{libdrm_ver}
+%{?with_wayland:Requires:	wayland >= 1.0.0}
 %if %{with gallium}
 # for egl_gallium.so
 Requires:	%{name}-libOpenVG = %{version}-%{release}
@@ -731,7 +732,6 @@ Summary:	Wayland EGL library
 Summary(pl.UTF-8):	Biblioteka Wayland EGL
 Group:		Libraries
 Requires:	libdrm >= %{libdrm_ver}
-Requires:	wayland >= 1.0.0
 
 %description libwayland-egl
 Wayland EGL platform library.
@@ -745,7 +745,6 @@ Summary(pl.UTF-8):	Pliki programistyczne biblioteki Wayland EGL
 Group:		Development/Libraries
 Requires:	%{name}-libwayland-egl = %{version}-%{release}
 Requires:	libdrm-devel >= %{libdrm_ver}
-Requires:	wayland-devel >= 1.0.0
 
 %description libwayland-egl-devel
 Development files for Wayland EGL platform library.
