@@ -32,14 +32,13 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	9.0
-Release:	3
+Version:	9.0.1
+Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	60e557ce407be3732711da484ab3db6c
+# Source0-md5:	97d6554c05ea7449398afe3a0ede7018
 Patch0:		%{name}-link.patch
-Patch1:		%{name}-wayland.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -95,8 +94,11 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %undefine	with_wayland
 %endif
 
-# _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
-%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libXvMCnouveau.so.* libdricore.*.so.* libOSMesa.so.* libdricore.*so.*
+# libGLESv1_CM, libGLESv2, libGL, libOSMesa:
+#  _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
+# libdricore: internal library, not linked with libglapi
+# libgbm: circular dependency with libEGL (wayland_buffer_is_drm symbol)
+%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libOSMesa.so.* libdricore.*.so.* libgbm.*.so.*
 
 # llvm build broken
 %define		filterout_ld    -Wl,--as-needed
@@ -1060,7 +1062,6 @@ Sterownik Mesa softpipe dla API vdpau.
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
 
 %build
 %{__libtoolize}
@@ -1143,7 +1144,7 @@ cp -pr include/CL $RPM_BUILD_ROOT%{_includedir}
 # dlopened by soname
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so
 # not used externally
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/lib{dricore9.0.0,glapi}.so
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/lib{dricore%{version},glapi}.so
 # dlopened
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/*.la
 # not defined by standards; and not needed, there is pkg-config support
@@ -1464,8 +1465,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files dri-core
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libdricore9.0.0.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libdricore9.0.0.so.1
+%attr(755,root,root) %{_libdir}/libdricore%{version}.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libdricore%{version}.so.1
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/drirc
 
 %files dri-driver-ati-radeon-R100
