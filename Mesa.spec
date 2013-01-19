@@ -26,14 +26,13 @@
 %define		libdrm_ver	2.4.39
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.14
-#
+
 %define		snap		20120921
-#
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	9.0.1
-Release:	1
+Release:	2
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
@@ -52,7 +51,7 @@ BuildRequires:	libstdc++-devel >= 5:3.3.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:2.2
 BuildRequires:	libvdpau-devel >= 0.4.1
-BuildRequires:	libxcb-devel >= 1.8.1
+BuildRequires:	libxcb-devel >= 1.9
 BuildRequires:	llvm-devel >= 3.1
 BuildRequires:	perl-base
 BuildRequires:	pixman-devel
@@ -127,6 +126,7 @@ Requires:	%{name}-libglapi = %{version}-%{release}
 # glx driver in libEGL dlopens libGL.so
 Requires:	OpenGL >= 1.2
 Requires:	libdrm >= %{libdrm_ver}
+Requires:	libxcb >= 1.9
 %{?with_wayland:Requires:	wayland >= 1.0.0}
 %if %{with gallium}
 # for egl_gallium.so
@@ -454,8 +454,8 @@ Group:		Libraries
 Requires:	%{name}-libOpenCL = %{version}-%{release}
 
 %description opencl-driver-radeonsi
-radeonsi driver for Mesa OpenCL implementation. It supports ATI
-Radeon adapters based on Southern Islands chips.
+radeonsi driver for Mesa OpenCL implementation. It supports ATI Radeon
+adapters based on Southern Islands chips.
 
 %description opencl-driver-radeonsi -l pl.UTF-8
 Sterownik radeonsi dla implementacji Mesa standardu OpenCL. Obsługuje
