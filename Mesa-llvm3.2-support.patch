@@ -1,0 +1,282 @@
+From: Tom Stellard <thomas.stell...@amd.com>
+
+LLVM 3.2 and newer requires that the R600/SI backend be part of the
+LLVM tree.
+---
+ configure.ac                                    | 26 +++++++++++++++++++------
+ src/gallium/drivers/radeon/Makefile             |  6 ++++++
+ src/gallium/drivers/radeon/Makefile.sources     |  7 ++++---
+ src/gallium/drivers/radeon/radeon_llvm_emit.cpp |  1 +
+ 4 files changed, 31 insertions(+), 9 deletions(-)</pre><pre>
+
+diff --git a/configure.ac b/configure.ac
+index b83078f..a942621 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1667,6 +1667,7 @@
+             if $LLVM_CONFIG --components | grep -q '\<mcjit\>'; then
+                 LLVM_COMPONENTS="${LLVM_COMPONENTS} mcjit"
+             fi
++            LLVM_COMPONENTS="${LLVM_COMPONENTS} all-targets"
+             if test "x$enable_opencl" = xyes; then
+                 LLVM_COMPONENTS="${LLVM_COMPONENTS} ipo linker instrumentation"
+             fi
+@@ -1788,6 +1789,23 @@
+     fi
+ }
+ 
++radeon_llvm_check() {
++    LLVM_VERSION_MAJOR=`echo $LLVM_VERSION | cut -d. -f1`
++    if test "$LLVM_VERSION_MAJOR" -lt "3" -o "x$LLVM_VERSION" = "x3.0"; then
++        AC_MSG_ERROR([LLVM 3.1 or newer is required for the r600/radeonsi llvm compiler.])
++    fi
++    if test "$LLVM_VERSION_MAJOR" -ge "3" -a "x$LLVM_VERSION" != "x3.1" && $LLVM_CONFIG --targets-built | grep -qv '\<AMDGPU\>' ; then
++        AC_MSG_ERROR([To use the r600/radeonsi LLVM backend with LLVM 3.2 and newer, you need to fetch the LLVM source from:
++                      git://people.freedesktop.org/~tstellar/llvm master
++                      and build with --enable-experimental-targets==AMDGPU])
++    fi
++    if test "$LLVM_VERSION" = "3.2"; then
++        dnl LLVM 3.2 does not add experimental libraries to llvm-config's
++        dnl library list.
++        LLVM_LIBS="$LLVM_LIBS -lLLVMAMDGPUCodeGen -lLLVMAMDGPUDesc -lLLVMAMDGPUAsmPrinter -lLLVMAMDGPUInfo `$LLVM_CONFIG --libs mc`"
++    fi
++}
++
+ dnl Gallium drivers
+ dnl Duplicates in GALLIUM_DRIVERS_DIRS are removed by sorting it after this block
+ if test "x$with_gallium_drivers" != x; then
+@@ -1818,9 +1836,7 @@
+             gallium_require_drm_loader
+             GALLIUM_DRIVERS_DIRS="$GALLIUM_DRIVERS_DIRS r600"
+             if test "x$enable_r600_llvm" = xyes -o "x$enable_opencl" = xyes; then
+-                if test "x$LLVM_VERSION" != "x3.1"; then
+-                    AC_MSG_ERROR([LLVM 3.1 is required for the r600 llvm compiler.])
+-                fi
++                radeon_llvm_check
+                 NEED_RADEON_GALLIUM=yes;
+             fi
+             if test "x$enable_r600_llvm" = xyes; then
+@@ -1835,9 +1851,7 @@
+             PKG_CHECK_MODULES([RADEON], [libdrm_radeon >= $LIBDRM_RADEON_REQUIRED])
+             gallium_require_drm_loader
+             GALLIUM_DRIVERS_DIRS="$GALLIUM_DRIVERS_DIRS radeonsi"
+-            if test "x$LLVM_VERSION" != "x3.1"; then
+-                AC_MSG_ERROR([LLVM 3.1 is required to build the radeonsi driver.])
+-            fi
++	    radeon_llvm_check
+ 	    NEED_RADEON_GALLIUM=yes;
+             gallium_check_st "radeon/drm" "dri-radeonsi" "xorg-radeonsi" "" "" "vdpau-radeonsi" ""
+             ;;
+diff --git a/src/gallium/drivers/radeon/Makefile b/src/gallium/drivers/radeon/Makefile
+index 7f1c613..bcc2646 100644
+--- a/src/gallium/drivers/radeon/Makefile
++++ b/src/gallium/drivers/radeon/Makefile
+@@ -12,6 +12,12 @@ TBLGEN = $(LLVM_BINDIR)/llvm-tblgen
+ 
+ CXXFLAGS+= $(LLVM_CXXFLAGS)
+ 
++ifeq ($(LLVM_VERSION),3.1)
++       CPP_SOURCES += $(LLVM_CPP_SOURCES)
++else
++       CXXFLAGS+= -DEXTERNAL_LLVM
++endif
++
+ include ../../Makefile.template
+ 
+ CXXFLAGS := $(filter-out -DDEBUG, $(CXXFLAGS))
+diff --git a/src/gallium/drivers/radeon/Makefile.sources b/src/gallium/drivers/radeon/Makefile.sources
+index c5d1207..5e79342 100644
+--- a/src/gallium/drivers/radeon/Makefile.sources
++++ b/src/gallium/drivers/radeon/Makefile.sources
+@@ -24,7 +24,7 @@
+ 	SISchedule.td
+ 
+ 
+-GENERATED_SOURCES := \
++LLVM_GENERATED_SOURCES := \
+ 	R600Intrinsics.td		\
+ 	R600RegisterInfo.td		\
+ 	SIRegisterInfo.td		\
+@@ -41,7 +41,7 @@
+ 	AMDGPUGenMCCodeEmitter.inc	\
+ 	AMDGPUGenDFAPacketizer.inc
+ 
+-CPP_SOURCES := \
++LLVM_CPP_SOURCES := \
+ 	AMDIL7XXDevice.cpp		\
+ 	AMDILCFGStructurizer.cpp	\
+ 	AMDILDevice.cpp			\
+@@ -80,6 +80,8 @@
+ 	MCTargetDesc/SIMCCodeEmitter.cpp \
+ 	MCTargetDesc/R600MCCodeEmitter.cpp \
+ 	TargetInfo/AMDGPUTargetInfo.cpp	\
++
++CPP_SOURCES := \
+ 	radeon_llvm_emit.cpp
+ 
+ C_SOURCES := \
+diff --git a/src/gallium/drivers/radeon/radeon_llvm_emit.cpp b/src/gallium/drivers/radeon/radeon_llvm_emit.cpp
+index 1b67bfe..625b0b4 100644
+--- a/src/gallium/drivers/radeon/radeon_llvm_emit.cpp
++++ b/src/gallium/drivers/radeon/radeon_llvm_emit.cpp
+@@ -90,6 +90,7 @@ radeon_llvm_compile(LLVMModuleRef M, unsigned char ** bytes,
+    /* XXX: Can we just initialize the AMDGPU target here? */
+    InitializeAllTargets();
+    InitializeAllTargetMCs();
++   InitializeAllAsmPrinters();
+ #else
+    LLVMInitializeAMDGPUTargetInfo();
+    LLVMInitializeAMDGPUTarget();
+-- 
+1.7.11.4
+Adjusted hacks for R600 rename
+
+---
+ configure.ac                                    | 12 ++++++------
+ src/gallium/drivers/radeon/radeon_llvm_emit.cpp |  7 +++++++
+ 2 files changed, 13 insertions(+), 6 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 228f464..b848503 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1794,15 +1794,15 @@
+     if test "$LLVM_VERSION_MAJOR" -lt "3" -o "x$LLVM_VERSION" = "x3.0"; then
+         AC_MSG_ERROR([LLVM 3.1 or newer is required for the r600/radeonsi llvm compiler.])
+     fi
+-    if test "$LLVM_VERSION_MAJOR" -ge "3" -a "x$LLVM_VERSION" != "x3.1" && $LLVM_CONFIG --targets-built | grep -qv '\<AMDGPU\>' ; then
++    if test "$LLVM_VERSION_MAJOR" -ge "3" -a "x$LLVM_VERSION" != "x3.1" && $LLVM_CONFIG --targets-built | grep -qv '\<R600\>' ; then
+         AC_MSG_ERROR([To use the r600/radeonsi LLVM backend with LLVM 3.2 and newer, you need to fetch the LLVM source from:
+                       git://people.freedesktop.org/~tstellar/llvm master
+-                      and build with --enable-experimental-targets==AMDGPU])
++                      and build with --enable-experimental-targets=R600])
+     fi
+     if test "$LLVM_VERSION" = "3.2"; then
+         dnl LLVM 3.2 does not add experimental libraries to llvm-config's
+         dnl library list.
+-        LLVM_LIBS="$LLVM_LIBS -lLLVMAMDGPUCodeGen -lLLVMAMDGPUDesc -lLLVMAMDGPUAsmPrinter -lLLVMAMDGPUInfo `$LLVM_CONFIG --libs mc`"
++        LLVM_LIBS="$LLVM_LIBS `$LLVM_CONFIG --libs R600`"
+     fi
+ }
+ 
+diff --git a/src/gallium/drivers/radeon/radeon_llvm_emit.cpp b/src/gallium/drivers/radeon/radeon_llvm_emit.cpp
+index 21661a0..9914228 100644
+--- a/src/gallium/drivers/radeon/radeon_llvm_emit.cpp
++++ b/src/gallium/drivers/radeon/radeon_llvm_emit.cpp
+@@ -86,17 +86,11 @@
+ 
+    Triple AMDGPUTriple(sys::getDefaultTargetTriple());
+ 
+-#ifdef EXTERNAL_LLVM
+-   /* XXX: Can we just initialize the AMDGPU target here? */
+-   InitializeAllTargets();
+-   InitializeAllTargetMCs();
+-   InitializeAllAsmPrinters();
+-#else
+-   LLVMInitializeAMDGPUTargetInfo();
+-   LLVMInitializeAMDGPUTarget();
+-   LLVMInitializeAMDGPUTargetMC();
+-   LLVMInitializeAMDGPUAsmPrinter();
+-#endif
++   LLVMInitializeR600TargetInfo();
++   LLVMInitializeR600Target();
++   LLVMInitializeR600TargetMC();
++   LLVMInitializeR600AsmPrinter();
++
+    std::string err;
+    const Target * AMDGPUTarget = TargetRegistry::lookupTarget("r600", err);
+    if(!AMDGPUTarget) {
+-- 
+1.7.11.4
+--- Mesa-9.0.2/src/gallium/drivers/radeon/radeon_llvm_emit.cpp.orig	2013-01-25 22:40:57.939828359 +0100
++++ Mesa-9.0.2/src/gallium/drivers/radeon/radeon_llvm_emit.cpp	2013-01-26 07:58:59.045797173 +0100
+@@ -36,12 +36,14 @@
+ #include <llvm/Support/TargetRegistry.h>
+ #include <llvm/Support/TargetSelect.h>
+ #include <llvm/Support/Threading.h>
+-#include <llvm/Target/TargetData.h>
+ #include <llvm/Target/TargetMachine.h>
+-
+ #include <llvm/Transforms/Scalar.h>
+-
+ #include <llvm-c/Target.h>
++#if HAVE_LLVM < 0x0302
++#include <llvm/Target/TargetData.h>
++#else
++#include <llvm/DataLayout.h>
++#endif
+ 
+ #include <iostream>
+ #include <stdlib.h>
+@@ -120,7 +122,11 @@
+                      ));
+    TargetMachine &AMDGPUTargetMachine = *tm.get();
+    PassManager PM;
++#if HAVE_LLVM < 0x0302
+    PM.add(new TargetData(*AMDGPUTargetMachine.getTargetData()));
++#else
++   PM.add(new DataLayout(*AMDGPUTargetMachine.getDataLayout()));
++#endif
+    PM.add(createPromoteMemoryToRegisterPass());
+    AMDGPUTargetMachine.setAsmVerbosityDefault(true);
+ 
+--- Mesa-9.0.2/src/gallium/state_trackers/clover/llvm/invocation.cpp.orig	2013-01-22 19:09:32.000000000 +0100
++++ Mesa-9.0.2/src/gallium/state_trackers/clover/llvm/invocation.cpp	2013-01-26 08:53:17.405729259 +0100
+@@ -35,9 +35,13 @@
+ #include <llvm/Support/TargetSelect.h>
+ #include <llvm/Support/MemoryBuffer.h>
+ #include <llvm/Support/PathV1.h>
+-#include <llvm/Target/TargetData.h>
+ #include <llvm/Transforms/IPO.h>
+ #include <llvm/Transforms/IPO/PassManagerBuilder.h>
++#if HAVE_LLVM < 0x0302
++#include <llvm/Target/TargetData.h>
++#else
++#include <llvm/DataLayout.h>
++#endif
+ 
+ #include "pipe/p_state.h"
+ #include "util/u_memory.h"
+@@ -120,9 +124,19 @@
+ 
+       c.getLangOpts().NoBuiltin = true;
+       c.getTargetOpts().Triple = triple;
++#if HAVE_LLVM < 0x0302
+       c.getInvocation().setLangDefaults(clang::IK_OpenCL);
++#else
++      c.getInvocation().setLangDefaults(c.getLangOpts(), clang::IK_OpenCL, clang::LangStandard::lang_opencl11);
++#endif
+       c.createDiagnostics(0, NULL, new clang::TextDiagnosticPrinter(
+-                          s_log, c.getDiagnosticOpts()));
++                          s_log,
++#if HAVE_LLVM < 0x0302
++			  c.getDiagnosticOpts()
++#else
++			  &c.getDiagnosticOpts()
++#endif
++			  ));
+ 
+       c.getPreprocessorOpts().addRemappedFile(name,
+                                       llvm::MemoryBuffer::getMemBuffer(source));
+@@ -213,7 +227,11 @@
+                                    E = kernel_func->arg_end(); I != E; ++I) {
+          llvm::Argument &arg = *I;
+          llvm::Type *arg_type = arg.getType();
++#if HAVE_LLVM < 0x0302
+          llvm::TargetData TD(kernel_func->getParent());
++#else
++         llvm::DataLayout TD(kernel_func->getParent()->getDataLayout());
++#endif
+          unsigned arg_size = TD.getTypeStoreSize(arg_type);
+ 
+          if (llvm::isa<llvm::PointerType>(arg_type) && arg.hasByValAttr()) {
+--- Mesa-9.0.2/src/gallium/targets/opencl/Makefile.am.orig	2013-01-22 19:09:32.000000000 +0100
++++ Mesa-9.0.2/src/gallium/targets/opencl/Makefile.am	2013-01-26 09:32:36.189013426 +0100
+@@ -20,7 +20,6 @@
+ 	-lclangParse \
+ 	-lclangSema \
+ 	-lclangAnalysis \
+-	-lclangRewrite \
+ 	-lclangAST \
+ 	-lclangLex \
+ 	-lclangBasic \

@@ -31,13 +31,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	9.0.1
-Release:	2
+Version:	9.0.2
+Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	97d6554c05ea7449398afe3a0ede7018
+# Source0-md5:	dc45d1192203e418163e0017640e1cfc
 Patch0:		%{name}-link.patch
+Patch1:		%{name}-llvm3.2-support.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -53,6 +54,7 @@ BuildRequires:	libtool >= 2:2.2
 BuildRequires:	libvdpau-devel >= 0.4.1
 BuildRequires:	libxcb-devel >= 1.9
 BuildRequires:	llvm-devel >= 3.1
+%{?with_opencl:BuildRequires:	llvm-libclc}
 BuildRequires:	perl-base
 BuildRequires:	pixman-devel
 BuildRequires:	pkgconfig
@@ -359,6 +361,7 @@ Summary(pl.UTF-8):	Implementacja Mesa API OpenCL (języka obliczeń)
 License:	MIT
 Group:		Libraries
 Requires:	libdrm >= %{libdrm_ver}
+Requires:	llvm-libclc
 Requires:	udev-libs >= 1:150
 Provides:	OpenCL = 1.1
 
@@ -1062,6 +1065,7 @@ Sterownik Mesa softpipe dla API vdpau.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 %{__libtoolize}
