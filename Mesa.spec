@@ -32,7 +32,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	9.1
-Release:	0.1
+Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
@@ -392,102 +392,6 @@ Header files for Mesa OpenCL library.
 
 %description libOpenCL-devel -l pl.UTF-8
 Pliki nagłówkowe biblioteki Mesa OpenCL.
-
-%package opencl-driver-i915
-Summary:	i915 driver for Mesa OpenCL implementation
-Summary(pl.UTF-8):	Sterownik i915 dla implementacji Mesa OpenCL
-Group:		Libraries
-Requires:	%{name}-libOpenCL = %{version}-%{release}
-
-%description opencl-driver-i915
-i915 driver for Mesa OpenCL implementation. It supports Intel
-915/945/G33/Q33/Q35/Pineview chips.
-
-%description opencl-driver-i915 -l pl.UTF-8
-Sterownik i915 dla implementacji Mesa standardu OpenCL. Obsługuje
-układy Intela z serii 915/945/G33/Q33/Q35/Pineview.
-
-%package opencl-driver-nouveau
-Summary:	nouveau driver for Mesa OpenCL implementation
-Summary(pl.UTF-8):	Sterownik nouveau dla implementacji Mesa OpenCL
-Group:		Libraries
-Requires:	%{name}-libOpenCL = %{version}-%{release}
-
-%description opencl-driver-nouveau
-nouveau driver for Mesa OpenCL implementation. It supports NVidia
-adapters.
-
-%description opencl-driver-nouveau -l pl.UTF-8
-Sterownik nouveau dla implementacji Mesa standardu OpenCL. Obsługuje
-karty graficzne firmy NVidia.
-
-%package opencl-driver-r300
-Summary:	r300 driver for Mesa OpenCL implementation
-Summary(pl.UTF-8):	Sterownik r300 dla implementacji Mesa OpenCL
-Group:		Libraries
-Requires:	%{name}-libOpenCL = %{version}-%{release}
-
-%description opencl-driver-r300
-r300 driver for Mesa OpenCL implementation. It supports ATI Radeon
-adapters based on R300/R400/RS690/R500 chips.
-
-%description opencl-driver-r300 -l pl.UTF-8
-Sterownik r300 dla implementacji Mesa standardu OpenCL. Obsługuje
-karty graficzne ATI Radeon oparte na układach R300/R400/RS690/R500.
-
-%package opencl-driver-r600
-Summary:	r600 driver for Mesa OpenCL implementation
-Summary(pl.UTF-8):	Sterownik r600 dla implementacji Mesa OpenCL
-Group:		Libraries
-Requires:	%{name}-libOpenCL = %{version}-%{release}
-
-%description opencl-driver-r600
-r600 driver for Mesa OpenCL implementation. It supports ATI Radeon
-adapters based on R600/R700 chips.
-
-%description opencl-driver-r600 -l pl.UTF-8
-Sterownik r600 dla implementacji Mesa standardu OpenCL. Obsługuje
-karty graficzne ATI Radeon oparte na układach R600/R700.
-
-%package opencl-driver-radeonsi
-Summary:	radeonsi driver for Mesa OpenCL implementation
-Summary(pl.UTF-8):	Sterownik radeonsi dla implementacji Mesa OpenCL
-Group:		Libraries
-Requires:	%{name}-libOpenCL = %{version}-%{release}
-
-%description opencl-driver-radeonsi
-radeonsi driver for Mesa OpenCL implementation. It supports ATI Radeon
-adapters based on Southern Islands chips.
-
-%description opencl-driver-radeonsi -l pl.UTF-8
-Sterownik radeonsi dla implementacji Mesa standardu OpenCL. Obsługuje
-karty graficzne ATI Radeon oparte na układach Southern Islands.
-
-%package opencl-driver-swrast
-Summary:	Software (swrast) driver for Mesa OpenCL implementation
-Summary(pl.UTF-8):	Sterownik programowy (swrast) dla implementacji Mesa OpenCL
-Group:		Libraries
-Requires:	%{name}-libOpenCL = %{version}-%{release}
-
-%description opencl-driver-swrast
-Software (swrast) driver for Mesa OpenCL implementation.
-
-%description opencl-driver-swrast -l pl.UTF-8
-Sterownik programowy (swrast) dla implementacji Mesa standardu OpenCL.
-
-%package opencl-driver-vmwgfx
-Summary:	vmwgfx driver for Mesa OpenCL implementation
-Summary(pl.UTF-8):	Sterownik vmwgfx dla implementacji Mesa OpenCL
-Group:		Libraries
-Requires:	%{name}-libOpenCL = %{version}-%{release}
-
-%description opencl-driver-vmwgfx
-vmwgfx driver for Mesa OpenCL implementation. It supports VMware
-virtual video adapter.
-
-%description opencl-driver-vmwgfx -l pl.UTF-8
-Sterownik vmwgfx dla implementacji Mesa standardu OpenCL. Obsługuje
-wirtualną kartę graficzną VMware.
 
 %package libOpenVG
 Summary:	Mesa implementation of OpenVG (Vector Graphics Accelleration) API
@@ -1151,7 +1055,7 @@ cp -pr include/CL $RPM_BUILD_ROOT%{_includedir}
 # not defined by standards; and not needed, there is pkg-config support
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/lib*.la
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/vdpau/lib*.la
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/gbm/gdb*.la
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/gbm/gbm*.la
 
 # remove "OS ABI: Linux 2.4.20" tag, so private copies (nvidia or fglrx),
 # set up via /etc/ld.so.conf.d/*.conf will be preferred over this
@@ -1303,38 +1207,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libOpenCL.so
 %{_includedir}/CL
-
-%if %{with gallium_intel}
-%files opencl-driver-i915
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/opencl/pipe_i915.so
-%endif
-
-%if %{with gallium_nouveau}
-%files opencl-driver-nouveau
-%defattr(644,root,root,755)
-#%attr(755,root,root) %{_libdir}/opencl/pipe_nouveau.so
-%endif
-
-%files opencl-driver-r300
-%defattr(644,root,root,755)
-#%attr(755,root,root) %{_libdir}/opencl/pipe_r300.so
-
-%files opencl-driver-r600
-%defattr(644,root,root,755)
-#%attr(755,root,root) %{_libdir}/opencl/pipe_r600.so
-
-%files opencl-driver-radeonsi
-%defattr(644,root,root,755)
-#%attr(755,root,root) %{_libdir}/opencl/pipe_radeonsi.so
-
-%files opencl-driver-swrast
-%defattr(644,root,root,755)
-#%attr(755,root,root) %{_libdir}/opencl/pipe_swrast.so
-
-%files opencl-driver-vmwgfx
-%defattr(644,root,root,755)
-#%attr(755,root,root) %{_libdir}/opencl/pipe_vmwgfx.so
 %endif
 
 %if %{with egl} && %{with gallium}
@@ -1381,6 +1253,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %ghost %{_libdir}/libgbm.so.1
 %if %{with gallium}
 %dir %{_libdir}/gbm
+%dir %{_libdir}/gallium-pipe
 %attr(755,root,root) %{_libdir}/gbm/gbm_gallium_drm.so
 %endif
 
@@ -1395,34 +1268,34 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium_intel}
 %files gbm-driver-i915
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gbm/pipe_i915.so
+%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_i915.so
 %endif
 
 %if %{with gallium_nouveau}
 %files gbm-driver-nouveau
 %defattr(644,root,root,755)
-#%attr(755,root,root) %{_libdir}/gbm/pipe_nouveau.so
+%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_nouveau.so
 %endif
 
 %files gbm-driver-r300
 %defattr(644,root,root,755)
-#%attr(755,root,root) %{_libdir}/gbm/pipe_r300.so
+%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_r300.so
 
 %files gbm-driver-r600
 %defattr(644,root,root,755)
-#%attr(755,root,root) %{_libdir}/gbm/pipe_r600.so
+%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_r600.so
 
 %files gbm-driver-radeonsi
 %defattr(644,root,root,755)
-#%attr(755,root,root) %{_libdir}/gbm/pipe_radeonsi.so
+%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_radeonsi.so
 
 %files gbm-driver-swrast
 %defattr(644,root,root,755)
-#%attr(755,root,root) %{_libdir}/gbm/pipe_swrast.so
+%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_swrast.so
 
 %files gbm-driver-vmwgfx
 %defattr(644,root,root,755)
-#%attr(755,root,root) %{_libdir}/gbm/pipe_vmwgfx.so
+%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_vmwgfx.so
 %endif
 
 %files libglapi
