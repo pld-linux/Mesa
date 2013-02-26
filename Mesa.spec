@@ -1118,7 +1118,7 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 %endif
 %if %{with gallium}
 	--enable-gallium-llvm \
-	--with-llvm-shared-libs \ \
+	--with-llvm-shared-libs \
 	%{__enable egl gallium-egl} \
 	%{__enable gbm gallium-gbm} \
 	%{?with_opencl:--enable-opencl} \
