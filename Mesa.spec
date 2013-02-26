@@ -31,14 +31,13 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	9.0.3
-Release:	1
+Version:	9.1
+Release:	0.1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	d7515cc5116c72ac63d735655bd63689
+# Source0-md5:	d3891e02215422e120271d976ff1947e
 Patch0:		%{name}-link.patch
-Patch1:		%{name}-llvm3.2-support.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -99,7 +98,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 #  _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
 # libdricore: internal library, not linked with libglapi
 # libgbm: circular dependency with libEGL (wayland_buffer_is_drm symbol)
-%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libOSMesa.so.* libdricore.*.so.* libgbm.*.so.*
+%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libOSMesa.so.* libdricore.*.so.* libgbm.*.so.* libXvMCnouveau.so.* libvdpau_softpipe.so.*
 
 # llvm build broken
 %define		filterout_ld    -Wl,--as-needed
@@ -1065,7 +1064,6 @@ Sterownik Mesa softpipe dla API vdpau.
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
 
 %build
 %{__libtoolize}
@@ -1104,7 +1102,6 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 	--disable-silent-rules \
 	--enable-shared \
 	--enable-glx-tls \
-	--enable-pic \
 	--enable-selinux \
 	%{?with_static_libs:--enable-static} \
 	%{__enable gbm} \
@@ -1144,15 +1141,17 @@ rm -rf $RPM_BUILD_ROOT
 # omitted by make install (as of 9.0)
 cp -pr include/CL $RPM_BUILD_ROOT%{_includedir}
 # strip out undesirable headers
-%{__rm} $RPM_BUILD_ROOT%{_includedir}/GL/{vms_x_fix,wglext,wmesa}.h
+%{__rm} $RPM_BUILD_ROOT%{_includedir}/GL/{wglext,wmesa}.h
 # dlopened by soname
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so
 # not used externally
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/lib{dricore%{version},glapi}.so
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/lib{dricore%{version}.0,glapi}.so
 # dlopened
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/*.la
 # not defined by standards; and not needed, there is pkg-config support
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/lib*.la
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/vdpau/lib*.la
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/gbm/gdb*.la
 
 # remove "OS ABI: Linux 2.4.20" tag, so private copies (nvidia or fglrx),
 # set up via /etc/ld.so.conf.d/*.conf will be preferred over this
@@ -1273,6 +1272,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libGLESv2.so
 %{_includedir}/GLES
 %{_includedir}/GLES2
+%{_includedir}/GLES3
 %{_pkgconfigdir}/glesv1_cm.pc
 %{_pkgconfigdir}/glesv2.pc
 
@@ -1298,7 +1298,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libOpenCL.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libOpenCL.so.1
-%dir %{_libdir}/opencl
 
 %files libOpenCL-devel
 %defattr(644,root,root,755)
@@ -1314,28 +1313,28 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium_nouveau}
 %files opencl-driver-nouveau
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/opencl/pipe_nouveau.so
+#%attr(755,root,root) %{_libdir}/opencl/pipe_nouveau.so
 %endif
 
 %files opencl-driver-r300
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/opencl/pipe_r300.so
+#%attr(755,root,root) %{_libdir}/opencl/pipe_r300.so
 
 %files opencl-driver-r600
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/opencl/pipe_r600.so
+#%attr(755,root,root) %{_libdir}/opencl/pipe_r600.so
 
 %files opencl-driver-radeonsi
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/opencl/pipe_radeonsi.so
+#%attr(755,root,root) %{_libdir}/opencl/pipe_radeonsi.so
 
 %files opencl-driver-swrast
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/opencl/pipe_swrast.so
+#%attr(755,root,root) %{_libdir}/opencl/pipe_swrast.so
 
 %files opencl-driver-vmwgfx
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/opencl/pipe_vmwgfx.so
+#%attr(755,root,root) %{_libdir}/opencl/pipe_vmwgfx.so
 %endif
 
 %if %{with egl} && %{with gallium}
@@ -1355,23 +1354,23 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium_nouveau}
 %files libXvMC-nouveau
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libXvMCnouveau.so.1.0
+%attr(755,root,root) %{_libdir}/libXvMCnouveau.so.1.0.0
 %attr(755,root,root) %ghost %{_libdir}/libXvMCnouveau.so.1
 %endif
 
 %files libXvMC-r300
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libXvMCr300.so.1.0
+%attr(755,root,root) %{_libdir}/libXvMCr300.so.1.0.0
 %attr(755,root,root) %ghost %{_libdir}/libXvMCr300.so.1
 
 %files libXvMC-r600
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libXvMCr600.so.1.0
+%attr(755,root,root) %{_libdir}/libXvMCr600.so.1.0.0
 %attr(755,root,root) %ghost %{_libdir}/libXvMCr600.so.1
 
 %files libXvMC-softpipe
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libXvMCsoftpipe.so.1.0
+%attr(755,root,root) %{_libdir}/libXvMCsoftpipe.so.1.0.0
 %attr(755,root,root) %ghost %{_libdir}/libXvMCsoftpipe.so.1
 %endif
 
@@ -1402,28 +1401,28 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium_nouveau}
 %files gbm-driver-nouveau
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gbm/pipe_nouveau.so
+#%attr(755,root,root) %{_libdir}/gbm/pipe_nouveau.so
 %endif
 
 %files gbm-driver-r300
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gbm/pipe_r300.so
+#%attr(755,root,root) %{_libdir}/gbm/pipe_r300.so
 
 %files gbm-driver-r600
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gbm/pipe_r600.so
+#%attr(755,root,root) %{_libdir}/gbm/pipe_r600.so
 
 %files gbm-driver-radeonsi
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gbm/pipe_radeonsi.so
+#%attr(755,root,root) %{_libdir}/gbm/pipe_radeonsi.so
 
 %files gbm-driver-swrast
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gbm/pipe_swrast.so
+#%attr(755,root,root) %{_libdir}/gbm/pipe_swrast.so
 
 %files gbm-driver-vmwgfx
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gbm/pipe_vmwgfx.so
+#%attr(755,root,root) %{_libdir}/gbm/pipe_vmwgfx.so
 %endif
 
 %files libglapi
@@ -1469,8 +1468,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files dri-core
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libdricore%{version}.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libdricore%{version}.so.1
+%attr(755,root,root) %{_libdir}/libdricore%{version}.0.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libdricore%{version}.0.so.1
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/drirc
 
 %files dri-driver-ati-radeon-R100
@@ -1525,32 +1524,32 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium_nouveau}
 %files -n libvdpau-driver-mesa-nouveau
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1.0.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so
 %endif
 
 %files -n libvdpau-driver-mesa-r300
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1.0.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so
 
 %files -n libvdpau-driver-mesa-r600
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so
 
 %files -n libvdpau-driver-mesa-radeonsi
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1.0.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so
 
 %files -n libvdpau-driver-mesa-softpipe
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so.1.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so.1.0.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so
 %endif

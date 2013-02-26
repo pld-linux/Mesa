@@ -1,151 +1,23 @@
---- Mesa-8.0.1/src/gallium/targets/vdpau-nouveau/Makefile.orig	2012-02-15 00:44:00.000000000 +0100
-+++ Mesa-8.0.1/src/gallium/targets/vdpau-nouveau/Makefile	2012-03-11 12:26:44.906377873 +0100
-@@ -19,7 +19,7 @@
- 	$(COMMON_GALLIUM_SOURCES) \
- 	$(DRIVER_SOURCES)
+--- Mesa-9.1/src/gallium/targets/xa-vmwgfx/Makefile.am~	2013-02-22 23:28:22.000000000 +0100
++++ Mesa-9.1/src/gallium/targets/xa-vmwgfx/Makefile.am	2013-02-26 19:51:30.938891682 +0100
+@@ -45,7 +45,8 @@
+ 	$(top_builddir)/src/gallium/winsys/svga/drm/libsvgadrm.la \
+ 	$(top_builddir)/src/gallium/drivers/svga/libsvga.la \
+ 	$(top_builddir)/src/gallium/drivers/trace/libtrace.la \
+-	$(top_builddir)/src/gallium/drivers/rbug/librbug.la
++	$(top_builddir)/src/gallium/drivers/rbug/librbug.la \
++	$(LIBDRM_LIBS)
  
--DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm_nouveau --libs) -lXfixes
-+DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm_nouveau libdrm --libs) -lXfixes -lxcb
+ nodist_EXTRA_libxatracker_la_SOURCES = dummy.cpp
  
- LINK_WITH_CXX=1
- 
---- Mesa-9.0.2/src/gallium/targets/vdpau-r300/Makefile.orig	2013-01-26 10:33:04.632271133 +0100
-+++ Mesa-9.0.2/src/gallium/targets/vdpau-r300/Makefile	2013-01-26 10:37:16.755599223 +0100
-@@ -21,7 +21,7 @@
- 	$(COMMON_GALLIUM_SOURCES) \
- 	$(DRIVER_SOURCES)
- 
--DRIVER_LIBS = $(LIBDRM_LIBS) $(RADEON_LIBS) -lXfixes
-+DRIVER_LIBS = $(LIBDRM_LIBS) $(RADEON_LIBS) -lXfixes -lxcb
- 
- include ../Makefile.vdpau
- 
---- Mesa-9.0.2/src/gallium/targets/vdpau-r600/Makefile.orig	2013-01-26 10:33:04.635604465 +0100
-+++ Mesa-9.0.2/src/gallium/targets/vdpau-r600/Makefile	2013-01-26 10:38:39.152264160 +0100
-@@ -17,7 +17,7 @@
- 	$(COMMON_GALLIUM_SOURCES) \
- 	$(DRIVER_SOURCES)
- 
--DRIVER_LIBS = $(LIBDRM_LIBS) $(RADEON_LIBS) -lXfixes
-+DRIVER_LIBS = $(LIBDRM_LIBS) $(RADEON_LIBS) -lXfixes -lxcb
- 
- include ../Makefile.vdpau
- 
---- Mesa-9.0.2/src/gallium/targets/vdpau-radeonsi/Makefile.orig	2013-01-26 10:33:04.638937797 +0100
-+++ Mesa-9.0.2/src/gallium/targets/vdpau-radeonsi/Makefile	2013-01-26 10:39:56.732262545 +0100
-@@ -23,7 +23,7 @@
- DRIVER_DEFINES = \
- 	-DGALLIUM_RBUG -DGALLIUM_TRACE -DGALLIUM_NOOP
- 
--DRIVER_LIBS = $(LIBDRM_LIBS) $(RADEON_LIBS) -lXfixes
-+DRIVER_LIBS = $(LIBDRM_LIBS) $(RADEON_LIBS) -lXfixes -lxcb
- 
- include ../Makefile.vdpau
- 
---- p/src/gallium/targets/vdpau-softpipe/Makefile~	2012-05-10 22:56:51.000000000 +0200
-+++ p/src/gallium/targets/vdpau-softpipe/Makefile	2012-05-11 09:27:05.364159093 +0200
-@@ -14,7 +14,7 @@
- C_SOURCES = \
- 	$(TOP)/src/gallium/auxiliary/vl/vl_winsys_xsp.c
- 
--DRIVER_LIBS =
-+DRIVER_LIBS = -lX11 -lXext
- 
- include ../Makefile.vdpau
-
---- Mesa-9.0.1/src/gallium/targets/xvmc-nouveau/Makefile.orig	2012-09-01 01:33:41.000000000 +0200
-+++ Mesa-9.0.1/src/gallium/targets/xvmc-nouveau/Makefile	2012-11-21 19:29:27.218929817 +0100
-@@ -5,6 +5,7 @@
- 
- PIPE_DRIVERS = \
- 	$(TOP)/src/gallium/winsys/nouveau/drm/libnouveaudrm.a \
-+	$(TOP)/src/gallium/drivers/nv30/libnv30.a \
- 	$(TOP)/src/gallium/drivers/nv50/libnv50.a \
- 	$(TOP)/src/gallium/drivers/nvc0/libnvc0.a \
- 	$(TOP)/src/gallium/drivers/nouveau/libnouveau.a \
-@@ -18,7 +19,7 @@
- 	$(COMMON_GALLIUM_SOURCES) \
- 	$(DRIVER_SOURCES)
- 
--DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm_nouveau --libs) -lXfixes
-+DRIVER_LIBS = $(shell $(PKG_CONFIG) libdrm_nouveau libdrm --libs) -lXfixes -lXvMC -lxcb -lX11
- 
- DRIVER_INCLUDES = $(shell $(PKG_CONFIG) libdrm --cflags-only-I)
- 
---- Mesa-9.0.2/src/gallium/targets/xvmc-r300/Makefile.orig	2013-01-26 10:33:04.628937800 +0100
-+++ Mesa-9.0.2/src/gallium/targets/xvmc-r300/Makefile	2013-01-26 10:36:06.578934005 +0100
-@@ -17,7 +17,7 @@
- 	$(COMMON_GALLIUM_SOURCES) \
- 	$(DRIVER_SOURCES)
- 
--DRIVER_LIBS = $(LIBDRM_LIBS) $(RADEON_LIBS) -lXfixes
-+DRIVER_LIBS = $(LIBDRM_LIBS) $(RADEON_LIBS) -lXfixes -lXvMC -lX11 -lxcb
- 
- include ../Makefile.xvmc
- 
---- Mesa-9.0.2/src/gallium/targets/xvmc-r600/Makefile.orig	2013-01-26 10:33:04.632271133 +0100
-+++ Mesa-9.0.2/src/gallium/targets/xvmc-r600/Makefile	2013-01-26 10:36:34.075600100 +0100
-@@ -17,7 +17,7 @@
- 	$(COMMON_GALLIUM_SOURCES) \
- 	$(DRIVER_SOURCES)
- 
--DRIVER_LIBS = $(LIBDRM_LIBS) $(RADEON_LIBS) -lXfixes
-+DRIVER_LIBS = $(LIBDRM_LIBS) $(RADEON_LIBS) -lXfixes -lXvMC -lX11 -lxcb
- 
- include ../Makefile.xvmc
- 
---- Mesa-8.0.1/src/gallium/targets/xvmc-softpipe/Makefile.orig	2012-02-15 00:44:00.000000000 +0100
-+++ Mesa-8.0.1/src/gallium/targets/xvmc-softpipe/Makefile	2012-03-11 12:35:53.273062913 +0100
-@@ -14,7 +14,7 @@
- C_SOURCES = \
- 	$(TOP)/src/gallium/winsys/g3dvl/xlib/xsp_winsys.c
- 
--DRIVER_LIBS =
-+DRIVER_LIBS = -lXvMC -lXext -lX11
- 
- include ../Makefile.xvmc
- 
---- Mesa-8.0.1/src/gallium/targets/xa-vmwgfx/Makefile.orig	2012-02-15 00:44:00.000000000 +0100
-+++ Mesa-8.0.1/src/gallium/targets/xa-vmwgfx/Makefile	2012-03-11 12:43:05.479747729 +0100
-@@ -30,6 +30,9 @@
- SOURCES = vmw_target.c
- OBJECTS = $(SOURCES:.c=.o)
- 
-+XA_LIBS = $(shell $(PKG_CONFIG) libdrm --libs)
-+XA_PC_REQ_PRIV = libdrm
-+
- ifeq ($(MESA_LLVM),1)
- LDFLAGS += $(LLVM_LDFLAGS)
- GALLIUM_AUXILIARIES += $(LLVM_LIBS)
-@@ -64,7 +67,7 @@
- 		$(MKLIB_OPTIONS) \
- 		-exports xa_symbols \
- 		 -install $(TOP)/$(LIB_DIR)/gallium \
--		$(OBJECTS) $(XA_LIB_DEPS) $(GALLIUM_AUXILIARIES)
-+		$(OBJECTS) $(XA_LIB_DEPS) $(GALLIUM_AUXILIARIES) $(XA_LIBS)
- 
- # xa pkgconfig file
- pcedit = sed \
-
---- p/src/mesa/libdricore/Makefile.am~	2012-08-26 21:00:26.000000000 +0200
-+++ p/src/mesa/libdricore/Makefile.am	2012-09-07 22:45:58.210981683 +0200
-@@ -46,7 +46,7 @@
- 	$(BUILTIN_COMPILER_GENERATED_CXX_FILES) \
- 	$(top_builddir)/src/glsl/builtin_function.cpp
- libdricore@VERSION@_la_LDFLAGS = -version-number 1:0
--libdricore@VERSION@_la_LIBADD = libdricore-asm.la
-+libdricore@VERSION@_la_LIBADD = libdricore-asm.la $(DLOPEN_LIBS)
- 
- # This is separated from libdricore to avoid conflics in object
- # outputs between main/clip.c and sparc/clip.c.  The documented way to
---- Mesa-9.0.1/src/gbm/Makefile.am.orig	2012-09-01 01:36:09.000000000 +0200
-+++ Mesa-9.0.1/src/gbm/Makefile.am	2012-11-21 20:22:20.668863673 +0100
+--- Mesa-9.1/src/gbm/Makefile.am~	2013-02-16 02:32:00.000000000 +0100
++++ Mesa-9.1/src/gbm/Makefile.am	2013-02-26 19:53:54.295673416 +0100
 @@ -19,7 +19,7 @@
  	main/backend.c \
  	main/common.c
  libgbm_la_LDFLAGS = -version-info 1:0
 -libgbm_la_LIBADD = $(LIBUDEV_LIBS) $(LIBKMS_LIBS) $(DLOPEN_LIBS)
-+libgbm_la_LIBADD = $(LIBUDEV_LIBS) $(LIBKMS_LIBS) $(LIBDRM_LIBS) $(DLOPEN_LIBS)
++libgbm_la_LIBADD = $(LIBUDEV_LIBS) $(LIBKMS_LIBS) $(DLOPEN_LIBS) $(LIBDRM_LIBS)
  
  if HAVE_EGL_PLATFORM_WAYLAND
  AM_CPPFLAGS = -DHAVE_WAYLAND_PLATFORM
