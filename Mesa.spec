@@ -32,7 +32,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	9.1
-Release:	1
+Release:	2
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
@@ -1114,6 +1114,8 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium}
 %dir %{_libdir}/egl
 %attr(755,root,root) %{_libdir}/egl/egl_gallium.so
+# better place?
+%attr(755,root,root) %{_libdir}/libllvmradeon%{version}.0.so
 %endif
 
 %files libEGL-devel
