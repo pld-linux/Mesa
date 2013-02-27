@@ -21,3 +21,23 @@
  
  if HAVE_EGL_PLATFORM_WAYLAND
  AM_CPPFLAGS = -DHAVE_WAYLAND_PLATFORM
+--- Mesa-9.1/src/gallium/targets/xvmc-nouveau/Makefile.am.orig	2013-02-20 01:26:22.000000000 +0100
++++ Mesa-9.1/src/gallium/targets/xvmc-nouveau/Makefile.am	2013-02-27 20:42:00.199549898 +0100
+@@ -48,6 +48,7 @@
+ 	$(top_builddir)/src/gallium/auxiliary/libgallium.la \
+ 	$(top_builddir)/src/gallium/state_trackers/xvmc/libxvmctracker.la \
+ 	$(top_builddir)/src/gallium/winsys/nouveau/drm/libnouveaudrm.la \
++	$(top_builddir)/src/gallium/drivers/nv30/libnv30.la \
+ 	$(top_builddir)/src/gallium/drivers/nv50/libnv50.la \
+ 	$(top_builddir)/src/gallium/drivers/nvc0/libnvc0.la \
+ 	$(top_builddir)/src/gallium/drivers/nouveau/libnouveau.la \
+--- Mesa-9.1/src/mesa/libdricore/Makefile.am.orig	2013-02-20 01:26:22.000000000 +0100
++++ Mesa-9.1/src/mesa/libdricore/Makefile.am	2013-02-27 20:43:01.806214222 +0100
+@@ -42,6 +42,7 @@
+ libdricore@VERSION@_la_LDFLAGS = -version-number 1:0
+ libdricore@VERSION@_la_LIBADD = \
+         ../program/libdricore_program.la \
++	$(DLOPEN_LIBS)
+         $()
+ 
+ if HAVE_X86_ASM
