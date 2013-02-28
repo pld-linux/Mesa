@@ -16,18 +16,19 @@
 %bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
 %bcond_with	static_libs	# static libraries [not supported for DRI, thus broken currently]
 #
-# minimal supported xserver version
-%define		xserver_ver	1.5.0
 # glapi version (glapi tables in dri drivers and libglx must be in sync);
 # set to current Mesa version on ABI break, when xserver tables get regenerated
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver	7.1.0
-#
+# internal API version (libdricore); a.b.c for Mesa-a.b.c, a.b.0 for Mesa-a.b
+%define		int_sover	9.1.0
+# minimal supported xserver version
+%define		xserver_ver	1.5.0
+# other packages
 %define		libdrm_ver	2.4.39
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.14
 
-%define		snap		20120921
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
@@ -467,6 +468,7 @@ Summary:	Mesa implementation of XvMC API for ATI Radeon R600 series adapters
 Summary(pl.UTF-8):	Implementacja Mesa API XvMC dla kart ATI Radeon z serii R600
 License:	MIT
 Group:		Libraries
+Requires:	%{name}-libllvmradeon = %{version}-%{release}
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	xorg-lib-libXvMC >= 1.0.6
 Conflicts:	Mesa-libXvMC
@@ -498,6 +500,7 @@ Implementacja Mesa softpipe API XvMC.
 Summary:	Mesa Graphics Buffer Manager library
 Summary(pl.UTF-8):	Biblioteka Mesa Graphics Buffer Manager
 Group:		Libraries
+Requires:	%{name}-libglapi = %{version}-%{release}
 Requires:	udev-libs >= 1:150
 Conflicts:	Mesa-libEGL < 8.0.1-2
 
@@ -573,6 +576,7 @@ Summary:	r600 driver for Mesa GBM framework
 Summary(pl.UTF-8):	Sterownik r600 dla szkieletu Mesa GBM
 Group:		Libraries
 Requires:	%{name}-libgbm = %{version}-%{release}
+Requires:	%{name}-libllvmradeon = %{version}-%{release}
 Obsoletes:	Mesa-opencl-driver-r600
 
 %description gbm-driver-r600
@@ -589,6 +593,7 @@ Summary:	radeonsi driver for Mesa GBM framework
 Summary(pl.UTF-8):	Sterownik radeonsi dla szkieletu Mesa GBM
 Group:		Libraries
 Requires:	%{name}-libgbm = %{version}-%{release}
+Requires:	%{name}-libllvmradeon = %{version}-%{release}
 Obsoletes:	Mesa-opencl-driver-radeonsi
 
 %description gbm-driver-radeonsi
@@ -641,6 +646,17 @@ Mesa GL API shared library, common for various APIs (EGL, GL, GLES).
 %description libglapi -l pl.UTF-8
 Biblioteka współdzielona Mesa GL API, wspólna dla różnych API (EGL,
 GL, GLES).
+
+%package libllvmradeon
+Summary:	LLVM radeon target library
+Summary(pl.UTF-8):	Biblioteka platformy radeon dla LLVM-a
+Group:		Libraries
+
+%description libllvmradeon
+LLVM radeon target library.
+
+%description libllvmradeon -l pl.UTF-8
+Biblioteka platformy radeon dla LLVM-a.
 
 %package libwayland-egl
 Summary:	Wayland EGL library
@@ -774,6 +790,7 @@ Summary:	X.org DRI driver for ATI R600 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R600
 License:	MIT
 Group:		X11/Libraries
+Requires:	%{name}-libllvmradeon = %{version}-%{release}
 Requires:	radeon-ucode
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
@@ -790,6 +807,7 @@ Summary:	X.org DRI driver for ATI Southern Islands card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI Southern Islands
 License:	MIT
 Group:		X11/Libraries
+Requires:	%{name}-libllvmradeon = %{version}-%{release}
 Requires:	radeon-ucode
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
@@ -928,6 +946,7 @@ Summary:	Mesa r600 driver for the vdpau API
 Summary(pl.UTF-8):	Sterownik Mesa r600 dla API vdpau
 License:	MIT
 Group:		X11/Libraries
+Requires:	%{name}-libllvmradeon = %{version}-%{release}
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libvdpau >= 0.4.1
 Conflicts:	libvdpau-driver-mesa
@@ -945,6 +964,7 @@ Summary:	Mesa radeonsi driver for the vdpau API
 Summary(pl.UTF-8):	Sterownik Mesa radeonsi dla API vdpau
 License:	MIT
 Group:		X11/Libraries
+Requires:	%{name}-libllvmradeon = %{version}-%{release}
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libvdpau >= 0.4.1
 Conflicts:	libvdpau-driver-mesa
@@ -1056,13 +1076,15 @@ cp -pr include/CL $RPM_BUILD_ROOT%{_includedir}
 # dlopened by soname
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so
 # not used externally
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/lib{dricore%{version}.0,glapi}.so
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/lib{dricore%{int_sover},glapi}.so
 # dlopened
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/egl/egl_*.la
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/gallium-pipe/pipe_*.la
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/gbm/gbm_*.la
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/vdpau/libvdpau_*.la
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/*.la
 # not defined by standards; and not needed, there is pkg-config support
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/lib*.la
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/vdpau/lib*.la
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/gbm/gbm*.la
 
 # remove "OS ABI: Linux 2.4.20" tag, so private copies (nvidia or fglrx),
 # set up via /etc/ld.so.conf.d/*.conf will be preferred over this
@@ -1104,6 +1126,9 @@ rm -rf $RPM_BUILD_ROOT
 %post	libglapi -p /sbin/ldconfig
 %postun	libglapi -p /sbin/ldconfig
 
+%post	libllvmradeon -p /sbin/ldconfig
+%postun	libllvmradeon -p /sbin/ldconfig
+
 %post	libwayland-egl -p /sbin/ldconfig
 %postun	libwayland-egl -p /sbin/ldconfig
 
@@ -1121,8 +1146,6 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium}
 %dir %{_libdir}/egl
 %attr(755,root,root) %{_libdir}/egl/egl_gallium.so
-# better place?
-%attr(755,root,root) %{_libdir}/libllvmradeon%{version}.0.so
 %endif
 
 %files libEGL-devel
@@ -1314,6 +1337,12 @@ rm -rf $RPM_BUILD_ROOT
 # libglapi-devel? nothing seems to need it atm.
 #%attr(755,root,root) %{_libdir}/libglapi.so
 
+%if %{with gallium}
+%files libllvmradeon
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libllvmradeon%{int_sover}.so
+%endif
+
 %if %{with wayland}
 %files libwayland-egl
 %defattr(644,root,root,755)
@@ -1350,8 +1379,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files dri-core
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libdricore%{version}.0.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libdricore%{version}.0.so.1
+%attr(755,root,root) %{_libdir}/libdricore%{int_sover}.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libdricore%{int_sover}.so.1
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/drirc
 
 %files dri-driver-ati-radeon-R100
