@@ -98,7 +98,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 #  _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
 # libdricore: internal library, not linked with libglapi
 # libgbm: circular dependency with libEGL (wayland_buffer_is_drm symbol)
-%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libOSMesa.so.* libdricore.*.so.* libgbm.*.so.* libXvMCnouveau.so.* libvdpau_softpipe.so.*
+%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libOSMesa.so.* libdricore.*.so.* libgbm.*.so.*
 
 # llvm build broken
 %define		filterout_ld    -Wl,--as-needed
@@ -979,8 +979,8 @@ dri_drivers="r200 radeon \
 %if %{without gallium_intel}
 i915 \
 %endif
-i965
-nouveau
+i965 \
+nouveau \
 %ifarch sparc sparcv9 sparc64
 ffb \
 %endif
