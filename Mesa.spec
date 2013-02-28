@@ -526,6 +526,7 @@ Summary:	i915 driver for Mesa GBM framework
 Summary(pl.UTF-8):	Sterownik i915 dla szkieletu Mesa GBM
 Group:		Libraries
 Requires:	%{name}-libgbm = %{version}-%{release}
+Obsoletes:	Mesa-opencl-driver-i915
 
 %description gbm-driver-i915
 i915 driver for Mesa Graphics Buffer Manager. It supports Intel
@@ -541,6 +542,7 @@ Summary:	nouveau driver for Mesa GBM framework
 Summary(pl.UTF-8):	Sterownik nouveau dla szkieletu Mesa GBM
 Group:		Libraries
 Requires:	%{name}-libgbm = %{version}-%{release}
+Obsoletes:	Mesa-opencl-driver-nouveau
 
 %description gbm-driver-nouveau
 nouveau driver for Mesa Graphics Buffer Manager. It supports NVidia
@@ -555,6 +557,7 @@ Summary:	r300 driver for Mesa GBM framework
 Summary(pl.UTF-8):	Sterownik r300 dla szkieletu Mesa GBM
 Group:		Libraries
 Requires:	%{name}-libgbm = %{version}-%{release}
+Obsoletes:	Mesa-opencl-driver-r300
 
 %description gbm-driver-r300
 r300 driver for Mesa Graphics Buffer Manager. It supports ATI Radeon
@@ -570,6 +573,7 @@ Summary:	r600 driver for Mesa GBM framework
 Summary(pl.UTF-8):	Sterownik r600 dla szkieletu Mesa GBM
 Group:		Libraries
 Requires:	%{name}-libgbm = %{version}-%{release}
+Obsoletes:	Mesa-opencl-driver-r600
 
 %description gbm-driver-r600
 r600 driver for Mesa Graphics Buffer Manager. It supports ATI Radeon
@@ -585,6 +589,7 @@ Summary:	radeonsi driver for Mesa GBM framework
 Summary(pl.UTF-8):	Sterownik radeonsi dla szkieletu Mesa GBM
 Group:		Libraries
 Requires:	%{name}-libgbm = %{version}-%{release}
+Obsoletes:	Mesa-opencl-driver-radeonsi
 
 %description gbm-driver-radeonsi
 radeonsi driver for Mesa Graphics Buffer Manager. It supports ATI
@@ -600,6 +605,7 @@ Summary:	Software (swrast) driver for Mesa GBM framework
 Summary(pl.UTF-8):	Sterownik programowy (swrast) dla szkieletu Mesa GBM
 Group:		Libraries
 Requires:	%{name}-libgbm = %{version}-%{release}
+Obsoletes:	Mesa-opencl-driver-swrast
 
 %description gbm-driver-swrast
 Software (swrast) driver for Mesa Graphics Buffer Manager.
@@ -613,6 +619,7 @@ Summary:	vmwgfx driver for Mesa GBM framework
 Summary(pl.UTF-8):	Sterownik vmwgfx dla szkieletu Mesa GBM
 Group:		Libraries
 Requires:	%{name}-libgbm = %{version}-%{release}
+Obsoletes:	Mesa-opencl-driver-vmwgfx
 
 %description gbm-driver-vmwgfx
 vmwgfx driver for Mesa Graphics Buffer Manager. It supports VMware
