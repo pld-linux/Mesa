@@ -41,14 +41,3 @@
          $()
  
  if HAVE_X86_ASM
---- Mesa-9.1/src/gallium/targets/vdpau-softpipe/Makefile.am.orig	2013-02-20 01:26:22.000000000 +0100
-+++ Mesa-9.1/src/gallium/targets/vdpau-softpipe/Makefile.am	2013-02-28 15:46:37.886610941 +0100
-@@ -35,7 +35,7 @@
- vdpau_LTLIBRARIES = libvdpau_softpipe.la
- 
- libvdpau_softpipe_la_SOURCES = \
--	$(top_srcdir)/src/gallium/auxiliary/vl/vl_winsys_dri.c
-+	$(top_srcdir)/src/gallium/auxiliary/vl/vl_winsys_xsp.c
- 
- libvdpau_softpipe_la_LDFLAGS = \
- 	-module \

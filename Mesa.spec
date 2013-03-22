@@ -21,23 +21,23 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver	7.1.0
 # internal API version (libdricore); a.b.c for Mesa-a.b.c, a.b.0 for Mesa-a.b
-%define		int_sover	9.1.0
+%define		int_sover	9.1.1
 # minimal supported xserver version
 %define		xserver_ver	1.5.0
 # other packages
-%define		libdrm_ver	2.4.39
+%define		libdrm_ver	2.4.42
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.14
 
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	9.1
-Release:	3
+Version:	9.1.1
+Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	d3891e02215422e120271d976ff1947e
+# Source0-md5:	6ea2bdc3b7ecfb4257b39814b4182580
 Patch0:		%{name}-link.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
@@ -53,7 +53,7 @@ BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:2.2
 BuildRequires:	libvdpau-devel >= 0.4.1
 BuildRequires:	libxcb-devel >= 1.9
-BuildRequires:	llvm-devel >= 3.1
+BuildRequires:	llvm-devel >= 3.2
 %{?with_opencl:BuildRequires:	llvm-libclc}
 BuildRequires:	perl-base
 BuildRequires:	pixman-devel
@@ -66,7 +66,7 @@ BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
 %{?with_egl:BuildRequires:	udev-devel >= 1:150}
 # wayland-{client,server}
-%{?with_wayland:BuildRequires:	wayland-devel >= 1.0.0}
+%{?with_wayland:BuildRequires:	wayland-devel >= 1.0.2}
 BuildRequires:	xorg-lib-libXdamage-devel
 BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXfixes-devel
@@ -129,7 +129,7 @@ Requires:	%{name}-libglapi = %{version}-%{release}
 Requires:	OpenGL >= 1.2
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libxcb >= 1.9
-%{?with_wayland:Requires:	wayland >= 1.0.0}
+%{?with_wayland:Requires:	wayland >= 1.0.2}
 %if %{with gallium}
 # for egl_gallium.so
 Requires:	%{name}-libOpenVG = %{version}-%{release}
@@ -1069,8 +1069,6 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-# omitted by make install (as of 9.0)
-cp -pr include/CL $RPM_BUILD_ROOT%{_includedir}
 # strip out undesirable headers
 %{__rm} $RPM_BUILD_ROOT%{_includedir}/GL/{wglext,wmesa}.h
 # dlopened by soname
