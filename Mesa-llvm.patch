@@ -1,0 +1,301 @@
+From 7cd248aa7938a068663fcd605169b7d4e21636bf Mon Sep 17 00:00:00 2001
+From: Tom Stellard <thomas.stellard@amd.com>
+Date: Wed, 13 Feb 2013 20:59:41 +0000
+Subject: radeon/llvm: Fix build with LLVM 3.3
+
+---
+diff --git a/src/gallium/drivers/r600/llvm_wrapper.cpp b/src/gallium/drivers/r600/llvm_wrapper.cpp
+index 81f5397..ae2f4d2 100644
+--- a/src/gallium/drivers/r600/llvm_wrapper.cpp
++++ b/src/gallium/drivers/r600/llvm_wrapper.cpp
+@@ -1,6 +1,10 @@
+ #include <llvm/ADT/OwningPtr.h>
+ #include <llvm/ADT/StringRef.h>
++#if HAVE_LLVM < 0x0303
+ #include <llvm/LLVMContext.h>
++#else
++#include <llvm/IR/LLVMContext.h>
++#endif
+ #include <llvm/PassManager.h>
+ #include <llvm/Support/IRReader.h>
+ #include <llvm/Support/MemoryBuffer.h>
+diff --git a/src/gallium/drivers/radeon/radeon_llvm_emit.cpp b/src/gallium/drivers/radeon/radeon_llvm_emit.cpp
+index 903e102..0491e64 100644
+--- a/src/gallium/drivers/radeon/radeon_llvm_emit.cpp
++++ b/src/gallium/drivers/radeon/radeon_llvm_emit.cpp
+@@ -25,8 +25,16 @@
+  */
+ #include "radeon_llvm_emit.h"
+ 
++#if HAVE_LLVM < 0x0303
+ #include <llvm/LLVMContext.h>
+ #include <llvm/Module.h>
++#include <llvm/DataLayout.h>
++#else
++#include <llvm/IR/LLVMContext.h>
++#include <llvm/IR/Module.h>
++#include <llvm/IR/DataLayout.h>
++#endif
++
+ #include <llvm/PassManager.h>
+ #include <llvm/ADT/Triple.h>
+ #include <llvm/Support/FormattedStream.h>
+@@ -39,7 +47,6 @@
+ #include <llvm/Target/TargetMachine.h>
+ #include <llvm/Transforms/Scalar.h>
+ #include <llvm-c/Target.h>
+-#include <llvm/DataLayout.h>
+ 
+ #include <iostream>
+ #include <stdlib.h>
+--
+cgit v0.9.0.2-2-gbebe
+From 1f006717db5258e703d83b37772b85ad25bf3319 Mon Sep 17 00:00:00 2001
+From: Tom Stellard <thomas.stellard@amd.com>
+Date: Wed, 13 Feb 2013 20:57:25 +0000
+Subject: r600g: Add $(DEFINES) to AM_CXXFLAGS
+
+This way llvm_wrapper.cpp is compiled with -DHAVE_LLVM=0x....
+---
+(limited to 'src/gallium')
+
+diff --git a/src/gallium/drivers/r600/Makefile.am b/src/gallium/drivers/r600/Makefile.am
+index 6f48b56..e1c8574 100644
+--- a/src/gallium/drivers/r600/Makefile.am
++++ b/src/gallium/drivers/r600/Makefile.am
+@@ -26,7 +26,8 @@ AM_CFLAGS += \
+ 	-I$(top_srcdir)/src/gallium/drivers/radeon/
+ 
+ AM_CXXFLAGS= \
+-	$(LLVM_CXXFLAGS)
++	$(LLVM_CXXFLAGS) \
++	$(DEFINES)
+ endif
+ 
+ if USE_R600_LLVM_COMPILER
+--
+cgit v0.9.0.2-2-gbebe
+From ead4db420e9e5408f41c70768a290592a384aedb Mon Sep 17 00:00:00 2001
+From: Tom Stellard <thomas.stellard@amd.com>
+Date: Tue, 23 Apr 2013 14:57:54 +0000
+Subject: gallivm: Fix build with LLVM >= r180063
+
+---
+diff --git a/src/gallium/auxiliary/gallivm/lp_bld_debug.cpp b/src/gallium/auxiliary/gallivm/lp_bld_debug.cpp
+index ac8e10b..86617d4 100644
+--- a/src/gallium/auxiliary/gallivm/lp_bld_debug.cpp
++++ b/src/gallium/auxiliary/gallivm/lp_bld_debug.cpp
+@@ -56,6 +56,10 @@
+ #include <llvm/MC/MCRegisterInfo.h>
+ #endif /* HAVE_LLVM >= 0x0301 */
+ 
++#if HAVE_LLVM >= 0x0303
++#include <llvm/ADT/OwningPtr.h>
++#endif
++
+ #include "util/u_math.h"
+ #include "util/u_debug.h"
+ 
+diff --git a/src/gallium/auxiliary/gallivm/lp_bld_misc.cpp b/src/gallium/auxiliary/gallivm/lp_bld_misc.cpp
+index 024819e..717afa7 100644
+--- a/src/gallium/auxiliary/gallivm/lp_bld_misc.cpp
++++ b/src/gallium/auxiliary/gallivm/lp_bld_misc.cpp
+@@ -67,6 +67,10 @@
+ #include <llvm/Target/TargetSelect.h>
+ #endif /* HAVE_LLVM < 0x0300 */
+ 
++#if HAVE_LLVM >= 0x0303
++#include <llvm/Wrap.h>
++#endif
++
+ #include "pipe/p_config.h"
+ #include "util/u_debug.h"
+ #include "util/u_cpu_detect.h"
+--
+cgit v0.9.0.2-2-gbebe
+From a0c8942bb4742b4bd22f494cea4dcd59d9ca99ab Mon Sep 17 00:00:00 2001
+From: Tom Stellard <thomas.stellard@amd.com>
+Date: Tue, 23 Apr 2013 14:58:38 +0000
+Subject: radeon/llvm:  Fix build with LLVM >= r180063
+
+---
+diff --git a/src/gallium/drivers/radeon/radeon_llvm_emit.cpp b/src/gallium/drivers/radeon/radeon_llvm_emit.cpp
+index d2dc035..5b770d0 100644
+--- a/src/gallium/drivers/radeon/radeon_llvm_emit.cpp
++++ b/src/gallium/drivers/radeon/radeon_llvm_emit.cpp
+@@ -47,6 +47,7 @@
+ #include <llvm/Support/Threading.h>
+ #include <llvm/Target/TargetMachine.h>
+ #include <llvm/Transforms/Scalar.h>
++#include <llvm/Wrap.h>
+ #include <llvm-c/Target.h>
+ 
+ #include <iostream>
+--
+cgit v0.9.0.2-2-gbebe
+From 6249db73ea580e6a54874235ffb3a7d42ac63bb4 Mon Sep 17 00:00:00 2001
+From: Christian König <christian.koenig@amd.com>
+Date: Tue, 26 Mar 2013 10:37:45 +0000
+Subject: radeon/llvm: remove uneeded inclusion
+
+The include isn't needed and the file has moved with LLVM master.
+
+Signed-off-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Michel Dänzer <michel.daenzer@amd.com>
+---
+(limited to 'src/gallium/drivers/radeon/radeon_llvm_emit.cpp')
+
+diff --git a/src/gallium/drivers/radeon/radeon_llvm_emit.cpp b/src/gallium/drivers/radeon/radeon_llvm_emit.cpp
+index ee82a90..a23532b 100644
+--- a/src/gallium/drivers/radeon/radeon_llvm_emit.cpp
++++ b/src/gallium/drivers/radeon/radeon_llvm_emit.cpp
+@@ -41,7 +41,6 @@
+ #include <llvm/ADT/Triple.h>
+ #include <llvm/Support/FormattedStream.h>
+ #include <llvm/Support/Host.h>
+-#include <llvm/Support/IRReader.h>
+ #include <llvm/Support/SourceMgr.h>
+ #include <llvm/Support/TargetRegistry.h>
+ #include <llvm/Support/TargetSelect.h>
+--
+cgit v0.9.0.2-2-gbebe
+diff -ur a/src/gallium/drivers/r600/llvm_wrapper.cpp b/src/gallium/drivers/r600/llvm_wrapper.cpp
+--- a/src/gallium/drivers/r600/llvm_wrapper.cpp	2013-03-05 23:54:28.000000000 +0100
++++ b/src/gallium/drivers/r600/llvm_wrapper.cpp	2013-05-02 17:46:36.411226826 +0200
+@@ -2,7 +2,12 @@
+ #include <llvm/ADT/StringRef.h>
+ #include <llvm/LLVMContext.h>
+ #include <llvm/PassManager.h>
++#if HAVE_LLVM < 0x0303
+ #include <llvm/Support/IRReader.h>
++#else
++#include <llvm/IRReader/IRReader.h>
++#include <llvm/Support/CBindingWrapping.h>
++#endif /* HAVE_LLVM < 0x0303 */
+ #include <llvm/Support/MemoryBuffer.h>
+ #include <llvm/Support/SourceMgr.h>
+ #include <llvm/Transforms/IPO.h>
+diff -ur a/src/gallium/drivers/r600/Makefile.am b/src/gallium/drivers/r600/Makefile.am
+--- a/src/gallium/drivers/r600/Makefile.am	2013-03-05 23:54:28.000000000 +0100
++++ b/src/gallium/drivers/r600/Makefile.am	2013-05-02 18:00:20.035242047 +0200
+@@ -23,6 +23,7 @@
+ 
+ AM_CFLAGS += \
+ 	$(LLVM_CFLAGS) \
++	-lLLVMIRReader \
+ 	-I$(top_srcdir)/src/gallium/drivers/radeon/
+ 
+ AM_CXXFLAGS= \
+From 4742f9b00b804dd01eb9955dd386a2373cd8eb36 Mon Sep 17 00:00:00 2001
+From: Armin K <krejzi@email.com>
+Date: Thu, 02 May 2013 10:55:04 +0000
+Subject: gallivm: Fix build with LLVM 3.3
+
+Reviewed-by: Tom Stellard <thomas.stellard@amd.com>
+---
+diff --git a/src/gallium/auxiliary/gallivm/lp_bld_misc.cpp b/src/gallium/auxiliary/gallivm/lp_bld_misc.cpp
+index 717afa7..a531d98 100644
+--- a/src/gallium/auxiliary/gallivm/lp_bld_misc.cpp
++++ b/src/gallium/auxiliary/gallivm/lp_bld_misc.cpp
+@@ -68,7 +68,9 @@
+ #endif /* HAVE_LLVM < 0x0300 */
+ 
+ #if HAVE_LLVM >= 0x0303
+-#include <llvm/Wrap.h>
++#include <llvm/IR/IRBuilder.h>
++#include <llvm/IR/Module.h>
++#include <llvm/Support/CBindingWrapping.h>
+ #endif
+ 
+ #include "pipe/p_config.h"
+--
+cgit v0.9.0.2-2-gbebe
+From cd84353d576246273d1c6ae8e96b65217be15ebc Mon Sep 17 00:00:00 2001
+From: Armin K <krejzi@email.com>
+Date: Thu, 02 May 2013 10:55:05 +0000
+Subject: radeon: Fix build with LLVM 3.3
+
+Reviewed-by: Tom Stellard <thomas.stellard@amd.com>
+---
+diff --git a/src/gallium/drivers/radeon/radeon_llvm_emit.cpp b/src/gallium/drivers/radeon/radeon_llvm_emit.cpp
+index 55dad9b..fb974f9 100644
+--- a/src/gallium/drivers/radeon/radeon_llvm_emit.cpp
++++ b/src/gallium/drivers/radeon/radeon_llvm_emit.cpp
+@@ -39,6 +39,7 @@
+ 
+ #include <llvm/PassManager.h>
+ #include <llvm/ADT/Triple.h>
++#include <llvm/Support/CBindingWrapping.h>
+ #include <llvm/Support/FormattedStream.h>
+ #include <llvm/Support/Host.h>
+ #include <llvm/Support/SourceMgr.h>
+@@ -47,7 +48,6 @@
+ #include <llvm/Support/Threading.h>
+ #include <llvm/Target/TargetMachine.h>
+ #include <llvm/Transforms/Scalar.h>
+-#include <llvm/Wrap.h>
+ #include <llvm-c/Target.h>
+ 
+ #include <iostream>
+--
+cgit v0.9.0.2-2-gbebe
+From b86646754f5e29553adb734ab54cb607eb02ff33 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ch=C3=AD-Thanh=20Christopher=20Nguy=E1=BB=85n?=
+ <chithanh@gentoo.org>
+Date: Mon, 6 May 2013 20:18:22 +0200
+Subject: [PATCH] targets/dri-i915: Force c++ linker in all cases
+
+Bugzilla: https://bugs.gentoo.org/show_bug.cgi?id=461696
+---
+ src/gallium/targets/dri-i915/Makefile.am | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
+
+diff --git a/src/gallium/targets/dri-i915/Makefile.am b/src/gallium/targets/dri-i915/Makefile.am
+index f4f9030..ce6be78 100644
+--- a/src/gallium/targets/dri-i915/Makefile.am
++++ b/src/gallium/targets/dri-i915/Makefile.am
+@@ -62,17 +62,11 @@ i915_dri_la_LIBADD = \
+ 	$(GALLIUM_DRI_LIB_DEPS) \
+ 	$(INTEL_LIBS)
+ 
+-if HAVE_MESA_LLVM
+-i915_dri_la_LINK = $(CXXLINK) $(i915_dri_la_LDFLAGS)
+-# Mention a dummy pure C++ file to trigger generation of the $(LINK) variable
+-nodist_EXTRA_i915_dri_la_SOURCES = dummy-cpp.cpp
++nodist_EXTRA_i915_dri_la_SOURCES = dummy.cpp
+ 
++if HAVE_MESA_LLVM
+ AM_CPPFLAGS += -DGALLIUM_LLVMPIPE
+ i915_dri_la_LIBADD += $(top_builddir)/src/gallium/drivers/llvmpipe/libllvmpipe.la $(LLVM_LIBS)
+-else
+-i915_dri_la_LINK = $(LINK) $(i915_dri_la_LDFLAGS)
+-# Mention a dummy pure C file to trigger generation of the $(LINK) variable
+-nodist_EXTRA_i915_dri_la_SOURCES = dummy-c.c
+ endif
+ 
+ # Provide compatibility with scripts for the old Mesa build system for
+-- 
+1.8.1.5
+
+Signed-off-by: Vinson Lee <vlee at freedesktop.org>
+---
+ src/gallium/auxiliary/gallivm/lp_bld_debug.cpp | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/gallium/auxiliary/gallivm/lp_bld_debug.cpp b/src/gallium/auxiliary/gallivm/lp_bld_debug.cpp
+index 86617d4..1c886ea 100644
+--- a/src/gallium/auxiliary/gallivm/lp_bld_debug.cpp
++++ b/src/gallium/auxiliary/gallivm/lp_bld_debug.cpp
+@@ -212,7 +212,9 @@ disassemble(const void* func, llvm::raw_ostream & Out)
+    std::string Error;
+    const Target *T = TargetRegistry::lookupTarget(Triple, Error);
+ 
+-#if HAVE_LLVM >= 0x0300
++#if HAVE_LLVM >= 0x0304
++   OwningPtr<const MCAsmInfo> AsmInfo(T->createMCAsmInfo(*T->createMCRegInfo(Triple), Triple));
++#elif HAVE_LLVM >= 0x0300
+    OwningPtr<const MCAsmInfo> AsmInfo(T->createMCAsmInfo(Triple));
+ #else
+    OwningPtr<const MCAsmInfo> AsmInfo(T->createAsmInfo(Triple));
+-- 
+1.8.2.1

@@ -39,6 +39,7 @@ Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
 # Source0-md5:	952ccd03547ed72333b64e1746cf8ada
 Patch0:		%{name}-link.patch
+Patch1:		%{name}-llvm.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -995,6 +996,7 @@ Sterownik Mesa softpipe dla API vdpau.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 %{__libtoolize}
