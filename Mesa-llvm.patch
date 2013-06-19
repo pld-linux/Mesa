@@ -401,3 +401,16 @@ index 86617d4..1c886ea 100644
  #endif /* HAVE_LLVM < 0x0303 */
  #include <llvm/Support/MemoryBuffer.h>
  #include <llvm/Support/SourceMgr.h>
+--- Mesa-9.1.3/src/gallium/targets/opencl/Makefile.am~	2013-03-05 23:54:28.000000000 +0100
++++ Mesa-9.1.3/src/gallium/targets/opencl/Makefile.am	2013-06-19 12:38:56.722221012 +0200
+@@ -21,9 +21,9 @@
+ 	-lclangSema \
+ 	-lclangAnalysis \
+ 	-lclangAST \
++	-lclangEdit \
+ 	-lclangLex \
+ 	-lclangBasic \
+-	-lclangEdit \
+ 	$(LLVM_LIBS)
+ 
+ 
