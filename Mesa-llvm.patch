@@ -81,21 +81,6 @@ Date: Tue, 23 Apr 2013 14:57:54 +0000
 Subject: gallivm: Fix build with LLVM >= r180063
 
 ---
-diff --git a/src/gallium/auxiliary/gallivm/lp_bld_debug.cpp b/src/gallium/auxiliary/gallivm/lp_bld_debug.cpp
-index ac8e10b..86617d4 100644
---- a/src/gallium/auxiliary/gallivm/lp_bld_debug.cpp
-+++ b/src/gallium/auxiliary/gallivm/lp_bld_debug.cpp
-@@ -56,6 +56,10 @@
- #include <llvm/MC/MCRegisterInfo.h>
- #endif /* HAVE_LLVM >= 0x0301 */
- 
-+#if HAVE_LLVM >= 0x0303
-+#include <llvm/ADT/OwningPtr.h>
-+#endif
-+
- #include "util/u_math.h"
- #include "util/u_debug.h"
- 
 diff --git a/src/gallium/auxiliary/gallivm/lp_bld_misc.cpp b/src/gallium/auxiliary/gallivm/lp_bld_misc.cpp
 index 024819e..717afa7 100644
 --- a/src/gallium/auxiliary/gallivm/lp_bld_misc.cpp
@@ -237,42 +222,6 @@ index 55dad9b..fb974f9 100644
  #include <llvm-c/Target.h>
  
  #include <iostream>
---
-cgit v0.9.0.2-2-gbebe
-From b86646754f5e29553adb734ab54cb607eb02ff33 Mon Sep 17 00:00:00 2001
-From: =?UTF-8?q?Ch=C3=AD-Thanh=20Christopher=20Nguy=E1=BB=85n?=
- <chithanh@gentoo.org>
-Date: Mon, 6 May 2013 20:18:22 +0200
-Subject: [PATCH] targets/dri-i915: Force c++ linker in all cases
-
-Bugzilla: https://bugs.gentoo.org/show_bug.cgi?id=461696
----
- src/gallium/targets/dri-i915/Makefile.am | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
-
-diff --git a/src/gallium/targets/dri-i915/Makefile.am b/src/gallium/targets/dri-i915/Makefile.am
-index f4f9030..ce6be78 100644
---- a/src/gallium/targets/dri-i915/Makefile.am
-+++ b/src/gallium/targets/dri-i915/Makefile.am
-@@ -62,17 +62,11 @@ i915_dri_la_LIBADD = \
- 	$(GALLIUM_DRI_LIB_DEPS) \
- 	$(INTEL_LIBS)
- 
--if HAVE_MESA_LLVM
--i915_dri_la_LINK = $(CXXLINK) $(i915_dri_la_LDFLAGS)
--# Mention a dummy pure C++ file to trigger generation of the $(LINK) variable
--nodist_EXTRA_i915_dri_la_SOURCES = dummy-cpp.cpp
-+nodist_EXTRA_i915_dri_la_SOURCES = dummy.cpp
- 
-+if HAVE_MESA_LLVM
- AM_CPPFLAGS += -DGALLIUM_LLVMPIPE
- i915_dri_la_LIBADD += $(top_builddir)/src/gallium/drivers/llvmpipe/libllvmpipe.la $(LLVM_LIBS)
--else
--i915_dri_la_LINK = $(LINK) $(i915_dri_la_LDFLAGS)
--# Mention a dummy pure C file to trigger generation of the $(LINK) variable
--nodist_EXTRA_i915_dri_la_SOURCES = dummy-c.c
- endif
- 
  # Provide compatibility with scripts for the old Mesa build system for
 -- 
 1.8.1.5
