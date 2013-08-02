@@ -21,7 +21,7 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver	7.1.0
 # internal API version (libdricore); a.b.c for Mesa-a.b.c, a.b.0 for Mesa-a.b
-%define		int_sover	9.1.5
+%define		int_sover	9.1.6
 # minimal supported xserver version
 %define		xserver_ver	1.5.0
 # other packages
@@ -32,12 +32,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	9.1.5
+Version:	9.1.6
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	4ed2af5943141a85a21869053a2fc2eb
+# Source0-md5:	443a2a352667294b53d56cb1a74114e9
 Patch0:		%{name}-link.patch
 Patch1:		%{name}-llvm.patch
 URL:		http://www.mesa3d.org/
@@ -54,7 +54,7 @@ BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:2.2
 BuildRequires:	libvdpau-devel >= 0.4.1
 BuildRequires:	libxcb-devel >= 1.9
-BuildRequires:	llvm-devel >= 3.2
+BuildRequires:	llvm-devel >= 3.3
 %{?with_opencl:BuildRequires:	llvm-libclc}
 BuildRequires:	perl-base
 BuildRequires:	pixman-devel
