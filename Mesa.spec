@@ -21,7 +21,7 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver	7.1.0
 # internal API version (libdricore); a.b.c for Mesa-a.b.c, a.b.0 for Mesa-a.b
-%define		int_sover	9.1.6
+%define		int_sover	9.2.0
 # minimal supported xserver version
 %define		xserver_ver	1.5.0
 # other packages
@@ -32,14 +32,13 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	9.1.6
+Version:	9.2.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
-Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	443a2a352667294b53d56cb1a74114e9
+Source0:	ftp://ftp.freedesktop.org/pub/mesa/9.2/%{name}Lib-%{version}.tar.bz2
+# Source0-md5:	4185b6aae890bc62a964f4b24cc1aca8
 Patch0:		%{name}-link.patch
-Patch1:		%{name}-llvm.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -469,7 +468,6 @@ Summary:	Mesa implementation of XvMC API for ATI Radeon R600 series adapters
 Summary(pl.UTF-8):	Implementacja Mesa API XvMC dla kart ATI Radeon z serii R600
 License:	MIT
 Group:		Libraries
-Requires:	%{name}-libllvmradeon = %{version}-%{release}
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	xorg-lib-libXvMC >= 1.0.6
 Conflicts:	Mesa-libXvMC
@@ -577,7 +575,6 @@ Summary:	r600 driver for Mesa GBM framework
 Summary(pl.UTF-8):	Sterownik r600 dla szkieletu Mesa GBM
 Group:		Libraries
 Requires:	%{name}-libgbm = %{version}-%{release}
-Requires:	%{name}-libllvmradeon = %{version}-%{release}
 Obsoletes:	Mesa-opencl-driver-r600
 
 %description gbm-driver-r600
@@ -594,8 +591,8 @@ Summary:	radeonsi driver for Mesa GBM framework
 Summary(pl.UTF-8):	Sterownik radeonsi dla szkieletu Mesa GBM
 Group:		Libraries
 Requires:	%{name}-libgbm = %{version}-%{release}
-Requires:	%{name}-libllvmradeon = %{version}-%{release}
 Obsoletes:	Mesa-opencl-driver-radeonsi
+Obsoletes:	Mesa-libllvmradeon
 
 %description gbm-driver-radeonsi
 radeonsi driver for Mesa Graphics Buffer Manager. It supports ATI
@@ -647,17 +644,6 @@ Mesa GL API shared library, common for various APIs (EGL, GL, GLES).
 %description libglapi -l pl.UTF-8
 Biblioteka współdzielona Mesa GL API, wspólna dla różnych API (EGL,
 GL, GLES).
-
-%package libllvmradeon
-Summary:	LLVM radeon target library
-Summary(pl.UTF-8):	Biblioteka platformy radeon dla LLVM-a
-Group:		Libraries
-
-%description libllvmradeon
-LLVM radeon target library.
-
-%description libllvmradeon -l pl.UTF-8
-Biblioteka platformy radeon dla LLVM-a.
 
 %package libwayland-egl
 Summary:	Wayland EGL library
@@ -791,7 +777,6 @@ Summary:	X.org DRI driver for ATI R600 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R600
 License:	MIT
 Group:		X11/Libraries
-Requires:	%{name}-libllvmradeon = %{version}-%{release}
 Requires:	radeon-ucode
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
@@ -808,7 +793,6 @@ Summary:	X.org DRI driver for ATI Southern Islands card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI Southern Islands
 License:	MIT
 Group:		X11/Libraries
-Requires:	%{name}-libllvmradeon = %{version}-%{release}
 Requires:	radeon-ucode
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
@@ -947,7 +931,6 @@ Summary:	Mesa r600 driver for the vdpau API
 Summary(pl.UTF-8):	Sterownik Mesa r600 dla API vdpau
 License:	MIT
 Group:		X11/Libraries
-Requires:	%{name}-libllvmradeon = %{version}-%{release}
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libvdpau >= 0.4.1
 Conflicts:	libvdpau-driver-mesa
@@ -965,10 +948,10 @@ Summary:	Mesa radeonsi driver for the vdpau API
 Summary(pl.UTF-8):	Sterownik Mesa radeonsi dla API vdpau
 License:	MIT
 Group:		X11/Libraries
-Requires:	%{name}-libllvmradeon = %{version}-%{release}
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libvdpau >= 0.4.1
 Conflicts:	libvdpau-driver-mesa
+Obsoletes:	Mesa-libllvmradeon
 
 %description -n libvdpau-driver-mesa-radeonsi
 Mesa radeonsi driver for the vdpau API. It supports ATI Radeon
@@ -996,7 +979,6 @@ Sterownik Mesa softpipe dla API vdpau.
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
 
 %build
 %{__libtoolize}
@@ -1126,9 +1108,6 @@ rm -rf $RPM_BUILD_ROOT
 %post	libglapi -p /sbin/ldconfig
 %postun	libglapi -p /sbin/ldconfig
 
-%post	libllvmradeon -p /sbin/ldconfig
-%postun	libllvmradeon -p /sbin/ldconfig
-
 %post	libwayland-egl -p /sbin/ldconfig
 %postun	libwayland-egl -p /sbin/ldconfig
 
@@ -1167,7 +1146,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files libGL
 %defattr(644,root,root,755)
-%doc docs/{*.html,README.{MITS,QUAKE,THREADS},RELNOTES*}
+%doc docs/{*.html,README.{MITS,QUAKE,THREADS,UVD},relnotes/*.html}
 %attr(755,root,root) %{_libdir}/libGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libGL.so.1
 # symlink for binary apps which fail to conform Linux OpenGL ABI
@@ -1176,7 +1155,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files libGL-devel
 %defattr(644,root,root,755)
-%doc docs/*.spec
+%doc docs/specs/*
 %dir %{_includedir}/GL
 %{_includedir}/GL/gl.h
 %{_includedir}/GL/glext.h
@@ -1336,12 +1315,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %ghost %{_libdir}/libglapi.so.0
 # libglapi-devel? nothing seems to need it atm.
 #%attr(755,root,root) %{_libdir}/libglapi.so
-
-%if %{with gallium}
-%files libllvmradeon
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libllvmradeon%{int_sover}.so
-%endif
 
 %if %{with wayland}
 %files libwayland-egl
