@@ -25,7 +25,7 @@
 # minimal supported xserver version
 %define		xserver_ver	1.5.0
 # other packages
-%define		libdrm_ver	2.4.42
+%define		libdrm_ver	2.4.46
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.14
 
@@ -64,7 +64,7 @@ BuildRequires:	python-libxml2
 BuildRequires:	python-modules >= 2
 BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
-%{?with_egl:BuildRequires:	udev-devel >= 1:150}
+%{?with_egl:BuildRequires:	udev-devel >= 1:151}
 # wayland-{client,server}
 %{?with_wayland:BuildRequires:	wayland-devel >= 1.0.2}
 BuildRequires:	xorg-lib-libXdamage-devel
@@ -133,7 +133,7 @@ Requires:	libxcb >= 1.9
 %if %{with gallium}
 # for egl_gallium.so
 Requires:	%{name}-libOpenVG = %{version}-%{release}
-Requires:	udev-libs >= 1:150
+Requires:	udev-libs >= 1:151
 %endif
 %if %{with gbm}
 Requires:	%{name}-libgbm = %{version}-%{release}
@@ -362,7 +362,7 @@ License:	MIT
 Group:		Libraries
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	llvm-libclc
-Requires:	udev-libs >= 1:150
+Requires:	udev-libs >= 1:151
 Provides:	OpenCL = 1.1
 
 %description libOpenCL
@@ -500,7 +500,7 @@ Summary:	Mesa Graphics Buffer Manager library
 Summary(pl.UTF-8):	Biblioteka Mesa Graphics Buffer Manager
 Group:		Libraries
 Requires:	%{name}-libglapi = %{version}-%{release}
-Requires:	udev-libs >= 1:150
+Requires:	udev-libs >= 1:151
 Conflicts:	Mesa-libEGL < 8.0.1-2
 
 %description libgbm
@@ -514,7 +514,7 @@ Summary:	Header file for Mesa Graphics Buffer Manager library
 Summary(pl.UTF-8):	Plik nagłówkowy biblioteki Mesa Graphics Buffer Manager
 Group:		Development/Libraries
 Requires:	%{name}-libgbm = %{version}-%{release}
-Requires:	udev-devel >= 1:150
+Requires:	udev-devel >= 1:151
 
 %description libgbm-devel
 Header file for Mesa Graphics Buffer Manager library.
