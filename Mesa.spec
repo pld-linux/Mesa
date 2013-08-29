@@ -575,6 +575,7 @@ Summary:	r600 driver for Mesa GBM framework
 Summary(pl.UTF-8):	Sterownik r600 dla szkieletu Mesa GBM
 Group:		Libraries
 Requires:	%{name}-libgbm = %{version}-%{release}
+Obsoletes:	Mesa-libllvmradeon
 Obsoletes:	Mesa-opencl-driver-r600
 
 %description gbm-driver-r600
@@ -591,8 +592,8 @@ Summary:	radeonsi driver for Mesa GBM framework
 Summary(pl.UTF-8):	Sterownik radeonsi dla szkieletu Mesa GBM
 Group:		Libraries
 Requires:	%{name}-libgbm = %{version}-%{release}
-Obsoletes:	Mesa-opencl-driver-radeonsi
 Obsoletes:	Mesa-libllvmradeon
+Obsoletes:	Mesa-opencl-driver-radeonsi
 
 %description gbm-driver-radeonsi
 radeonsi driver for Mesa Graphics Buffer Manager. It supports ATI
