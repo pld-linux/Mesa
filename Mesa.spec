@@ -33,12 +33,16 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	9.2.0
-Release:	1
+Release:	2
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/9.2/%{name}Lib-%{version}.tar.bz2
 # Source0-md5:	4185b6aae890bc62a964f4b24cc1aca8
 Patch0:		%{name}-link.patch
+Patch1:		0001-gallium-egl-Simplify-native_wayland_drm_bufmgr_helpe.patch
+Patch2:		0002-gallium-egl-Don-t-add-a-listener-for-wl_drm-twice-in.patch
+Patch3:		0003-egl-Update-to-Wayland-1.2-server-API.patch
+Patch4:		0004-gallium-egl-Commit-the-rest-of-the-native_wayland_dr.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -980,6 +984,10 @@ Sterownik Mesa softpipe dla API vdpau.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
 
 %build
 %{__libtoolize}

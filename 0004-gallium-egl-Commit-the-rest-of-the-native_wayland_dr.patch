@@ -1,0 +1,76 @@
+From c5279d643b528690243803c923fd3ff74b1b9dd5 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Kristian=20H=C3=B8gsberg?= <krh@bitplanet.net>
+Date: Wed, 7 Aug 2013 11:19:59 -0700
+Subject: [PATCH 4/4] gallium-egl: Commit the rest of the
+ native_wayland_drm_bufmgr_helper v2 patch
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+I missed Anders v2 on the list which fixed non-wayland compilation:
+
+http://lists.freedesktop.org/archives/mesa-dev/2013-July/042062.html
+
+Signed-off-by: Kristian Høgsberg <krh@bitplanet.net>
+---
+ src/gallium/state_trackers/egl/drm/native_drm.c  | 2 ++
+ src/gallium/state_trackers/egl/drm/native_drm.h  | 4 ----
+ src/gallium/state_trackers/egl/x11/native_dri2.c | 5 ++---
+ 3 files changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/src/gallium/state_trackers/egl/drm/native_drm.c b/src/gallium/state_trackers/egl/drm/native_drm.c
+index 88ac490..c82bbe4 100644
+--- a/src/gallium/state_trackers/egl/drm/native_drm.c
++++ b/src/gallium/state_trackers/egl/drm/native_drm.c
+@@ -132,7 +132,9 @@ drm_display_destroy(struct native_display *ndpy)
+ 
+    FREE(drmdpy->device_name);
+ 
++#ifdef HAVE_WAYLAND_BACKEND
+    wayland_drm_bufmgr_destroy(ndpy->wayland_bufmgr);
++#endif
+ 
+    if (drmdpy->own_gbm) {
+       gbm_device_destroy(&drmdpy->gbmdrm->base.base);
+diff --git a/src/gallium/state_trackers/egl/drm/native_drm.h b/src/gallium/state_trackers/egl/drm/native_drm.h
+index 2c015b2..6a1cd5d 100644
+--- a/src/gallium/state_trackers/egl/drm/native_drm.h
++++ b/src/gallium/state_trackers/egl/drm/native_drm.h
+@@ -67,10 +67,6 @@ struct drm_display {
+    struct drm_surface **shown_surfaces;
+    /* save the original settings of the CRTCs */
+    struct drm_crtc *saved_crtcs;
+-
+-#ifdef HAVE_WAYLAND_BACKEND
+-   struct wl_drm *wl_server_drm; /* for EGL_WL_bind_wayland_display */
+-#endif
+ };
+ 
+ struct drm_config {
+diff --git a/src/gallium/state_trackers/egl/x11/native_dri2.c b/src/gallium/state_trackers/egl/x11/native_dri2.c
+index 3d08863..3aa7c17 100644
+--- a/src/gallium/state_trackers/egl/x11/native_dri2.c
++++ b/src/gallium/state_trackers/egl/x11/native_dri2.c
+@@ -60,9 +60,6 @@ struct dri2_display {
+    int num_configs;
+ 
+    struct util_hash_table *surfaces;
+-#ifdef HAVE_WAYLAND_BACKEND
+-   struct wl_drm *wl_server_drm; /* for EGL_WL_bind_wayland_display */
+-#endif
+ };
+ 
+ struct dri2_surface {
+@@ -757,7 +754,9 @@ dri2_display_destroy(struct native_display *ndpy)
+    if (dri2dpy->surfaces)
+       util_hash_table_destroy(dri2dpy->surfaces);
+ 
++#ifdef HAVE_WAYLAND_BACKEND
+    wayland_drm_bufmgr_destroy(ndpy->wayland_bufmgr);
++#endif
+ 
+    if (dri2dpy->xscr)
+       x11_screen_destroy(dri2dpy->xscr);
+-- 
+1.8.4
+
