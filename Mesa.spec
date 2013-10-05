@@ -15,6 +15,7 @@
 %bcond_without	wayland		# Wayland EGL
 %bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
 %bcond_with	static_libs	# static libraries [not supported for DRI, thus broken currently]
+%bcond_with	tests		# tests
 #
 # glapi version (glapi tables in dri drivers and libglx must be in sync);
 # set to current Mesa version on ABI break, when xserver tables get regenerated
@@ -1055,6 +1056,8 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 	--with-dri-driverdir=%{_libdir}/xorg/modules/dri
 
 %{__make}
+
+%{?with_tests:%{__make} check}
 
 %install
 rm -rf $RPM_BUILD_ROOT
