@@ -22,7 +22,7 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver	7.1.0
 # internal API version (libdricore); a.b.c for Mesa-a.b.c, a.b.0 for Mesa-a.b
-%define		int_sover	9.2.1
+%define		int_sover	9.2.2
 # minimal supported xserver version
 %define		xserver_ver	1.5.0
 # other packages
@@ -33,12 +33,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	9.2.1
+Version:	9.2.2
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	dd4c82667d9c19c28a553b12eba3f8a0
+# Source0-md5:	20887f8020db7d1736a01ae9cd5d8c38
 Patch0:		%{name}-link.patch
 Patch1:		0001-gallium-egl-Simplify-native_wayland_drm_bufmgr_helpe.patch
 Patch2:		0002-gallium-egl-Don-t-add-a-listener-for-wl_drm-twice-in.patch
