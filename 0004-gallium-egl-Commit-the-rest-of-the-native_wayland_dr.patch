@@ -32,21 +32,6 @@ index 88ac490..c82bbe4 100644
  
     if (drmdpy->own_gbm) {
        gbm_device_destroy(&drmdpy->gbmdrm->base.base);
-diff --git a/src/gallium/state_trackers/egl/drm/native_drm.h b/src/gallium/state_trackers/egl/drm/native_drm.h
-index 2c015b2..6a1cd5d 100644
---- a/src/gallium/state_trackers/egl/drm/native_drm.h
-+++ b/src/gallium/state_trackers/egl/drm/native_drm.h
-@@ -67,10 +67,6 @@ struct drm_display {
-    struct drm_surface **shown_surfaces;
-    /* save the original settings of the CRTCs */
-    struct drm_crtc *saved_crtcs;
--
--#ifdef HAVE_WAYLAND_BACKEND
--   struct wl_drm *wl_server_drm; /* for EGL_WL_bind_wayland_display */
--#endif
- };
- 
- struct drm_config {
 diff --git a/src/gallium/state_trackers/egl/x11/native_dri2.c b/src/gallium/state_trackers/egl/x11/native_dri2.c
 index 3d08863..3aa7c17 100644
 --- a/src/gallium/state_trackers/egl/x11/native_dri2.c

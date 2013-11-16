@@ -94,7 +94,7 @@ index 52fcb3f..bdbb450 100644
  const __DRIuseInvalidateExtension use_invalidate = {
     { __DRI_USE_INVALIDATE, 1 }
  };
-@@ -1195,7 +1199,7 @@ dri2_create_image_wayland_wl_buffer(_EGLDisplay *disp, _EGLContext *ctx,
+@@ -1195,7 +1199,7 @@ dri2_create_image_wayland_wl_buffer(_EGL
  				    EGLClientBuffer _buffer,
  				    const EGLint *attr_list)
  {
@@ -103,17 +103,17 @@ index 52fcb3f..bdbb450 100644
     struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
     const struct wl_drm_components_descriptor *f;
     __DRIimage *dri_image;
-@@ -1203,7 +1207,8 @@ dri2_create_image_wayland_wl_buffer(_EGLDisplay *disp, _EGLContext *ctx,
+@@ -1203,7 +1207,8 @@ dri2_create_image_wayland_wl_buffer(_EGL
     EGLint err;
     int32_t plane;
  
--   if (!wayland_buffer_is_drm(&buffer->buffer))
-+   buffer = wayland_drm_buffer_get((struct wl_resource *) _buffer);
+-   if (!wayland_buffer_is_drm(dri2_dpy->wl_server_drm, &buffer->buffer))
++   buffer = wayland_drm_buffer_get(dri2_dpy->wl_server_drm, (struct wl_resource *) _buffer);
 +   if (!buffer)
         return NULL;
  
     err = _eglParseImageAttribList(&attrs, disp, attr_list);
-@@ -1508,8 +1513,8 @@ dri2_wl_reference_buffer(void *user_data, uint32_t name, int fd,
+@@ -1508,8 +1513,8 @@ dri2_wl_reference_buffer(void *user_data
  
     if (fd == -1)
        img = dri2_dpy->image->createImageFromNames(dri2_dpy->dri_screen,
@@ -124,7 +124,7 @@ index 52fcb3f..bdbb450 100644
                                                    buffer->format,
                                                    (int*)&name, 1,
                                                    buffer->stride,
-@@ -1517,8 +1522,8 @@ dri2_wl_reference_buffer(void *user_data, uint32_t name, int fd,
+@@ -1517,8 +1522,8 @@ dri2_wl_reference_buffer(void *user_data
                                                    NULL);
     else
        img = dri2_dpy->image->createImageFromFds(dri2_dpy->dri_screen,
@@ -135,7 +135,7 @@ index 52fcb3f..bdbb450 100644
                                                  buffer->format,
                                                  &fd, 1,
                                                  buffer->stride,
-@@ -1607,13 +1612,14 @@ dri2_unbind_wayland_display_wl(_EGLDriver *drv, _EGLDisplay *disp,
+@@ -1612,14 +1617,15 @@ dri2_unbind_wayland_display_wl(_EGLDrive
  
  static EGLBoolean
  dri2_query_wayland_buffer_wl(_EGLDriver *drv, _EGLDisplay *disp,
@@ -145,15 +145,16 @@ index 52fcb3f..bdbb450 100644
  {
 -   struct wl_drm_buffer *buffer = (struct wl_drm_buffer *) _buffer;
 +   struct wl_drm_buffer *buffer;
+    struct dri2_egl_display *dri2_dpy = dri2_egl_display(disp);
     const struct wl_drm_components_descriptor *format;
  
--   if (!wayland_buffer_is_drm(&buffer->buffer))
-+   buffer = wayland_drm_buffer_get(buffer_resource);
+-   if (!wayland_buffer_is_drm(dri2_dpy->wl_server_drm, &buffer->buffer))
++   buffer = wayland_drm_buffer_get(dri2_dpy->wl_server_drm, buffer_resource);
 +   if (!buffer)
        return EGL_FALSE;
  
     format = buffer->driver_format;
-@@ -1622,10 +1628,10 @@ dri2_query_wayland_buffer_wl(_EGLDriver *drv, _EGLDisplay *disp,
+@@ -1628,10 +1634,10 @@ dri2_query_wayland_buffer_wl(_EGLDriver
        *value = format->components;
        return EGL_TRUE;
     case EGL_WIDTH:
@@ -217,7 +218,7 @@ index 7e2073a..d317c5e 100644
  struct wl_drm {
  	struct wl_display *display;
  
-@@ -86,8 +88,8 @@ create_buffer(struct wl_client *client, struct wl_resource *resource,
+@@ -83,8 +85,8 @@ create_buffer(struct wl_client *client,
  	}
  
  	buffer->drm = drm;
@@ -228,14 +229,14 @@ index 7e2073a..d317c5e 100644
  	buffer->format = format;
  	buffer->offset[0] = offset0;
  	buffer->stride[0] = stride0;
-@@ -104,16 +106,17 @@ create_buffer(struct wl_client *client, struct wl_resource *resource,
+@@ -101,16 +103,17 @@ create_buffer(struct wl_client *client,
  		return;
  	}
  
 -	buffer->buffer.resource.object.id = id;
 -	buffer->buffer.resource.object.interface = &wl_buffer_interface;
 -	buffer->buffer.resource.object.implementation =
--		(void (**)(void)) &drm_buffer_interface;
+-		(void (**)(void)) &drm->buffer_interface;
 -	buffer->buffer.resource.data = buffer;
 -
 -	buffer->buffer.resource.destroy = destroy_buffer;
@@ -250,12 +251,12 @@ index 7e2073a..d317c5e 100644
  
 -	wl_client_add_resource(resource->client, &buffer->buffer.resource);
 +	wl_resource_set_implementation(buffer->resource,
-+				       (void (**)(void)) &drm_buffer_interface,
++				       (void (**)(void)) &drm->buffer_interface,
 +				       buffer, destroy_buffer);
  }
  
  static void
-@@ -208,8 +211,15 @@ bind_drm(struct wl_client *client, void *data, uint32_t version, uint32_t id)
+@@ -205,8 +208,15 @@ bind_drm(struct wl_client *client, void
  	struct wl_resource *resource;
          uint32_t capabilities;
  
@@ -273,18 +274,20 @@ index 7e2073a..d317c5e 100644
  	wl_resource_post_event(resource, WL_DRM_DEVICE, drm->device_name);
  	wl_resource_post_event(resource, WL_DRM_FORMAT,
  			       WL_DRM_FORMAT_ARGB8888);
-@@ -232,6 +242,19 @@ bind_drm(struct wl_client *client, void *data, uint32_t version, uint32_t id)
+@@ -229,6 +239,21 @@ bind_drm(struct wl_client *client, void
             wl_resource_post_event(resource, WL_DRM_CAPABILITIES, capabilities);
  }
  
 +struct wl_drm_buffer *
-+wayland_drm_buffer_get(struct wl_resource *resource)
++wayland_drm_buffer_get(struct wl_drm *drm, struct wl_resource *resource)
 +{
++	struct wl_drm_buffer *buffer;
++
 +	if (resource == NULL)
 +		return NULL;
 +
 +	if (wl_resource_instance_of(resource, &wl_buffer_interface,
-+				    &drm_buffer_interface))
++				    &drm->buffer_interface))
 +		return wl_resource_get_user_data(resource);
 +	else
 +		return NULL;
@@ -293,24 +296,24 @@ index 7e2073a..d317c5e 100644
  struct wl_drm *
  wayland_drm_init(struct wl_display *display, char *device_name,
                   struct wayland_drm_callbacks *callbacks, void *user_data,
-@@ -247,7 +270,7 @@ wayland_drm_init(struct wl_display *display, char *device_name,
- 	drm->user_data = user_data;
+@@ -245,7 +270,7 @@ wayland_drm_init(struct wl_display *disp
          drm->flags = flags;
+         drm->buffer_interface.destroy = buffer_destroy;
  
 -	wl_display_add_global(display, &wl_drm_interface, drm, bind_drm);
 +	wl_global_create(display, &wl_drm_interface, 2, drm, bind_drm);
  
  	return drm;
  }
-@@ -262,25 +285,14 @@ wayland_drm_uninit(struct wl_drm *drm)
+@@ -260,25 +285,14 @@ wayland_drm_uninit(struct wl_drm *drm)
  	free(drm);
  }
  
 -int
--wayland_buffer_is_drm(struct wl_buffer *buffer)
+-wayland_buffer_is_drm(struct wl_drm *drm, struct wl_buffer *buffer)
 -{
 -	return buffer->resource.object.implementation == 
--		(void (**)(void)) &drm_buffer_interface;
+-		(void (**)(void)) &drm->buffer_interface;
 -}
 -
  uint32_t
@@ -350,17 +353,17 @@ index 335073a..ca04882 100644
  enum { WAYLAND_DRM_PRIME = 0x01 };
  
 +struct wl_drm_buffer *
-+wayland_drm_buffer_get(struct wl_resource *resource);
++wayland_drm_buffer_get(struct wl_drm *drm, struct wl_resource *resource);
 +
  struct wl_drm *
  wayland_drm_init(struct wl_display *display, char *device_name,
  		 struct wayland_drm_callbacks *callbacks, void *user_data,
-@@ -98,13 +102,10 @@ wayland_drm_init(struct wl_display *display, char *device_name,
+@@ -98,13 +102,10 @@ wayland_drm_init(struct wl_display *disp
  void
  wayland_drm_uninit(struct wl_drm *drm);
  
 -int
--wayland_buffer_is_drm(struct wl_buffer *buffer);
+-wayland_buffer_is_drm(struct wl_drm *drm, struct wl_buffer *buffer);
 -
  uint32_t
 -wayland_drm_buffer_get_format(struct wl_buffer *buffer_base);
@@ -437,7 +440,7 @@ diff --git a/src/gallium/state_trackers/egl/common/native_wayland_drm_bufmgr.c b
 index 1603a3a..9b69cb9 100644
 --- a/src/gallium/state_trackers/egl/common/native_wayland_drm_bufmgr.c
 +++ b/src/gallium/state_trackers/egl/common/native_wayland_drm_bufmgr.c
-@@ -70,8 +70,8 @@ wayland_drm_bufmgr_reference_buffer(void *user_data, uint32_t name, int fd,
+@@ -70,8 +70,8 @@ wayland_drm_bufmgr_reference_buffer(void
     templ.target = PIPE_TEXTURE_2D;
     templ.format = pf;
     templ.bind = PIPE_BIND_RENDER_TARGET | PIPE_BIND_SAMPLER_VIEW;
@@ -448,14 +451,15 @@ index 1603a3a..9b69cb9 100644
     templ.depth0 = 1;
     templ.array_size = 1;
  
-@@ -137,22 +137,29 @@ wayland_drm_bufmgr_unbind_display(struct native_display *ndpy,
+@@ -137,22 +137,31 @@ wayland_drm_bufmgr_unbind_display(struct
  
  static struct pipe_resource *
  wayland_drm_bufmgr_wl_buffer_get_resource(struct native_display *ndpy,
 -                                          struct wl_buffer *buffer)
-+                                          struct wl_resource *buffer_resource)
++                                          struct wl_resourcer *buffer_resource)
  {
-+   struct wl_drm_buffer *buffer = wayland_drm_buffer_get(buffer_resource);
++   struct wayland_drm_bufmgr *bufmgr = wayland_drm_bufmgr(ndpy->wayland_bufmgr);
++   struct wl_drm_buffer *buffer = wayland_drm_buffer_get(bufmgr->wl_server_drm, buffer_resource);
 +
 +   if (!buffer)
 +      return NULL;
@@ -471,10 +475,11 @@ index 1603a3a..9b69cb9 100644
  {
 -   struct wl_drm_buffer *buffer = (struct wl_drm_buffer *) _buffer;
 -   struct pipe_resource *resource = buffer->driver_buffer;
-+   struct wl_drm_buffer *buffer = wayland_drm_buffer_get(buffer_resource);
++   struct wayland_drm_bufmgr *bufmgr = wayland_drm_bufmgr(ndpy->wayland_bufmgr);
++   struct wl_drm_buffer *buffer = wayland_drm_buffer_get(bufmgr->wl_server_drm, buffer_resource);
 +   struct pipe_resource *resource;
  
--   if (!wayland_buffer_is_drm(&buffer->buffer))
+-   if (!wayland_buffer_is_drm(wayland_drm_bufmgr(ndpy->wayland_bufmgr)->wl_server_drm, &buffer->buffer))
 +   if (!buffer)
        return EGL_FALSE;
  
@@ -483,7 +488,7 @@ index 1603a3a..9b69cb9 100644
     switch (attribute) {
     case EGL_TEXTURE_FORMAT:
        switch (resource->format) {
-@@ -166,10 +173,10 @@ wayland_drm_bufmgr_query_buffer(struct native_display *ndpy,
+@@ -166,10 +175,10 @@ wayland_drm_bufmgr_query_buffer(struct n
           return EGL_FALSE;
        }
     case EGL_WIDTH:
@@ -500,19 +505,19 @@ diff --git a/src/gbm/backends/dri/gbm_dri.c b/src/gbm/backends/dri/gbm_dri.c
 index a3a0530..f7da79c 100644
 --- a/src/gbm/backends/dri/gbm_dri.c
 +++ b/src/gbm/backends/dri/gbm_dri.c
-@@ -374,9 +374,10 @@ gbm_dri_bo_import(struct gbm_device *gbm,
+@@ -374,12 +374,13 @@ gbm_dri_bo_import(struct gbm_device *gbm
  #if HAVE_WAYLAND_PLATFORM
     case GBM_BO_IMPORT_WL_BUFFER:
     {
 -      struct wl_drm_buffer *wb = (struct wl_drm_buffer *) buffer;
 +      struct wl_drm_buffer *wb;
  
--      if (!wayland_buffer_is_drm(buffer))
-+      wb = wayland_drm_buffer_get((struct wl_resource *) buffer);
-+      if (!wb)
+       if (dri->wl_drm == NULL)
+          return NULL;
+ 
+-      if (!wayland_buffer_is_drm(dri->wl_drm, buffer))
++      wb = wayland_drm_buffer_get(dri->wl_drm, (struct wl_resource *) buffer);
++      if (!wb);
           return NULL;
  
        image = wb->driver_buffer;
--- 
-1.8.4
-
