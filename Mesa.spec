@@ -21,8 +21,6 @@
 # set to current Mesa version on ABI break, when xserver tables get regenerated
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver	7.1.0
-# internal API version; a.b.c for Mesa-a.b.c, a.b.0 for Mesa-a.b
-%define		int_sover	9.2.4
 # minimal supported xserver version
 %define		xserver_ver	1.5.0
 # other packages
