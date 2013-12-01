@@ -21,7 +21,7 @@
 # set to current Mesa version on ABI break, when xserver tables get regenerated
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver	7.1.0
-# internal API version (libdricore); a.b.c for Mesa-a.b.c, a.b.0 for Mesa-a.b
+# internal API version; a.b.c for Mesa-a.b.c, a.b.0 for Mesa-a.b
 %define		int_sover	9.2.4
 # minimal supported xserver version
 %define		xserver_ver	1.5.0
@@ -33,17 +33,13 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	9.2.4
+Version:	10.0.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
-Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	e630c0a307cec4f0f70ddd029d2fe084
+Source0:	ftp://ftp.freedesktop.org/pub/mesa/10.0/%{name}Lib-%{version}.tar.bz2
+# Source0-md5:	f3fe55d9735bea158bbe97ed9a0da819
 Patch0:		%{name}-link.patch
-Patch1:		0001-gallium-egl-Simplify-native_wayland_drm_bufmgr_helpe.patch
-Patch2:		0002-gallium-egl-Don-t-add-a-listener-for-wl_drm-twice-in.patch
-Patch3:		0003-egl-Update-to-Wayland-1.2-server-API.patch
-Patch4:		0004-gallium-egl-Commit-the-rest-of-the-native_wayland_dr.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -102,9 +98,8 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # libGLESv1_CM, libGLESv2, libGL, libOSMesa:
 #  _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
-# libdricore: internal library, not linked with libglapi
 # libgbm: circular dependency with libEGL (wayland_buffer_is_drm symbol)
-%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libOSMesa.so.* libdricore.*.so.* libgbm.*.so.*
+%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libOSMesa.so.* libgbm.*.so.*
 
 # llvm build broken
 %define		filterout_ld    -Wl,--as-needed
@@ -451,23 +446,6 @@ Mesa implementation of XvMC API for NVidia adapters (NV40-NV96, NVa0).
 %description libXvMC-nouveau -l pl.UTF-8
 Implementacja Mesa API XvMC dla kart NVidia (NV40-NV96, NVa0).
 
-%package libXvMC-r300
-Summary:	Mesa implementation of XvMC API for ATI Radeon R300 series adapters
-Summary(pl.UTF-8):	Implementacja Mesa API XvMC dla kart ATI Radeon z serii R300
-License:	MIT
-Group:		Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	xorg-lib-libXvMC >= 1.0.6
-Conflicts:	Mesa-libXvMC
-
-%description libXvMC-r300
-Mesa implementation of XvMC API for ATI Radeon adapters based on
-R300/R400/RS690/R500 chips.
-
-%description libXvMC-r300 -l pl.UTF-8
-Implementacja Mesa API XvMC dla kart ATI Radeon opartych na układach
-R300/R400/RS690/R500.
-
 %package libXvMC-r600
 Summary:	Mesa implementation of XvMC API for ATI Radeon R600 series adapters
 Summary(pl.UTF-8):	Implementacja Mesa API XvMC dla kart ATI Radeon z serii R600
@@ -484,21 +462,6 @@ R600/R700 chips.
 %description libXvMC-r600 -l pl.UTF-8
 Implementacja Mesa API XvMC dla kart ATI Radeon opartych na układach
 R600/R700.
-
-%package libXvMC-softpipe
-Summary:	Mesa softpipe implementation of XvMC API
-Summary(pl.UTF-8):	Implementacja Mesa softpipe API XvMC
-License:	MIT
-Group:		Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	xorg-lib-libXvMC >= 1.0.6
-Conflicts:	Mesa-libXvMC
-
-%description libXvMC-softpipe
-Mesa softpipe implementation of XvMC API.
-
-%description libXvMC-softpipe -l pl.UTF-8
-Implementacja Mesa softpipe API XvMC.
 
 %package libgbm
 Summary:	Mesa Graphics Buffer Manager library
@@ -714,26 +677,11 @@ Khronos platform header file.
 %description khrplatform-devel -l pl.UTF-8
 Plik nagłówkowy platformy Khronos.
 
-%package dri-core
-Summary:	X.org DRI core library
-Summary(pl.UTF-8):	Biblioteka X.org DRI core
-License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
-
-%description dri-core
-X.org DRI core library.
-
-%description dri-core -l pl.UTF-8
-Biblioteka X.org DRI core.
-
 %package dri-driver-ati-radeon-R100
 Summary:	X.org DRI driver for ATI R100 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R100
 License:	MIT
 Group:		X11/Libraries
-Requires:	%{name}-dri-core = %{version}-%{release}
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
@@ -750,7 +698,6 @@ Summary:	X.org DRI driver for ATI R200 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R200
 License:	MIT
 Group:		X11/Libraries
-Requires:	%{name}-dri-core = %{version}-%{release}
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
@@ -815,9 +762,6 @@ Summary:	X.org DRI driver for Intel i915 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i915
 License:	MIT
 Group:		X11/Libraries
-%if %{without gallium_intel}
-Requires:	%{name}-dri-core = %{version}-%{release}
-%endif
 Requires:	xorg-driver-video-intel
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
@@ -837,7 +781,6 @@ Summary:	X.org DRI driver for Intel i965 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i965
 License:	MIT
 Group:		X11/Libraries
-Requires:	%{name}-dri-core = %{version}-%{release}
 Requires:	xorg-driver-video-intel
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
@@ -857,7 +800,6 @@ Summary:	X.org DRI driver for NVIDIA card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart NVIDIA
 License:	MIT
 Group:		X11/Libraries
-Requires:	%{name}-dri-core = %{version}-%{release}
 Requires:	xorg-driver-video-nouveau
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
@@ -873,7 +815,6 @@ Summary:	X.org DRI software rasterizer driver
 Summary(pl.UTF-8):	Sterownik X.org DRI obsługujący rysowanie programowe
 License:	MIT
 Group:		X11/Libraries
-Requires:	%{name}-dri-core = %{version}-%{release}
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 
@@ -915,23 +856,6 @@ Mesa nouveau driver for the vdpau API. It supports NVidia adapters
 Sterownik Mesa nouveau dla API vdpau. Obsługuje karty NVidia
 (NV40-NV96, NVa0).
 
-%package -n libvdpau-driver-mesa-r300
-Summary:	Mesa r300 driver for the vdpau API
-Summary(pl.UTF-8):	Sterownik Mesa r300 dla API vdpau
-License:	MIT
-Group:		X11/Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	libvdpau >= 0.4.1
-Conflicts:	libvdpau-driver-mesa
-
-%description -n libvdpau-driver-mesa-r300
-Mesa r300 driver for the vdpau API. It supports ATI Radeon adapters
-based on R300/R400/RS690/R500 chips.
-
-%description -n libvdpau-driver-mesa-r300 -l pl.UTF-8
-Sterownik Mesa r300 dla API vdpau. Obsługuje karty ATI Radeon oparte
-na układach R300/R400/RS690/R500.
-
 %package -n libvdpau-driver-mesa-r600
 Summary:	Mesa r600 driver for the vdpau API
 Summary(pl.UTF-8):	Sterownik Mesa r600 dla API vdpau
@@ -967,28 +891,9 @@ adapters based on Southern Islands chips.
 Sterownik Mesa radeonsi dla API vdpau. Obsługuje karty ATI Radeon
 oparte na układach Southern Islands.
 
-%package -n libvdpau-driver-mesa-softpipe
-Summary:	Mesa softpipe driver for the vdpau API
-Summary(pl.UTF-8):	Sterownik Mesa softpipe dla API vdpau
-License:	MIT
-Group:		X11/Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	libvdpau >= 0.4.1
-Conflicts:	libvdpau-driver-mesa
-
-%description -n libvdpau-driver-mesa-softpipe
-Mesa softpipe driver for the vdpau API.
-
-%description -n libvdpau-driver-mesa-softpipe -l pl.UTF-8
-Sterownik Mesa softpipe dla API vdpau.
-
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
 
 %build
 %{__libtoolize}
@@ -1070,7 +975,7 @@ rm -rf $RPM_BUILD_ROOT
 # dlopened by soname
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so
 # not used externally
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/lib{dricore%{int_sover},glapi}.so
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/libglapi.so
 # dlopened
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/egl/egl_*.la
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/gallium-pipe/pipe_*.la
@@ -1107,12 +1012,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %post	libXvMC-nouveau -p /sbin/ldconfig
 %postun	libXvMC-nouveau -p /sbin/ldconfig
-%post	libXvMC-r300 -p /sbin/ldconfig
-%postun	libXvMC-r300 -p /sbin/ldconfig
 %post	libXvMC-r600 -p /sbin/ldconfig
 %postun	libXvMC-r600 -p /sbin/ldconfig
-%post	libXvMC-softpipe -p /sbin/ldconfig
-%postun	libXvMC-softpipe -p /sbin/ldconfig
 
 %post	libgbm -p /sbin/ldconfig
 %postun	libgbm -p /sbin/ldconfig
@@ -1125,9 +1026,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %post	libxatracker -p /sbin/ldconfig
 %postun	libxatracker -p /sbin/ldconfig
-
-%post	dri-core -p /sbin/ldconfig
-%postun	dri-core -p /sbin/ldconfig
 
 %if %{with egl}
 %files libEGL
@@ -1164,6 +1062,7 @@ rm -rf $RPM_BUILD_ROOT
 # symlink for binary apps which fail to conform Linux OpenGL ABI
 # (and dlopen libGL.so instead of libGL.so.1; the same does Mesa libEGL)
 %attr(755,root,root) %{_libdir}/libGL.so
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/drirc
 
 %files libGL-devel
 %defattr(644,root,root,755)
@@ -1253,20 +1152,10 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %ghost %{_libdir}/libXvMCnouveau.so.1
 %endif
 
-%files libXvMC-r300
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libXvMCr300.so.1.0.0
-%attr(755,root,root) %ghost %{_libdir}/libXvMCr300.so.1
-
 %files libXvMC-r600
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libXvMCr600.so.1.0.0
 %attr(755,root,root) %ghost %{_libdir}/libXvMCr600.so.1
-
-%files libXvMC-softpipe
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libXvMCsoftpipe.so.1.0.0
-%attr(755,root,root) %ghost %{_libdir}/libXvMCsoftpipe.so.1
 %endif
 
 %if %{with gbm}
@@ -1344,7 +1233,7 @@ rm -rf $RPM_BUILD_ROOT
 %files libxatracker
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libxatracker.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libxatracker.so.1
+%attr(755,root,root) %ghost %{_libdir}/libxatracker.so.2
 
 %files libxatracker-devel
 %defattr(644,root,root,755)
@@ -1361,12 +1250,6 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_includedir}/KHR
 %{_includedir}/KHR/khrplatform.h
 %endif
-
-%files dri-core
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libdricore%{int_sover}.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libdricore%{int_sover}.so.1
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/drirc
 
 %files dri-driver-ati-radeon-R100
 %defattr(644,root,root,755)
@@ -1425,12 +1308,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so
 %endif
 
-%files -n libvdpau-driver-mesa-r300
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1.0.0
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so
-
 %files -n libvdpau-driver-mesa-r600
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0.0
@@ -1442,10 +1319,4 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1.0.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so
-
-%files -n libvdpau-driver-mesa-softpipe
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so.1.0.0
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so.1
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_softpipe.so
 %endif
