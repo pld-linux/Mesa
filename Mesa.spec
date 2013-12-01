@@ -197,6 +197,9 @@ Provides:	OpenGL = 3.1
 Provides:	OpenGL-GLX = 1.4
 Obsoletes:	Mesa
 Obsoletes:	Mesa-dri
+Obsoletes:	Mesa-dri-core < 10.0.0
+Obsoletes:	Mesa-libXvMC-softpipe < 10.0.0
+Obsoletes:	libvdpau-driver-mesa-softpipe < 10.0.0
 Obsoletes:	X11-OpenGL-libGL < 1:7.0.0
 Obsoletes:	XFree86-OpenGL-libGL < 1:7.0.0
 
