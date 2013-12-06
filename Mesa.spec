@@ -193,13 +193,11 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	%{name}-libglapi = %{version}-%{release}
 Requires:	libdrm >= %{libdrm_ver}
-Provides:	OpenGL = 3.1
+Provides:	OpenGL = 3.3
 Provides:	OpenGL-GLX = 1.4
 Obsoletes:	Mesa
 Obsoletes:	Mesa-dri
 Obsoletes:	Mesa-dri-core < 10.0.0
-Obsoletes:	Mesa-libXvMC-softpipe < 10.0.0
-Obsoletes:	libvdpau-driver-mesa-softpipe < 10.0.0
 Obsoletes:	X11-OpenGL-libGL < 1:7.0.0
 Obsoletes:	XFree86-OpenGL-libGL < 1:7.0.0
 
@@ -240,7 +238,7 @@ Requires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 Requires:	xorg-proto-glproto-devel >= %{glproto_ver}
 Suggests:	OpenGL-doc-man
 Provides:	OpenGL-GLX-devel = 1.4
-Provides:	OpenGL-devel = 3.1
+Provides:	OpenGL-devel = 3.3
 Obsoletes:	Mesa-devel
 Obsoletes:	X11-OpenGL-devel < 1:7.0.0
 Obsoletes:	X11-OpenGL-devel-base < 1:7.0.0
@@ -259,7 +257,7 @@ Summary(pl.UTF-8):	Statyczna biblioteka libGL z projektu Mesa3D
 License:	MIT
 Group:		X11/Development/Libraries
 Requires:	%{name}-libGL-devel = %{version}-%{release}
-Provides:	OpenGL-static = 3.1
+Provides:	OpenGL-static = 3.3
 Obsoletes:	Mesa-static
 Obsoletes:	X11-OpenGL-static < 1:7.0.0
 Obsoletes:	XFree86-OpenGL-static < 1:7.0.0
