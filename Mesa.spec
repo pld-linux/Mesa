@@ -24,7 +24,7 @@
 # minimal supported xserver version
 %define		xserver_ver	1.5.0
 # other packages
-%define		libdrm_ver	2.4.46
+%define		libdrm_ver	2.4.49
 %define		dri2proto_ver	2.6
 %define		glproto_ver	1.4.14
 
@@ -65,7 +65,7 @@ BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
 %{?with_egl:BuildRequires:	udev-devel >= 1:151}
 # wayland-{client,server}
-%{?with_wayland:BuildRequires:	wayland-devel >= 1.0.2}
+%{?with_wayland:BuildRequires:	wayland-devel >= 1.2.0}
 BuildRequires:	xorg-lib-libXdamage-devel
 BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXfixes-devel
@@ -127,7 +127,7 @@ Requires:	%{name}-libglapi = %{version}-%{release}
 Requires:	OpenGL >= 1.2
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libxcb >= 1.9
-%{?with_wayland:Requires:	wayland >= 1.0.2}
+%{?with_wayland:Requires:	wayland >= 1.2.0}
 %if %{with gallium}
 # for egl_gallium.so
 Requires:	%{name}-libOpenVG = %{version}-%{release}
