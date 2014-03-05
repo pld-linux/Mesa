@@ -31,12 +31,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	10.0.3
+Version:	10.1.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
-Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	5f9f463ef08129f6762106b434910adb
+Source0:	ftp://ftp.freedesktop.org/pub/mesa/10.1/%{name}Lib-%{version}.tar.bz2
+# Source0-md5:	3ec43f79dbcd9aa2a4a27bf1f51655b6
 Patch0:		%{name}-link.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
@@ -1055,7 +1055,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files libGL
 %defattr(644,root,root,755)
-%doc docs/{*.html,README.{MITS,QUAKE,THREADS,UVD},relnotes/*.html}
+%doc docs/{*.html,README.UVD,relnotes/*.html}
 %attr(755,root,root) %{_libdir}/libGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libGL.so.1
 # symlink for binary apps which fail to conform Linux OpenGL ABI

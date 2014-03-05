@@ -10,15 +10,4 @@
  
  nodist_EXTRA_libxatracker_la_SOURCES = dummy.cpp
  
---- Mesa-9.1/src/gbm/Makefile.am~	2013-02-16 02:32:00.000000000 +0100
-+++ Mesa-9.1/src/gbm/Makefile.am	2013-02-26 19:53:54.295673416 +0100
-@@ -19,7 +19,7 @@
- 	main/backend.c \
- 	main/common.c
- libgbm_la_LDFLAGS = -version-info 1:0
--libgbm_la_LIBADD = $(LIBUDEV_LIBS) $(LIBKMS_LIBS) $(DLOPEN_LIBS)
-+libgbm_la_LIBADD = $(LIBUDEV_LIBS) $(LIBKMS_LIBS) $(DLOPEN_LIBS) $(LIBDRM_LIBS)
- 
- if HAVE_EGL_PLATFORM_WAYLAND
- AM_CPPFLAGS = -DHAVE_WAYLAND_PLATFORM
 
