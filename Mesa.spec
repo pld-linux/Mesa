@@ -20,13 +20,15 @@
 # glapi version (glapi tables in dri drivers and libglx must be in sync);
 # set to current Mesa version on ABI break, when xserver tables get regenerated
 # (until they start to be somehow versioned themselves)
-%define		glapi_ver	7.1.0
+%define		glapi_ver		7.1.0
 # minimal supported xserver version
-%define		xserver_ver	1.5.0
+%define		xserver_ver		1.5.0
 # other packages
-%define		libdrm_ver	2.4.49
-%define		dri2proto_ver	2.6
-%define		glproto_ver	1.4.14
+%define		libdrm_ver		2.4.52
+%define		dri2proto_ver		2.6
+%define		dri3proto_ver		1.0
+%define		glproto_ver		1.4.14
+%define		presentproto_ver	1.0
 
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
@@ -44,20 +46,22 @@ BuildRequires:	automake
 %{?with_opencl:BuildRequires:	clang-devel >= 3.1}
 BuildRequires:	expat-devel
 BuildRequires:	gcc >= 5:3.3
-%{?with_opencl:BuildRequires:	gcc >= 6:4.6}
+%{?with_opencl:BuildRequires:	gcc-c++ >= 6:4.7}
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
 BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= 5:3.3.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:2.2
 BuildRequires:	libvdpau-devel >= 0.4.1
-BuildRequires:	libxcb-devel >= 1.9
+BuildRequires:	libxcb-devel >= 1.10
 BuildRequires:	llvm-devel >= 3.3
 %{?with_opencl:BuildRequires:	llvm-libclc}
 BuildRequires:	perl-base
 BuildRequires:	pixman-devel
 BuildRequires:	pkgconfig
 BuildRequires:	pkgconfig(talloc) >= 2.0.1
+BuildRequires:	pkgconfig(xcb-dri3)
+BuildRequires:	pkgconfig(xcb-present)
 BuildRequires:	python >= 2
 BuildRequires:	python-libxml2
 BuildRequires:	python-modules >= 2
@@ -72,8 +76,11 @@ BuildRequires:	xorg-lib-libXfixes-devel
 BuildRequires:	xorg-lib-libXt-devel
 BuildRequires:	xorg-lib-libXvMC-devel >= 1.0.6
 BuildRequires:	xorg-lib-libXxf86vm-devel
+BuildRequires:	xorg-lib-libxshmfence-devel
 BuildRequires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
+BuildRequires:	xorg-proto-dri3proto-devel >= %{dri3proto_ver}
 BuildRequires:	xorg-proto-glproto-devel >= %{glproto_ver}
+BuildRequires:	xorg-proto-presentproto-devel >= %{presentproto_ver}
 BuildRequires:	xorg-util-makedepend
 BuildRequires:	xorg-xserver-server-devel >= %{xserver_ver}
 %if %{with gallium}
