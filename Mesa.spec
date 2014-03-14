@@ -109,6 +109,8 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 # llvm build broken
 %define		filterout_ld    -Wl,--as-needed
 
+%define		specflags	%{!?with_debug:-DNDEBUG}
+
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
 that of OpenGL(R). To the extent that Mesa utilizes the OpenGL command
