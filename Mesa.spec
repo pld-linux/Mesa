@@ -45,6 +45,7 @@ URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
 %{?with_opencl:BuildRequires:	clang-devel >= 3.1}
+BuildRequires:	elfutils-devel
 BuildRequires:	expat-devel
 BuildRequires:	gcc >= 5:3.3
 %{?with_opencl:BuildRequires:	gcc-c++ >= 6:4.7}
