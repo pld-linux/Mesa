@@ -12,7 +12,7 @@
 %bcond_without	egl		# EGL libraries
 %bcond_without	gbm		# Graphics Buffer Manager
 %bcond_without	opencl		# OpenCL support
-%bcond_without	ocl_icd		# OpenCL as ICD (instalable client driver)
+%bcond_without	ocl_icd		# OpenCL as ICD (installable client driver)
 %bcond_without	wayland		# Wayland EGL
 %bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
 %bcond_with	static_libs	# static libraries [not supported for DRI, thus broken currently]
