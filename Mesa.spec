@@ -11,7 +11,8 @@
 %bcond_without	gallium_nouveau	# gallium nouveau driver
 %bcond_without	egl		# EGL libraries
 %bcond_without	gbm		# Graphics Buffer Manager
-%bcond_without	opencl		# OpenCL library
+%bcond_without	opencl		# OpenCL support
+%bcond_without	ocl_icd		# OpenCL as ICD (instalable client driver)
 %bcond_without	wayland		# Wayland EGL
 %bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
 %bcond_with	static_libs	# static libraries [not supported for DRI, thus broken currently]
@@ -56,6 +57,7 @@ BuildRequires:	libvdpau-devel >= 0.4.1
 BuildRequires:	libxcb-devel >= 1.10
 BuildRequires:	llvm-devel >= 3.3
 %{?with_opencl:BuildRequires:	llvm-libclc}
+%{?with_ocl_icd:BuildRequires:	ocl-icd-devel}
 BuildRequires:	perl-base
 BuildRequires:	pixman-devel
 BuildRequires:	pkgconfig
@@ -92,6 +94,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %if %{without gallium}
 %undefine	with_gallium_intel
 %undefine	with_gallium_nouveau
+%undefine	with_ocl_icd
 %undefine	with_opencl
 %undefine	with_xa
 %endif
@@ -362,6 +365,38 @@ Static OSMesa (off-screen renderer) library.
 
 %description libOSMesa-static -l pl.UTF-8
 Biblioteka statyczna OSMesa (renderująca bitmapy w pamięci).
+
+%package OpenCL-icd
+Summary:	Mesa implementation of OpenCL (Compuing Language) API ICD
+Summary(pl.UTF-8):	Implementacja Mesa API OpenCL (języka obliczeń) ICD
+License:	MIT
+Group:		Libraries
+Requires:	filesystem >= 4.0-29
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	llvm-libclc
+Requires:	udev-libs >= 1:151
+Provides:	OpenCL = 1.1
+
+%description OpenCL-icd
+This package contains Mesa implementation of OpenCL - standard for
+cross-platform, parallel programming of modern processors found in
+personal computers, servers and handheld/embedded devices. OpenCL
+specification can be found on Khronos Group site:
+<http://www.khronos.org/opencl/>. Mesa implements OpenCL 1.1.
+
+The implementation is provided as an installable client driver (ICD)
+for use with the ocl-icd loader.
+
+%description OpenCL-icd -l pl.UTF-8
+Ten pakiet zawiera implementację Mesa standardu OpenCL - standardu
+wieloplatformowego, równoległego programowania nowoczesnych
+procesorów, jakie znajdują się w komputerach osobistych, serwerach
+oraz urządzeniach przenośnych/wbudowanych. Specyfikację OpenCL można
+znaleźć na stronie Khronos Group: <http://www.khronos.org/opencl/>.
+Mesa zawiera implementację OpenCL w wersji 1.1.
+
+Implementacja dostarczona jest w postaci instalowalnego sterownika klienta
+(ICD), który może być użyty z loaderem ocl-icd.
 
 %package libOpenCL
 Summary:	Mesa implementation of OpenCL (Compuing Language) API
@@ -956,7 +991,8 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 	--with-llvm-shared-libs \
 	%{__enable egl gallium-egl} \
 	%{__enable gbm gallium-gbm} \
-	%{?with_opencl:--enable-opencl} \
+	%{__enable ocl_icd opencl-icd} \
+	%{__enable opencl opencl} \
 	%{?with_egl:--enable-openvg} \
 	--enable-vdpau \
 	%{?with_xa:--enable-xa} \
@@ -1128,6 +1164,14 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %if %{with opencl}
+%if %{with ocl_icd}
+%files OpenCL-icd
+%defattr(644,root,root,755)
+/etc/OpenCL/vendors/mesa.icd
+%attr(755,root,root) %{_libdir}/libMesaOpenCL.so
+%attr(755,root,root) %{_libdir}/libMesaOpenCL.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libMesaOpenCL.so.1
+%else
 %files libOpenCL
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libOpenCL.so.*.*.*
@@ -1137,6 +1181,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libOpenCL.so
 %{_includedir}/CL
+%endif
 %endif
 
 %if %{with egl} && %{with gallium}
