@@ -35,7 +35,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	10.1.4
-Release:	1
+Release:	2
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
@@ -112,8 +112,6 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # llvm build broken
 %define		filterout_ld    -Wl,--as-needed
-
-%define		specflags	%{!?with_debug:-DNDEBUG}
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
