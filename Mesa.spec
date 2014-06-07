@@ -25,7 +25,7 @@
 # minimal supported xserver version
 %define		xserver_ver		1.5.0
 # other packages
-%define		libdrm_ver		2.4.52
+%define		libdrm_ver		2.4.54
 %define		dri2proto_ver		2.6
 %define		dri3proto_ver		1.0
 %define		glproto_ver		1.4.14
@@ -34,13 +34,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	10.1.4
-Release:	2
+Version:	10.2.1
+Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	6fddee101f49b7409cd29994c34ddee7
-Patch0:		%{name}-link.patch
+# Source0-md5:	093f9b5d077e5f6061dcd7b01b7aa51a
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -59,6 +58,7 @@ BuildRequires:	libxcb-devel >= 1.10
 BuildRequires:	llvm-devel >= 3.3
 %{?with_opencl:BuildRequires:	llvm-libclc}
 %{?with_ocl_icd:BuildRequires:	ocl-icd-devel}
+BuildRequires:	libomxil-bellagio-devel
 BuildRequires:	perl-base
 BuildRequires:	pixman-devel
 BuildRequires:	pkgconfig
@@ -66,7 +66,6 @@ BuildRequires:	pkgconfig(talloc) >= 2.0.1
 BuildRequires:	pkgconfig(xcb-dri3)
 BuildRequires:	pkgconfig(xcb-present)
 BuildRequires:	python >= 2
-BuildRequires:	python-libxml2
 BuildRequires:	python-modules >= 2
 BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
@@ -935,7 +934,6 @@ oparte na układach Southern Islands.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 %{__libtoolize}
@@ -987,13 +985,14 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 %endif
 %if %{with gallium}
 	--enable-gallium-llvm \
-	--with-llvm-shared-libs \
+	--enable-llvm-shared-libs \
 	%{__enable egl gallium-egl} \
 	%{__enable gbm gallium-gbm} \
 	%{__enable ocl_icd opencl-icd} \
 	%{__enable opencl opencl} \
 	%{?with_egl:--enable-openvg} \
 	--enable-vdpau \
+	--enable-omx \
 	%{?with_xa:--enable-xa} \
 	--enable-xvmc \
 	--with-gallium-drivers=${gallium_drivers} \
