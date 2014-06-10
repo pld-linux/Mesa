@@ -13,6 +13,7 @@
 %bcond_without	gbm		# Graphics Buffer Manager
 %bcond_without	opencl		# OpenCL support
 %bcond_without	ocl_icd		# OpenCL as ICD (installable client driver)
+%bcond_without	omx		# OpenMAX (Bellagio OMXIL) support
 %bcond_without	wayland		# Wayland EGL
 %bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
 %bcond_with	static_libs	# static libraries [not supported for DRI, thus broken currently]
@@ -58,7 +59,7 @@ BuildRequires:	libxcb-devel >= 1.10
 BuildRequires:	llvm-devel >= 3.3
 %{?with_opencl:BuildRequires:	llvm-libclc}
 %{?with_ocl_icd:BuildRequires:	ocl-icd-devel}
-BuildRequires:	libomxil-bellagio-devel
+%{?with_omx:BuildRequires:	libomxil-bellagio-devel}
 BuildRequires:	perl-base
 BuildRequires:	pixman-devel
 BuildRequires:	pkgconfig
@@ -78,7 +79,7 @@ BuildRequires:	xorg-lib-libXfixes-devel
 BuildRequires:	xorg-lib-libXt-devel
 BuildRequires:	xorg-lib-libXvMC-devel >= 1.0.6
 BuildRequires:	xorg-lib-libXxf86vm-devel
-BuildRequires:	xorg-lib-libxshmfence-devel
+BuildRequires:	xorg-lib-libxshmfence-devel >= 1.1
 BuildRequires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 BuildRequires:	xorg-proto-dri3proto-devel >= %{dri3proto_ver}
 BuildRequires:	xorg-proto-glproto-devel >= %{glproto_ver}
@@ -169,7 +170,7 @@ Requires:	%{name}-libEGL = %{version}-%{release}
 Requires:	libdrm-devel >= %{libdrm_ver}
 Requires:	xorg-lib-libX11-devel
 Requires:	xorg-lib-libXdamage-devel
-Requires:	xorg-lib-libXext-devel
+Requires:	xorg-lib-libXext-devel >= 1.0.5
 Requires:	xorg-lib-libXfixes-devel
 Requires:	xorg-lib-libXxf86vm-devel
 Requires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
@@ -242,7 +243,7 @@ Requires:	OpenGL >= 1.5
 Requires:	libdrm-devel >= %{libdrm_ver}
 Requires:	xorg-lib-libX11-devel
 Requires:	xorg-lib-libXdamage-devel
-Requires:	xorg-lib-libXext-devel
+Requires:	xorg-lib-libXext-devel >= 1.0.5
 Requires:	xorg-lib-libXxf86vm-devel
 Requires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 Requires:	xorg-proto-glproto-devel >= %{glproto_ver}
@@ -932,6 +933,57 @@ adapters based on Southern Islands chips.
 Sterownik Mesa radeonsi dla API vdpau. Obsługuje karty ATI Radeon
 oparte na układach Southern Islands.
 
+%package -n omxil-mesa-nouveau
+Summary:	Mesa nouveau driver for Bellagio OpenMAX IL API
+Summary(pl.UTF-8):	Sterownik Mesa nouveau dla API Bellagio OpenMAX IL
+License:	MIT
+Group:		X11/Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	libxcb >= 1.8
+Requires:	libomxil-bellagio
+
+%description -n omxil-mesa-nouveau
+Mesa nouveau driver for Bellagio OpenMAX IL API. It supports NVidia
+adapters (NV40-NV96, NVa0).
+
+%description -n omxil-mesa-nouveau -l pl.UTF-8
+Sterownik Mesa nouveau dla API Bellagio OpenMAX IL. Obsługuje karty
+NVidia (NV40-NV96, NVa0).
+
+%package -n omxil-mesa-r600
+Summary:	Mesa r600 driver for Bellagio OpenMAX IL API
+Summary(pl.UTF-8):	Sterownik Mesa r600 dla API Bellagio OpenMAX IL
+License:	MIT
+Group:		X11/Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	libxcb >= 1.8
+Requires:	libomxil-bellagio
+
+%description -n omxil-mesa-r600
+Mesa r600 driver for Bellagio OpenMAX IL API. It supports ATI Radeon
+adapters based on R600/R700 chips.
+
+%description -n omxil-mesa-r600 -l pl.UTF-8
+Sterownik Mesa r600 dla API Bellagio OpenMAX IL. Obsługuje karty ATI
+Radeon oparte na układach R600/R700.
+
+%package -n omxil-mesa-radeonsi
+Summary:	Mesa radeonsi driver for Bellagio OpenMAX IL API
+Summary(pl.UTF-8):	Sterownik Mesa radeonsi dla API Bellagio OpenMAX IL
+License:	MIT
+Group:		X11/Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	libxcb >= 1.8
+Requires:	libomxil-bellagio
+
+%description -n omxil-mesa-radeonsi
+Mesa radeonsi driver for Bellagio OpenMAX IL API. It supports ATI
+Radeon adapters based on Southern Islands chips.
+
+%description -n omxil-mesa-radeonsi -l pl.UTF-8
+Sterownik Mesa radeonsi dla API Bellagio OpenMAX IL. Obsługuje karty
+ATI Radeon oparte na układach Southern Islands.
+
 %prep
 %setup -q
 
@@ -992,7 +1044,7 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 	%{__enable opencl opencl} \
 	%{?with_egl:--enable-openvg} \
 	--enable-vdpau \
-	--enable-omx \
+	%{?with_omx:--enable-omx} \
 	%{?with_xa:--enable-xa} \
 	--enable-xvmc \
 	--with-gallium-drivers=${gallium_drivers} \
@@ -1019,6 +1071,7 @@ rm -rf $RPM_BUILD_ROOT
 # not used externally
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libglapi.so
 # dlopened
+%{?with_omx:%{__rm} $RPM_BUILD_ROOT%{_libdir}/bellagio/libomx_*.la}
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/egl/egl_*.la
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/gallium-pipe/pipe_*.la
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/gbm/gbm_*.la
@@ -1370,4 +1423,20 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1.0.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so
+%endif
+
+%if %{with gallium} && %{with omx}
+%if %{with gallium_nouveau}
+%files -n omxil-mesa-nouveau
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/bellagio/libomx_nouveau.so
+%endif
+
+%files -n omxil-mesa-r600
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/bellagio/libomx_r600.so
+
+%files -n omxil-mesa-radeonsi
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/bellagio/libomx_radeonsi.so
 %endif
