@@ -9,6 +9,7 @@
 %bcond_without	gallium		# gallium drivers
 %bcond_with	gallium_intel	# gallium i915 driver (instead of plain dri; doesn't work with AIGLX)
 %bcond_without	gallium_nouveau	# gallium nouveau driver
+%bcond_without	gallium_radeon	# gallium radeon drivers
 %bcond_without	egl		# EGL libraries
 %bcond_without	gbm		# Graphics Buffer Manager
 %bcond_without	opencl		# OpenCL support
@@ -35,12 +36,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	10.2.7
+Version:	10.3.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
-Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	b54b793d5b60b9da31ba1f86a6f82bf8
+Source0:	ftp://ftp.freedesktop.org/pub/mesa/10.3/%{name}Lib-%{version}.tar.bz2
+# Source0-md5:	bc071575596a074df2b15cac57c01ed8
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -57,6 +58,7 @@ BuildRequires:	libtool >= 2:2.2
 BuildRequires:	libvdpau-devel >= 0.4.1
 BuildRequires:	libxcb-devel >= 1.10
 BuildRequires:	llvm-devel >= 3.3
+%{?with_gallium_radeon:BuildRequires:	llvm-devel >= 3.4.2}
 %{?with_opencl:BuildRequires:	llvm-libclc}
 %{?with_ocl_icd:BuildRequires:	ocl-icd-devel}
 %{?with_omx:BuildRequires:	libomxil-bellagio-devel}
@@ -933,6 +935,21 @@ adapters based on Southern Islands chips.
 Sterownik Mesa radeonsi dla API vdpau. Obsługuje karty ATI Radeon
 oparte na układach Southern Islands.
 
+%package -n omxil-mesa
+Summary:	Mesa driver for Bellagio OpenMAX IL API
+Summary(pl.UTF-8):	Sterownik Mesa nouveau dla API Bellagio OpenMAX IL
+License:	MIT
+Group:		X11/Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	libxcb >= 1.8
+Requires:	libomxil-bellagio
+
+%description -n omxil-mesa
+Mesa driver for Bellagio OpenMAX IL API.
+
+%description -n omxil-mesa -l pl.UTF-8
+Sterownik Mesa dla API Bellagio OpenMAX IL.
+
 %package -n omxil-mesa-nouveau
 Summary:	Mesa nouveau driver for Bellagio OpenMAX IL API
 Summary(pl.UTF-8):	Sterownik Mesa nouveau dla API Bellagio OpenMAX IL
@@ -1010,9 +1027,11 @@ gallium_drivers="svga swrast \
 %if %{with gallium_intel}
 i915 \
 %endif
+%if %{with gallium_radeon}
 r300 \
 r600 \
 radeonsi \
+%endif
 %if %{with gallium_nouveau}
 nouveau
 %endif
@@ -1075,8 +1094,6 @@ rm -rf $RPM_BUILD_ROOT
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/egl/egl_*.la
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/gallium-pipe/pipe_*.la
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/gbm/gbm_*.la
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/vdpau/libvdpau_*.la
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/*.la
 # not defined by standards; and not needed, there is pkg-config support
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/lib*.la
 
@@ -1138,6 +1155,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_includedir}/EGL
 %{_includedir}/EGL/egl.h
 %{_includedir}/EGL/eglext.h
+%{_includedir}/EGL/eglextchromium.h
 %{_includedir}/EGL/eglmesaext.h
 %{_includedir}/EGL/eglplatform.h
 %{_pkgconfigdir}/egl.pc
@@ -1164,6 +1182,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc docs/specs/*
 %dir %{_includedir}/GL
 %{_includedir}/GL/gl.h
+%{_includedir}/GL/glcorearb.h
 %{_includedir}/GL/glext.h
 %{_includedir}/GL/gl_mangle.h
 %{_includedir}/GL/glx.h
@@ -1256,10 +1275,12 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %ghost %{_libdir}/libXvMCnouveau.so.1
 %endif
 
+%if %{with gallium_radeon}
 %files libXvMC-r600
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libXvMCr600.so.1.0.0
 %attr(755,root,root) %ghost %{_libdir}/libXvMCr600.so.1
+%endif
 %endif
 
 %if %{with gbm}
@@ -1293,6 +1314,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/gallium-pipe/pipe_nouveau.so
 %endif
 
+%if %{with gallium_radeon}
 %files gbm-driver-r300
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/gallium-pipe/pipe_r300.so
@@ -1304,6 +1326,7 @@ rm -rf $RPM_BUILD_ROOT
 %files gbm-driver-radeonsi
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/gallium-pipe/pipe_radeonsi.so
+%endif
 
 %files gbm-driver-swrast
 %defattr(644,root,root,755)
@@ -1364,6 +1387,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/r200_dri.so
 
 %if %{with gallium}
+%if %{with gallium_radeon}
 %files dri-driver-ati-radeon-R300
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/r300_dri.so
@@ -1371,11 +1395,12 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-ati-radeon-R600
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/r600_dri.so
-%endif
 
 %files dri-driver-ati-radeon-SI
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/radeonsi_dri.so
+%endif
+%endif
 
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
@@ -1394,6 +1419,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files dri-driver-swrast
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/kms_swrast_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
 
 %if %{with gallium}
@@ -1412,6 +1438,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so
 %endif
 
+%if %{with gallium_radeon}
 %files -n libvdpau-driver-mesa-r600
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0.0
@@ -1424,14 +1451,21 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so
 %endif
+%endif
 
 %if %{with gallium} && %{with omx}
+%files -n omxil-mesa
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/bellagio/libomx_mesa.so
+
+%if 0
 %if %{with gallium_nouveau}
 %files -n omxil-mesa-nouveau
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/bellagio/libomx_nouveau.so
 %endif
 
+%if %{with gallium_radeon}
 %files -n omxil-mesa-r600
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/bellagio/libomx_r600.so
@@ -1439,4 +1473,6 @@ rm -rf $RPM_BUILD_ROOT
 %files -n omxil-mesa-radeonsi
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/bellagio/libomx_radeonsi.so
+%endif
+%endif
 %endif
