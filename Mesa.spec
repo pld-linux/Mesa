@@ -27,7 +27,7 @@
 # minimal supported xserver version
 %define		xserver_ver		1.5.0
 # other packages
-%define		libdrm_ver		2.4.54
+%define		libdrm_ver		2.4.56
 %define		dri2proto_ver		2.6
 %define		dri3proto_ver		1.0
 %define		glproto_ver		1.4.14
@@ -943,6 +943,9 @@ Group:		X11/Libraries
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libxcb >= 1.8
 Requires:	libomxil-bellagio
+Obsoletes:	omxil-mesa-nouveau
+Obsoletes:	omxil-mesa-r600
+Obsoletes:	omxil-mesa-radeonsi
 
 %description -n omxil-mesa
 Mesa driver for Bellagio OpenMAX IL API.
@@ -1087,6 +1090,9 @@ rm -rf $RPM_BUILD_ROOT
 %{__rm} $RPM_BUILD_ROOT%{_includedir}/GL/{wglext,wmesa}.h
 # dlopened by soname
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so.1.0
+# dlopened by soname or .so link
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/vdpau/libvdpau_*.so.1.0
 # not used externally
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libglapi.so
 # dlopened
@@ -1457,22 +1463,4 @@ rm -rf $RPM_BUILD_ROOT
 %files -n omxil-mesa
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/bellagio/libomx_mesa.so
-
-%if 0
-%if %{with gallium_nouveau}
-%files -n omxil-mesa-nouveau
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/bellagio/libomx_nouveau.so
-%endif
-
-%if %{with gallium_radeon}
-%files -n omxil-mesa-r600
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/bellagio/libomx_r600.so
-
-%files -n omxil-mesa-radeonsi
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/bellagio/libomx_radeonsi.so
-%endif
-%endif
 %endif
