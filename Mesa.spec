@@ -61,7 +61,6 @@ BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:2.2
 BuildRequires:	libvdpau-devel >= 0.4.1
 BuildRequires:	libxcb-devel >= 1.10
-BuildRequires:	llvm-devel >= 3.3
 %{?with_gallium_radeon:BuildRequires:	llvm-devel >= 3.4.2}
 %{?with_opencl:BuildRequires:	llvm-libclc}
 %{?with_ocl_icd:BuildRequires:	ocl-icd-devel}
@@ -91,10 +90,9 @@ BuildRequires:	xorg-proto-dri3proto-devel >= %{dri3proto_ver}
 BuildRequires:	xorg-proto-glproto-devel >= %{glproto_ver}
 BuildRequires:	xorg-proto-presentproto-devel >= %{presentproto_ver}
 BuildRequires:	xorg-util-makedepend
-BuildRequires:	xorg-xserver-server-devel >= %{xserver_ver}
 %if %{with gallium}
 BuildRequires:	xorg-proto-xextproto-devel >= 7.0.99.1
-BuildRequires:	xorg-xserver-server-devel >= 1.6.0
+BuildRequires:	xorg-xserver-server-devel >= %{xserver_ver}
 %endif
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -1125,15 +1123,15 @@ rm -rf $RPM_BUILD_ROOT
 # strip out undesirable headers
 %{__rm} $RPM_BUILD_ROOT%{_includedir}/GL/{wglext,wmesa}.h
 # dlopened by soname
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so.1.0
+%{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so}
+%{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so.1.0}
 # dlopened by soname or .so link
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/vdpau/libvdpau_*.so.1.0
+%{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/vdpau/libvdpau_*.so.1.0}
 # not used externally
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libglapi.so
 # dlopened
 %{?with_omx:%{__rm} $RPM_BUILD_ROOT%{_libdir}/bellagio/libomx_*.la}
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/gallium-pipe/pipe_*.la
+%{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/gallium-pipe/pipe_*.la}
 # not defined by standards; and not needed, there is pkg-config support
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/lib*.la
 %{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/libva/dri/gallium_drv_video.la}
@@ -1461,7 +1459,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %files dri-driver-swrast
 %defattr(644,root,root,755)
+%if %{with gallium}
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/kms_swrast_dri.so
+%endif
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
 
 %if %{with gallium}
