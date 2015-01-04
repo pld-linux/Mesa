@@ -36,6 +36,26 @@
 %define		glproto_ver		1.4.14
 %define		presentproto_ver	1.0
 
+# no clang/llvm on x32 yet
+%ifarch x32
+%undefine	with_gallium
+%endif
+
+%if %{without gallium}
+%undefine	with_gallium_intel
+%undefine	with_gallium_nouveau
+%undefine	with_gallium_radeon
+%undefine	with_ocl_icd
+%undefine	with_omx
+%undefine	with_opencl
+%undefine	with_xa
+%endif
+
+%if %{without egl}
+%undefine	with_gbm
+%undefine	with_wayland
+%endif
+
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
@@ -95,19 +115,6 @@ BuildRequires:	xorg-proto-xextproto-devel >= 7.0.99.1
 BuildRequires:	xorg-xserver-server-devel >= %{xserver_ver}
 %endif
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
-
-%if %{without gallium}
-%undefine	with_gallium_intel
-%undefine	with_gallium_nouveau
-%undefine	with_ocl_icd
-%undefine	with_opencl
-%undefine	with_xa
-%endif
-
-%if %{without egl}
-%undefine	with_gbm
-%undefine	with_wayland
-%endif
 
 # libGLESv1_CM, libGLESv2, libGL, libOSMesa:
 #  _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
