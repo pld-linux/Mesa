@@ -18,8 +18,10 @@
 %bcond_without	opencl		# OpenCL support
 %bcond_without	ocl_icd		# OpenCL as ICD (installable client driver)
 %bcond_without	omx		# OpenMAX (Bellagio OMXIL) support
+%bcond_without	va		# VA library
 %bcond_without	wayland		# Wayland EGL
 %bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
+%bcond_with	texture_float	# floating-point textures and renderbuffers (SGI patent in US)
 %bcond_with	static_libs	# static libraries [not supported for DRI, thus broken currently]
 %bcond_with	tests		# tests
 #
@@ -79,6 +81,8 @@ BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= 5:3.3.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:2.2
+%{?with_va:BuildRequires:	libva-devel >= 1.3.0}
+%{?with_va:BuildRequires:	pkgconfig(libva) >= 0.35.0}
 BuildRequires:	libvdpau-devel >= 0.4.1
 BuildRequires:	libxcb-devel >= 1.10
 %{?with_gallium_radeon:BuildRequires:	llvm-devel >= 3.4.2}
@@ -522,6 +526,7 @@ R600/R700.
 Summary:	VA driver for Gallium State Tracker
 Summary(pl.UTF-8):	Sterownik VA do Gallium
 Group:		Libraries
+Requires:	libva >= 1.3.0
 
 %description -n libva-driver-gallium
 VA driver for Gallium State Tracker.
@@ -1088,6 +1093,7 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 	--enable-glx-tls \
 	--enable-selinux \
 	%{?with_static_libs:--enable-static} \
+	%{?with_texture_float:--enable-texture-float} \
 	%{__enable gbm} \
 	--enable-osmesa \
 	--enable-shared-glapi \
@@ -1211,7 +1217,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files libGL
 %defattr(644,root,root,755)
-%doc docs/{*.html,README.UVD,relnotes/*.html}
+%doc docs/{*.html,README.UVD,patents.txt,relnotes/*.html}
 %attr(755,root,root) %{_libdir}/libGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libGL.so.1
 # symlink for binary apps which fail to conform Linux OpenGL ABI
@@ -1324,8 +1330,11 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %ghost %{_libdir}/libXvMCr600.so.1
 %endif
 
+%if %{with va}
 %files -n libva-driver-gallium
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libva/dri/gallium_drv_video.so
+%endif
 %endif
 
 %if %{with gbm}
