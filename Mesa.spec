@@ -15,6 +15,7 @@
 # OpenVG hasn't been integrated into standard libEGL yet"
 %bcond_with	openvg		# OpenVG
 %bcond_without	gbm		# Graphics Buffer Manager
+%bcond_without	nine		# Nine Direct3D 9+ state tracker (for Wine)
 %bcond_without	opencl		# OpenCL support
 %bcond_without	ocl_icd		# OpenCL as ICD (installable client driver)
 %bcond_without	omx		# OpenMAX (Bellagio OMXIL) support
@@ -47,6 +48,7 @@
 %undefine	with_gallium_intel
 %undefine	with_gallium_nouveau
 %undefine	with_gallium_radeon
+%undefine	with_nine
 %undefine	with_ocl_icd
 %undefine	with_omx
 %undefine	with_opencl
@@ -910,6 +912,30 @@ X.org DRI driver for VMWare.
 %description dri-driver-vmwgfx -l pl.UTF-8
 Sterownik X.org DRI dla VMware.
 
+%package d3d
+Summary:	Nine Direct3D9 driver (for Wine)
+Summary(pl.UTF-8):	Sterownik Direct3D9 Nine (dla Wine)
+Group:		Libraries
+Requires:	libdrm >= %{libdrm_ver}
+
+%description d3d
+Nine Direct3D9 driver (for Wine).
+
+%description d3d -l pl.UTF-8
+Sterownik Direct3D9 Nine (dla Wine).
+
+%package d3d-devel
+Summary:	Nine Direct3D9 driver API
+Summary(pl.UTF-8):	API sterownika Direct3D9 Nine
+Group:		Development/Libraries
+Requires:	libdrm-devel >= %{libdrm_ver}
+
+%description d3d-devel
+Nine Direct3D9 driver API.
+
+%description d3d-devel -l pl.UTF-8
+API sterownika Direct3D9 Nine.
+
 %package -n libvdpau-driver-mesa-nouveau
 Summary:	Mesa nouveau driver for the vdpau API
 Summary(pl.UTF-8):	Sterownik Mesa nouveau dla API vdpau
@@ -1089,14 +1115,14 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 
 %configure \
 	--disable-silent-rules \
-	--enable-shared \
+	%{__enable gbm} \
 	--enable-glx-tls \
+	--enable-osmesa \
 	--enable-selinux \
+	--enable-shared \
+	--enable-shared-glapi \
 	%{?with_static_libs:--enable-static} \
 	%{?with_texture_float:--enable-texture-float} \
-	%{__enable gbm} \
-	--enable-osmesa \
-	--enable-shared-glapi \
 %if %{with egl}
 	--enable-egl \
 	--enable-gles1 \
@@ -1109,7 +1135,8 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 	%{__enable egl gallium-egl} \
 	%{__enable gbm gallium-gbm} \
 	%{__enable ocl_icd opencl-icd} \
-	%{__enable opencl opencl} \
+	%{?with_nine:--enable-nine} \
+	%{__enable opencl} \
 	%{?with_egl:%{?with_openvg:--enable-openvg}} \
 	--enable-vdpau \
 	%{?with_omx:--enable-omx} \
@@ -1144,6 +1171,7 @@ rm -rf $RPM_BUILD_ROOT
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libglapi.so
 # dlopened
 %{?with_omx:%{__rm} $RPM_BUILD_ROOT%{_libdir}/bellagio/libomx_*.la}
+%{?with_nine:%{__rm} $RPM_BUILD_ROOT%{_libdir}/d3d/d3dadapter9.la}
 %{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/gallium-pipe/pipe_*.la}
 # not defined by standards; and not needed, there is pkg-config support
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/lib*.la
@@ -1484,6 +1512,18 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-vmwgfx
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/vmwgfx_dri.so
+%endif
+
+%if %{with nine}
+%files d3d
+%defattr(644,root,root,755)
+%dir %{_libdir}/d3d
+%attr(755,root,root) %{_libdir}/d3d/d3dadapter9.so*
+
+%files d3d-devel
+%defattr(644,root,root,755)
+%{_includedir}/d3dadapter
+%{_pkgconfigdir}/d3d.pc
 %endif
 
 %if %{with gallium}
