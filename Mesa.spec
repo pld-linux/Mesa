@@ -378,6 +378,7 @@ Requires:	libdrm >= %{libdrm_ver}
 Requires:	llvm-libclc
 Requires:	udev-libs >= 1:151
 Provides:	OpenCL = 1.1
+Provides:	ocl-icd-driver
 
 %description OpenCL-icd
 This package contains Mesa implementation of OpenCL - standard for
