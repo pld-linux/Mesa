@@ -11,12 +11,18 @@
 %bcond_without	gallium_nouveau	# gallium nouveau driver
 %bcond_without	gallium_radeon	# gallium radeon drivers
 %bcond_without	egl		# EGL libraries
+# "Cannot enable OpenVG, because egl_gallium has been removed and
+# OpenVG hasn't been integrated into standard libEGL yet"
+%bcond_with	openvg		# OpenVG
 %bcond_without	gbm		# Graphics Buffer Manager
+%bcond_without	nine		# Nine Direct3D 9+ state tracker (for Wine)
 %bcond_without	opencl		# OpenCL support
 %bcond_without	ocl_icd		# OpenCL as ICD (installable client driver)
 %bcond_without	omx		# OpenMAX (Bellagio OMXIL) support
+%bcond_without	va		# VA library
 %bcond_without	wayland		# Wayland EGL
 %bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
+%bcond_with	texture_float	# floating-point textures and renderbuffers (SGI patent in US)
 %bcond_with	static_libs	# static libraries [not supported for DRI, thus broken currently]
 %bcond_with	tests		# tests
 #
@@ -33,15 +39,36 @@
 %define		glproto_ver		1.4.14
 %define		presentproto_ver	1.0
 
+# no clang/llvm on x32 yet
+%ifarch x32
+%undefine	with_gallium
+%endif
+
+%if %{without gallium}
+%undefine	with_gallium_intel
+%undefine	with_gallium_nouveau
+%undefine	with_gallium_radeon
+%undefine	with_nine
+%undefine	with_ocl_icd
+%undefine	with_omx
+%undefine	with_opencl
+%undefine	with_xa
+%endif
+
+%if %{without egl}
+%undefine	with_gbm
+%undefine	with_wayland
+%endif
+
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	10.3.5
+Version:	10.4.3
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	f404f9ecece1e04f2c99dadc42a7d215
+# Source0-md5:	be86c4ee226f8ca28b7d4c728c350b01
 Patch0:		missing-type.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
@@ -56,9 +83,10 @@ BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= 5:3.3.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:2.2
+%{?with_va:BuildRequires:	libva-devel >= 1.3.0}
+%{?with_va:BuildRequires:	pkgconfig(libva) >= 0.35.0}
 BuildRequires:	libvdpau-devel >= 0.4.1
 BuildRequires:	libxcb-devel >= 1.10
-BuildRequires:	llvm-devel >= 3.3
 %{?with_gallium_radeon:BuildRequires:	llvm-devel >= 3.4.2}
 %{?with_opencl:BuildRequires:	llvm-libclc}
 %{?with_ocl_icd:BuildRequires:	ocl-icd-devel}
@@ -88,25 +116,11 @@ BuildRequires:	xorg-proto-dri3proto-devel >= %{dri3proto_ver}
 BuildRequires:	xorg-proto-glproto-devel >= %{glproto_ver}
 BuildRequires:	xorg-proto-presentproto-devel >= %{presentproto_ver}
 BuildRequires:	xorg-util-makedepend
-BuildRequires:	xorg-xserver-server-devel >= %{xserver_ver}
 %if %{with gallium}
 BuildRequires:	xorg-proto-xextproto-devel >= 7.0.99.1
-BuildRequires:	xorg-xserver-server-devel >= 1.6.0
+BuildRequires:	xorg-xserver-server-devel >= %{xserver_ver}
 %endif
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
-
-%if %{without gallium}
-%undefine	with_gallium_intel
-%undefine	with_gallium_nouveau
-%undefine	with_ocl_icd
-%undefine	with_opencl
-%undefine	with_xa
-%endif
-
-%if %{without egl}
-%undefine	with_gbm
-%undefine	with_wayland
-%endif
 
 # libGLESv1_CM, libGLESv2, libGL, libOSMesa:
 #  _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
@@ -143,8 +157,10 @@ Requires:	libdrm >= %{libdrm_ver}
 Requires:	libxcb >= 1.9
 %{?with_wayland:Requires:	wayland >= 1.2.0}
 %if %{with gallium}
+%if %{with openvg}
 # for egl_gallium.so
 Requires:	%{name}-libOpenVG = %{version}-%{release}
+%endif
 Requires:	udev-libs >= 1:151
 %endif
 %if %{with gbm}
@@ -508,6 +524,18 @@ R600/R700 chips.
 %description libXvMC-r600 -l pl.UTF-8
 Implementacja Mesa API XvMC dla kart ATI Radeon opartych na układach
 R600/R700.
+
+%package -n libva-driver-gallium
+Summary:	VA driver for Gallium State Tracker
+Summary(pl.UTF-8):	Sterownik VA do Gallium
+Group:		Libraries
+Requires:	libva >= 1.3.0
+
+%description -n libva-driver-gallium
+VA driver for Gallium State Tracker.
+
+%description -n libva-driver-gallium -l pl.UTF-8
+Sterownik VA do Gallium.
 
 %package libgbm
 Summary:	Mesa Graphics Buffer Manager library
@@ -885,6 +913,30 @@ X.org DRI driver for VMWare.
 %description dri-driver-vmwgfx -l pl.UTF-8
 Sterownik X.org DRI dla VMware.
 
+%package d3d
+Summary:	Nine Direct3D9 driver (for Wine)
+Summary(pl.UTF-8):	Sterownik Direct3D9 Nine (dla Wine)
+Group:		Libraries
+Requires:	libdrm >= %{libdrm_ver}
+
+%description d3d
+Nine Direct3D9 driver (for Wine).
+
+%description d3d -l pl.UTF-8
+Sterownik Direct3D9 Nine (dla Wine).
+
+%package d3d-devel
+Summary:	Nine Direct3D9 driver API
+Summary(pl.UTF-8):	API sterownika Direct3D9 Nine
+Group:		Development/Libraries
+Requires:	libdrm-devel >= %{libdrm_ver}
+
+%description d3d-devel
+Nine Direct3D9 driver API.
+
+%description d3d-devel -l pl.UTF-8
+API sterownika Direct3D9 Nine.
+
 %package -n libvdpau-driver-mesa-nouveau
 Summary:	Mesa nouveau driver for the vdpau API
 Summary(pl.UTF-8):	Sterownik Mesa nouveau dla API vdpau
@@ -901,6 +953,23 @@ Mesa nouveau driver for the vdpau API. It supports NVidia adapters
 %description -n libvdpau-driver-mesa-nouveau -l pl.UTF-8
 Sterownik Mesa nouveau dla API vdpau. Obsługuje karty NVidia
 (NV40-NV96, NVa0).
+
+%package -n libvdpau-driver-mesa-r300
+Summary:	Mesa r300 driver for the vdpau API
+Summary(pl.UTF-8):	Sterownik Mesa r300 dla API vdpau
+License:	MIT
+Group:		X11/Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	libvdpau >= 0.4.1
+Conflicts:	libvdpau-driver-mesa
+
+%description -n libvdpau-driver-mesa-r300
+Mesa r300 driver for the vdpau API. It supports ATI Radeon adapters
+based on R300 chips.
+
+%description -n libvdpau-driver-mesa-r300 -l pl.UTF-8
+Sterownik Mesa r300 dla API vdpau. Obsługuje karty ATI Radeon oparte
+na układach R300.
 
 %package -n libvdpau-driver-mesa-r600
 Summary:	Mesa r600 driver for the vdpau API
@@ -1047,13 +1116,14 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 
 %configure \
 	--disable-silent-rules \
-	--enable-shared \
-	--enable-glx-tls \
-	--enable-selinux \
-	%{?with_static_libs:--enable-static} \
 	%{__enable gbm} \
+	--enable-glx-tls \
 	--enable-osmesa \
+	--enable-selinux \
+	--enable-shared \
 	--enable-shared-glapi \
+	%{?with_static_libs:--enable-static} \
+	%{?with_texture_float:--enable-texture-float} \
 %if %{with egl}
 	--enable-egl \
 	--enable-gles1 \
@@ -1066,8 +1136,9 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 	%{__enable egl gallium-egl} \
 	%{__enable gbm gallium-gbm} \
 	%{__enable ocl_icd opencl-icd} \
-	%{__enable opencl opencl} \
-	%{?with_egl:--enable-openvg} \
+	%{?with_nine:--enable-nine} \
+	%{__enable opencl} \
+	%{?with_egl:%{?with_openvg:--enable-openvg}} \
 	--enable-vdpau \
 	%{?with_omx:--enable-omx} \
 	%{?with_xa:--enable-xa} \
@@ -1076,6 +1147,7 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 %else
 	--without-gallium-drivers \
 %endif
+	--with-va-libdir=%{_libdir}/libva/dri \
 	--with-dri-drivers=${dri_drivers} \
 	--with-dri-driverdir=%{_libdir}/xorg/modules/dri
 
@@ -1092,19 +1164,19 @@ rm -rf $RPM_BUILD_ROOT
 # strip out undesirable headers
 %{__rm} $RPM_BUILD_ROOT%{_includedir}/GL/{wglext,wmesa}.h
 # dlopened by soname
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so.1.0
+%{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so}
+%{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so.1.0}
 # dlopened by soname or .so link
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/vdpau/libvdpau_*.so.1.0
+%{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/vdpau/libvdpau_*.so.1.0}
 # not used externally
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libglapi.so
 # dlopened
 %{?with_omx:%{__rm} $RPM_BUILD_ROOT%{_libdir}/bellagio/libomx_*.la}
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/egl/egl_*.la
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/gallium-pipe/pipe_*.la
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/gbm/gbm_*.la
+%{?with_nine:%{__rm} $RPM_BUILD_ROOT%{_libdir}/d3d/d3dadapter9.la}
+%{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/gallium-pipe/pipe_*.la}
 # not defined by standards; and not needed, there is pkg-config support
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/lib*.la
+%{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/libva/dri/gallium_drv_video.la}
 
 # remove "OS ABI: Linux 2.4.20" tag, so private copies (nvidia or fglrx),
 # set up via /etc/ld.so.conf.d/*.conf will be preferred over this
@@ -1153,10 +1225,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libEGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libEGL.so.1
-%if %{with gallium}
-%dir %{_libdir}/egl
-%attr(755,root,root) %{_libdir}/egl/egl_gallium.so
-%endif
 
 %files libEGL-devel
 %defattr(644,root,root,755)
@@ -1178,7 +1246,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files libGL
 %defattr(644,root,root,755)
-%doc docs/{*.html,README.UVD,relnotes/*.html}
+%doc docs/{*.html,README.UVD,patents.txt,relnotes/*.html}
 %attr(755,root,root) %{_libdir}/libGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libGL.so.1
 # symlink for binary apps which fail to conform Linux OpenGL ABI
@@ -1263,7 +1331,7 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %endif
 
-%if %{with egl} && %{with gallium}
+%if %{with egl} && %{with openvg} && %{with gallium}
 %files libOpenVG
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libOpenVG.so.*.*.*
@@ -1290,6 +1358,12 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libXvMCr600.so.1.0.0
 %attr(755,root,root) %ghost %{_libdir}/libXvMCr600.so.1
 %endif
+
+%if %{with va}
+%files -n libva-driver-gallium
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libva/dri/gallium_drv_video.so
+%endif
 %endif
 
 %if %{with gbm}
@@ -1298,9 +1372,11 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libgbm.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libgbm.so.1
 %if %{with gallium}
-%dir %{_libdir}/gbm
 %dir %{_libdir}/gallium-pipe
+%if %{with openvg}
+%dir %{_libdir}/gbm
 %attr(755,root,root) %{_libdir}/gbm/gbm_gallium_drm.so
+%endif
 %endif
 
 %files libgbm-devel
@@ -1428,13 +1504,27 @@ rm -rf $RPM_BUILD_ROOT
 
 %files dri-driver-swrast
 %defattr(644,root,root,755)
+%if %{with gallium}
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/kms_swrast_dri.so
+%endif
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
 
 %if %{with gallium}
 %files dri-driver-vmwgfx
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/vmwgfx_dri.so
+%endif
+
+%if %{with nine}
+%files d3d
+%defattr(644,root,root,755)
+%dir %{_libdir}/d3d
+%attr(755,root,root) %{_libdir}/d3d/d3dadapter9.so*
+
+%files d3d-devel
+%defattr(644,root,root,755)
+%{_includedir}/d3dadapter
+%{_pkgconfigdir}/d3d.pc
 %endif
 
 %if %{with gallium}
@@ -1448,6 +1538,12 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %if %{with gallium_radeon}
+%files -n libvdpau-driver-mesa-r300
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1.0.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so
+
 %files -n libvdpau-driver-mesa-r600
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0.0
