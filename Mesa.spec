@@ -63,12 +63,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	10.4.5
+Version:	10.5.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
-Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/%{name}Lib-%{version}.tar.bz2
-# Source0-md5:	fd44bf89d48d1744591d9dbe0ce1d54e
+Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}.tar.xz
+# Source0-md5:	133c5264a0c81d23168a65435ad23ede
 Patch0:		missing-type.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
@@ -76,7 +76,7 @@ BuildRequires:	automake
 %{?with_opencl:BuildRequires:	clang-devel >= 3.1}
 BuildRequires:	elfutils-devel
 BuildRequires:	expat-devel
-BuildRequires:	gcc >= 5:3.3
+BuildRequires:	gcc >= 5:4.1
 %{?with_opencl:BuildRequires:	gcc-c++ >= 6:4.7}
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
 BuildRequires:	libselinux-devel
@@ -1076,7 +1076,7 @@ Sterownik Mesa radeonsi dla API Bellagio OpenMAX IL. Obsługuje karty
 ATI Radeon oparte na układach Southern Islands.
 
 %prep
-%setup -q
+%setup -q -n mesa-%{version}
 %patch0 -p1
 
 %build
