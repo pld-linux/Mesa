@@ -63,12 +63,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	10.5.0
+Version:	10.5.1
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}.tar.xz
-# Source0-md5:	133c5264a0c81d23168a65435ad23ede
+# Source0-md5:	203dba1fb6b503802fa6625181b26d31
 Patch0:		missing-type.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
