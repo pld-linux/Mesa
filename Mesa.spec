@@ -63,12 +63,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	10.5.1
+Version:	10.5.3
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}.tar.xz
-# Source0-md5:	203dba1fb6b503802fa6625181b26d31
+# Source0-md5:	72aaa2604b38135a3a37c37cd967284d
 Patch0:		missing-type.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
@@ -76,11 +76,11 @@ BuildRequires:	automake
 %{?with_opencl:BuildRequires:	clang-devel >= 3.1}
 BuildRequires:	elfutils-devel
 BuildRequires:	expat-devel
-BuildRequires:	gcc >= 5:4.1
+BuildRequires:	gcc >= 6:4.2.0
 %{?with_opencl:BuildRequires:	gcc-c++ >= 6:4.7}
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
 BuildRequires:	libselinux-devel
-BuildRequires:	libstdc++-devel >= 5:3.3.0
+BuildRequires:	libstdc++-devel >= 6:4.2.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:2.2
 %{?with_va:BuildRequires:	libva-devel >= 1.3.0}
@@ -98,6 +98,7 @@ BuildRequires:	pkgconfig(talloc) >= 2.0.1
 BuildRequires:	pkgconfig(xcb-dri3)
 BuildRequires:	pkgconfig(xcb-present)
 BuildRequires:	python >= 2
+BuildRequires:	python-Mako >= 0.3.4
 BuildRequires:	python-modules >= 2
 BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
