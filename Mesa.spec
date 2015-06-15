@@ -63,12 +63,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	10.5.7
+Version:	10.6.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}.tar.xz
-# Source0-md5:	c6a1fdccd4ea372975d263235136ad2d
+# Source0-md5:	1a7e2e9f17eff9307fd14fb6cc70783b
 Patch0:		missing-type.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
@@ -1163,7 +1163,7 @@ rm -rf $RPM_BUILD_ROOT
 	DESTDIR=$RPM_BUILD_ROOT
 
 # strip out undesirable headers
-%{__rm} $RPM_BUILD_ROOT%{_includedir}/GL/{wglext,wmesa}.h
+%{__rm} $RPM_BUILD_ROOT%{_includedir}/GL/wglext.h
 # dlopened by soname
 %{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so}
 %{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so.1.0}
