@@ -2,6 +2,7 @@
 # TODO:
 # - check if gallium_intel note is still valid, switch the bcond if not
 # - consider:
+# - ARM drivers (ilo,freedreno,vc4)?
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
 # - resurrect static if it's useful (using plain xorg target? DRI doesn't support static)
 #
@@ -11,9 +12,7 @@
 %bcond_without	gallium_nouveau	# gallium nouveau driver
 %bcond_without	gallium_radeon	# gallium radeon drivers
 %bcond_without	egl		# EGL libraries
-# "Cannot enable OpenVG, because egl_gallium has been removed and
-# OpenVG hasn't been integrated into standard libEGL yet"
-%bcond_with	openvg		# OpenVG
+%bcond_with	openvg		# OpenVG library [not builind since 10.4, dropped in 10.6]
 %bcond_without	gbm		# Graphics Buffer Manager
 %bcond_without	nine		# Nine Direct3D 9+ state tracker (for Wine)
 %bcond_without	opencl		# OpenCL support
@@ -33,7 +32,7 @@
 # minimal supported xserver version
 %define		xserver_ver		1.5.0
 # other packages
-%define		libdrm_ver		2.4.56
+%define		libdrm_ver		2.4.60
 %define		dri2proto_ver		2.6
 %define		dri3proto_ver		1.0
 %define		glproto_ver		1.4.14
@@ -89,6 +88,8 @@ BuildRequires:	libvdpau-devel >= 0.4.1
 BuildRequires:	libxcb-devel >= 1.10
 %{?with_gallium_radeon:BuildRequires:	llvm-devel >= 3.4.2}
 %{?with_opencl:BuildRequires:	llvm-libclc}
+# for SHA1 (could use also libmd/libsha1/libgcrypt/openssl instead)
+BuildRequires:	nettle-devel
 %{?with_ocl_icd:BuildRequires:	ocl-icd-devel}
 %{?with_omx:BuildRequires:	libomxil-bellagio-devel}
 BuildRequires:	perl-base
@@ -158,10 +159,6 @@ Requires:	libdrm >= %{libdrm_ver}
 Requires:	libxcb >= 1.9
 %{?with_wayland:Requires:	wayland >= 1.2.0}
 %if %{with gallium}
-%if %{with openvg}
-# for egl_gallium.so
-Requires:	%{name}-libOpenVG = %{version}-%{release}
-%endif
 Requires:	udev-libs >= 1:151
 %endif
 %if %{with gbm}
@@ -1139,18 +1136,18 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 	%{__enable ocl_icd opencl-icd} \
 	%{?with_nine:--enable-nine} \
 	%{__enable opencl} \
-	%{?with_egl:%{?with_openvg:--enable-openvg}} \
 	--enable-vdpau \
 	%{?with_omx:--enable-omx} \
 	%{?with_xa:--enable-xa} \
 	--enable-xvmc \
+	--with-dri-drivers=${dri_drivers} \
+	--with-dri-driverdir=%{_libdir}/xorg/modules/dri \
 	--with-gallium-drivers=${gallium_drivers} \
 %else
 	--without-gallium-drivers \
 %endif
-	--with-va-libdir=%{_libdir}/libva/dri \
-	--with-dri-drivers=${dri_drivers} \
-	--with-dri-driverdir=%{_libdir}/xorg/modules/dri
+	--with-sha1=libnettle \
+	--with-va-libdir=%{_libdir}/libva/dri
 
 %{__make}
 
@@ -1374,10 +1371,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %ghost %{_libdir}/libgbm.so.1
 %if %{with gallium}
 %dir %{_libdir}/gallium-pipe
-%if %{with openvg}
-%dir %{_libdir}/gbm
-%attr(755,root,root) %{_libdir}/gbm/gbm_gallium_drm.so
-%endif
 %endif
 
 %files libgbm-devel
