@@ -63,7 +63,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	10.6.1
-Release:	1
+Release:	2
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}.tar.xz
@@ -1140,12 +1140,12 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 	%{?with_omx:--enable-omx} \
 	%{?with_xa:--enable-xa} \
 	--enable-xvmc \
-	--with-dri-drivers=${dri_drivers} \
-	--with-dri-driverdir=%{_libdir}/xorg/modules/dri \
 	--with-gallium-drivers=${gallium_drivers} \
 %else
 	--without-gallium-drivers \
 %endif
+	--with-dri-drivers=${dri_drivers} \
+	--with-dri-driverdir=%{_libdir}/xorg/modules/dri \
 	--with-sha1=libnettle \
 	--with-va-libdir=%{_libdir}/libva/dri
 
