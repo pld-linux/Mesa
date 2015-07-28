@@ -38,9 +38,9 @@
 %define		glproto_ver		1.4.14
 %define		presentproto_ver	1.0
 
-# no clang/llvm on x32 yet
 %ifarch x32
-%undefine	with_gallium
+# ICE in src/gallium/targets/d3dadapter9/getproc.c
+%undefine	with_nine
 %endif
 
 %if %{without gallium}
