@@ -38,6 +38,11 @@
 %define		glproto_ver		1.4.14
 %define		presentproto_ver	1.0
 
+%ifarch x32
+# ICE in src/gallium/targets/d3dadapter9/getproc.c
+%undefine	with_nine
+%endif
+
 %if %{without gallium}
 %undefine	with_gallium_intel
 %undefine	with_gallium_nouveau
@@ -58,7 +63,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	11.0.3
-Release:	2
+Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}.tar.xz
