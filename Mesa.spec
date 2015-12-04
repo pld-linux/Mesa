@@ -32,7 +32,7 @@
 # minimal supported xserver version
 %define		xserver_ver		1.5.0
 # other packages
-%define		libdrm_ver		2.4.60
+%define		libdrm_ver		2.4.63
 %define		dri2proto_ver		2.6
 %define		dri3proto_ver		1.0
 %define		glproto_ver		1.4.14
@@ -80,7 +80,7 @@ BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:2.2
 %{?with_va:BuildRequires:	libva-devel >= 1.3.0}
 %{?with_va:BuildRequires:	pkgconfig(libva) >= 0.35.0}
-BuildRequires:	libvdpau-devel >= 0.4.1
+BuildRequires:	libvdpau-devel >= 1.1
 BuildRequires:	libxcb-devel >= 1.10
 %{?with_gallium_radeon:BuildRequires:	llvm-devel >= 3.4.2}
 %{?with_opencl:BuildRequires:	llvm-libclc}
@@ -160,7 +160,7 @@ Requires:	udev-libs >= 1:151
 %if %{with gbm}
 Requires:	%{name}-libgbm = %{version}-%{release}
 %endif
-Provides:	EGL = 1.4
+Provides:	EGL = 1.5
 
 %description libEGL
 This package contains shared libEGL - Mesa implementation of EGL
@@ -188,7 +188,7 @@ Requires:	xorg-lib-libXfixes-devel
 Requires:	xorg-lib-libXxf86vm-devel
 Requires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 Requires:	xorg-proto-glproto-devel >= %{glproto_ver}
-Provides:	EGL-devel = 1.4
+Provides:	EGL-devel = 1.5
 
 %description libEGL-devel
 Header files for Mesa implementation of EGL library.
@@ -202,7 +202,7 @@ Summary(pl.UTF-8):	Statyczna biblioteka Mesa EGL
 License:	MIT
 Group:		Development/Libraries
 Requires:	%{name}-libEGL-devel = %{version}-%{release}
-Provides:	EGL-static = 1.4
+Provides:	EGL-static = 1.5
 
 %description libEGL-static
 Static Mesa EGL library.
@@ -217,7 +217,7 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	%{name}-libglapi = %{version}-%{release}
 Requires:	libdrm >= %{libdrm_ver}
-Provides:	OpenGL = 3.3
+Provides:	OpenGL = 4.1
 Provides:	OpenGL-GLX = 1.4
 Obsoletes:	Mesa
 Obsoletes:	Mesa-dri
@@ -262,7 +262,7 @@ Requires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 Requires:	xorg-proto-glproto-devel >= %{glproto_ver}
 Suggests:	OpenGL-doc-man
 Provides:	OpenGL-GLX-devel = 1.4
-Provides:	OpenGL-devel = 3.3
+Provides:	OpenGL-devel = 4.1
 Obsoletes:	Mesa-devel
 Obsoletes:	X11-OpenGL-devel < 1:7.0.0
 Obsoletes:	X11-OpenGL-devel-base < 1:7.0.0
@@ -281,7 +281,7 @@ Summary(pl.UTF-8):	Statyczna biblioteka libGL z projektu Mesa3D
 License:	MIT
 Group:		X11/Development/Libraries
 Requires:	%{name}-libGL-devel = %{version}-%{release}
-Provides:	OpenGL-static = 3.3
+Provides:	OpenGL-static = 4.1
 Obsoletes:	Mesa-static
 Obsoletes:	X11-OpenGL-static < 1:7.0.0
 Obsoletes:	XFree86-OpenGL-static < 1:7.0.0
@@ -301,6 +301,7 @@ Requires:	%{name}-libglapi = %{version}-%{release}
 Provides:	OpenGLES
 Provides:	OpenGLESv1 = 1.1
 Provides:	OpenGLESv2 = 2.0
+Provides:	OpenGLESv3 = 3.1
 
 %description libGLES
 This package contains shared libraries of Mesa implementation of GLES
@@ -328,6 +329,7 @@ Requires:	%{name}-libGLES = %{version}-%{release}
 Provides:	OpenGLES-devel
 Provides:	OpenGLESv1-devel = 1.1
 Provides:	OpenGLESv2-devel = 2.0
+Provides:	OpenGLESv3-devel = 3.1
 
 %description libGLES-devel
 Header files for Mesa GLES libraries.
@@ -442,7 +444,7 @@ Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki Mesa OpenCL
 License:	MIT
 Group:		Development/Libraries
 Requires:	%{name}-libOpenCL = %{version}-%{release}
-Provides:	OpenCL-devel = 1.1
+Provides:	OpenCL-devel = 1.2
 
 %description libOpenCL-devel
 Header files for Mesa OpenCL library.
@@ -937,7 +939,7 @@ Summary(pl.UTF-8):	Sterownik Mesa nouveau dla API vdpau
 License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm >= %{libdrm_ver}
-Requires:	libvdpau >= 0.4.1
+Requires:	libvdpau >= 1.1
 Conflicts:	libvdpau-driver-mesa
 
 %description -n libvdpau-driver-mesa-nouveau
@@ -954,7 +956,7 @@ Summary(pl.UTF-8):	Sterownik Mesa r300 dla API vdpau
 License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm >= %{libdrm_ver}
-Requires:	libvdpau >= 0.4.1
+Requires:	libvdpau >= 1.1
 Conflicts:	libvdpau-driver-mesa
 
 %description -n libvdpau-driver-mesa-r300
@@ -971,7 +973,7 @@ Summary(pl.UTF-8):	Sterownik Mesa r600 dla API vdpau
 License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm >= %{libdrm_ver}
-Requires:	libvdpau >= 0.4.1
+Requires:	libvdpau >= 1.1
 Conflicts:	libvdpau-driver-mesa
 
 %description -n libvdpau-driver-mesa-r600
@@ -988,7 +990,7 @@ Summary(pl.UTF-8):	Sterownik Mesa radeonsi dla API vdpau
 License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm >= %{libdrm_ver}
-Requires:	libvdpau >= 0.4.1
+Requires:	libvdpau >= 1.1
 Conflicts:	libvdpau-driver-mesa
 Obsoletes:	Mesa-libllvmradeon
 
