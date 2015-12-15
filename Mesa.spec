@@ -1,6 +1,6 @@
 #
 # TODO:
-# - check if gallium_intel note is still valid, switch the bcond if not
+# - check if gallium_i915 note is still valid, switch the bcond if not
 # - consider:
 # - ARM drivers (ilo,freedreno,vc4)?
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
@@ -8,7 +8,7 @@
 #
 # Conditional build:
 %bcond_without	gallium		# gallium drivers
-%bcond_with	gallium_intel	# gallium i915 driver (instead of plain dri; doesn't work with AIGLX)
+%bcond_with	gallium_i915	# gallium i915 Intel driver (instead of plain dri; doesn't work with AIGLX)
 %bcond_without	gallium_nouveau	# gallium nouveau driver
 %bcond_without	gallium_radeon	# gallium radeon drivers
 %bcond_without	egl		# EGL libraries
@@ -39,7 +39,7 @@
 %define		presentproto_ver	1.0
 
 %if %{without gallium}
-%undefine	with_gallium_intel
+%undefine	with_gallium_i915
 %undefine	with_gallium_nouveau
 %undefine	with_gallium_radeon
 %undefine	with_nine
@@ -57,12 +57,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	11.0.7
+Version:	11.1.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}.tar.xz
-# Source0-md5:	5bb515d4b0931b7a9e1bfec3da73f10f
+# Source0-md5:	00a81d2b97cc62c08ae91f8914825f0b
 Patch0:		missing-type.patch
 Patch1:		x32.patch
 URL:		http://www.mesa3d.org/
@@ -865,6 +865,21 @@ X.org DRI driver for Intel i965 card family (946GZ, 965G, 965Q, 965GM,
 Sterownik X.org DRI dla rodziny kart Intel i965 (946GZ, 965G, 965Q,
 965GM, 965GME, GM45, G41, B43, Q45, G45).
 
+%package dri-driver-intel-ilo
+Summary:	X.org DRI driver for Intel card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel
+License:	MIT
+Group:		X11/Libraries
+Requires:	xorg-driver-video-intel
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
+
+%description dri-driver-intel-ilo
+X.org DRI driver for Intel card family.
+
+%description dri-driver-intel-ilo -l pl.UTF-8
+Sterownik X.org DRI dla rodziny kart Intel.
+
 %package dri-driver-nouveau
 Summary:	X.org DRI driver for NVIDIA card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart NVIDIA
@@ -893,6 +908,20 @@ X.org DRI software rasterizer driver.
 
 %description dri-driver-swrast -l pl.UTF-8
 Sterownik X.org DRI obsługujący rysowanie programowe.
+
+%package dri-driver-virgl
+Summary:	X.org DRI driver for QEMU VirGL
+Summary(pl.UTF-8):	Sterownik X.org DRI dla QEMU VirGL
+License:	MIT
+Group:		X11/Libraries
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
+
+%description dri-driver-virgl
+X.org DRI driver for QEMU VirGL.
+
+%description dri-driver-virgl -l pl.UTF-8
+Sterownik X.org DRI dla QEMU VirGL.
 
 %package dri-driver-vmwgfx
 Summary:	X.org DRI driver for VMware
@@ -1083,7 +1112,7 @@ ATI Radeon oparte na układach Southern Islands.
 %{__automake}
 
 dri_drivers="r200 radeon \
-%if %{without gallium_intel}
+%if %{without gallium_i915}
 i915 \
 %endif
 i965 \
@@ -1096,7 +1125,7 @@ swrast"
 dri_drivers=$(echo $dri_drivers | xargs | tr ' ' ',')
 
 gallium_drivers="svga swrast \
-%if %{with gallium_intel}
+%if %{with gallium_i915}
 i915 \
 %endif
 %if %{with gallium_radeon}
@@ -1107,6 +1136,8 @@ radeonsi \
 %if %{with gallium_nouveau}
 nouveau
 %endif
+ilo \
+virgl \
 "
 
 gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
@@ -1380,7 +1411,7 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %if %{with gallium}
-%if %{with gallium_intel}
+%if %{with gallium_i915}
 %files gbm-driver-i915
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/gallium-pipe/pipe_i915.so
@@ -1478,6 +1509,13 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/radeonsi_dri.so
 %endif
+
+%files dri-driver-intel-ilo
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/ilo_dri.so
+# better place needed for dir
+%attr(755,root,root) %dir %{_libdir}/gallium-pipe
+%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_i965.so
 %endif
 
 %files dri-driver-intel-i915
@@ -1503,6 +1541,10 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
 
 %if %{with gallium}
+%files dri-driver-virgl
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/virtio_gpu_dri.so
+
 %files dri-driver-vmwgfx
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/vmwgfx_dri.so
