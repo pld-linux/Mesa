@@ -561,116 +561,6 @@ Header file for Mesa Graphics Buffer Manager library.
 Plik nagłówkowy biblioteki Mesa Graphics Buffer Manager (zarządcy
 bufora graficznego).
 
-%package gbm-driver-i915
-Summary:	i915 driver for Mesa GBM framework
-Summary(pl.UTF-8):	Sterownik i915 dla szkieletu Mesa GBM
-Group:		Libraries
-Requires:	%{name}-libgbm = %{version}-%{release}
-Obsoletes:	Mesa-opencl-driver-i915
-
-%description gbm-driver-i915
-i915 driver for Mesa Graphics Buffer Manager. It supports Intel
-915/945/G33/Q33/Q35/Pineview chips.
-
-%description gbm-driver-i915 -l pl.UTF-8
-Sterownik i915 dla szkieletu Mesa Graphics Buffer Manager (zarządcy
-bufora graficznego). Obsługuje układy Intela z serii
-915/945/G33/Q33/Q35/Pineview.
-
-%package gbm-driver-nouveau
-Summary:	nouveau driver for Mesa GBM framework
-Summary(pl.UTF-8):	Sterownik nouveau dla szkieletu Mesa GBM
-Group:		Libraries
-Requires:	%{name}-libgbm = %{version}-%{release}
-Obsoletes:	Mesa-opencl-driver-nouveau
-
-%description gbm-driver-nouveau
-nouveau driver for Mesa Graphics Buffer Manager. It supports NVidia
-adapters.
-
-%description gbm-driver-nouveau -l pl.UTF-8
-Sterownik nouveau dla szkieletu Mesa Graphics Buffer Manager (zarządcy
-bufora graficznego). Obsługuje karty graficzne firmy NVidia.
-
-%package gbm-driver-r300
-Summary:	r300 driver for Mesa GBM framework
-Summary(pl.UTF-8):	Sterownik r300 dla szkieletu Mesa GBM
-Group:		Libraries
-Requires:	%{name}-libgbm = %{version}-%{release}
-Obsoletes:	Mesa-opencl-driver-r300
-
-%description gbm-driver-r300
-r300 driver for Mesa Graphics Buffer Manager. It supports ATI Radeon
-adapters based on R300/R400/RS690/R500 chips.
-
-%description gbm-driver-r300 -l pl.UTF-8
-Sterownik r300 dla szkieletu Mesa Graphics Buffer Manager (zarządcy
-bufora graficznego). Obsługuje karty graficzne ATI Radeon oparte na
-układach R300/R400/RS690/R500.
-
-%package gbm-driver-r600
-Summary:	r600 driver for Mesa GBM framework
-Summary(pl.UTF-8):	Sterownik r600 dla szkieletu Mesa GBM
-Group:		Libraries
-Requires:	%{name}-libgbm = %{version}-%{release}
-Obsoletes:	Mesa-libllvmradeon
-Obsoletes:	Mesa-opencl-driver-r600
-
-%description gbm-driver-r600
-r600 driver for Mesa Graphics Buffer Manager. It supports ATI Radeon
-adapters based on R600/R700 chips.
-
-%description gbm-driver-r600 -l pl.UTF-8
-Sterownik r600 dla szkieletu Mesa Graphics Buffer Manager (zarządcy
-bufora graficznego). Obsługuje karty graficzne ATI Radeon oparte na
-układach R600/R700.
-
-%package gbm-driver-radeonsi
-Summary:	radeonsi driver for Mesa GBM framework
-Summary(pl.UTF-8):	Sterownik radeonsi dla szkieletu Mesa GBM
-Group:		Libraries
-Requires:	%{name}-libgbm = %{version}-%{release}
-Obsoletes:	Mesa-libllvmradeon
-Obsoletes:	Mesa-opencl-driver-radeonsi
-
-%description gbm-driver-radeonsi
-radeonsi driver for Mesa Graphics Buffer Manager. It supports ATI
-Radeon adapters based on Southern Islands chips.
-
-%description gbm-driver-radeonsi -l pl.UTF-8
-Sterownik radeonsi dla szkieletu Mesa Graphics Buffer Manager
-(zarządcy bufora graficznego). Obsługuje karty graficzne ATI Radeon
-oparte na układach Southern Islands.
-
-%package gbm-driver-swrast
-Summary:	Software (swrast) driver for Mesa GBM framework
-Summary(pl.UTF-8):	Sterownik programowy (swrast) dla szkieletu Mesa GBM
-Group:		Libraries
-Requires:	%{name}-libgbm = %{version}-%{release}
-Obsoletes:	Mesa-opencl-driver-swrast
-
-%description gbm-driver-swrast
-Software (swrast) driver for Mesa Graphics Buffer Manager.
-
-%description gbm-driver-swrast -l pl.UTF-8
-Sterownik programowy (swrast) dla szkieletu Mesa Graphics Buffer
-Manager (zarządcy bufora graficznego).
-
-%package gbm-driver-vmwgfx
-Summary:	vmwgfx driver for Mesa GBM framework
-Summary(pl.UTF-8):	Sterownik vmwgfx dla szkieletu Mesa GBM
-Group:		Libraries
-Requires:	%{name}-libgbm = %{version}-%{release}
-Obsoletes:	Mesa-opencl-driver-vmwgfx
-
-%description gbm-driver-vmwgfx
-vmwgfx driver for Mesa Graphics Buffer Manager. It supports VMware
-virtual video adapter.
-
-%description gbm-driver-vmwgfx -l pl.UTF-8
-Sterownik vmwgfx dla szkieletu Mesa Graphics Buffer Manager (zarządcy
-bufora graficznego). Obsługuje wirtualną kartę graficzną VMware.
-
 %package libglapi
 Summary:	Mesa GL API shared library
 Summary(pl.UTF-8):	Biblioteka współdzielona Mesa GL API
@@ -866,8 +756,8 @@ Sterownik X.org DRI dla rodziny kart Intel i965 (946GZ, 965G, 965Q,
 965GM, 965GME, GM45, G41, B43, Q45, G45).
 
 %package dri-driver-intel-ilo
-Summary:	X.org DRI driver for Intel card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel
+Summary:	X.org DRI driver for Intel chips family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny układów firmy Intel
 License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-driver-video-intel
@@ -875,10 +765,12 @@ Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 
 %description dri-driver-intel-ilo
-X.org DRI driver for Intel card family.
+X.org DRI driver for Intel chips family. It supports Cherryview/
+Broadwell/Bay Trail/Haswell/Ivybridge/Sandybridge chips.
 
 %description dri-driver-intel-ilo -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart Intel.
+Sterownik X.org DRI dla rodziny układów firmy Intel. Obsługuje układy
+Cherryview/Broadwell/Bay Trail/Haswell/Ivybdidge/Sandybridge.
 
 %package dri-driver-nouveau
 Summary:	X.org DRI driver for NVIDIA card family
@@ -937,6 +829,143 @@ X.org DRI driver for VMWare.
 
 %description dri-driver-vmwgfx -l pl.UTF-8
 Sterownik X.org DRI dla VMware.
+
+%package pipe-driver-i915
+Summary:	i915 driver for Mesa Gallium dynamic pipe loader
+Summary(pl.UTF-8):	Sterownik i915 dla dynamicznego systemu potoków szkieletu Mesa Gallium
+Group:		Libraries
+Obsoletes:	Mesa-gbm-driver-i915
+Obsoletes:	Mesa-opencl-driver-i915
+
+%description pipe-driver-i915
+i915 driver for Mesa Gallium dynamic pipe loader. It supports Intel
+915/945/G33/Q33/Q35/Pineview chips.
+
+%description pipe-driver-i915 -l pl.UTF-8
+Sterownik i915 dla dynamicznego systemu potoków szkieletu Mesa
+Gallium. Obsługuje układy Intela z serii 915/945/G33/Q33/Q35/Pineview.
+
+%package pipe-driver-i965
+Summary:	i965 (ilo) driver for Mesa Gallium dynamic pipe loader
+Summary(pl.UTF-8):	Sterownik i965 (ilo) dla dynamicznego systemu potoków szkieletu Mesa Gallium
+Group:		Libraries
+
+%description pipe-driver-i965
+i965 (ilo) driver for Mesa Gallium dynamic pipe loader. It supports
+Intel Cherryview/Broadwell/Bay Trail/Haswell/Ivybridge/Sandybridge
+chips.
+
+%description pipe-driver-i965 -l pl.UTF-8
+Sterownik i965 (ilo) dla dynamicznego systemu potoków szkieletu Mesa
+Gallium. Obsługuje układy Intela Cherryview/Broadwell/Bay Trail/
+Haswell/Ivybdidge/Sandybridge.
+
+%package pipe-driver-msm
+Summary:	msm (freedreno) driver for Mesa Gallium dynamic pipe loader
+Summary(pl.UTF-8):	Sterownik msm (freedreno) dla dynamicznego systemu potoków szkieletu Mesa Gallium
+Group:		Libraries
+
+%description pipe-driver-msm
+msm (freedreno) driver for Mesa Gallium dynamic pipe loader. It
+supports Adreno chips.
+
+%description pipe-driver-msm -l pl.UTF-8
+Sterownik msm (freedreno) dla dynamicznego systemu potoków szkieletu
+Mesa Gallium. Obsługuje układy Adreno.
+
+%package pipe-driver-nouveau
+Summary:	nouveau driver for Mesa Gallium dynamic pipe loader
+Summary(pl.UTF-8):	Sterownik nouveau dla dynamicznego systemu potoków szkieletu Mesa Gallium
+Group:		Libraries
+Obsoletes:	Mesa-gbm-driver-nouveau
+Obsoletes:	Mesa-opencl-driver-nouveau
+
+%description pipe-driver-nouveau
+nouveau driver for Mesa Gallium dynamic pipe loader. It supports
+NVidia adapters.
+
+%description pipe-driver-nouveau -l pl.UTF-8
+Sterownik nouveau dla dynamicznego systemu potoków szkieletu Mesa
+Gallium. Obsługuje karty graficzne firmy NVidia.
+
+%package pipe-driver-r300
+Summary:	r300 driver for Mesa Gallium dynamic pipe loader
+Summary(pl.UTF-8):	Sterownik r300 dla dynamicznego systemu potoków szkieletu Mesa Gallium
+Group:		Libraries
+Obsoletes:	Mesa-gbm-driver-r300
+Obsoletes:	Mesa-opencl-driver-r300
+
+%description pipe-driver-r300
+r300 driver for Mesa Gallium dynamic pipe loader. It supports ATI
+Radeon adapters based on R300/R400/RS690/R500 chips.
+
+%description pipe-driver-r300 -l pl.UTF-8
+Sterownik r300 dla dynamicznego systemu potoków szkieletu Mesa
+Gallium. Obsługuje karty graficzne ATI Radeon oparte na układach
+R300/R400/RS690/R500.
+
+%package pipe-driver-r600
+Summary:	r600 driver for Mesa Gallium dynamic pipe loader
+Summary(pl.UTF-8):	Sterownik r600 dla dynamicznego systemu potoków szkieletu Mesa Gallium
+Group:		Libraries
+Obsoletes:	Mesa-gbm-driver-r600
+Obsoletes:	Mesa-libllvmradeon
+Obsoletes:	Mesa-opencl-driver-r600
+
+%description pipe-driver-r600
+r600 driver for Mesa Gallium dynamic pipe loader. It supports ATI
+Radeon adapters based on R600/R700 chips.
+
+%description pipe-driver-r600 -l pl.UTF-8
+Sterownik r600 dla dynamicznego systemu potoków szkieletu Mesa
+Gallium. Obsługuje karty graficzne ATI Radeon oparte na układach
+R600/R700.
+
+%package pipe-driver-radeonsi
+Summary:	radeonsi driver for Mesa Gallium dynamic pipe loader
+Summary(pl.UTF-8):	Sterownik radeonsi dla dynamicznego systemu potoków szkieletu Mesa Gallium
+Group:		Libraries
+Obsoletes:	Mesa-gbm-driver-radeonsi
+Obsoletes:	Mesa-libllvmradeon
+Obsoletes:	Mesa-opencl-driver-radeonsi
+
+%description pipe-driver-radeonsi
+radeonsi driver for Mesa Gallium dynamic pipe loader. It supports ATI
+Radeon adapters based on Southern Islands chips.
+
+%description pipe-driver-radeonsi -l pl.UTF-8
+Sterownik radeonsi dla dynamicznego systemu potoków szkieletu Mesa
+Gallium. Obsługuje karty graficzne ATI Radeon oparte na układach
+Southern Islands.
+
+%package pipe-driver-swrast
+Summary:	Software (swrast) driver for Mesa Gallium dynamic pipe loader
+Summary(pl.UTF-8):	Sterownik programowy (swrast) dla dynamicznego systemu potoków szkieletu Mesa Gallium
+Group:		Libraries
+Obsoletes:	Mesa-gbm-driver-swrast
+Obsoletes:	Mesa-opencl-driver-swrast
+
+%description pipe-driver-swrast
+Software (swrast) driver for Mesa Gallium dynamic pipe loader.
+
+%description pipe-driver-swrast -l pl.UTF-8
+Sterownik programowy (swrast) dla dynamicznego systemu potoków
+szkieletu Mesa Gallium.
+
+%package pipe-driver-vmwgfx
+Summary:	vmwgfx driver for Mesa Gallium dynamic pipe loader
+Summary(pl.UTF-8):	Sterownik vmwgfx dla dynamicznego systemu potoków szkieletu Mesa Gallium
+Group:		Libraries
+Obsoletes:	Mesa-gbm-driver-vmwgfx
+Obsoletes:	Mesa-opencl-driver-vmwgfx
+
+%description pipe-driver-vmwgfx
+vmwgfx driver for Mesa Gallium dynamic pipe loader. It supports VMware
+virtual video adapter.
+
+%description pipe-driver-vmwgfx -l pl.UTF-8
+Sterownik vmwgfx dla dynamicznego systemu potoków szkieletu Mesa
+Gallium. Obsługuje wirtualną kartę graficzną VMware.
 
 %package d3d
 Summary:	Nine Direct3D9 driver (for Wine)
@@ -1346,11 +1375,15 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libMesaOpenCL.so
 %attr(755,root,root) %{_libdir}/libMesaOpenCL.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libMesaOpenCL.so.1
+# currently only OpenCL uses dynamic pipe loader
+%dir %{_libdir}/gallium-pipe
 %else
 %files libOpenCL
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libOpenCL.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libOpenCL.so.1
+# currently only OpenCL uses dynamic pipe loader
+%dir %{_libdir}/gallium-pipe
 
 %files libOpenCL-devel
 %defattr(644,root,root,755)
@@ -1399,51 +1432,12 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libgbm.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libgbm.so.1
-%if %{with gallium}
-%dir %{_libdir}/gallium-pipe
-%endif
 
 %files libgbm-devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libgbm.so
 %{_includedir}/gbm.h
 %{_pkgconfigdir}/gbm.pc
-%endif
-
-%if %{with gallium}
-%if %{with gallium_i915}
-%files gbm-driver-i915
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_i915.so
-%endif
-
-%if %{with gallium_nouveau}
-%files gbm-driver-nouveau
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_nouveau.so
-%endif
-
-%if %{with gallium_radeon}
-%files gbm-driver-r300
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_r300.so
-
-%files gbm-driver-r600
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_r600.so
-
-%files gbm-driver-radeonsi
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_radeonsi.so
-%endif
-
-%files gbm-driver-swrast
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_swrast.so
-
-%files gbm-driver-vmwgfx
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_vmwgfx.so
 %endif
 
 %files libglapi
@@ -1513,9 +1507,6 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-intel-ilo
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/ilo_dri.so
-# better place needed for dir
-%attr(755,root,root) %dir %{_libdir}/gallium-pipe
-%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_i965.so
 %endif
 
 %files dri-driver-intel-i915
@@ -1548,6 +1539,52 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-vmwgfx
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/vmwgfx_dri.so
+%endif
+
+%if %{with gallium}
+%if %{with gallium_i915}
+%files pipe-driver-i915
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_i915.so
+%endif
+
+%files pipe-driver-i965
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_i965.so
+
+%ifarch arm
+%files pipe-driver-msm
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_msm.so
+%endif
+
+%if %{with gallium_nouveau}
+%files pipe-driver-nouveau
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_nouveau.so
+%endif
+
+%if %{with gallium_radeon}
+%files pipe-driver-r300
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_r300.so
+
+%files pipe-driver-r600
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_r600.so
+
+%files pipe-driver-radeonsi
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_radeonsi.so
+%endif
+
+%files pipe-driver-swrast
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_swrast.so
+
+%files pipe-driver-vmwgfx
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_vmwgfx.so
 %endif
 
 %if %{with nine}
