@@ -2,7 +2,6 @@
 # TODO:
 # - check if gallium_i915 note is still valid, switch the bcond if not
 # - consider:
-# - ARM drivers (ilo,freedreno,vc4)?
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
 # - resurrect static if it's useful (using plain xorg target? DRI doesn't support static)
 #
@@ -717,6 +716,21 @@ X.org DRI driver for ATI Southern Islands card family.
 %description dri-driver-ati-radeon-SI -l pl.UTF-8
 Sterownik X.org DRI dla rodziny kart ATI Southern Islands.
 
+%package dri-driver-freedreno
+Summary:	X.org DRI driver for Adreno chips
+Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Adreno
+License:	MIT
+Group:		X11/Libraries
+Requires:	xorg-driver-video-freedreno
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
+
+%description dri-driver-freedreno
+X.org DRI driver for Adreno chips.
+
+%description dri-driver-freedreno -l pl.UTF-8
+Sterownik X.org DRI dla układów Adreno.
+
 %package dri-driver-intel-i915
 Summary:	X.org DRI driver for Intel i915 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i915
@@ -800,6 +814,21 @@ X.org DRI software rasterizer driver.
 
 %description dri-driver-swrast -l pl.UTF-8
 Sterownik X.org DRI obsługujący rysowanie programowe.
+
+%package dri-driver-vc4
+Summary:	X.org DRI driver for Broadcom VC4 chips
+Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Broadcom VC4
+License:	MIT
+Group:		X11/Libraries
+Requires:	xorg-driver-video-modesetting
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
+
+%description dri-driver-vc4
+X.org DRI driver for Broadcom VC4 chips.
+
+%description dri-driver-vc4 -l pl.UTF-8
+Sterownik X.org DRI dla układów Broadcom VC4.
 
 %package dri-driver-virgl
 Summary:	X.org DRI driver for QEMU VirGL
@@ -1167,6 +1196,10 @@ nouveau
 %endif
 ilo \
 virgl \
+%ifarch arm
+freedreno \
+vc4 \
+%endif
 "
 
 gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
@@ -1532,6 +1565,12 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
 
 %if %{with gallium}
+%ifarch arm
+%files dri-driver-vc4
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/vc4_dri.so
+%endif
+
 %files dri-driver-virgl
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/virtio_gpu_dri.so
