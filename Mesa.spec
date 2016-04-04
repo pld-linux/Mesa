@@ -56,12 +56,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	11.1.2
-Release:	2
+Version:	11.2.0
+Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}.tar.xz
-# Source0-md5:	0a1e9b0419b7cda01203eedaedfd37b5
+# Source0-md5:	aee389ef4fe00c4251fcb866ca3c510f
 Patch0:		missing-type.patch
 Patch1:		x32.patch
 URL:		http://www.mesa3d.org/
