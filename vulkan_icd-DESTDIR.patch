@@ -1,0 +1,10 @@
+diff --git a/src/intel/vulkan/Makefile.am b/src/intel/vulkan/Makefile.am
+index cba6671..5aedef8 100644
+--- a/src/intel/vulkan/Makefile.am
++++ b/src/intel/vulkan/Makefile.am
+@@ -209,4 +209,4 @@ libvulkan_test_la_LIBADD = $(libvulkan_intel_la_LIBADD)
+ include $(top_srcdir)/install-lib-links.mk
+ 
+ install-data-local:
+-	$(INSTALL_DATA) -D $(srcdir)/intel_icd.json $(VULKAN_ICD_INSTALL_DIR)/intel_icd.json
++	$(INSTALL_DATA) -D $(srcdir)/intel_icd.json $(DESTDIR)/$(VULKAN_ICD_INSTALL_DIR)/intel_icd.json

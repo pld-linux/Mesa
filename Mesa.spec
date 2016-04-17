@@ -31,7 +31,7 @@
 # minimal supported xserver version
 %define		xserver_ver		1.5.0
 # other packages
-%define		libdrm_ver		2.4.63
+%define		libdrm_ver		2.4.66
 %define		dri2proto_ver		2.6
 %define		dri3proto_ver		1.0
 %define		glproto_ver		1.4.14
@@ -53,17 +53,21 @@
 %undefine	with_wayland
 %endif
 
+%define snap	20160417
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	11.2.0
-Release:	1
+Version:	11.3.0
+Release:	0.s%{snap}.1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
-Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}.tar.xz
-# Source0-md5:	aee389ef4fe00c4251fcb866ca3c510f
+# git archive --format=tar --prefix=Mesa-s20160417/ master | xz > ../Mesa-s20160417.tar.xz
+Source0:	Mesa-s%{snap}.tar.xz
+# Source0-md5:	21dee106a08c2f91f31f542d4d2d4ee5
 Patch0:		missing-type.patch
 Patch1:		x32.patch
+Patch2:		keep_git_sha.patch
+Patch3:		vulkan_icd-DESTDIR.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -77,11 +81,11 @@ BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= 6:4.2.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:2.2
-%{?with_va:BuildRequires:	libva-devel >= 1.3.0}
-%{?with_va:BuildRequires:	pkgconfig(libva) >= 0.35.0}
+%{?with_va:BuildRequires:	libva-devel >= 1.6.0}
+%{?with_va:BuildRequires:	pkgconfig(libva) >= 0.38.0}
 BuildRequires:	libvdpau-devel >= 1.1
 BuildRequires:	libxcb-devel >= 1.10
-%{?with_gallium_radeon:BuildRequires:	llvm-devel >= 3.4.2}
+%{?with_gallium_radeon:BuildRequires:	llvm-devel >= 3.6}
 %{?with_opencl:BuildRequires:	llvm-libclc}
 # for SHA1 (could use also libmd/libsha1/libgcrypt/openssl instead)
 BuildRequires:	nettle-devel
@@ -1158,10 +1162,40 @@ Radeon adapters based on Southern Islands chips.
 Sterownik Mesa radeonsi dla API Bellagio OpenMAX IL. Obsługuje karty
 ATI Radeon oparte na układach Southern Islands.
 
+%package vulkan-icd-intel
+Summary:	Mesa Vulkan driver for Intel GPUs
+Summary(pl.UTF-8):	Sterownik Vulkan dla GPU Intel
+License:	MIT
+Group:		Libraries
+Suggests:	vulkan(loader)
+Requires:	libdrm >= %{libdrm_ver}
+Provides:	vulkan(icd) = 1.0.3
+
+%description vulkan-icd-intel
+Mesa Vulkan driver for Intel GPUs.
+
+%description vulkan-icd-intel -l pl.UTF-8
+Sterownik Vulkan dla GPU Intela.
+
+%package vulkan-icd-intel-devel
+Summary:	Header files for Mesa Intel GPU Vulkan driver
+Summary(pl.UTF-8):	Pliki nagłówkowe sterownika Vulkan dla GPU Intel
+License:	MIT
+Group:		Development/Libraries
+Requires:	%{name}-vulkan-icd-intel = %{version}-%{release}
+
+%description vulkan-icd-intel-devel
+eader files for Mesa Intel GPU Vulkan driver.
+
+%description vulkan-icd-intel-devel -l pl.UTF-8
+Pliki nagłówkowe sterownika Vulkan dla GPU Intel.
+
 %prep
-%setup -q -n mesa-%{version}
+%setup -q -n Mesa-s%{snap}
 %patch0 -p1
-%patch1 -p1
+#%patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %build
 %{__libtoolize}
@@ -1204,6 +1238,8 @@ vc4 \
 
 gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 
+vulkan_drivers="intel"
+
 %configure \
 	--disable-silent-rules \
 	%{__enable gbm} \
@@ -1228,6 +1264,7 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 	%{__enable ocl_icd opencl-icd} \
 	%{?with_nine:--enable-nine} \
 	%{__enable opencl} \
+	%{__enable va} \
 	--enable-vdpau \
 	%{?with_omx:--enable-omx} \
 	%{?with_xa:--enable-xa} \
@@ -1238,8 +1275,12 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 %endif
 	--with-dri-drivers=${dri_drivers} \
 	--with-dri-driverdir=%{_libdir}/xorg/modules/dri \
+	--with-vulkan-drivers=${vulkan_drivers} \
+	--with-vulkan-icddir=/usr/share/vulkan/icd.d \
 	--with-sha1=libnettle \
 	--with-va-libdir=%{_libdir}/libva/dri
+
+echo "#define MESA_GIT_SHA1 \"$(xzcat %{SOURCE0}|git get-tar-commit-id|cut -c-7)\"" > src/mesa/main/git_sha1.h
 
 %{__make}
 
@@ -1266,7 +1307,12 @@ rm -rf $RPM_BUILD_ROOT
 %{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/gallium-pipe/pipe_*.la}
 # not defined by standards; and not needed, there is pkg-config support
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/lib*.la
+%if %{with va}
 %{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/libva/dri/gallium_drv_video.la}
+%endif
+
+# these are provided by vulkan-devel
+rm -r $RPM_BUILD_ROOT%{_includedir}/vulkan/{vk_platform.h,vulkan.h}
 
 # remove "OS ABI: Linux 2.4.20" tag, so private copies (nvidia or fglrx),
 # set up via /etc/ld.so.conf.d/*.conf will be preferred over this
@@ -1674,3 +1720,12 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/bellagio/libomx_mesa.so
 %endif
+
+%files vulkan-icd-intel
+%defattr(644,root,root,755)
+%{_libdir}/libvulkan_intel.so
+%{_datadir}/vulkan/icd.d/*.json
+
+%files vulkan-icd-intel-devel
+%defattr(644,root,root,755)
+%{_includedir}/vulkan/vulkan_intel.h

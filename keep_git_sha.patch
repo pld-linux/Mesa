@@ -1,0 +1,32 @@
+diff -dur -x '*~' Mesa-vulkan-s20160220.orig/src/mesa/Makefile.am Mesa-vulkan-s20160220/src/mesa/Makefile.am
+--- Mesa-vulkan-s20160220.orig/src/mesa/Makefile.am	2016-02-19 17:05:35.000000000 +0100
++++ Mesa-vulkan-s20160220/src/mesa/Makefile.am	2016-02-20 16:06:38.690371982 +0100
+@@ -36,28 +36,6 @@
+ gldir = $(includedir)/GL
+ gl_HEADERS = $(top_srcdir)/include/GL/*.h
+ 
+-.PHONY: main/git_sha1.h.tmp
+-main/git_sha1.h.tmp:
+-	@# Don't assume that $(top_srcdir)/.git is a directory. It may be
+-	@# a gitlink file if $(top_srcdir) is a submodule checkout or a linked
+-	@# worktree.
+-	@touch main/git_sha1.h.tmp
+-	@if test -e $(top_srcdir)/.git; then \
+-		if which git > /dev/null; then \
+-		    git --git-dir=$(top_srcdir)/.git log -n 1 --oneline | \
+-			sed 's/^\([^ ]*\) .*/#define MESA_GIT_SHA1 "git-\1"/' \
+-			> main/git_sha1.h.tmp ; \
+-		fi \
+-	fi
+-
+-main/git_sha1.h: main/git_sha1.h.tmp
+-	@echo "updating main/git_sha1.h"
+-	@if ! cmp -s main/git_sha1.h.tmp main/git_sha1.h; then \
+-		mv main/git_sha1.h.tmp main/git_sha1.h ;\
+-	else \
+-		rm main/git_sha1.h.tmp ;\
+-	fi
+-
+ include Makefile.sources
+ 
+ EXTRA_DIST = \
