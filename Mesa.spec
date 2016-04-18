@@ -54,11 +54,12 @@
 %endif
 
 %define snap	20160418
+%define	rel	1
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	11.3.0
-Release:	0.s%{snap}.1
+Release:	0.s%{snap}.%{rel}
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 # git archive --format=tar --prefix=Mesa-s20160418/ master | xz > ../Mesa-s20160418.tar.xz
