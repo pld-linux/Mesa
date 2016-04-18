@@ -65,9 +65,8 @@ Group:		X11/Libraries
 Source0:	Mesa-s%{snap}.tar.xz
 # Source0-md5:	21dee106a08c2f91f31f542d4d2d4ee5
 Patch0:		missing-type.patch
-Patch1:		x32.patch
-Patch2:		keep_git_sha.patch
-Patch3:		vulkan_icd-DESTDIR.patch
+Patch1:		keep_git_sha.patch
+Patch2:		vulkan_icd-DESTDIR.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -1193,9 +1192,8 @@ Pliki nagłówkowe sterownika Vulkan dla GPU Intel.
 %prep
 %setup -q -n Mesa-s%{snap}
 %patch0 -p1
-#%patch1 -p1
+%patch1 -p1
 %patch2 -p1
-%patch3 -p1
 
 %build
 %{__libtoolize}
