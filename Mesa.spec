@@ -53,7 +53,7 @@
 %undefine	with_wayland
 %endif
 
-%define snap	20160417
+%define snap	20160418
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
@@ -61,9 +61,9 @@ Version:	11.3.0
 Release:	0.s%{snap}.1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
-# git archive --format=tar --prefix=Mesa-s20160417/ master | xz > ../Mesa-s20160417.tar.xz
+# git archive --format=tar --prefix=Mesa-s20160418/ master | xz > ../Mesa-s20160418.tar.xz
 Source0:	Mesa-s%{snap}.tar.xz
-# Source0-md5:	21dee106a08c2f91f31f542d4d2d4ee5
+# Source0-md5:	9837de67444fdf54ab837788ef342076
 Patch0:		missing-type.patch
 Patch1:		keep_git_sha.patch
 Patch2:		vulkan_icd-DESTDIR.patch
