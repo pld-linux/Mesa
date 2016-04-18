@@ -64,7 +64,6 @@ Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}.tar.xz
 # Source0-md5:	f97d8e2f4b9a346f35c9585b2f3bf8bb
 Patch0:		missing-type.patch
-Patch1:		x32.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -1162,7 +1161,6 @@ ATI Radeon oparte na układach Southern Islands.
 %prep
 %setup -q -n mesa-%{version}
 %patch0 -p1
-#%patch1 -p1
 
 %build
 %{__libtoolize}
