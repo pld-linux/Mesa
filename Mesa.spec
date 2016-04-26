@@ -31,7 +31,7 @@
 # minimal supported xserver version
 %define		xserver_ver		1.5.0
 # other packages
-%define		libdrm_ver		2.4.63
+%define		libdrm_ver		2.4.66
 %define		dri2proto_ver		2.6
 %define		dri3proto_ver		1.0
 %define		glproto_ver		1.4.14
@@ -71,14 +71,15 @@ BuildRequires:	automake
 BuildRequires:	elfutils-devel
 BuildRequires:	expat-devel
 BuildRequires:	gcc >= 6:4.2.0
+%{?with_nine:BuildRequires:	gcc-c++ >= 6:4.6}
 %{?with_opencl:BuildRequires:	gcc-c++ >= 6:4.7}
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
 BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= 6:4.2.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:2.2
-%{?with_va:BuildRequires:	libva-devel >= 1.3.0}
-%{?with_va:BuildRequires:	pkgconfig(libva) >= 0.35.0}
+%{?with_va:BuildRequires:	libva-devel >= 1.6.0}
+%{?with_va:BuildRequires:	pkgconfig(libva) >= 0.38.0}
 BuildRequires:	libvdpau-devel >= 1.1
 BuildRequires:	libxcb-devel >= 1.10
 %{?with_gallium_radeon:BuildRequires:	llvm-devel >= 3.4.2}
@@ -524,7 +525,7 @@ R600/R700.
 Summary:	VA driver for Gallium State Tracker
 Summary(pl.UTF-8):	Sterownik VA do Gallium
 Group:		Libraries
-Requires:	libva >= 1.3.0
+Requires:	libva >= 1.6.0
 
 %description -n libva-driver-gallium
 VA driver for Gallium State Tracker.
