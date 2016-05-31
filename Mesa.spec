@@ -56,7 +56,7 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-# NOTE:		version 11.3.0 is being prepared on the MESA_11_3 branch
+# NOTE:		version 12.0.0 is being prepared on the MESA_12_0 branch
 Version:	11.2.2
 Release:	1
 License:	MIT (core) and others - see license.html file
