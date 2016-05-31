@@ -53,21 +53,17 @@
 %undefine	with_wayland
 %endif
 
-%define snap	20160418
+%define prerel	rc1
 %define	rel	1
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	11.3.0
-Release:	0.s%{snap}.%{rel}
+Version:	12.0.0
+Release:	0.%{prerel}.%{rel}
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
-# git archive --format=tar --prefix=Mesa-s20160418/ master | xz > ../Mesa-s20160418.tar.xz
-Source0:	Mesa-s%{snap}.tar.xz
-# Source0-md5:	9837de67444fdf54ab837788ef342076
-Patch0:		missing-type.patch
-Patch1:		keep_git_sha.patch
-Patch2:		vulkan_icd-DESTDIR.patch
+Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}-%{prerel}.tar.xz
+# Source0-md5:	1b2d2764beca249bb81f23274fc1d75d
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -1191,10 +1187,7 @@ eader files for Mesa Intel GPU Vulkan driver.
 Pliki nagłówkowe sterownika Vulkan dla GPU Intel.
 
 %prep
-%setup -q -n Mesa-s%{snap}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+%setup -q -n mesa-%{version}-%{prerel}
 
 %build
 %{__libtoolize}
@@ -1278,8 +1271,6 @@ vulkan_drivers="intel"
 	--with-vulkan-icddir=/usr/share/vulkan/icd.d \
 	--with-sha1=libnettle \
 	--with-va-libdir=%{_libdir}/libva/dri
-
-echo "#define MESA_GIT_SHA1 \"$(xzcat %{SOURCE0}|git get-tar-commit-id|cut -c-7)\"" > src/mesa/main/git_sha1.h
 
 %{__make}
 
@@ -1400,6 +1391,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glxext.h
 %{_includedir}/GL/glx_mangle.h
+%{_includedir}/GL/mesa_glinterop.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
 %{_pkgconfigdir}/dri.pc
