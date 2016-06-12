@@ -53,7 +53,7 @@
 %undefine	with_wayland
 %endif
 
-%define prerel	rc1
+%define prerel	rc2
 %define	rel	1
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
@@ -63,7 +63,7 @@ Release:	0.%{prerel}.%{rel}
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}-%{prerel}.tar.xz
-# Source0-md5:	1b2d2764beca249bb81f23274fc1d75d
+# Source0-md5:	ed974368926916b3bb552b29745a139d
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
