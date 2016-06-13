@@ -736,7 +736,6 @@ Summary:	X.org DRI driver for Intel i915 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i915
 License:	MIT
 Group:		X11/Libraries
-Requires:	xorg-driver-video-intel
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	Mesa-dri-driver-intel-i830
@@ -755,7 +754,6 @@ Summary:	X.org DRI driver for Intel i965 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i965
 License:	MIT
 Group:		X11/Libraries
-Requires:	xorg-driver-video-intel
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	Mesa-dri-driver-intel-i830
