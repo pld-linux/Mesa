@@ -53,7 +53,7 @@
 %undefine	with_wayland
 %endif
 
-%define prerel	rc2
+%define prerel	rc3
 %define	rel	1
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
@@ -63,7 +63,7 @@ Release:	0.%{prerel}.%{rel}
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}-%{prerel}.tar.xz
-# Source0-md5:	ed974368926916b3bb552b29745a139d
+# Source0-md5:	53495c9bb3e1a9b676e6ebd75936389a
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -522,15 +522,57 @@ R600/R700.
 
 %package -n libva-driver-gallium
 Summary:	VA driver for Gallium State Tracker
-Summary(pl.UTF-8):	Sterownik VA do Gallium
+Summary(pl.UTF-8):	Sterowniki VA do Gallium
+Group:		Libraries
+%if %{with gallium_radeon}
+Requires:	libva-driver-r600
+Requires:	libva-driver-radeonsi
+%endif
+%if %{with gallium_nouveau}
+Requires:	libva-driver-nouveau
+%endif
+
+%description -n libva-driver-gallium
+VA drivers for Gallium State Tracker (r600, radeonsi & nouveau).
+
+%description -n libva-driver-gallium -l pl.UTF-8
+Sterowniki VA do Gallium (r600, radeonsi & nouveau).
+
+%package -n libva-driver-r600
+Summary:	VA driver for ATI Radeon R600 series adapters
+Summary(pl.UTF-8):	Sterownik VA dla kart ATI Radeon z serii R600
 Group:		Libraries
 Requires:	libva >= 1.3.0
 
-%description -n libva-driver-gallium
-VA driver for Gallium State Tracker.
+%description -n libva-driver-r600
+VA driver for ATI Radeon R600 series adapters.
 
-%description -n libva-driver-gallium -l pl.UTF-8
-Sterownik VA do Gallium.
+%description -n libva-driver-r600 -l pl.UTF-8
+Sterownik VA dla kart ATI Radeon z serii R600.
+
+%package -n libva-driver-radeonsi
+Summary:	VA driver for ATI Radeon SI adapters
+Summary(pl.UTF-8):	Sterownik VA dla kart ATI Radeon SI
+Group:		Libraries
+Requires:	libva >= 1.3.0
+
+%description -n libva-driver-radeonsi
+VA driver for ATI Radeon adapters based on Southern Islands chips.
+
+%description -n libva-driver-radeonsi -l pl.UTF-8
+Sterownik VA dla kart ATI Radeon opartych na układach Southern Islands.
+
+%package -n libva-driver-nouveau
+Summary:	VA driver for NVidia adapters
+Summary(pl.UTF-8):	Sterownik VA dla kart NVidia
+Group:		Libraries
+Requires:	libva >= 1.3.0
+
+%description -n libva-driver-nouveau
+VA driver for NVidia adapters.
+
+%description -n libva-driver-nouveau -l pl.UTF-8
+Sterownik VA dla kart NVidia.
 
 %package libgbm
 Summary:	Mesa Graphics Buffer Manager library
@@ -1295,9 +1337,6 @@ rm -rf $RPM_BUILD_ROOT
 %{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/gallium-pipe/pipe_*.la}
 # not defined by standards; and not needed, there is pkg-config support
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/lib*.la
-%if %{with va}
-%{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/libva/dri/gallium_drv_video.la}
-%endif
 
 # these are provided by vulkan-devel
 rm -r $RPM_BUILD_ROOT%{_includedir}/vulkan/{vk_platform.h,vulkan.h}
@@ -1491,7 +1530,22 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with va}
 %files -n libva-driver-gallium
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libva/dri/gallium_drv_video.so
+
+%if %{with gallium_radeon}
+%files -n libva-driver-r600
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libva/dri/r600_drv_video.so
+
+%files -n libva-driver-radeonsi
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libva/dri/radeonsi_drv_video.so
+%endif
+
+%if %{with gallium_nouveau}
+%files -n libva-driver-nouveau
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libva/dri/nouveau_drv_video.so
+%endif
 %endif
 %endif
 
