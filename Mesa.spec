@@ -53,17 +53,16 @@
 %undefine	with_wayland
 %endif
 
+%define	rel	1
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-# NOTE:		version 12.0.0 is being prepared on the MESA_12_0 branch
-Version:	11.2.2
+Version:	12.0.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}.tar.xz
-# Source0-md5:	e0ec73f7273662a74366f0d76dd19ac3
-Patch0:		missing-type.patch
+# Source0-md5:	c805c347b6a85cde622845e3fb225aa5
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -82,7 +81,7 @@ BuildRequires:	libtool >= 2:2.2
 %{?with_va:BuildRequires:	pkgconfig(libva) >= 0.38.0}
 BuildRequires:	libvdpau-devel >= 1.1
 BuildRequires:	libxcb-devel >= 1.10
-%{?with_gallium_radeon:BuildRequires:	llvm-devel >= 3.4.2}
+%{?with_gallium_radeon:BuildRequires:	llvm-devel >= 3.6}
 %{?with_opencl:BuildRequires:	llvm-libclc}
 # for SHA1 (could use also libmd/libsha1/libgcrypt/openssl instead)
 BuildRequires:	nettle-devel
@@ -523,15 +522,57 @@ R600/R700.
 
 %package -n libva-driver-gallium
 Summary:	VA driver for Gallium State Tracker
-Summary(pl.UTF-8):	Sterownik VA do Gallium
+Summary(pl.UTF-8):	Sterowniki VA do Gallium
+Group:		Libraries
+%if %{with gallium_radeon}
+Requires:	libva-driver-r600
+Requires:	libva-driver-radeonsi
+%endif
+%if %{with gallium_nouveau}
+Requires:	libva-driver-nouveau
+%endif
+
+%description -n libva-driver-gallium
+VA drivers for Gallium State Tracker (r600, radeonsi & nouveau).
+
+%description -n libva-driver-gallium -l pl.UTF-8
+Sterowniki VA do Gallium (r600, radeonsi & nouveau).
+
+%package -n libva-driver-r600
+Summary:	VA driver for ATI Radeon R600 series adapters
+Summary(pl.UTF-8):	Sterownik VA dla kart ATI Radeon z serii R600
 Group:		Libraries
 Requires:	libva >= 1.6.0
 
-%description -n libva-driver-gallium
-VA driver for Gallium State Tracker.
+%description -n libva-driver-r600
+VA driver for ATI Radeon R600 series adapters.
 
-%description -n libva-driver-gallium -l pl.UTF-8
-Sterownik VA do Gallium.
+%description -n libva-driver-r600 -l pl.UTF-8
+Sterownik VA dla kart ATI Radeon z serii R600.
+
+%package -n libva-driver-radeonsi
+Summary:	VA driver for ATI Radeon SI adapters
+Summary(pl.UTF-8):	Sterownik VA dla kart ATI Radeon SI
+Group:		Libraries
+Requires:	libva >= 1.6.0
+
+%description -n libva-driver-radeonsi
+VA driver for ATI Radeon adapters based on Southern Islands chips.
+
+%description -n libva-driver-radeonsi -l pl.UTF-8
+Sterownik VA dla kart ATI Radeon opartych na układach Southern Islands.
+
+%package -n libva-driver-nouveau
+Summary:	VA driver for NVidia adapters
+Summary(pl.UTF-8):	Sterownik VA dla kart NVidia
+Group:		Libraries
+Requires:	libva >= 1.6.0
+
+%description -n libva-driver-nouveau
+VA driver for NVidia adapters.
+
+%description -n libva-driver-nouveau -l pl.UTF-8
+Sterownik VA dla kart NVidia.
 
 %package libgbm
 Summary:	Mesa Graphics Buffer Manager library
@@ -737,7 +778,6 @@ Summary:	X.org DRI driver for Intel i915 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i915
 License:	MIT
 Group:		X11/Libraries
-Requires:	xorg-driver-video-intel
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	Mesa-dri-driver-intel-i830
@@ -756,7 +796,6 @@ Summary:	X.org DRI driver for Intel i965 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i965
 License:	MIT
 Group:		X11/Libraries
-Requires:	xorg-driver-video-intel
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	Mesa-dri-driver-intel-i830
@@ -1159,9 +1198,36 @@ Radeon adapters based on Southern Islands chips.
 Sterownik Mesa radeonsi dla API Bellagio OpenMAX IL. Obsługuje karty
 ATI Radeon oparte na układach Southern Islands.
 
+%package vulkan-icd-intel
+Summary:	Mesa Vulkan driver for Intel GPUs
+Summary(pl.UTF-8):	Sterownik Vulkan dla GPU Intel
+License:	MIT
+Group:		Libraries
+Suggests:	vulkan(loader)
+Requires:	libdrm >= %{libdrm_ver}
+Provides:	vulkan(icd) = 1.0.3
+
+%description vulkan-icd-intel
+Mesa Vulkan driver for Intel GPUs.
+
+%description vulkan-icd-intel -l pl.UTF-8
+Sterownik Vulkan dla GPU Intela.
+
+%package vulkan-icd-intel-devel
+Summary:	Header files for Mesa Intel GPU Vulkan driver
+Summary(pl.UTF-8):	Pliki nagłówkowe sterownika Vulkan dla GPU Intel
+License:	MIT
+Group:		Development/Libraries
+Requires:	%{name}-vulkan-icd-intel = %{version}-%{release}
+
+%description vulkan-icd-intel-devel
+eader files for Mesa Intel GPU Vulkan driver.
+
+%description vulkan-icd-intel-devel -l pl.UTF-8
+Pliki nagłówkowe sterownika Vulkan dla GPU Intel.
+
 %prep
 %setup -q -n mesa-%{version}
-%patch0 -p1
 
 %build
 %{__libtoolize}
@@ -1204,6 +1270,8 @@ vc4 \
 
 gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 
+vulkan_drivers="intel"
+
 %configure \
 	--disable-silent-rules \
 	%{__enable gbm} \
@@ -1228,6 +1296,7 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 	%{__enable ocl_icd opencl-icd} \
 	%{?with_nine:--enable-nine} \
 	%{__enable opencl} \
+	%{__enable va} \
 	--enable-vdpau \
 	%{?with_omx:--enable-omx} \
 	%{?with_xa:--enable-xa} \
@@ -1238,6 +1307,8 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 %endif
 	--with-dri-drivers=${dri_drivers} \
 	--with-dri-driverdir=%{_libdir}/xorg/modules/dri \
+	--with-vulkan-drivers=${vulkan_drivers} \
+	--with-vulkan-icddir=/usr/share/vulkan/icd.d \
 	--with-sha1=libnettle \
 	--with-va-libdir=%{_libdir}/libva/dri
 
@@ -1266,7 +1337,9 @@ rm -rf $RPM_BUILD_ROOT
 %{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/gallium-pipe/pipe_*.la}
 # not defined by standards; and not needed, there is pkg-config support
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/lib*.la
-%{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/libva/dri/gallium_drv_video.la}
+
+# these are provided by vulkan-devel
+rm -r $RPM_BUILD_ROOT%{_includedir}/vulkan/{vk_platform.h,vulkan.h}
 
 # remove "OS ABI: Linux 2.4.20" tag, so private copies (nvidia or fglrx),
 # set up via /etc/ld.so.conf.d/*.conf will be preferred over this
@@ -1355,6 +1428,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glxext.h
 %{_includedir}/GL/glx_mangle.h
+%{_includedir}/GL/mesa_glinterop.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
 %{_pkgconfigdir}/dri.pc
@@ -1456,7 +1530,22 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with va}
 %files -n libva-driver-gallium
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libva/dri/gallium_drv_video.so
+
+%if %{with gallium_radeon}
+%files -n libva-driver-r600
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libva/dri/r600_drv_video.so
+
+%files -n libva-driver-radeonsi
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libva/dri/radeonsi_drv_video.so
+%endif
+
+%if %{with gallium_nouveau}
+%files -n libva-driver-nouveau
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libva/dri/nouveau_drv_video.so
+%endif
 %endif
 %endif
 
@@ -1674,3 +1763,12 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/bellagio/libomx_mesa.so
 %endif
+
+%files vulkan-icd-intel
+%defattr(644,root,root,755)
+%{_libdir}/libvulkan_intel.so
+%{_datadir}/vulkan/icd.d/*.json
+
+%files vulkan-icd-intel-devel
+%defattr(644,root,root,755)
+%{_includedir}/vulkan/vulkan_intel.h
