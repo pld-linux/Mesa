@@ -53,17 +53,16 @@
 %undefine	with_wayland
 %endif
 
-%define prerel	rc3
 %define	rel	1
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	12.0.0
-Release:	0.%{prerel}.%{rel}
+Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
-Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}-%{prerel}.tar.xz
-# Source0-md5:	53495c9bb3e1a9b676e6ebd75936389a
+Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}.tar.xz
+# Source0-md5:	c805c347b6a85cde622845e3fb225aa5
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -1227,7 +1226,7 @@ eader files for Mesa Intel GPU Vulkan driver.
 Pliki nagłówkowe sterownika Vulkan dla GPU Intel.
 
 %prep
-%setup -q -n mesa-%{version}-%{prerel}
+%setup -q -n mesa-%{version}
 
 %build
 %{__libtoolize}
