@@ -57,12 +57,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	12.0.2
+Version:	12.0.3
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}.tar.xz
-# Source0-md5:	f19032b5cb5e362745f0c2accc28a641
+# Source0-md5:	1113699c714042d8c4df4766be8c57d8
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -1291,8 +1291,6 @@ vulkan_drivers="intel"
 %if %{with gallium}
 	--enable-gallium-llvm \
 	--enable-llvm-shared-libs \
-	%{__enable egl gallium-egl} \
-	%{__enable gbm gallium-gbm} \
 	%{__enable ocl_icd opencl-icd} \
 	%{?with_nine:--enable-nine} \
 	%{__enable opencl} \
