@@ -4,6 +4,7 @@
 # - consider:
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
 # - resurrect static if it's useful (using plain xorg target? DRI doesn't support static)
+# - libglvnd?
 #
 # Conditional build:
 %bcond_without	gallium		# gallium drivers
@@ -216,7 +217,7 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	%{name}-libglapi = %{version}-%{release}
 Requires:	libdrm >= %{libdrm_ver}
-Provides:	OpenGL = 4.1
+Provides:	OpenGL = 4.3
 Provides:	OpenGL-GLX = 1.4
 Obsoletes:	Mesa
 Obsoletes:	Mesa-dri
@@ -261,7 +262,7 @@ Requires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 Requires:	xorg-proto-glproto-devel >= %{glproto_ver}
 Suggests:	OpenGL-doc-man
 Provides:	OpenGL-GLX-devel = 1.4
-Provides:	OpenGL-devel = 4.1
+Provides:	OpenGL-devel = 4.3
 Obsoletes:	Mesa-devel
 Obsoletes:	X11-OpenGL-devel < 1:7.0.0
 Obsoletes:	X11-OpenGL-devel-base < 1:7.0.0
@@ -280,7 +281,7 @@ Summary(pl.UTF-8):	Statyczna biblioteka libGL z projektu Mesa3D
 License:	MIT
 Group:		X11/Development/Libraries
 Requires:	%{name}-libGL-devel = %{version}-%{release}
-Provides:	OpenGL-static = 4.1
+Provides:	OpenGL-static = 4.3
 Obsoletes:	Mesa-static
 Obsoletes:	X11-OpenGL-static < 1:7.0.0
 Obsoletes:	XFree86-OpenGL-static < 1:7.0.0
@@ -1200,7 +1201,7 @@ ATI Radeon oparte na układach Southern Islands.
 
 %package vulkan-icd-intel
 Summary:	Mesa Vulkan driver for Intel GPUs
-Summary(pl.UTF-8):	Sterownik Vulkan dla GPU Intel
+Summary(pl.UTF-8):	Sterownik Vulkan dla GPU firmy Intel
 License:	MIT
 Group:		Libraries
 Suggests:	vulkan(loader)
@@ -1215,7 +1216,7 @@ Sterownik Vulkan dla GPU Intela.
 
 %package vulkan-icd-intel-devel
 Summary:	Header files for Mesa Intel GPU Vulkan driver
-Summary(pl.UTF-8):	Pliki nagłówkowe sterownika Vulkan dla GPU Intel
+Summary(pl.UTF-8):	Pliki nagłówkowe sterownika Vulkan dla GPU Intela
 License:	MIT
 Group:		Development/Libraries
 Requires:	%{name}-vulkan-icd-intel = %{version}-%{release}
@@ -1764,8 +1765,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files vulkan-icd-intel
 %defattr(644,root,root,755)
-%{_libdir}/libvulkan_intel.so
-%{_datadir}/vulkan/icd.d/*.json
+%attr(755,root,root) %{_libdir}/libvulkan_intel.so
+%{_datadir}/vulkan/icd.d/intel_icd.json
 
 %files vulkan-icd-intel-devel
 %defattr(644,root,root,755)
