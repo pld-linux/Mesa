@@ -58,12 +58,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	12.0.3
+Version:	13.0.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}.tar.xz
-# Source0-md5:	1113699c714042d8c4df4766be8c57d8
+# Source0-md5:	8c4ca7da1be2b8f9a877db09304335a4
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -217,7 +217,7 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	%{name}-libglapi = %{version}-%{release}
 Requires:	libdrm >= %{libdrm_ver}
-Provides:	OpenGL = 4.3
+Provides:	OpenGL = 4.5
 Provides:	OpenGL-GLX = 1.4
 Obsoletes:	Mesa
 Obsoletes:	Mesa-dri
@@ -1321,8 +1321,6 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-# strip out undesirable headers
-%{__rm} $RPM_BUILD_ROOT%{_includedir}/GL/wglext.h
 # dlopened by soname
 %{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so}
 %{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so.1.0}
@@ -1427,7 +1425,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glxext.h
 %{_includedir}/GL/glx_mangle.h
-%{_includedir}/GL/mesa_glinterop.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
 %{_pkgconfigdir}/dri.pc
@@ -1766,7 +1763,7 @@ rm -rf $RPM_BUILD_ROOT
 %files vulkan-icd-intel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libvulkan_intel.so
-%{_datadir}/vulkan/icd.d/intel_icd.json
+%{_datadir}/vulkan/icd.d/intel_icd*.json
 
 %files vulkan-icd-intel-devel
 %defattr(644,root,root,755)
