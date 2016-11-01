@@ -262,7 +262,7 @@ Requires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 Requires:	xorg-proto-glproto-devel >= %{glproto_ver}
 Suggests:	OpenGL-doc-man
 Provides:	OpenGL-GLX-devel = 1.4
-Provides:	OpenGL-devel = 4.3
+Provides:	OpenGL-devel = 4.5
 Obsoletes:	Mesa-devel
 Obsoletes:	X11-OpenGL-devel < 1:7.0.0
 Obsoletes:	X11-OpenGL-devel-base < 1:7.0.0
@@ -281,7 +281,7 @@ Summary(pl.UTF-8):	Statyczna biblioteka libGL z projektu Mesa3D
 License:	MIT
 Group:		X11/Development/Libraries
 Requires:	%{name}-libGL-devel = %{version}-%{release}
-Provides:	OpenGL-static = 4.3
+Provides:	OpenGL-static = 4.5
 Obsoletes:	Mesa-static
 Obsoletes:	X11-OpenGL-static < 1:7.0.0
 Obsoletes:	XFree86-OpenGL-static < 1:7.0.0
