@@ -24,6 +24,7 @@
 %bcond_with	texture_float	# floating-point textures and renderbuffers (SGI patent in US)
 %bcond_with	static_libs	# static libraries [not supported for DRI, thus broken currently]
 %bcond_with	tests		# tests
+%bcond_with	shared_llvm	# enable linking with shared LLVM libs – may cause compatibility problems with Steam and games
 #
 # glapi version (glapi tables in dri drivers and libglx must be in sync);
 # set to current Mesa version on ABI break, when xserver tables get regenerated
@@ -59,7 +60,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	13.0.0
-Release:	1
+Release:	1.1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}.tar.xz
@@ -82,7 +83,7 @@ BuildRequires:	libtool >= 2:2.2
 %{?with_va:BuildRequires:	pkgconfig(libva) >= 0.38.0}
 BuildRequires:	libvdpau-devel >= 1.1
 BuildRequires:	libxcb-devel >= 1.10
-%{?with_gallium_radeon:BuildRequires:	llvm-devel >= 3.6}
+%{?with_gallium_radeon:BuildRequires:	llvm-devel >= 3.8}
 %{?with_opencl:BuildRequires:	llvm-libclc}
 # for SHA1 (could use also libmd/libsha1/libgcrypt/openssl instead)
 BuildRequires:	nettle-devel
@@ -1291,7 +1292,7 @@ vulkan_drivers="intel"
 %endif
 %if %{with gallium}
 	--enable-gallium-llvm \
-	--enable-llvm-shared-libs \
+	%{__enable_disable shared_llvm llvm-shared-libs} \
 	%{__enable ocl_icd opencl-icd} \
 	%{?with_nine:--enable-nine} \
 	%{__enable opencl} \
