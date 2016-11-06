@@ -12,15 +12,18 @@
 %bcond_without	gallium_nouveau	# gallium nouveau driver
 %bcond_without	gallium_radeon	# gallium radeon drivers
 %bcond_without	egl		# EGL libraries
-%bcond_with	openvg		# OpenVG library [not builind since 10.4, dropped in 10.6]
+%bcond_with	openvg		# OpenVG library [not building since 10.4, dropped in 10.6]
 %bcond_without	gbm		# Graphics Buffer Manager
 %bcond_without	nine		# Nine Direct3D 9+ state tracker (for Wine)
 %bcond_without	opencl		# OpenCL support
 %bcond_without	ocl_icd		# OpenCL as ICD (installable client driver)
+%bcond_with	glvnd		# OpenGL vendor neutral dispatcher support
 %bcond_without	omx		# OpenMAX (Bellagio OMXIL) support
 %bcond_without	va		# VA library
 %bcond_without	wayland		# Wayland EGL
 %bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
+%bcond_with	hud_extra	# HUD block/NIC I/O HUD stats support
+%bcond_with	lm_sensors	# HUD lm_sensors support
 %bcond_with	texture_float	# floating-point textures and renderbuffers (SGI patent in US)
 %bcond_with	static_libs	# static libraries [not supported for DRI, thus broken currently]
 %bcond_with	tests		# tests
@@ -75,6 +78,7 @@ BuildRequires:	gcc >= 6:4.2.0
 %{?with_nine:BuildRequires:	gcc-c++ >= 6:4.6}
 %{?with_opencl:BuildRequires:	gcc-c++ >= 6:4.7}
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
+%{?with_glvnd:BuildRequires:	libglvnd-devel >= 0.1.0}
 BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= 6:4.2.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
@@ -96,7 +100,7 @@ BuildRequires:	pkgconfig(talloc) >= 2.0.1
 BuildRequires:	pkgconfig(xcb-dri3)
 BuildRequires:	pkgconfig(xcb-present)
 BuildRequires:	python >= 2
-BuildRequires:	python-Mako >= 0.3.4
+BuildRequires:	python-Mako >= 0.8.0
 BuildRequires:	python-modules >= 2
 BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
@@ -115,6 +119,7 @@ BuildRequires:	xorg-proto-glproto-devel >= %{glproto_ver}
 BuildRequires:	xorg-proto-presentproto-devel >= %{presentproto_ver}
 BuildRequires:	xorg-util-makedepend
 %if %{with gallium}
+%{?with_lm_sensors:BuildRequires:	lm_sensors-devel >= 3.4}
 BuildRequires:	xorg-proto-xextproto-devel >= 7.0.99.1
 BuildRequires:	xorg-xserver-server-devel >= %{xserver_ver}
 %endif
@@ -1256,7 +1261,7 @@ nouveau
 %endif
 ilo \
 virgl \
-%ifarch arm
+%ifarch %{arm}
 freedreno \
 vc4 \
 %endif
@@ -1270,6 +1275,7 @@ vulkan_drivers="intel"
 	--disable-silent-rules \
 	%{__enable gbm} \
 	--enable-glx-tls \
+	%{?with_glvnd:--enable-libglvnd} \
 	--enable-osmesa \
 	--enable-selinux \
 	--enable-shared \
@@ -1283,9 +1289,11 @@ vulkan_drivers="intel"
 	--with-egl-platforms=x11%{?with_gbm:,drm}%{?with_wayland:,wayland} \
 %endif
 %if %{with gallium}
+	%{?with_hud_extra:--enable-gallium-extra-hud} \
 	--enable-gallium-llvm \
 	%{__enable_disable shared_llvm llvm-shared-libs} \
 	%{__enable ocl_icd opencl-icd} \
+	%{?with_lm_sensors:--enable-lmsensors} \
 	%{?with_nine:--enable-nine} \
 	%{__enable opencl} \
 	%{__enable va} \
@@ -1329,11 +1337,13 @@ rm -rf $RPM_BUILD_ROOT
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/lib*.la
 
 # these are provided by vulkan-devel
-rm -r $RPM_BUILD_ROOT%{_includedir}/vulkan/{vk_platform.h,vulkan.h}
+%{__rm} -r $RPM_BUILD_ROOT%{_includedir}/vulkan/{vk_platform.h,vulkan.h}
 
+%if %{without glvnd}
 # remove "OS ABI: Linux 2.4.20" tag, so private copies (nvidia or fglrx),
 # set up via /etc/ld.so.conf.d/*.conf will be preferred over this
 strip -R .note.ABI-tag $RPM_BUILD_ROOT%{_libdir}/libGL.so.*.*
+%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -1400,11 +1410,17 @@ rm -rf $RPM_BUILD_ROOT
 %files libGL
 %defattr(644,root,root,755)
 %doc docs/{*.html,README.UVD,patents.txt,relnotes/*.html}
+%if %{with glvnd}
+%attr(755,root,root) %{_libdir}/libGLX_mesa.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libGLX_mesa.so.0
+%attr(755,root,root) %{_libdir}/libGLX_mesa.so
+%else
 %attr(755,root,root) %{_libdir}/libGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libGL.so.1
 # symlink for binary apps which fail to conform Linux OpenGL ABI
 # (and dlopen libGL.so instead of libGL.so.1; the same does Mesa libEGL)
 %attr(755,root,root) %{_libdir}/libGL.so
+%endif
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/drirc
 
 %files libGL-devel
@@ -1643,7 +1659,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
 
 %if %{with gallium}
-%ifarch arm
+%ifarch %{arm}
 %files dri-driver-vc4
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/vc4_dri.so
@@ -1669,7 +1685,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/gallium-pipe/pipe_i965.so
 
-%ifarch arm
+%ifarch %{arm}
 %files pipe-driver-msm
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/gallium-pipe/pipe_msm.so
@@ -1756,7 +1772,7 @@ rm -rf $RPM_BUILD_ROOT
 %files vulkan-icd-intel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libvulkan_intel.so
-%{_datadir}/vulkan/icd.d/intel_icd*.json
+%{_datadir}/vulkan/icd.d/intel_icd.*.json
 
 %files vulkan-icd-intel-devel
 %defattr(644,root,root,755)
