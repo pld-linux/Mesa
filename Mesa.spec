@@ -28,6 +28,7 @@
 %bcond_with	static_libs	# static libraries [not supported for DRI, thus broken currently]
 %bcond_with	tests		# tests
 %bcond_without	shared_llvm	# disable use of the shared LLVM libs
+%bcond_without	radv		# disable build of the radeon Vulkan driver
 #
 # glapi version (glapi tables in dri drivers and libglx must be in sync);
 # set to current Mesa version on ABI break, when xserver tables get regenerated
@@ -87,6 +88,7 @@ BuildRequires:	libtool >= 2:2.2
 BuildRequires:	libvdpau-devel >= 1.1
 BuildRequires:	libxcb-devel >= 1.10
 %{?with_gallium_radeon:BuildRequires:	llvm-devel >= 3.8}
+%{?with_radv:BuildRequires:	llvm-devel >= 3.9}
 %{?with_opencl:BuildRequires:	llvm-libclc}
 # for SHA1 (could use also libmd/libsha1/libgcrypt/openssl instead)
 BuildRequires:	nettle-devel
@@ -1224,6 +1226,20 @@ eader files for Mesa Intel GPU Vulkan driver.
 %description vulkan-icd-intel-devel -l pl.UTF-8
 Pliki nagłówkowe sterownika Vulkan dla GPU Intel.
 
+%package vulkan-icd-radeon
+Summary:	radv - experimental Mesa Vulkan driver for AMD Radeon GPUs
+Summary(pl.UTF-8):	radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD
+License:	MIT
+Group:		Libraries
+Suggests:	vulkan(loader)
+Provides:	vulkan(icd) = 1.0.3
+
+%description vulkan-icd-radeon
+radv - experimental Mesa Vulkan driver for AMD Radeon GPUs.
+
+%description vulkan-icd-radeon -l pl.UTF-8
+radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD.
+
 %prep
 %setup -q -n mesa-%{version}
 
@@ -1268,7 +1284,7 @@ vc4 \
 
 gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 
-vulkan_drivers="intel"
+vulkan_drivers="intel%{?with_radv:,radeon}"
 
 %configure \
 	--disable-silent-rules \
@@ -1776,3 +1792,10 @@ rm -rf $RPM_BUILD_ROOT
 %files vulkan-icd-intel-devel
 %defattr(644,root,root,755)
 %{_includedir}/vulkan/vulkan_intel.h
+
+%if %{with radv}
+%files vulkan-icd-radeon
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libvulkan_radeon.so
+%{_datadir}/vulkan/icd.d/radeon_icd.json
+%endif
