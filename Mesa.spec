@@ -58,7 +58,7 @@
 %undefine	with_wayland
 %endif
 
-%define	rel	1
+%define	rel	2
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
