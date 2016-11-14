@@ -1797,5 +1797,5 @@ rm -rf $RPM_BUILD_ROOT
 %files vulkan-icd-radeon
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libvulkan_radeon.so
-%{_datadir}/vulkan/icd.d/radeon_icd.json
+%{_datadir}/vulkan/icd.d/radeon_icd.*.json
 %endif
