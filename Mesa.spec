@@ -236,7 +236,7 @@ Silicon Graphics, Inc. However, the author does not possess an OpenGL
 license from SGI, and makes no claim that Mesa is in any way a
 compatible replacement for OpenGL or associated with SGI.
 
-This package contains libGL which implements OpenGL 1.5 and GLX 1.4
+This package contains libGL which implements OpenGL 4.5 and GLX 1.4
 specifications. It uses DRI for rendering.
 
 %description libGL -l pl.UTF-8
@@ -246,7 +246,7 @@ autoryzacją Silicon Graphics, Inc. Jednak autor nie posiada licencji
 OpenGL od SGI i nie twierdzi, że Mesa jest kompatybilnym zamiennikiem
 OpenGL ani powiązana z SGI.
 
-Ten pakiet zawiera libGL implementującą specyfikacje OpenGL 1.5 oraz
+Ten pakiet zawiera libGL implementującą specyfikacje OpenGL 4.5 oraz
 GLX 1.4. Używa DRI do renderowania.
 
 %package libGL-devel
@@ -304,7 +304,7 @@ Requires:	%{name}-libglapi = %{version}-%{release}
 Provides:	OpenGLES
 Provides:	OpenGLESv1 = 1.1
 Provides:	OpenGLESv2 = 2.0
-Provides:	OpenGLESv3 = 3.1
+Provides:	OpenGLESv3 = 3.2
 
 %description libGLES
 This package contains shared libraries of Mesa implementation of GLES
@@ -332,7 +332,7 @@ Requires:	%{name}-libGLES = %{version}-%{release}
 Provides:	OpenGLES-devel
 Provides:	OpenGLESv1-devel = 1.1
 Provides:	OpenGLESv2-devel = 2.0
-Provides:	OpenGLESv3-devel = 3.1
+Provides:	OpenGLESv3-devel = 3.2
 
 %description libGLES-devel
 Header files for Mesa GLES libraries.
