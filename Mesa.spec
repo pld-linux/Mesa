@@ -62,12 +62,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	13.0.4
+Version:	17.0.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
-Source0:	ftp://ftp.freedesktop.org/pub/mesa/%{version}/mesa-%{version}.tar.xz
-# Source0-md5:	d088a921e935218833a8071cb672a574
+Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
+# Source0-md5:	932e4171a86b14940c06812356486155
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -106,7 +106,7 @@ BuildRequires:	python-modules >= 2
 BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
 # wayland-{client,server}
-%{?with_wayland:BuildRequires:	wayland-devel >= 1.2.0}
+%{?with_wayland:BuildRequires:	wayland-devel >= 1.11.0}
 BuildRequires:	xorg-lib-libXdamage-devel
 BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXfixes-devel
@@ -1350,9 +1350,6 @@ rm -rf $RPM_BUILD_ROOT
 %{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/gallium-pipe/pipe_*.la}
 # not defined by standards; and not needed, there is pkg-config support
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/lib*.la
-
-# these are provided by vulkan-devel
-%{__rm} -r $RPM_BUILD_ROOT%{_includedir}/vulkan/{vk_platform.h,vulkan.h}
 
 %if %{without glvnd}
 # remove "OS ABI: Linux 2.4.20" tag, so private copies (nvidia or fglrx),
