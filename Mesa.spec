@@ -4,7 +4,6 @@
 # - consider:
 # - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
 # - resurrect static if it's useful (using plain xorg target? DRI doesn't support static)
-# - libglvnd?
 #
 # Conditional build:
 %bcond_without	gallium		# gallium drivers
@@ -37,7 +36,11 @@
 # minimal supported xserver version
 %define		xserver_ver		1.5.0
 # other packages
+%ifarch %{arm}
+%define		libdrm_ver		2.4.74
+%else
 %define		libdrm_ver		2.4.71
+%endif
 %define		dri2proto_ver		2.6
 %define		dri3proto_ver		1.0
 %define		glproto_ver		1.4.14
@@ -68,12 +71,13 @@ License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 # Source0-md5:	932e4171a86b14940c06812356486155
+Patch0:		%{name}-link.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
 %{?with_opencl:BuildRequires:	clang-devel >= 3.1}
 BuildRequires:	elfutils-devel
-BuildRequires:	expat-devel
+BuildRequires:	expat-devel >= 1.95
 BuildRequires:	gcc >= 6:4.2.0
 %{?with_nine:BuildRequires:	gcc-c++ >= 6:4.6}
 %{?with_opencl:BuildRequires:	gcc-c++ >= 6:4.7}
@@ -159,7 +163,7 @@ Requires:	%{name}-libglapi = %{version}-%{release}
 Requires:	OpenGL >= 1.2
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libxcb >= 1.9
-%{?with_wayland:Requires:	wayland >= 1.2.0}
+%{?with_wayland:Requires:	wayland >= 1.11.0}
 %if %{with gbm}
 Requires:	%{name}-libgbm = %{version}-%{release}
 %endif
@@ -562,7 +566,8 @@ Requires:	libva >= 1.6.0
 VA driver for ATI Radeon adapters based on Southern Islands chips.
 
 %description -n libva-driver-radeonsi -l pl.UTF-8
-Sterownik VA dla kart ATI Radeon opartych na układach Southern Islands.
+Sterownik VA dla kart ATI Radeon opartych na układach Southern
+Islands.
 
 %package -n libva-driver-nouveau
 Summary:	VA driver for NVidia adapters
@@ -757,6 +762,21 @@ X.org DRI driver for ATI Southern Islands card family.
 
 %description dri-driver-ati-radeon-SI -l pl.UTF-8
 Sterownik X.org DRI dla rodziny kart ATI Southern Islands.
+
+%package dri-driver-etnaviv
+Summary:	X.org DRI driver for Vivante 3D chips
+Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Vivante 3D
+License:	MIT
+Group:		X11/Libraries
+#Requires:	xorg-driver-video-?
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
+
+%description dri-driver-etnaviv
+X.org DRI driver for Vivante 3D chips.
+
+%description dri-driver-etnaviv -l pl.UTF-8
+Sterownik X.org DRI dla układów Vivante 3D.
 
 %package dri-driver-freedreno
 Summary:	X.org DRI driver for Adreno chips
@@ -1036,6 +1056,22 @@ virtual video adapter.
 Sterownik vmwgfx dla dynamicznego systemu potoków szkieletu Mesa
 Gallium. Obsługuje wirtualną kartę graficzną VMware.
 
+%package swr
+Summary:	OpenSWR software rasterizer modules for Mesa
+Summary(pl.UTF-8):	Moduły programowego rasteryzera OpenSWR dla Mesy
+Group:		Libraries
+Requires:	cpuinfo(avx)
+
+%description swr
+OpenSWR software rasterizer modules for Mesa, utilizing x86 AVX or
+VX2 instruction sets. They can be loaded by swrast pipe driver or
+OSMesa library.
+
+%description swr -l pl.UTF-8
+Moduły programowego rasteryzera OpenSWR dla Mesy, wykorzystujące
+zestawy instrukcji x86 AVX lub AVX2. Mogą być wczytywane przez
+sterownik potoków swrast lub bibliotekę OSMesa.
+
 %package d3d
 Summary:	Nine Direct3D9 driver (for Wine)
 Summary(pl.UTF-8):	Sterownik Direct3D9 Nine (dla Wine)
@@ -1242,6 +1278,7 @@ radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD.
 
 %prep
 %setup -q -n mesa-%{version}
+%patch0 -p1
 
 %build
 %{__libtoolize}
@@ -1249,42 +1286,41 @@ radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD.
 %{__autoconf}
 %{__automake}
 
-dri_drivers="r200 radeon \
-%if %{without gallium_i915}
-i915 \
+dri_drivers="nouveau r200 radeon swrast \
+%ifarch %{ix86} %{x8664} x32
+i965 %{!?with_gallium_i915:i915} \
 %endif
-i965 \
-nouveau \
-%ifarch sparc sparcv9 sparc64
-ffb \
-%endif
-swrast"
+"
 
 dri_drivers=$(echo $dri_drivers | xargs | tr ' ' ',')
 
-gallium_drivers="svga swrast \
-%if %{with gallium_i915}
-i915 \
+gallium_drivers="svga swrast virgl \
+%ifarch %{ix86} %{x8664} x32
+swr ilo %{?with_gallium_i915:i915} \
 %endif
 %if %{with gallium_radeon}
-r300 \
-r600 \
-radeonsi \
+r300 r600 radeonsi \
 %endif
 %if %{with gallium_nouveau}
 nouveau
 %endif
-ilo \
-virgl \
 %ifarch %{arm}
+etnaviv \
 freedreno \
+imx \
 vc4 \
 %endif
 "
 
 gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 
-vulkan_drivers="intel%{?with_radv:,radeon}"
+vulkan_drivers="%{?with_radv:radeon} \
+%ifarch %{ix86} %{x8664} x32
+intel \
+%endif
+"
+
+vulkan_drivers=$(echo $vulkan_drivers | xargs | tr ' ' ',')
 
 %configure \
 	--disable-silent-rules \
@@ -1672,6 +1708,16 @@ rm -rf $RPM_BUILD_ROOT
 
 %if %{with gallium}
 %ifarch %{arm}
+%files dri-driver-etnaviv
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/etnaviv_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/imx-drm_dri.so
+
+%files dri-driver-freedreno
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/kgsl_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/msm_dri.so
+
 %files dri-driver-vc4
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/vc4_dri.so
@@ -1730,6 +1776,13 @@ rm -rf $RPM_BUILD_ROOT
 %files pipe-driver-vmwgfx
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/gallium-pipe/pipe_vmwgfx.so
+
+%ifarch %{ix86} %{x8664} x32
+%files swr
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libswrAVX.so
+%attr(755,root,root) %{_libdir}/libswrAVX2.so
+%endif
 %endif
 
 %if %{with nine}

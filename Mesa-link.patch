@@ -1,0 +1,17 @@
+--- mesa-17.0.0/src/gallium/drivers/swr/Makefile.am.orig	2017-02-16 16:55:35.492796001 +0100
++++ mesa-17.0.0/src/gallium/drivers/swr/Makefile.am	2017-02-16 16:55:38.929462627 +0100
+@@ -159,11 +159,13 @@
+ COMMON_LIBADD = \
+ 	$(top_builddir)/src/gallium/auxiliary/libgallium.la \
+ 	$(top_builddir)/src/mesa/libmesagallium.la \
+-	$(LLVM_LIBS)
++	$(LLVM_LIBS) \
++	-lpthread -ldl
+ 
+ COMMON_LDFLAGS = \
+ 	-shared \
+ 	-module \
++	-avoid-version \
+ 	-no-undefined \
+ 	$(GC_SECTIONS) \
+ 	$(NO_UNDEFINED) \
