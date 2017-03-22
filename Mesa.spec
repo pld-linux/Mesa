@@ -694,10 +694,12 @@ Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 
 %description dri-driver-ati-radeon-R100
-X.org DRI driver for ATI R100 card family (Radeon 7000-7500).
+X.org DRI driver for ATI R100 card family (Radeon 7000-7500). It
+supports R100, RV100, RS100, RV200, RS200, RS250.
 
 %description dri-driver-ati-radeon-R100 -l pl.UTF-8
 Sterownik X.org DRI dla rodziny kart ATI R100 (Radeon 7000-7500).
+Obsługuje układy R100, RV100, RS100, RV200, RS200, RS250.
 
 %package dri-driver-ati-radeon-R200
 Summary:	X.org DRI driver for ATI R200 card family
@@ -710,10 +712,12 @@ Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 
 %description dri-driver-ati-radeon-R200
-X.org DRI driver for ATI R200 card family (Radeon 8500-92xx)
+X.org DRI driver for ATI R200 card family (Radeon 8500-92xx). It
+supports R200, RV250, RV280, RS300, RS350 chips.
 
 %description dri-driver-ati-radeon-R200 -l pl.UTF-8
 Sterownik X.org DRI dla rodziny kart ATI R200 (Radeon 8500-92xx).
+Obsługuje układy R200, RV250, RV280, RS300, RS350.
 
 %package dri-driver-ati-radeon-R300
 Summary:	X.org DRI driver for ATI R300 card family
@@ -726,10 +730,18 @@ Requires:	xorg-xserver-server >= %{xserver_ver}
 Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 
 %description dri-driver-ati-radeon-R300
-X.org DRI driver for ATI R300/R400/RS690/R500 card family.
+X.org Gallium DRI driver for ATI R300/R400/RS690/R500 card family
+(Radeon 9600-9800, X300-X2300). It supports R300, R350, R360, RV350,
+RV370, RV380, R420, R423, R430, R480, R481, RV410, RS400, RC410,
+RS480, RS482, R520, RV515, RV530, RV560, RV570, R580, RS600, RS690,
+RS740 chips.
 
 %description dri-driver-ati-radeon-R300 -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart ATI R300/R400/RS690/R500.
+Sterownik X.org DRI Gallium dla rodziny kart ATI R300/R400/RS690/R500
+(Radeon 9600-9800, X300-X2300). Obsługuje układy R300, R350, R360,
+RV350, RV370, RV380, R420, R423, R430, R480, R481, RV410, RS400,
+RC410, RS480, RS482, R520, RV515, RV530, RV560, RV570, R580, RS600,
+RS690, RS740.
 
 %package dri-driver-ati-radeon-R600
 Summary:	X.org DRI driver for ATI R600 card family
@@ -742,10 +754,18 @@ Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 
 %description dri-driver-ati-radeon-R600
-X.org DRI driver for ATI R600/R700 card family.
+X.org Gallium DRI driver for ATI R600/R700 card family (Radeon HD
+2400-7000). It supports R600, RV610, RV630, RV670, RV620, RV635,
+RS780, RS880, RV770, RV730, RV710, RV740, CEDAR, REDWOOD, JUNIPER,
+CYPRESS, HEMLOCK, PALM, SUMO/SUMO2, CAYMAN, BARTS, TURKS, CAICOS,
+ARUBA chips.
 
 %description dri-driver-ati-radeon-R600 -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart ATI R600/R700.
+Sterownik X.org DRI Gallium dla rodziny kart ATI R600/R700 (Radeon HD
+2400-7000). Obsługuje układy R600, RV610, RV630, RV670, RV620, RV635,
+RS780, RS880, RV770, RV730, RV710, RV740, CEDAR, REDWOOD, JUNIPER,
+CYPRESS, HEMLOCK, PALM, SUMO/SUMO2, CAYMAN, BARTS, TURKS, CAICOS,
+ARUBA.
 
 %package dri-driver-ati-radeon-SI
 Summary:	X.org DRI driver for ATI Southern Islands card family
@@ -758,10 +778,16 @@ Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 
 %description dri-driver-ati-radeon-SI
-X.org DRI driver for ATI Southern Islands card family.
+X.org Gallium DRI driver for ATI Southern Islands card family (Radeon
+HD 7700-8000, R9, APU). It supports TAHITI, PITCAIRN, VERDE, OLAND,
+HAINAN, BONAIRE, KABINI, MULLINS, KAVERI, HAWAII, ICELAND, TONGA,
+CARRIZO, FIJI, POLARIS, STONEY chips.
 
 %description dri-driver-ati-radeon-SI -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart ATI Southern Islands.
+Sterownik X.org DRI Gallium dla rodziny kart ATI Southern Islands
+(Radeon HD 7700-8000, R9, APU). Obsługuje układy TAHITI, PITCAIRN,
+VERDE, OLAND, HAINAN, BONAIRE, KABINI, MULLINS, KAVERI, HAWAII,
+ICELAND, TONGA, CARRIZO, FIJI, POLARIS, STONEY.
 
 %package dri-driver-etnaviv
 Summary:	X.org DRI driver for Vivante 3D chips
@@ -804,12 +830,12 @@ Obsoletes:	Mesa-dri-driver-intel-i830
 Obsoletes:	X11-driver-i810-dri < 1:7.0.0
 
 %description dri-driver-intel-i915
-X.org DRI driver for Intel i915 card family (915, 945, G33, Q33, Q35,
-Pineview).
+X.org DRI driver for Intel i915 card family (830, 845, 852/855, 865,
+915, 945, G33, Q33, Q35, Pineview).
 
 %description dri-driver-intel-i915 -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart Intel i915 (915, 945, G33, Q33,
-Q35, Pineview).
+Sterownik X.org DRI dla rodziny kart Intel i915 (830, 845, 852/855,
+865, 915, 945, G33, Q33, Q35, Pineview).
 
 %package dri-driver-intel-i965
 Summary:	X.org DRI driver for Intel i965 card family
@@ -822,19 +848,22 @@ Obsoletes:	Mesa-dri-driver-intel-i830
 Obsoletes:	X11-driver-i810-dri < 1:7.0.0
 
 %description dri-driver-intel-i965
-X.org DRI driver for Intel i965 card family (946GZ, 965G, 965Q, 965GM,
-965GME, GM45, G41, B43, Q45, G45);
+X.org (non-Gallium) DRI driver for Intel i965 card family (946GZ,
+965G, 965Q, 965GM, 965GME, GM45, G41, B43, Q45/Q43, G45/G43, Ironlake,
+Sandybridge, Ivybridge, Haswell, Ray Trail, Broadwell, Cherrytrail,
+Braswell, Cherryview, Skylake, Broxton, Kabylake, Geminilake);
 
 %description dri-driver-intel-i965 -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart Intel i965 (946GZ, 965G, 965Q,
-965GM, 965GME, GM45, G41, B43, Q45, G45).
+Sterownik X.org DRI (nie Gallium) dla rodziny kart Intel i965 (946GZ,
+965G, 965Q, 965GM, 965GME, GM45, G41, B43, Q45/Q43, G45/G43, Ironlake,
+Sandybridge, Ivybridge, Haswell, Ray Trail, Broadwell, Cherrytrail,
+Braswell, Cherryview, Skylake, Broxton, Kabylake, Geminilake);
 
 %package dri-driver-intel-ilo
 Summary:	X.org DRI driver for Intel chips family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny układów firmy Intel
 License:	MIT
 Group:		X11/Libraries
-Requires:	xorg-driver-video-intel
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 
