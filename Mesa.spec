@@ -37,11 +37,11 @@
 %define		xserver_ver		1.5.0
 # other packages
 %ifarch %{arm}
-%define		libdrm_ver		2.4.74
+%define		libdrm_ver		2.4.80
 %else
-%define		libdrm_ver		2.4.71
+%define		libdrm_ver		2.4.79
 %endif
-%define		dri2proto_ver		2.6
+%define		dri2proto_ver		2.8
 %define		dri3proto_ver		1.0
 %define		glproto_ver		1.4.14
 %define		presentproto_ver	1.0
@@ -65,12 +65,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	17.0.5
+Version:	17.1.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
-# Source0-md5:	5587b6b693260e3a3125f60fed6a625d
+# Source0-md5:	ab1c7d44df6afd5d35286de57f762a74
 Patch0:		%{name}-link.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
@@ -92,6 +92,8 @@ BuildRequires:	libtool >= 2:2.2
 BuildRequires:	libvdpau-devel >= 1.1
 BuildRequires:	libxcb-devel >= 1.10
 %{?with_gallium_radeon:BuildRequires:	llvm-devel >= 3.8}
+# for swr driver
+%{?with_gallium:BuildRequires:	llvm-devel >= 3.9}
 %{?with_radv:BuildRequires:	llvm-devel >= 3.9}
 %{?with_opencl:BuildRequires:	llvm-libclc}
 # for SHA1 (could use also libmd/libsha1/libgcrypt/openssl instead)
@@ -111,7 +113,7 @@ BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
 # wayland-{client,server}
 %{?with_wayland:BuildRequires:	wayland-devel >= 1.11.0}
-BuildRequires:	xorg-lib-libXdamage-devel
+BuildRequires:	xorg-lib-libXdamage-devel >= 1.1
 BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXfixes-devel
 BuildRequires:	xorg-lib-libXt-devel
@@ -128,6 +130,7 @@ BuildRequires:	xorg-util-makedepend
 BuildRequires:	xorg-proto-xextproto-devel >= 7.0.99.1
 BuildRequires:	xorg-xserver-server-devel >= %{xserver_ver}
 %endif
+BuildRequires:	zlib-devel >= 1.2.8
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # libGLESv1_CM, libGLESv2, libGL, libOSMesa:
@@ -859,22 +862,6 @@ Sterownik X.org DRI (nie Gallium) dla rodziny kart Intel i965 (946GZ,
 Sandybridge, Ivybridge, Haswell, Ray Trail, Broadwell, Cherrytrail,
 Braswell, Cherryview, Skylake, Broxton, Kabylake, Geminilake);
 
-%package dri-driver-intel-ilo
-Summary:	X.org DRI driver for Intel chips family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny układów firmy Intel
-License:	MIT
-Group:		X11/Libraries
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
-
-%description dri-driver-intel-ilo
-X.org DRI driver for Intel chips family. It supports Cherryview/
-Broadwell/Bay Trail/Haswell/Ivybridge/Sandybridge chips.
-
-%description dri-driver-intel-ilo -l pl.UTF-8
-Sterownik X.org DRI dla rodziny układów firmy Intel. Obsługuje układy
-Cherryview/Broadwell/Bay Trail/Haswell/Ivybdidge/Sandybridge.
-
 %package dri-driver-nouveau
 Summary:	X.org DRI driver for NVIDIA card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart NVIDIA
@@ -962,21 +949,6 @@ i915 driver for Mesa Gallium dynamic pipe loader. It supports Intel
 %description pipe-driver-i915 -l pl.UTF-8
 Sterownik i915 dla dynamicznego systemu potoków szkieletu Mesa
 Gallium. Obsługuje układy Intela z serii 915/945/G33/Q33/Q35/Pineview.
-
-%package pipe-driver-i965
-Summary:	i965 (ilo) driver for Mesa Gallium dynamic pipe loader
-Summary(pl.UTF-8):	Sterownik i965 (ilo) dla dynamicznego systemu potoków szkieletu Mesa Gallium
-Group:		Libraries
-
-%description pipe-driver-i965
-i965 (ilo) driver for Mesa Gallium dynamic pipe loader. It supports
-Intel Cherryview/Broadwell/Bay Trail/Haswell/Ivybridge/Sandybridge
-chips.
-
-%description pipe-driver-i965 -l pl.UTF-8
-Sterownik i965 (ilo) dla dynamicznego systemu potoków szkieletu Mesa
-Gallium. Obsługuje układy Intela Cherryview/Broadwell/Bay Trail/
-Haswell/Ivybdidge/Sandybridge.
 
 %package pipe-driver-msm
 Summary:	msm (freedreno) driver for Mesa Gallium dynamic pipe loader
@@ -1325,7 +1297,7 @@ dri_drivers=$(echo $dri_drivers | xargs | tr ' ' ',')
 
 gallium_drivers="svga swrast virgl \
 %ifarch %{ix86} %{x8664} x32
-swr ilo %{?with_gallium_i915:i915} \
+swr %{?with_gallium_i915:i915} \
 %endif
 %if %{with gallium_radeon}
 r300 r600 radeonsi \
@@ -1370,7 +1342,7 @@ vulkan_drivers=$(echo $vulkan_drivers | xargs | tr ' ' ',')
 %endif
 %if %{with gallium}
 	%{?with_hud_extra:--enable-gallium-extra-hud} \
-	--enable-gallium-llvm \
+	--enable-llvm \
 	%{__enable_disable shared_llvm llvm-shared-libs} \
 	%{__enable ocl_icd opencl-icd} \
 	%{?with_lm_sensors:--enable-lmsensors} \
@@ -1708,11 +1680,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/radeonsi_dri.so
 %endif
 
-%files dri-driver-intel-ilo
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/ilo_dri.so
-%endif
-
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
@@ -1767,10 +1734,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/gallium-pipe/pipe_i915.so
 %endif
-
-%files pipe-driver-i965
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_i965.so
 
 %ifarch %{arm}
 %files pipe-driver-msm
