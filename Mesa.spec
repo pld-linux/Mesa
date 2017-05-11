@@ -1,9 +1,6 @@
 #
 # TODO:
 # - check if gallium_i915 note is still valid, switch the bcond if not
-# - consider:
-# - subpackage with non-dri libGL for use with X-servers with missing GLX extension?
-# - resurrect static if it's useful (using plain xorg target? DRI doesn't support static)
 #
 # Conditional build:
 %bcond_without	gallium		# gallium drivers
@@ -45,6 +42,7 @@
 %define		dri3proto_ver		1.0
 %define		glproto_ver		1.4.14
 %define		presentproto_ver	1.0
+%define		zlib_ver		1.2.8
 
 %if %{without gallium}
 %undefine	with_gallium_i915
@@ -82,7 +80,7 @@ BuildRequires:	gcc >= 6:4.2.0
 %{?with_nine:BuildRequires:	gcc-c++ >= 6:4.6}
 %{?with_opencl:BuildRequires:	gcc-c++ >= 6:4.7}
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
-%{?with_glvnd:BuildRequires:	libglvnd-devel >= 0.1.0}
+%{?with_glvnd:BuildRequires:	libglvnd-devel >= 0.2.0}
 BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= 6:4.2.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
@@ -130,7 +128,7 @@ BuildRequires:	xorg-util-makedepend
 BuildRequires:	xorg-proto-xextproto-devel >= 7.0.99.1
 BuildRequires:	xorg-xserver-server-devel >= %{xserver_ver}
 %endif
-BuildRequires:	zlib-devel >= 1.2.8
+BuildRequires:	zlib-devel >= %{zlib_ver}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # libGLESv1_CM, libGLESv2, libGL, libOSMesa:
@@ -192,7 +190,7 @@ Requires:	%{name}-khrplatform-devel = %{version}-%{release}
 Requires:	%{name}-libEGL = %{version}-%{release}
 Requires:	libdrm-devel >= %{libdrm_ver}
 Requires:	xorg-lib-libX11-devel
-Requires:	xorg-lib-libXdamage-devel
+Requires:	xorg-lib-libXdamage-devel >= 1.1
 Requires:	xorg-lib-libXext-devel >= 1.0.5
 Requires:	xorg-lib-libXfixes-devel
 Requires:	xorg-lib-libXxf86vm-devel
@@ -227,6 +225,7 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	%{name}-libglapi = %{version}-%{release}
 Requires:	libdrm >= %{libdrm_ver}
+Requires:	xorg-lib-libXdamage >= 1.1
 Provides:	OpenGL = 4.5
 Provides:	OpenGL-GLX = 1.4
 Obsoletes:	Mesa
@@ -265,7 +264,7 @@ Group:		X11/Development/Libraries
 Requires:	OpenGL >= 1.5
 Requires:	libdrm-devel >= %{libdrm_ver}
 Requires:	xorg-lib-libX11-devel
-Requires:	xorg-lib-libXdamage-devel
+Requires:	xorg-lib-libXdamage-devel >= 1.1
 Requires:	xorg-lib-libXext-devel >= 1.0.5
 Requires:	xorg-lib-libXxf86vm-devel
 Requires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
@@ -352,6 +351,7 @@ Summary:	OSMesa (off-screen renderer) library
 Summary(pl.UTF-8):	Biblioteka OSMesa (renderująca bitmapy w pamięci)
 License:	MIT
 Group:		Libraries
+Requires:	zlib >= %{zlib_ver}
 
 %description libOSMesa
 OSMesa (off-screen renderer) library.
@@ -398,6 +398,7 @@ Group:		Libraries
 Requires:	filesystem >= 4.0-29
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	llvm-libclc
+Requires:	zlib >= %{zlib_ver}
 Provides:	OpenCL = 1.1
 Provides:	ocl-icd-driver
 
@@ -504,6 +505,7 @@ License:	MIT
 Group:		Libraries
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	xorg-lib-libXvMC >= 1.0.6
+Requires:	zlib >= %{zlib_ver}
 Conflicts:	Mesa-libXvMC
 
 %description libXvMC-nouveau
@@ -519,6 +521,7 @@ License:	MIT
 Group:		Libraries
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	xorg-lib-libXvMC >= 1.0.6
+Requires:	zlib >= %{zlib_ver}
 Conflicts:	Mesa-libXvMC
 
 %description libXvMC-r600
@@ -552,6 +555,7 @@ Summary:	VA driver for ATI Radeon R600 series adapters
 Summary(pl.UTF-8):	Sterownik VA dla kart ATI Radeon z serii R600
 Group:		Libraries
 Requires:	libva >= 1.6.0
+Requires:	zlib >= %{zlib_ver}
 
 %description -n libva-driver-r600
 VA driver for ATI Radeon R600 series adapters.
@@ -564,6 +568,7 @@ Summary:	VA driver for ATI Radeon SI adapters
 Summary(pl.UTF-8):	Sterownik VA dla kart ATI Radeon SI
 Group:		Libraries
 Requires:	libva >= 1.6.0
+Requires:	zlib >= %{zlib_ver}
 
 %description -n libva-driver-radeonsi
 VA driver for ATI Radeon adapters based on Southern Islands chips.
@@ -577,6 +582,7 @@ Summary:	VA driver for NVidia adapters
 Summary(pl.UTF-8):	Sterownik VA dla kart NVidia
 Group:		Libraries
 Requires:	libva >= 1.6.0
+Requires:	zlib >= %{zlib_ver}
 
 %description -n libva-driver-nouveau
 VA driver for NVidia adapters.
@@ -653,6 +659,7 @@ Summary:	Xorg Gallium3D accelleration library
 Summary(pl.UTF-8):	Biblioteka akceleracji Gallium3D dla Xorg
 Group:		X11/Libraries
 Requires:	libdrm >= %{libdrm_ver}
+Requires:	zlib >= %{zlib_ver}
 
 %description libxatracker
 Xorg Gallium3D accelleration library (used by new vmwgfx driver).
@@ -694,6 +701,7 @@ Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
 Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 
 %description dri-driver-ati-radeon-R100
@@ -712,6 +720,7 @@ Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
 Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 
 %description dri-driver-ati-radeon-R200
@@ -730,6 +739,7 @@ Group:		X11/Libraries
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
 Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 
 %description dri-driver-ati-radeon-R300
@@ -755,6 +765,7 @@ Requires:	radeon-ucode
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
 
 %description dri-driver-ati-radeon-R600
 X.org Gallium DRI driver for ATI R600/R700 card family (Radeon HD
@@ -779,6 +790,7 @@ Requires:	radeon-ucode
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
 
 %description dri-driver-ati-radeon-SI
 X.org Gallium DRI driver for ATI Southern Islands card family (Radeon
@@ -800,6 +812,7 @@ Group:		X11/Libraries
 #Requires:	xorg-driver-video-?
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
 
 %description dri-driver-etnaviv
 X.org DRI driver for Vivante 3D chips.
@@ -815,6 +828,7 @@ Group:		X11/Libraries
 Requires:	xorg-driver-video-freedreno
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
 
 %description dri-driver-freedreno
 X.org DRI driver for Adreno chips.
@@ -829,6 +843,7 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
 Obsoletes:	Mesa-dri-driver-intel-i830
 Obsoletes:	X11-driver-i810-dri < 1:7.0.0
 
@@ -847,6 +862,7 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
 Obsoletes:	Mesa-dri-driver-intel-i830
 Obsoletes:	X11-driver-i810-dri < 1:7.0.0
 
@@ -870,6 +886,7 @@ Group:		X11/Libraries
 Requires:	xorg-driver-video-nouveau
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
 
 %description dri-driver-nouveau
 X.org DRI drivers for NVIDIA card family.
@@ -884,6 +901,7 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
 
 %description dri-driver-swrast
 X.org DRI software rasterizer driver.
@@ -899,6 +917,7 @@ Group:		X11/Libraries
 Requires:	xorg-driver-video-modesetting
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
 
 %description dri-driver-vc4
 X.org DRI driver for Broadcom VC4 chips.
@@ -913,6 +932,7 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
 
 %description dri-driver-virgl
 X.org DRI driver for QEMU VirGL.
@@ -928,6 +948,7 @@ Group:		X11/Libraries
 Requires:	xorg-driver-video-vmware
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
 
 %description dri-driver-vmwgfx
 X.org DRI driver for VMWare.
@@ -939,6 +960,7 @@ Sterownik X.org DRI dla VMware.
 Summary:	i915 driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik i915 dla dynamicznego systemu potoków szkieletu Mesa Gallium
 Group:		Libraries
+Requires:	zlib >= %{zlib_ver}
 Obsoletes:	Mesa-gbm-driver-i915
 Obsoletes:	Mesa-opencl-driver-i915
 
@@ -954,6 +976,7 @@ Gallium. Obsługuje układy Intela z serii 915/945/G33/Q33/Q35/Pineview.
 Summary:	msm (freedreno) driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik msm (freedreno) dla dynamicznego systemu potoków szkieletu Mesa Gallium
 Group:		Libraries
+Requires:	zlib >= %{zlib_ver}
 
 %description pipe-driver-msm
 msm (freedreno) driver for Mesa Gallium dynamic pipe loader. It
@@ -967,6 +990,7 @@ Mesa Gallium. Obsługuje układy Adreno.
 Summary:	nouveau driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik nouveau dla dynamicznego systemu potoków szkieletu Mesa Gallium
 Group:		Libraries
+Requires:	zlib >= %{zlib_ver}
 Obsoletes:	Mesa-gbm-driver-nouveau
 Obsoletes:	Mesa-opencl-driver-nouveau
 
@@ -982,6 +1006,7 @@ Gallium. Obsługuje karty graficzne firmy NVidia.
 Summary:	r300 driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik r300 dla dynamicznego systemu potoków szkieletu Mesa Gallium
 Group:		Libraries
+Requires:	zlib >= %{zlib_ver}
 Obsoletes:	Mesa-gbm-driver-r300
 Obsoletes:	Mesa-opencl-driver-r300
 
@@ -998,6 +1023,7 @@ R300/R400/RS690/R500.
 Summary:	r600 driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik r600 dla dynamicznego systemu potoków szkieletu Mesa Gallium
 Group:		Libraries
+Requires:	zlib >= %{zlib_ver}
 Obsoletes:	Mesa-gbm-driver-r600
 Obsoletes:	Mesa-libllvmradeon
 Obsoletes:	Mesa-opencl-driver-r600
@@ -1015,6 +1041,7 @@ R600/R700.
 Summary:	radeonsi driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik radeonsi dla dynamicznego systemu potoków szkieletu Mesa Gallium
 Group:		Libraries
+Requires:	zlib >= %{zlib_ver}
 Obsoletes:	Mesa-gbm-driver-radeonsi
 Obsoletes:	Mesa-libllvmradeon
 Obsoletes:	Mesa-opencl-driver-radeonsi
@@ -1032,6 +1059,7 @@ Southern Islands.
 Summary:	Software (swrast) driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik programowy (swrast) dla dynamicznego systemu potoków szkieletu Mesa Gallium
 Group:		Libraries
+Requires:	zlib >= %{zlib_ver}
 Obsoletes:	Mesa-gbm-driver-swrast
 Obsoletes:	Mesa-opencl-driver-swrast
 
@@ -1046,6 +1074,7 @@ szkieletu Mesa Gallium.
 Summary:	vmwgfx driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik vmwgfx dla dynamicznego systemu potoków szkieletu Mesa Gallium
 Group:		Libraries
+Requires:	zlib >= %{zlib_ver}
 Obsoletes:	Mesa-gbm-driver-vmwgfx
 Obsoletes:	Mesa-opencl-driver-vmwgfx
 
@@ -1062,6 +1091,7 @@ Summary:	OpenSWR software rasterizer modules for Mesa
 Summary(pl.UTF-8):	Moduły programowego rasteryzera OpenSWR dla Mesy
 Group:		Libraries
 Requires:	cpuinfo(avx)
+Requires:	zlib >= %{zlib_ver}
 
 %description swr
 OpenSWR software rasterizer modules for Mesa, utilizing x86 AVX or
@@ -1078,6 +1108,7 @@ Summary:	Nine Direct3D9 driver (for Wine)
 Summary(pl.UTF-8):	Sterownik Direct3D9 Nine (dla Wine)
 Group:		Libraries
 Requires:	libdrm >= %{libdrm_ver}
+Requires:	zlib >= %{zlib_ver}
 
 %description d3d
 Nine Direct3D9 driver (for Wine).
@@ -1104,6 +1135,7 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libvdpau >= 1.1
+Requires:	zlib >= %{zlib_ver}
 Conflicts:	libvdpau-driver-mesa
 
 %description -n libvdpau-driver-mesa-nouveau
@@ -1121,6 +1153,7 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libvdpau >= 1.1
+Requires:	zlib >= %{zlib_ver}
 Conflicts:	libvdpau-driver-mesa
 
 %description -n libvdpau-driver-mesa-r300
@@ -1138,6 +1171,7 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libvdpau >= 1.1
+Requires:	zlib >= %{zlib_ver}
 Conflicts:	libvdpau-driver-mesa
 
 %description -n libvdpau-driver-mesa-r600
@@ -1155,6 +1189,7 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libvdpau >= 1.1
+Requires:	zlib >= %{zlib_ver}
 Conflicts:	libvdpau-driver-mesa
 Obsoletes:	Mesa-libllvmradeon
 
@@ -1174,6 +1209,7 @@ Group:		X11/Libraries
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libxcb >= 1.8
 Requires:	libomxil-bellagio
+Requires:	zlib >= %{zlib_ver}
 Obsoletes:	omxil-mesa-nouveau
 Obsoletes:	omxil-mesa-r600
 Obsoletes:	omxil-mesa-radeonsi
@@ -1184,64 +1220,14 @@ Mesa driver for Bellagio OpenMAX IL API.
 %description -n omxil-mesa -l pl.UTF-8
 Sterownik Mesa dla API Bellagio OpenMAX IL.
 
-%package -n omxil-mesa-nouveau
-Summary:	Mesa nouveau driver for Bellagio OpenMAX IL API
-Summary(pl.UTF-8):	Sterownik Mesa nouveau dla API Bellagio OpenMAX IL
-License:	MIT
-Group:		X11/Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	libxcb >= 1.8
-Requires:	libomxil-bellagio
-
-%description -n omxil-mesa-nouveau
-Mesa nouveau driver for Bellagio OpenMAX IL API. It supports NVidia
-adapters (NV40-NV96, NVa0).
-
-%description -n omxil-mesa-nouveau -l pl.UTF-8
-Sterownik Mesa nouveau dla API Bellagio OpenMAX IL. Obsługuje karty
-NVidia (NV40-NV96, NVa0).
-
-%package -n omxil-mesa-r600
-Summary:	Mesa r600 driver for Bellagio OpenMAX IL API
-Summary(pl.UTF-8):	Sterownik Mesa r600 dla API Bellagio OpenMAX IL
-License:	MIT
-Group:		X11/Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	libxcb >= 1.8
-Requires:	libomxil-bellagio
-
-%description -n omxil-mesa-r600
-Mesa r600 driver for Bellagio OpenMAX IL API. It supports ATI Radeon
-adapters based on R600/R700 chips.
-
-%description -n omxil-mesa-r600 -l pl.UTF-8
-Sterownik Mesa r600 dla API Bellagio OpenMAX IL. Obsługuje karty ATI
-Radeon oparte na układach R600/R700.
-
-%package -n omxil-mesa-radeonsi
-Summary:	Mesa radeonsi driver for Bellagio OpenMAX IL API
-Summary(pl.UTF-8):	Sterownik Mesa radeonsi dla API Bellagio OpenMAX IL
-License:	MIT
-Group:		X11/Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	libxcb >= 1.8
-Requires:	libomxil-bellagio
-
-%description -n omxil-mesa-radeonsi
-Mesa radeonsi driver for Bellagio OpenMAX IL API. It supports ATI
-Radeon adapters based on Southern Islands chips.
-
-%description -n omxil-mesa-radeonsi -l pl.UTF-8
-Sterownik Mesa radeonsi dla API Bellagio OpenMAX IL. Obsługuje karty
-ATI Radeon oparte na układach Southern Islands.
-
 %package vulkan-icd-intel
 Summary:	Mesa Vulkan driver for Intel GPUs
 Summary(pl.UTF-8):	Sterownik Vulkan dla GPU firmy Intel
 License:	MIT
 Group:		Libraries
-Suggests:	vulkan(loader)
 Requires:	libdrm >= %{libdrm_ver}
+Requires:	zlib >= %{zlib_ver}
+Suggests:	vulkan(loader)
 Provides:	vulkan(icd) = 1.0.3
 
 %description vulkan-icd-intel
@@ -1268,6 +1254,7 @@ Summary:	radv - experimental Mesa Vulkan driver for AMD Radeon GPUs
 Summary(pl.UTF-8):	radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD
 License:	MIT
 Group:		Libraries
+Requires:	zlib >= %{zlib_ver}
 Suggests:	vulkan(loader)
 Provides:	vulkan(icd) = 1.0.3
 
@@ -1338,7 +1325,7 @@ vulkan_drivers=$(echo $vulkan_drivers | xargs | tr ' ' ',')
 	--enable-egl \
 	--enable-gles1 \
 	--enable-gles2 \
-	--with-egl-platforms=x11%{?with_gbm:,drm}%{?with_wayland:,wayland} \
+	--with-platforms=x11%{?with_gbm:,drm}%{?with_wayland:,wayland} \
 %endif
 %if %{with gallium}
 	%{?with_hud_extra:--enable-gallium-extra-hud} \
