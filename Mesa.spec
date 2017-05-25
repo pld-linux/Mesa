@@ -1666,6 +1666,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/radeonsi_dri.so
 %endif
+%endif
 
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
