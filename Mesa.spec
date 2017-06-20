@@ -63,12 +63,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	17.1.2
-Release:	2
+Version:	17.1.3
+Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
-# Source0-md5:	4d2eaf5955740b044afd95ed167c906c
+# Source0-md5:	1946a93d543bc219427e2bebe2ac4752
 Patch0:		%{name}-link.patch
 Patch1:		i965_ignore_anisotropic_filtering_in_nearest_mode.patch
 URL:		http://www.mesa3d.org/
