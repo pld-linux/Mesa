@@ -63,14 +63,13 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	17.1.3
+Version:	17.1.4
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
-# Source0-md5:	1946a93d543bc219427e2bebe2ac4752
+# Source0-md5:	be2ef7c9edec23b07f74f6512a6a6fa5
 Patch0:		%{name}-link.patch
-Patch1:		i965_ignore_anisotropic_filtering_in_nearest_mode.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
 BuildRequires:	automake
@@ -1268,7 +1267,6 @@ radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD.
 %prep
 %setup -q -n mesa-%{version}
 %patch0 -p1
-%patch1 -p1
 
 %build
 %{__libtoolize}
