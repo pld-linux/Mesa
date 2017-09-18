@@ -63,12 +63,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	17.1.6
-Release:	2
+Version:	17.2.1
+Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
-# Source0-md5:	54758bf842f9ea53c8b57cce4311b87e
+# Source0-md5:	f53ed38110237d9df5f9198c09ef0ab0
 Patch0:		%{name}-link.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
@@ -111,6 +111,7 @@ BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
 # wayland-{client,server}
 %{?with_wayland:BuildRequires:	wayland-devel >= 1.11.0}
+%{?with_wayland:BuildRequires:	wayland-protocols >= 1.8}
 BuildRequires:	xorg-lib-libXdamage-devel >= 1.1
 BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXfixes-devel

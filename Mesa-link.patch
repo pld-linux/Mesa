@@ -1,18 +1,11 @@
-diff -dur -x '*~' -x '*.orig' -x '*.rej' mesa-17.1.6.orig/src/gallium/drivers/swr/Makefile.am mesa-17.1.6/src/gallium/drivers/swr/Makefile.am
---- mesa-17.1.6.orig/src/gallium/drivers/swr/Makefile.am	2017-08-07 14:04:30.000000000 +0200
-+++ mesa-17.1.6/src/gallium/drivers/swr/Makefile.am	2017-08-07 21:03:24.230258941 +0200
-@@ -159,11 +159,13 @@
- 	$(top_builddir)/src/gallium/auxiliary/libgallium.la \
- 	$(top_builddir)/src/mesa/libmesagallium.la \
- 	$(LLVM_LIBS) \
--	$(PTHREAD_LIBS)
-+	$(PTHREAD_LIBS) \
-+	-ldl
- 
+diff -dur mesa-17.2.1.orig/src/gallium/drivers/swr/Makefile.am mesa-17.2.1/src/gallium/drivers/swr/Makefile.am
+--- mesa-17.2.1.orig/src/gallium/drivers/swr/Makefile.am	2017-09-18 01:03:22.000000000 +0200
++++ mesa-17.2.1/src/gallium/drivers/swr/Makefile.am	2017-09-18 10:31:22.000000000 +0200
+@@ -236,6 +236,7 @@
  COMMON_LDFLAGS = \
  	-shared \
  	-module \
 +	-avoid-version \
  	-no-undefined \
  	$(GC_SECTIONS) \
- 	$(NO_UNDEFINED) \
+ 	$(LD_NO_UNDEFINED)
