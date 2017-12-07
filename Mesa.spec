@@ -33,11 +33,7 @@
 # minimal supported xserver version
 %define		xserver_ver		1.5.0
 # other packages
-%ifarch %{arm}
-%define		libdrm_ver		2.4.80
-%else
-%define		libdrm_ver		2.4.79
-%endif
+%define		libdrm_ver		2.4.82
 %define		dri2proto_ver		2.8
 %define		dri3proto_ver		1.0
 %define		glproto_ver		1.4.14
@@ -89,8 +85,7 @@ BuildRequires:	libtool >= 2:2.2
 %{?with_va:BuildRequires:	pkgconfig(libva) >= 0.38.0}
 BuildRequires:	libvdpau-devel >= 1.1
 BuildRequires:	libxcb-devel >= 1.10
-%{?with_gallium_radeon:BuildRequires:	llvm-devel >= 3.8}
-# for swr driver
+# gallium core requires 3.3.0, swr/r600/radeonsi require 3.9.0
 %{?with_gallium:BuildRequires:	llvm-devel >= 3.9}
 %{?with_radv:BuildRequires:	llvm-devel >= 3.9}
 %{?with_opencl:BuildRequires:	llvm-libclc}
