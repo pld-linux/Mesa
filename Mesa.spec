@@ -33,7 +33,7 @@
 # minimal supported xserver version
 %define		xserver_ver		1.5.0
 # other packages
-%define		libdrm_ver		2.4.82
+%define		libdrm_ver		2.4.85
 %define		dri2proto_ver		2.8
 %define		dri3proto_ver		1.0
 %define		glproto_ver		1.4.14
@@ -59,12 +59,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	17.2.6
+Version:	17.3.1
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
-# Source0-md5:	862f2b7e2a08554570b192a89f723b6f
+# Source0-md5:	b4b021279ea21e1eb8a1369afa6f19a0
 Patch0:		%{name}-link.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
@@ -120,7 +120,7 @@ BuildRequires:	xorg-proto-glproto-devel >= %{glproto_ver}
 BuildRequires:	xorg-proto-presentproto-devel >= %{presentproto_ver}
 BuildRequires:	xorg-util-makedepend
 %if %{with gallium}
-%{?with_lm_sensors:BuildRequires:	lm_sensors-devel >= 3.4}
+%{?with_lm_sensors:BuildRequires:	lm_sensors-devel >= 4.0}
 BuildRequires:	xorg-proto-xextproto-devel >= 7.0.99.1
 BuildRequires:	xorg-xserver-server-devel >= %{xserver_ver}
 %endif
@@ -1333,7 +1333,7 @@ vulkan_drivers=$(echo $vulkan_drivers | xargs | tr ' ' ',')
 	%{__enable opencl} \
 	%{__enable va} \
 	--enable-vdpau \
-	%{?with_omx:--enable-omx} \
+	%{?with_omx:--enable-omx-bellagio} \
 	%{?with_xa:--enable-xa} \
 	--enable-xvmc \
 	--with-gallium-drivers=${gallium_drivers} \
