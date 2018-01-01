@@ -1418,12 +1418,22 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with egl}
 %files libEGL
 %defattr(644,root,root,755)
+%if %{with glvnd}
+%attr(755,root,root) %{_libdir}/libEGL_mesa.so.*.*
+%attr(755,root,root) %ghost %{_libdir}/libEGL_mesa.so.0
+%{_datadir}/glvnd/egl_vendor.d/50_mesa.json
+%else
 %attr(755,root,root) %{_libdir}/libEGL.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libEGL.so.1
+%endif
 
 %files libEGL-devel
 %defattr(644,root,root,755)
+%if %{with glvnd}
+%attr(755,root,root) %{_libdir}/libEGL_mesa.so
+%else
 %attr(755,root,root) %{_libdir}/libEGL.so
+%endif
 %dir %{_includedir}/EGL
 %{_includedir}/EGL/egl.h
 %{_includedir}/EGL/eglext.h
