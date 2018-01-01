@@ -130,7 +130,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 # libGLESv1_CM, libGLESv2, libGL, libOSMesa:
 #  _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
 # libgbm: circular dependency with libEGL (wayland_buffer_is_drm symbol)
-%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libOSMesa.so.* libgbm.*.so.*
+%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libOSMesa.so.* libgbm.*.so.* libGLX_mesa.so.0.*
 
 # llvm build broken
 %define		filterout_ld    -Wl,--as-needed
