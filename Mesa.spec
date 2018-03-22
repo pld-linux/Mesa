@@ -33,7 +33,7 @@
 # minimal supported xserver version
 %define		xserver_ver		1.5.0
 # other packages
-%define		libdrm_ver		2.4.85
+%define		libdrm_ver		2.4.91
 %define		dri2proto_ver		2.8
 %define		dri3proto_ver		1.0
 %define		glproto_ver		1.4.14
