@@ -59,12 +59,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	18.0.2
+Version:	18.1.1
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
-# Source0-md5:	3c303da98ec2ce37c795baeba5aee31e
+# Source0-md5:	063468c930ff61d211ece0191874fa95
 Patch0:		%{name}-link.patch
 Patch1:		glvnd-fix-gl-dot-pc.patch
 URL:		http://www.mesa3d.org/
@@ -83,12 +83,12 @@ BuildRequires:	libstdc++-devel >= 6:4.2.0
 BuildRequires:	libtalloc-devel >= 2:2.0.1
 BuildRequires:	libtool >= 2:2.2
 %{?with_va:BuildRequires:	libva-devel >= 1.6.0}
-%{?with_va:BuildRequires:	pkgconfig(libva) >= 0.38.0}
+%{?with_va:BuildRequires:	pkgconfig(libva) >= 0.39.0}
 BuildRequires:	libvdpau-devel >= 1.1
 BuildRequires:	libxcb-devel >= 1.10
 # gallium core requires 3.3.0, swr/r600/radeonsi require 3.9.0
-%{?with_gallium:BuildRequires:	llvm-devel >= 3.9}
-%{?with_radv:BuildRequires:	llvm-devel >= 3.9}
+%{?with_gallium:BuildRequires:	llvm-devel >= 4.0}
+%{?with_radv:BuildRequires:	llvm-devel >= 4.0}
 %{?with_opencl:BuildRequires:	llvm-libclc}
 # for SHA1 (could use also libmd/libsha1/libgcrypt/openssl instead)
 BuildRequires:	nettle-devel
