@@ -60,7 +60,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	18.1.1
-Release:	1
+Release:	2
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
@@ -85,7 +85,7 @@ BuildRequires:	libtool >= 2:2.2
 %{?with_va:BuildRequires:	libva-devel >= 1.6.0}
 %{?with_va:BuildRequires:	pkgconfig(libva) >= 0.39.0}
 BuildRequires:	libvdpau-devel >= 1.1
-BuildRequires:	libxcb-devel >= 1.10
+BuildRequires:	libxcb-devel >= 1.13
 # gallium core requires 3.3.0, swr/r600/radeonsi require 3.9.0
 %{?with_gallium:BuildRequires:	llvm-devel >= 4.0}
 %{?with_radv:BuildRequires:	llvm-devel >= 4.0}
@@ -222,6 +222,7 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	%{name}-libglapi = %{version}-%{release}
 Requires:	libdrm >= %{libdrm_ver}
+Requires:	libxcb >= 1.13
 Requires:	xorg-lib-libXdamage >= 1.1
 Provides:	OpenGL = 4.5
 Provides:	OpenGL-GLX = 1.4
