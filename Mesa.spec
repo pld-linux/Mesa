@@ -86,7 +86,7 @@ BuildRequires:	libtool >= 2:2.2
 %{?with_va:BuildRequires:	pkgconfig(libva) >= 0.39.0}
 BuildRequires:	libvdpau-devel >= 1.1
 BuildRequires:	libxcb-devel >= 1.13
-# gallium core requires 3.3.0, swr/r600/radeonsi require 3.9.0
+# gallium core requires 3.3.0, OpenCL/r600 require 3.9.0, swr/radeonsi/radv 4.0.0
 %{?with_gallium:BuildRequires:	llvm-devel >= 4.0}
 %{?with_radv:BuildRequires:	llvm-devel >= 4.0}
 %{?with_opencl:BuildRequires:	llvm-libclc}
