@@ -33,12 +33,13 @@
 # minimal supported xserver version
 %define		xserver_ver		1.5.0
 # other packages
-%define		libdrm_ver		2.4.91
+%define		libdrm_ver		2.4.92
 %define		dri2proto_ver		2.8
 %define		dri3proto_ver		1.0
 %define		glproto_ver		1.4.14
 %define		presentproto_ver	1.0
 %define		zlib_ver		1.2.8
+%define		wayland_ver		1.11
 
 %if %{without gallium}
 %undefine	with_gallium_i915
@@ -59,12 +60,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	18.1.8
+Version:	18.2.1
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
-Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
-# Source0-md5:	d2d1de1e338e63877f753ab9d66ba597
+#Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
+# https://bugs.freedesktop.org/show_bug.cgi?id=107865
+Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
+# Source0-md5:	dd9976c620c8646c60a41ef7197c88c2
 Patch0:		%{name}-link.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
@@ -86,8 +89,8 @@ BuildRequires:	libtool >= 2:2.2
 BuildRequires:	libvdpau-devel >= 1.1
 BuildRequires:	libxcb-devel >= 1.13
 # gallium core requires 3.3.0, OpenCL/r600 require 3.9.0, swr/radeonsi/radv 4.0.0
-%{?with_gallium:BuildRequires:	llvm-devel >= 4.0}
-%{?with_radv:BuildRequires:	llvm-devel >= 4.0}
+%{?with_gallium:BuildRequires:	llvm-devel >= 5.0}
+%{?with_radv:BuildRequires:	llvm-devel >= 5.0}
 %{?with_opencl:BuildRequires:	llvm-libclc}
 # for SHA1 (could use also libmd/libsha1/libgcrypt/openssl instead)
 BuildRequires:	nettle-devel
@@ -105,8 +108,9 @@ BuildRequires:	python-modules >= 2
 BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
 # wayland-{client,server}
-%{?with_wayland:BuildRequires:	wayland-devel >= 1.11.0}
+%{?with_wayland:BuildRequires:	wayland-devel >= %{wayland_ver}}
 %{?with_wayland:BuildRequires:	wayland-protocols >= 1.8}
+%{?with_wayland:BuildRequires:	wayland-egl-devel >= %{wayland_ver}}
 BuildRequires:	xorg-lib-libXdamage-devel >= 1.1
 BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXfixes-devel
@@ -625,31 +629,6 @@ Mesa GL API shared library, common for various APIs (EGL, GL, GLES).
 %description libglapi -l pl.UTF-8
 Biblioteka współdzielona Mesa GL API, wspólna dla różnych API (EGL,
 GL, GLES).
-
-%package libwayland-egl
-Summary:	Wayland EGL library
-Summary(pl.UTF-8):	Biblioteka Wayland EGL
-Group:		Libraries
-Requires:	libdrm >= %{libdrm_ver}
-
-%description libwayland-egl
-Wayland EGL platform library.
-
-%description libwayland-egl -l pl.UTF-8
-Biblioteka platformy EGL Wayland.
-
-%package libwayland-egl-devel
-Summary:	Development files for Wayland EGL library
-Summary(pl.UTF-8):	Pliki programistyczne biblioteki Wayland EGL
-Group:		Development/Libraries
-Requires:	%{name}-libwayland-egl = %{version}-%{release}
-Requires:	libdrm-devel >= %{libdrm_ver}
-
-%description libwayland-egl-devel
-Development files for Wayland EGL platform library.
-
-%description libwayland-egl-devel -l pl.UTF-8
-Pliki programistyczne biblioteki platformy EGL Wayland.
 
 %package libxatracker
 Summary:	Xorg Gallium3D accelleration library
@@ -1262,7 +1241,7 @@ radv - experimental Mesa Vulkan driver for AMD Radeon GPUs.
 radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD.
 
 %prep
-%setup -q -n mesa-%{version}
+%setup -q -n mesa-mesa-%{version}
 %patch0 -p1
 
 %build
@@ -1410,9 +1389,6 @@ rm -rf $RPM_BUILD_ROOT
 %post	libglapi -p /sbin/ldconfig
 %postun	libglapi -p /sbin/ldconfig
 
-%post	libwayland-egl -p /sbin/ldconfig
-%postun	libwayland-egl -p /sbin/ldconfig
-
 %post	libxatracker -p /sbin/ldconfig
 %postun	libxatracker -p /sbin/ldconfig
 
@@ -1452,7 +1428,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files libGL
 %defattr(644,root,root,755)
-%doc docs/{*.html,README.UVD,patents.txt,relnotes/*.html}
+%doc docs/{*.html,README.UVD,features.txt,relnotes/*.html}
 %if %{with glvnd}
 %attr(755,root,root) %{_libdir}/libGLX_mesa.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libGLX_mesa.so.0
@@ -1616,18 +1592,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %ghost %{_libdir}/libglapi.so.0
 # libglapi-devel? nothing seems to need it atm.
 #%attr(755,root,root) %{_libdir}/libglapi.so
-
-%if %{with wayland}
-%files libwayland-egl
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libwayland-egl.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libwayland-egl.so.1
-
-%files libwayland-egl-devel
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libwayland-egl.so
-%{_pkgconfigdir}/wayland-egl.pc
-%endif
 
 %if %{with xa}
 %files libxatracker
