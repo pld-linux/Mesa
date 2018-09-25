@@ -1259,8 +1259,11 @@ i965 %{!?with_gallium_i915:i915} \
 dri_drivers=$(echo $dri_drivers | xargs | tr ' ' ',')
 
 gallium_drivers="svga swrast virgl \
+%ifarch %{x8664}
+swr
+%endif
 %ifarch %{ix86} %{x8664} x32
-swr %{?with_gallium_i915:i915} \
+%{?with_gallium_i915:i915} \
 %endif
 %if %{with gallium_radeon}
 r300 r600 radeonsi \
@@ -1728,7 +1731,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/gallium-pipe/pipe_vmwgfx.so
 
-%ifarch %{ix86} %{x8664} x32
+%ifarch %{x8664}
 %files swr
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libswrAVX.so
