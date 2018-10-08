@@ -100,8 +100,10 @@ BuildRequires:	perl-base
 BuildRequires:	pixman-devel
 BuildRequires:	pkgconfig
 BuildRequires:	pkgconfig(talloc) >= 2.0.1
-BuildRequires:	pkgconfig(xcb-dri3)
-BuildRequires:	pkgconfig(xcb-present)
+BuildRequires:	pkgconfig(xcb-dri2) >= 1.8
+BuildRequires:	pkgconfig(xcb-dri3) >= 1.13
+BuildRequires:	pkgconfig(xcb-glx) >= 1.8.1
+BuildRequires:	pkgconfig(xcb-present) >= 1.13
 BuildRequires:	python >= 2
 BuildRequires:	python-Mako >= 0.8.0
 BuildRequires:	python-modules >= 2
@@ -163,7 +165,7 @@ Requires:	%{name}-libglapi = %{version}-%{release}
 # glx driver in libEGL dlopens libGL.so
 Requires:	OpenGL >= 1.2
 Requires:	libdrm >= %{libdrm_ver}
-Requires:	libxcb >= 1.9
+Requires:	libxcb >= 1.13
 %{?with_wayland:Requires:	wayland >= 1.11.0}
 %if %{with gbm}
 Requires:	%{name}-libgbm = %{version}-%{release}
@@ -1183,7 +1185,7 @@ Summary(pl.UTF-8):	Sterownik Mesa nouveau dla API Bellagio OpenMAX IL
 License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm >= %{libdrm_ver}
-Requires:	libxcb >= 1.8
+Requires:	libxcb >= 1.13
 Requires:	libomxil-bellagio
 Requires:	zlib >= %{zlib_ver}
 Obsoletes:	omxil-mesa-nouveau
@@ -1202,6 +1204,10 @@ Summary(pl.UTF-8):	Sterownik Vulkan dla GPU firmy Intel
 License:	MIT
 Group:		Libraries
 Requires:	libdrm >= %{libdrm_ver}
+Requires:	libxcb >= 1.13
+Requires:	xorg-lib-libxshmfence >= 1.1
+# wayland-client
+Requires:	wayland >= %{wayland_ver}
 Requires:	zlib >= %{zlib_ver}
 Suggests:	vulkan(loader)
 Provides:	vulkan(icd) = 1.0.3
@@ -1230,6 +1236,11 @@ Summary:	radv - experimental Mesa Vulkan driver for AMD Radeon GPUs
 Summary(pl.UTF-8):	radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD
 License:	MIT
 Group:		Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	libxcb >= 1.13
+Requires:	xorg-lib-libxshmfence >= 1.1
+# wayland-client
+Requires:	wayland >= %{wayland_ver}
 Requires:	zlib >= %{zlib_ver}
 Suggests:	vulkan(loader)
 Provides:	vulkan(icd) = 1.0.3
