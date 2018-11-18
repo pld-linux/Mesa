@@ -60,14 +60,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	18.2.4
+Version:	18.2.5
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
-#Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
-# https://bugs.freedesktop.org/show_bug.cgi?id=107865
-Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
-# Source0-md5:	7a2cd47dea4eea359952ac2088b63641
+Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
+# Source0-md5:	b31a43ebb8b37fb704a9a75c90bbd71b
 Patch0:		%{name}-link.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	autoconf >= 2.60
@@ -1252,7 +1250,7 @@ radv - experimental Mesa Vulkan driver for AMD Radeon GPUs.
 radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD.
 
 %prep
-%setup -q -n mesa-mesa-%{version}
+%setup -q -n mesa-%{version}
 %patch0 -p1
 
 %build
