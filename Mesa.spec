@@ -60,6 +60,7 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
+#		NOTE: 18.3 is being prepared on the 'Mesa-18.3' branch
 Version:	18.2.6
 Release:	2
 License:	MIT (core) and others - see license.html file
