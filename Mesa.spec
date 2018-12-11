@@ -6,7 +6,7 @@
 %bcond_without	egl		# EGL libraries
 %bcond_without	gbm		# Graphics Buffer Manager
 %bcond_without	nine		# Nine Direct3D 9+ state tracker (for Wine)
-%bcond_without	opencl		# OpenCL support
+%bcond_with	opencl		# OpenCL support (requires LLVM with RTTI)
 %bcond_with	glvnd		# OpenGL vendor neutral dispatcher support
 %bcond_without	omx		# OpenMAX (Bellagio OMXIL) support
 %bcond_without	va		# VA library
@@ -55,6 +55,7 @@ Group:		X11/Libraries
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
 # Source0-md5:	f57785009d23751324e4585678b7f3d0
+Patch0:		nouveau_no_rtti.patch
 URL:		http://www.mesa3d.org/
 BuildRequires:	meson >= 0.45
 BuildRequires:  ninja
@@ -106,11 +107,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # libGLESv1_CM, libGLESv2, libGL, libOSMesa:
 #  _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
-# libgbm: circular dependency with libEGL (wayland_buffer_is_drm symbol)
-#%%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libOSMesa.so.* libgbm.*.so.* libGLX_mesa.so.0.*
-
-## llvm build broken
-#%%define		filterout_ld    -Wl,--as-needed
+%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libOSMesa.so.* libGLX_mesa.so.0.*
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
@@ -1172,7 +1169,16 @@ radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD.
 %prep
 %setup -q -n mesa-mesa-%{version}
 
+%patch0 -p1
+
 %build
+
+%if %{with opencl}
+if [ "$(llvm-config --has-rtti)" != "YES" ] ; then
+	echo "Clover (gallium OpenCL) requires LLVM with RTTI!"
+	exit 1
+fi
+%endif
 
 dri_drivers="nouveau r100 r200 \
 %if %{without gallium}
@@ -1245,19 +1251,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %meson_install -C build
 
-# dlopened by soname
-%{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so}
-%{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so.1.0}
-# dlopened by soname or .so link
-%{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/vdpau/libvdpau_*.so.1.0}
 # not used externally
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libglapi.so
-# dlopened
-%{?with_omx:%{__rm} $RPM_BUILD_ROOT%{_libdir}/bellagio/libomx_*.la}
-%{?with_nine:%{__rm} $RPM_BUILD_ROOT%{_libdir}/d3d/d3dadapter9.la}
-%{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/gallium-pipe/pipe_*.la}
-# not defined by standards; and not needed, there is pkg-config support
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/lib*.la
 
 %if %{without glvnd}
 # remove "OS ABI: Linux 2.4.20" tag, so private copies (nvidia or fglrx),
@@ -1339,7 +1334,7 @@ rm -rf $RPM_BUILD_ROOT
 # (and dlopen libGL.so instead of libGL.so.1; the same does Mesa libEGL)
 %attr(755,root,root) %{_libdir}/libGL.so
 %endif
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/drirc
+%{_datadir}/drirc.d
 
 %files libGL-devel
 %defattr(644,root,root,755)
@@ -1414,15 +1409,13 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium_nouveau}
 %files libXvMC-nouveau
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libXvMCnouveau.so.1.0.0
-%attr(755,root,root) %ghost %{_libdir}/libXvMCnouveau.so.1
+%attr(755,root,root) %{_libdir}/libXvMCnouveau.so
 %endif
 
 %if %{with gallium_radeon}
 %files libXvMC-r600
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libXvMCr600.so.1.0.0
-%attr(755,root,root) %ghost %{_libdir}/libXvMCr600.so.1
+%attr(755,root,root) %{_libdir}/libXvMCr600.so
 %endif
 
 %if %{with va}
@@ -1562,6 +1555,7 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %if %{with gallium}
+%if %{with opencl}
 %ifarch %{arm}
 %files pipe-driver-msm
 %defattr(644,root,root,755)
@@ -1595,12 +1589,16 @@ rm -rf $RPM_BUILD_ROOT
 %files pipe-driver-vmwgfx
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/gallium-pipe/pipe_vmwgfx.so
+%endif
 
+# currently disabled as cannot be built with swrast
+%if 0
 %ifarch %{x8664}
 %files swr
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libswrAVX.so
 %attr(755,root,root) %{_libdir}/libswrAVX2.so
+%endif
 %endif
 %endif
 
@@ -1622,6 +1620,7 @@ rm -rf $RPM_BUILD_ROOT
 %files -n libvdpau-driver-mesa-nouveau
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1.0.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so
 %endif
@@ -1630,18 +1629,21 @@ rm -rf $RPM_BUILD_ROOT
 %files -n libvdpau-driver-mesa-r300
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1.0.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so
 
 %files -n libvdpau-driver-mesa-r600
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so
 
 %files -n libvdpau-driver-mesa-radeonsi
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1.0.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so
 %endif
