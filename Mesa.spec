@@ -6,7 +6,8 @@
 %bcond_without	egl		# EGL libraries
 %bcond_without	gbm		# Graphics Buffer Manager
 %bcond_without	nine		# Nine Direct3D 9+ state tracker (for Wine)
-%bcond_with	opencl		# OpenCL support (requires LLVM with RTTI)
+%bcond_without	opencl		# OpenCL support
+%bcond_without  ocl_icd         # OpenCL as ICD (installable client driver)
 %bcond_with	glvnd		# OpenGL vendor neutral dispatcher support
 %bcond_without	omx		# OpenMAX (Bellagio OMXIL) support
 %bcond_without	va		# VA library
@@ -42,6 +43,10 @@
 %if %{without egl}
 %undefine	with_gbm
 %undefine	with_wayland
+%endif
+
+%if %{without opencl}
+%undefine	with_ocl_icd
 %endif
 
 Summary:	Free OpenGL implementation
@@ -1231,7 +1236,15 @@ vulkan_drivers=$(echo $vulkan_drivers | xargs | tr ' ' ',')
 	-Dva-libs-path=%{_libdir}/libva/dri \
 	-Dgallium-xa=%{?with_xa:true}%{?!with_xa:false} \
 	-Dgallium-nine=%{?with_nine:true}%{?!with_nine:false} \
-	-Dgallium-opencl=%{?with_opencl:icd}%{?!with_opencl:disabled} \
+%if %{with opencl}
+%if %{with ocl_icd}
+	-Dgallium-opencl=icd \
+%else
+	-Dgallium-opencl=standalone \
+%endif
+%else
+	-Dgallium-opencl=disabled \
+%endif
 	-Dvulkan-drivers=${vulkan_drivers} \
 	-Dvulkan-icd-dir=/usr/share/vulkan/icd.d \
 	-Dgbm=%{?with_gbm:true}%{?!with_gbm:false} \
