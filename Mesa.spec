@@ -1,18 +1,13 @@
 #
-# TODO:
-# - check if gallium_i915 note is still valid, switch the bcond if not
-#
 # Conditional build:
 %bcond_without	gallium		# gallium drivers
-%bcond_with	gallium_i915	# gallium i915 Intel driver (instead of plain dri; doesn't work with AIGLX)
 %bcond_without	gallium_nouveau	# gallium nouveau driver
 %bcond_without	gallium_radeon	# gallium radeon drivers
 %bcond_without	egl		# EGL libraries
-%bcond_with	openvg		# OpenVG library [not building since 10.4, dropped in 10.6]
 %bcond_without	gbm		# Graphics Buffer Manager
 %bcond_without	nine		# Nine Direct3D 9+ state tracker (for Wine)
 %bcond_without	opencl		# OpenCL support
-%bcond_without	ocl_icd		# OpenCL as ICD (installable client driver)
+%bcond_without  ocl_icd         # OpenCL as ICD (installable client driver)
 %bcond_with	glvnd		# OpenGL vendor neutral dispatcher support
 %bcond_without	omx		# OpenMAX (Bellagio OMXIL) support
 %bcond_without	va		# VA library
@@ -20,33 +15,26 @@
 %bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
 %bcond_with	hud_extra	# HUD block/NIC I/O HUD stats support
 %bcond_with	lm_sensors	# HUD lm_sensors support
-%bcond_with	texture_float	# floating-point textures and renderbuffers (SGI patent in US)
-%bcond_with	static_libs	# static libraries [not supported for DRI, thus broken currently]
 %bcond_with	tests		# tests
-%bcond_without	shared_llvm	# disable use of the shared LLVM libs
 %bcond_without	radv		# disable build of the radeon Vulkan driver
 #
 # glapi version (glapi tables in dri drivers and libglx must be in sync);
 # set to current Mesa version on ABI break, when xserver tables get regenerated
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver		7.1.0
-# minimal supported xserver version
-%define		xserver_ver		1.5.0
 # other packages
-%define		libdrm_ver		2.4.92
+%define		libdrm_ver		2.4.95
 %define		dri2proto_ver		2.8
-%define		dri3proto_ver		1.0
 %define		glproto_ver		1.4.14
-%define		presentproto_ver	1.0
 %define		zlib_ver		1.2.8
 %define		wayland_ver		1.11
+%define		llvm_ver		6.0.0
+%define		gcc_ver 		6:4.8.0
 
 %if %{without gallium}
-%undefine	with_gallium_i915
 %undefine	with_gallium_nouveau
 %undefine	with_gallium_radeon
 %undefine	with_nine
-%undefine	with_ocl_icd
 %undefine	with_omx
 %undefine	with_opencl
 %undefine	with_xa
@@ -57,57 +45,51 @@
 %undefine	with_wayland
 %endif
 
+%if %{without opencl}
+%undefine	with_ocl_icd
+%endif
+
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-#		NOTE: 18.3 is being prepared on the 'Mesa-18.3' branch
-Version:	18.2.8
+Version:	18.3.2
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
-# Source0-md5:	bba8fcfa55424b379363344aba50eebd
-Patch0:		%{name}-link.patch
+# Source0-md5:	05271d9dbac776b851debb2e5b501559
+Patch0:		nouveau_no_rtti.patch
 URL:		http://www.mesa3d.org/
-BuildRequires:	autoconf >= 2.60
-BuildRequires:	automake
-%{?with_opencl:BuildRequires:	clang-devel >= 3.1}
+BuildRequires:	meson >= 0.45
+BuildRequires:  ninja
+%{?with_opencl:BuildRequires:	clang-devel >= %{llvm_ver}}
 BuildRequires:	elfutils-devel
 BuildRequires:	expat-devel >= 1.95
-BuildRequires:	gcc >= 6:4.2.0
-%{?with_nine:BuildRequires:	gcc-c++ >= 6:4.6}
-%{?with_opencl:BuildRequires:	gcc-c++ >= 6:4.7}
+BuildRequires:	gcc >= %{gcc_ver}
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
 %{?with_glvnd:BuildRequires:	libglvnd-devel >= 0.2.0}
 BuildRequires:	libselinux-devel
-BuildRequires:	libstdc++-devel >= 6:4.2.0
-BuildRequires:	libtalloc-devel >= 2:2.0.1
-BuildRequires:	libtool >= 2:2.2
-%{?with_va:BuildRequires:	libva-devel >= 1.6.0}
+BuildRequires:	libstdc++-devel >= %{gcc_ver}
+BuildRequires:	libunwind-devel
+%{?with_va:BuildRequires:	libva-devel}
 %{?with_va:BuildRequires:	pkgconfig(libva) >= 0.39.0}
 BuildRequires:	libvdpau-devel >= 1.1
 BuildRequires:	libxcb-devel >= 1.13
-# gallium core requires 3.3.0, OpenCL/r600 require 3.9.0, swr/radeonsi/radv 4.0.0
-%{?with_gallium:BuildRequires:	llvm-devel >= 5.0}
-%{?with_radv:BuildRequires:	llvm-devel >= 5.0}
+%{?with_gallium:BuildRequires:	llvm-devel >= %{llvm_ver}}
+%{?with_radv:BuildRequires:	llvm-devel >= %{llvm_ver}}
 %{?with_opencl:BuildRequires:	llvm-libclc}
-# for SHA1 (could use also libmd/libsha1/libgcrypt/openssl instead)
-BuildRequires:	nettle-devel
-%{?with_ocl_icd:BuildRequires:	ocl-icd-devel}
 %{?with_omx:BuildRequires:	libomxil-bellagio-devel}
-BuildRequires:	perl-base
-BuildRequires:	pixman-devel
 BuildRequires:	pkgconfig
 BuildRequires:	pkgconfig(talloc) >= 2.0.1
 BuildRequires:	pkgconfig(xcb-dri2) >= 1.8
 BuildRequires:	pkgconfig(xcb-dri3) >= 1.13
 BuildRequires:	pkgconfig(xcb-glx) >= 1.8.1
 BuildRequires:	pkgconfig(xcb-present) >= 1.13
-BuildRequires:	python >= 2
-BuildRequires:	python-Mako >= 0.8.0
-BuildRequires:	python-modules >= 2
+BuildRequires:	pkgconfig(xcb-randr) >= 1.12
+BuildRequires:	python3
+BuildRequires:	python3-Mako >= 0.8.0
 BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
 # wayland-{client,server}
@@ -117,30 +99,20 @@ BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libXdamage-devel >= 1.1
 BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXfixes-devel
-BuildRequires:	xorg-lib-libXt-devel
 BuildRequires:	xorg-lib-libXvMC-devel >= 1.0.6
 BuildRequires:	xorg-lib-libXxf86vm-devel
 BuildRequires:	xorg-lib-libxshmfence-devel >= 1.1
 BuildRequires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
-BuildRequires:	xorg-proto-dri3proto-devel >= %{dri3proto_ver}
 BuildRequires:	xorg-proto-glproto-devel >= %{glproto_ver}
-BuildRequires:	xorg-proto-presentproto-devel >= %{presentproto_ver}
-BuildRequires:	xorg-util-makedepend
 %if %{with gallium}
 %{?with_lm_sensors:BuildRequires:	lm_sensors-devel >= 4.0}
-BuildRequires:	xorg-proto-xextproto-devel >= 7.0.99.1
-BuildRequires:	xorg-xserver-server-devel >= %{xserver_ver}
 %endif
 BuildRequires:	zlib-devel >= %{zlib_ver}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # libGLESv1_CM, libGLESv2, libGL, libOSMesa:
 #  _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
-# libgbm: circular dependency with libEGL (wayland_buffer_is_drm symbol)
-%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libOSMesa.so.* libgbm.*.so.* libGLX_mesa.so.0.*
-
-# llvm build broken
-%define		filterout_ld    -Wl,--as-needed
+%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libOSMesa.so.* libGLX_mesa.so.0.*
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
@@ -464,43 +436,6 @@ Header files for Mesa OpenCL library.
 
 %description libOpenCL-devel -l pl.UTF-8
 Pliki nagłówkowe biblioteki Mesa OpenCL.
-
-%package libOpenVG
-Summary:	Mesa implementation of OpenVG (Vector Graphics Accelleration) API
-Summary(pl.UTF-8):	Implementacja Mesa API OpenVG (akceleracji grafiki wektorowej)
-License:	MIT
-Group:		Libraries
-Provides:	OpenVG = 1.1
-
-%description libOpenVG
-This package contains Mesa implementation of OpenVG - cross-platform
-API that provides a low-level hardware acceleration interface for
-vector graphics libraries such as Flash and SVG. OpenVG specification
-can be found on Khronos Group site: <http://www.khronos.org/openvg/>.
-Mesa implements OpenVG 1.1.
-
-%description libOpenVG -l pl.UTF-8
-Ten pakiet zawiera implementację Mesa standardu OpenVG -
-wieloplatfomowego API zapewniającego niskopoziomowy interfejs
-akceleracji sprzętowej dla bibliotek grafiki wektorowej, takiej jak
-Flash czy SVG. Specyfikację OpenVG można znaleźć na stronie Khronos
-Group: <http://www.khronos.org/openvg/>. Mesa zawiera implementację
-OpenVG w wersji 1.1.
-
-%package libOpenVG-devel
-Summary:	Header file for Mesa OpenVG library
-Summary(pl.UTF-8):	Plik nagłówkowy biblioteki Mesa OpenVG
-License:	MIT
-Group:		Development/Libraries
-Requires:	%{name}-khrplatform-devel = %{version}-%{release}
-Requires:	%{name}-libOpenVG = %{version}-%{release}
-Provides:	OpenVG-devel = 1.1
-
-%description libOpenVG-devel
-Header file for Mesa OpenVG library.
-
-%description libOpenVG-devel -l pl.UTF-8
-Plik nagłówkowy biblioteki Mesa OpenVG.
 
 %package libXvMC-nouveau
 Summary:	Mesa implementation of XvMC API for NVidia adapters
@@ -935,22 +870,6 @@ X.org DRI driver for VMWare.
 %description dri-driver-vmwgfx -l pl.UTF-8
 Sterownik X.org DRI dla VMware.
 
-%package pipe-driver-i915
-Summary:	i915 driver for Mesa Gallium dynamic pipe loader
-Summary(pl.UTF-8):	Sterownik i915 dla dynamicznego systemu potoków szkieletu Mesa Gallium
-Group:		Libraries
-Requires:	zlib >= %{zlib_ver}
-Obsoletes:	Mesa-gbm-driver-i915
-Obsoletes:	Mesa-opencl-driver-i915
-
-%description pipe-driver-i915
-i915 driver for Mesa Gallium dynamic pipe loader. It supports Intel
-915/945/G33/Q33/Q35/Pineview chips.
-
-%description pipe-driver-i915 -l pl.UTF-8
-Sterownik i915 dla dynamicznego systemu potoków szkieletu Mesa
-Gallium. Obsługuje układy Intela z serii 915/945/G33/Q33/Q35/Pineview.
-
 %package pipe-driver-msm
 Summary:	msm (freedreno) driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik msm (freedreno) dla dynamicznego systemu potoków szkieletu Mesa Gallium
@@ -1254,29 +1173,31 @@ radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD.
 
 %prep
 %setup -q -n mesa-mesa-%{version}
+
 %patch0 -p1
 
 %build
-%{__libtoolize}
-%{__aclocal} -I m4
-%{__autoconf}
-%{__automake}
 
-dri_drivers="nouveau r200 radeon swrast \
+%if %{with opencl}
+if [ "$(llvm-config --has-rtti)" != "YES" ] ; then
+	echo "Clover (gallium OpenCL) requires LLVM with RTTI!"
+	exit 1
+fi
+%endif
+
+dri_drivers="nouveau r100 r200 \
+%if %{without gallium}
+swrast
+%endif
 %ifarch %{ix86} %{x8664} x32
-i965 %{!?with_gallium_i915:i915} \
+i965 i915 \
 %endif
 "
 
 dri_drivers=$(echo $dri_drivers | xargs | tr ' ' ',')
 
-gallium_drivers="svga swrast virgl \
-%ifarch %{x8664}
-swr
-%endif
-%ifarch %{ix86} %{x8664} x32
-%{?with_gallium_i915:i915} \
-%endif
+gallium_drivers="svga virgl \
+swrast
 %if %{with gallium_radeon}
 r300 r600 radeonsi \
 %endif
@@ -1293,7 +1214,7 @@ vc4 \
 
 gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 
-vulkan_drivers="%{?with_radv:radeon} \
+vulkan_drivers="%{?with_radv:amd} \
 %ifarch %{ix86} %{x8664} x32
 intel \
 %endif
@@ -1301,70 +1222,50 @@ intel \
 
 vulkan_drivers=$(echo $vulkan_drivers | xargs | tr ' ' ',')
 
-%configure \
-	--disable-silent-rules \
-	%{__enable gbm} \
-	--enable-glx-tls \
-	%{?with_glvnd:--enable-libglvnd} \
-	--enable-osmesa \
-	--enable-selinux \
-	--enable-shared \
-	--enable-shared-glapi \
-	%{?with_static_libs:--enable-static} \
-	%{?with_texture_float:--enable-texture-float} \
-%if %{with egl}
-	--enable-egl \
-	--enable-gles1 \
-	--enable-gles2 \
-	--with-platforms=x11%{?with_gbm:,drm}%{?with_wayland:,wayland} \
-%endif
-%if %{with gallium}
-	%{?with_hud_extra:--enable-gallium-extra-hud} \
-	--enable-llvm \
-	%{__enable_disable shared_llvm llvm-shared-libs} \
-	%{__enable ocl_icd opencl-icd} \
-	%{?with_lm_sensors:--enable-lmsensors} \
-	%{?with_nine:--enable-nine} \
-	%{__enable opencl} \
-	%{__enable va} \
-	--enable-vdpau \
-	%{?with_omx:--enable-omx-bellagio} \
-	%{?with_xa:--enable-xa} \
-	--enable-xvmc \
-	--with-gallium-drivers=${gallium_drivers} \
+%meson build \
+	-Dplatforms=x11,drm,%{?with_wayland:,wayland},surfaceless \
+	-Ddri3=true \
+	-Ddri-drivers=${dri_drivers} \
+	-Ddri-drivers-path=%{_libdir}/xorg/modules/dri \
+	-Dgallium-drivers=${gallium_drivers} \
+	%{?with_hud_extra:-Dgallium-extra-hud=true} \
+	-Dgallium-vdpau=true \
+	-Dgallium-xvmc=true \
+	-Dgallium-omx=%{?with_omx:bellagio}%{?!with_omx:disabled} \
+	-Dgallium-va=%{?with_va:true}%{?!with_va:false} \
+	-Dva-libs-path=%{_libdir}/libva/dri \
+	-Dgallium-xa=%{?with_xa:true}%{?!with_xa:false} \
+	-Dgallium-nine=%{?with_nine:true}%{?!with_nine:false} \
+%if %{with opencl}
+%if %{with ocl_icd}
+	-Dgallium-opencl=icd \
 %else
-	--without-gallium-drivers \
+	-Dgallium-opencl=standalone \
 %endif
-	--with-dri-drivers=${dri_drivers} \
-	--with-dri-driverdir=%{_libdir}/xorg/modules/dri \
-	--with-vulkan-drivers=${vulkan_drivers} \
-	--with-vulkan-icddir=/usr/share/vulkan/icd.d \
-	--with-sha1=libnettle \
-	--with-va-libdir=%{_libdir}/libva/dri
+%else
+	-Dgallium-opencl=disabled \
+%endif
+	-Dvulkan-drivers=${vulkan_drivers} \
+	-Dvulkan-icd-dir=/usr/share/vulkan/icd.d \
+	-Dgbm=%{?with_gbm:true}%{?!with_gbm:false} \
+	-Degl=%{?with_egl:true}%{?!with_egl:false} \
+	-Dglvnd=%{?with_glvnd:true}%{?!with_glvnd:false} \
+	-Dlibunwind=true \
+	-Dlmsensors=%{?with_lm_sensors:true}%{?!with_lm_sensors:false} \
+	-Dselinux=true \
+	-Dosmesa=%{?with_gallium:gallium}%{?!with_gallium:classic}
 
-%{__make}
+%meson_build -C build
 
-%{?with_tests:%{__make} check}
+%{?with_tests:%meson_test -C build}
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%{__make} install \
-	DESTDIR=$RPM_BUILD_ROOT
+%meson_install -C build
 
-# dlopened by soname
-%{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so}
-%{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/libXvMC*.so.1.0}
-# dlopened by soname or .so link
-%{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/vdpau/libvdpau_*.so.1.0}
 # not used externally
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libglapi.so
-# dlopened
-%{?with_omx:%{__rm} $RPM_BUILD_ROOT%{_libdir}/bellagio/libomx_*.la}
-%{?with_nine:%{__rm} $RPM_BUILD_ROOT%{_libdir}/d3d/d3dadapter9.la}
-%{?with_gallium:%{__rm} $RPM_BUILD_ROOT%{_libdir}/gallium-pipe/pipe_*.la}
-# not defined by standards; and not needed, there is pkg-config support
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/lib*.la
 
 %if %{without glvnd}
 # remove "OS ABI: Linux 2.4.20" tag, so private copies (nvidia or fglrx),
@@ -1389,9 +1290,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %post	libOpenCL -p /sbin/ldconfig
 %postun	libOpenCL -p /sbin/ldconfig
-
-%post	libOpenVG -p /sbin/ldconfig
-%postun	libOpenVG -p /sbin/ldconfig
 
 %post	libXvMC-nouveau -p /sbin/ldconfig
 %postun	libXvMC-nouveau -p /sbin/ldconfig
@@ -1433,12 +1331,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/EGL/eglmesaext.h
 %{_includedir}/EGL/eglplatform.h
 %{_pkgconfigdir}/egl.pc
-
-%if %{with static_libs}
-%files libEGL-static
-%defattr(644,root,root,755)
-%{_libdir}/libEGL.a
-%endif
 %endif
 
 %files libGL
@@ -1455,7 +1347,7 @@ rm -rf $RPM_BUILD_ROOT
 # (and dlopen libGL.so instead of libGL.so.1; the same does Mesa libEGL)
 %attr(755,root,root) %{_libdir}/libGL.so
 %endif
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/drirc
+%{_datadir}/drirc.d
 
 %files libGL-devel
 %defattr(644,root,root,755)
@@ -1472,12 +1364,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/internal/dri_interface.h
 %{_pkgconfigdir}/dri.pc
 %{_pkgconfigdir}/gl.pc
-
-%if %{with static_libs}
-%files libGL-static
-%defattr(644,root,root,755)
-%{_libdir}/libGL.a
-%endif
 
 %files libGLES
 %defattr(644,root,root,755)
@@ -1507,12 +1393,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/osmesa.h
 %{_pkgconfigdir}/osmesa.pc
 
-%if %{with static_libs}
-%files libOSMesa-static
-%defattr(644,root,root,755)
-%{_libdir}/libOSMesa.a
-%endif
-
 %if %{with opencl}
 %if %{with ocl_icd}
 %files OpenCL-icd
@@ -1538,32 +1418,17 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %endif
 
-%if %{with egl} && %{with openvg} && %{with gallium}
-%files libOpenVG
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libOpenVG.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libOpenVG.so.1
-
-%files libOpenVG-devel
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libOpenVG.so
-%{_includedir}/VG
-%{_pkgconfigdir}/vg.pc
-%endif
-
 %if %{with gallium}
 %if %{with gallium_nouveau}
 %files libXvMC-nouveau
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libXvMCnouveau.so.1.0.0
-%attr(755,root,root) %ghost %{_libdir}/libXvMCnouveau.so.1
+%attr(755,root,root) %{_libdir}/libXvMCnouveau.so
 %endif
 
 %if %{with gallium_radeon}
 %files libXvMC-r600
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libXvMCr600.so.1.0.0
-%attr(755,root,root) %ghost %{_libdir}/libXvMCr600.so.1
+%attr(755,root,root) %{_libdir}/libXvMCr600.so
 %endif
 
 %if %{with va}
@@ -1703,12 +1568,7 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %if %{with gallium}
-%if %{with gallium_i915}
-%files pipe-driver-i915
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_i915.so
-%endif
-
+%if %{with opencl}
 %ifarch %{arm}
 %files pipe-driver-msm
 %defattr(644,root,root,755)
@@ -1742,12 +1602,16 @@ rm -rf $RPM_BUILD_ROOT
 %files pipe-driver-vmwgfx
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/gallium-pipe/pipe_vmwgfx.so
+%endif
 
+# currently disabled as cannot be built with swrast
+%if 0
 %ifarch %{x8664}
 %files swr
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libswrAVX.so
 %attr(755,root,root) %{_libdir}/libswrAVX2.so
+%endif
 %endif
 %endif
 
@@ -1769,6 +1633,7 @@ rm -rf $RPM_BUILD_ROOT
 %files -n libvdpau-driver-mesa-nouveau
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1.0.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so
 %endif
@@ -1777,18 +1642,21 @@ rm -rf $RPM_BUILD_ROOT
 %files -n libvdpau-driver-mesa-r300
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1.0.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so
 
 %files -n libvdpau-driver-mesa-r600
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so
 
 %files -n libvdpau-driver-mesa-radeonsi
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1.0.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so
 %endif
