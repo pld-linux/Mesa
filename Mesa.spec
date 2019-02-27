@@ -1,3 +1,4 @@
+# TODO: libtizonia >= 0.10.0 as an alternative for bellagio?
 #
 # Conditional build:
 %bcond_without	gallium		# gallium drivers
@@ -7,7 +8,7 @@
 %bcond_without	gbm		# Graphics Buffer Manager
 %bcond_without	nine		# Nine Direct3D 9+ state tracker (for Wine)
 %bcond_without	opencl		# OpenCL support
-%bcond_without  ocl_icd         # OpenCL as ICD (installable client driver)
+%bcond_without	ocl_icd		# OpenCL as ICD (installable client driver)
 %bcond_with	glvnd		# OpenGL vendor neutral dispatcher support
 %bcond_without	omx		# OpenMAX (Bellagio OMXIL) support
 %bcond_without	va		# VA library
@@ -52,18 +53,16 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	18.3.3
+Version:	18.3.4
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
-# Source0-md5:	62f3225cbe07d838ae0a842736d43f11
+# Source0-md5:	64fefeab30a36fd64be935e66c450154
 Patch0:		nouveau_no_rtti.patch
 URL:		http://www.mesa3d.org/
-BuildRequires:	meson >= 0.45
-BuildRequires:  ninja
 %{?with_opencl:BuildRequires:	clang-devel >= %{llvm_ver}}
 BuildRequires:	elfutils-devel
 BuildRequires:	expat-devel >= 1.95
@@ -81,6 +80,8 @@ BuildRequires:	libxcb-devel >= 1.13
 %{?with_radv:BuildRequires:	llvm-devel >= %{llvm_ver}}
 %{?with_opencl:BuildRequires:	llvm-libclc}
 %{?with_omx:BuildRequires:	libomxil-bellagio-devel}
+BuildRequires:	meson >= 0.45
+BuildRequires:	ninja
 BuildRequires:	pkgconfig
 BuildRequires:	pkgconfig(talloc) >= 2.0.1
 BuildRequires:	pkgconfig(xcb-dri2) >= 1.8
@@ -1204,10 +1205,13 @@ r300 r600 radeonsi \
 %if %{with gallium_nouveau}
 nouveau
 %endif
-%ifarch %{arm}
+%ifarch %{arm} aarch64
 etnaviv \
 freedreno \
 imx \
+pl111 \
+tegra \
+v3d \
 vc4 \
 %endif
 "
@@ -1227,15 +1231,11 @@ vulkan_drivers=$(echo $vulkan_drivers | xargs | tr ' ' ',')
 	-Ddri3=true \
 	-Ddri-drivers=${dri_drivers} \
 	-Ddri-drivers-path=%{_libdir}/xorg/modules/dri \
+	-Degl=%{?with_egl:true}%{!?with_egl:false} \
 	-Dgallium-drivers=${gallium_drivers} \
 	%{?with_hud_extra:-Dgallium-extra-hud=true} \
-	-Dgallium-vdpau=true \
-	-Dgallium-xvmc=true \
-	-Dgallium-omx=%{?with_omx:bellagio}%{?!with_omx:disabled} \
-	-Dgallium-va=%{?with_va:true}%{?!with_va:false} \
-	-Dva-libs-path=%{_libdir}/libva/dri \
-	-Dgallium-xa=%{?with_xa:true}%{?!with_xa:false} \
-	-Dgallium-nine=%{?with_nine:true}%{?!with_nine:false} \
+	-Dgallium-nine=%{?with_nine:true}%{!?with_nine:false} \
+	-Dgallium-omx=%{?with_omx:bellagio}%{!?with_omx:disabled} \
 %if %{with opencl}
 %if %{with ocl_icd}
 	-Dgallium-opencl=icd \
@@ -1245,15 +1245,19 @@ vulkan_drivers=$(echo $vulkan_drivers | xargs | tr ' ' ',')
 %else
 	-Dgallium-opencl=disabled \
 %endif
-	-Dvulkan-drivers=${vulkan_drivers} \
-	-Dvulkan-icd-dir=/usr/share/vulkan/icd.d \
-	-Dgbm=%{?with_gbm:true}%{?!with_gbm:false} \
-	-Degl=%{?with_egl:true}%{?!with_egl:false} \
-	-Dglvnd=%{?with_glvnd:true}%{?!with_glvnd:false} \
+	-Dgallium-va=%{?with_va:true}%{!?with_va:false} \
+	-Dgallium-vdpau=true \
+	-Dgallium-xvmc=true \
+	-Dgallium-xa=%{?with_xa:true}%{!?with_xa:false} \
+	-Dgbm=%{?with_gbm:true}%{!?with_gbm:false} \
+	-Dglvnd=%{?with_glvnd:true}%{!?with_glvnd:false} \
 	-Dlibunwind=true \
-	-Dlmsensors=%{?with_lm_sensors:true}%{?!with_lm_sensors:false} \
+	-Dlmsensors=%{?with_lm_sensors:true}%{!?with_lm_sensors:false} \
+	-Dosmesa=%{?with_gallium:gallium}%{!?with_gallium:classic} \
 	-Dselinux=true \
-	-Dosmesa=%{?with_gallium:gallium}%{?!with_gallium:classic}
+	-Dva-libs-path=%{_libdir}/libva/dri \
+	-Dvulkan-drivers=${vulkan_drivers} \
+	-Dvulkan-icd-dir=/usr/share/vulkan/icd.d
 
 %meson_build -C build
 
