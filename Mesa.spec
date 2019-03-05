@@ -62,6 +62,7 @@ Group:		X11/Libraries
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
 # Source0-md5:	64fefeab30a36fd64be935e66c450154
 Patch0:		nouveau_no_rtti.patch
+Patch1:		dridriverdir.patch
 URL:		http://www.mesa3d.org/
 %{?with_opencl:BuildRequires:	clang-devel >= %{llvm_ver}}
 BuildRequires:	elfutils-devel
@@ -1176,6 +1177,7 @@ radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD.
 %setup -q -n mesa-mesa-%{version}
 
 %patch0 -p1
+%patch1 -p1
 
 %build
 
