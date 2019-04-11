@@ -24,12 +24,12 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver		7.1.0
 # other packages
-%define		libdrm_ver		2.4.95
+%define		libdrm_ver		2.4.97
 %define		dri2proto_ver		2.8
 %define		glproto_ver		1.4.14
 %define		zlib_ver		1.2.8
 %define		wayland_ver		1.11
-%define		llvm_ver		6.0.0
+%define		llvm_ver		7.0.0
 %define		gcc_ver 		6:4.8.0
 
 %if %{without gallium}
@@ -53,14 +53,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	18.3.5
+Version:	19.0.2
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
-# Source0-md5:	c58f1c90430c03cb3631d3d0f228f7d0
+# Source0-md5:	4a5e81eba57f6888a5be8fba0b9aa843
 Patch0:		nouveau_no_rtti.patch
 URL:		http://www.mesa3d.org/
 %{?with_opencl:BuildRequires:	clang-devel >= %{llvm_ver}}
@@ -1270,6 +1270,7 @@ rm -rf $RPM_BUILD_ROOT
 
 # not used externally
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libglapi.so
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/vdpau/libvdpau_gallium.so
 
 %if %{without glvnd}
 # remove "OS ABI: Linux 2.4.20" tag, so private copies (nvidia or fglrx),
