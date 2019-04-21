@@ -81,7 +81,7 @@ BuildRequires:	libxcb-devel >= 1.13
 %{?with_opencl:BuildRequires:	llvm-libclc}
 %{?with_omx:BuildRequires:	libomxil-bellagio-devel}
 BuildRequires:	meson >= 0.45
-BuildRequires:	ninja
+BuildRequires:	ninja >= 1.5
 BuildRequires:	pkgconfig
 BuildRequires:	pkgconfig(talloc) >= 2.0.1
 BuildRequires:	pkgconfig(xcb-dri2) >= 1.8
@@ -100,13 +100,14 @@ BuildRequires:	sed >= 4.0
 BuildRequires:	xorg-lib-libXdamage-devel >= 1.1
 BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXfixes-devel
+BuildRequires:	xorg-lib-libXrandr-devel >= 1.3
 BuildRequires:	xorg-lib-libXvMC-devel >= 1.0.6
 BuildRequires:	xorg-lib-libXxf86vm-devel
 BuildRequires:	xorg-lib-libxshmfence-devel >= 1.1
 BuildRequires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 BuildRequires:	xorg-proto-glproto-devel >= %{glproto_ver}
 %if %{with gallium}
-%{?with_lm_sensors:BuildRequires:	lm_sensors-devel >= 4.0}
+%{?with_lm_sensors:BuildRequires:	lm_sensors-devel}
 %endif
 BuildRequires:	zlib-devel >= %{zlib_ver}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -1126,6 +1127,7 @@ License:	MIT
 Group:		Libraries
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libxcb >= 1.13
+Requires:	xorg-lib-libXrandr >= 1.3
 Requires:	xorg-lib-libxshmfence >= 1.1
 # wayland-client
 Requires:	wayland >= %{wayland_ver}
@@ -1159,6 +1161,7 @@ License:	MIT
 Group:		Libraries
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libxcb >= 1.13
+Requires:	xorg-lib-libXrandr >= 1.3
 Requires:	xorg-lib-libxshmfence >= 1.1
 # wayland-client
 Requires:	wayland >= %{wayland_ver}
