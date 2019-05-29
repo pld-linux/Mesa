@@ -53,14 +53,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	19.0.4
+Version:	19.0.5
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
-# Source0-md5:	687794d79413f9b488de321725d44867
+# Source0-md5:	dbeefe955c19411a0a23d7bb58a92149
 Patch0:		nouveau_no_rtti.patch
 URL:		http://www.mesa3d.org/
 %{?with_opencl:BuildRequires:	clang-devel >= %{llvm_ver}}
@@ -1200,8 +1200,10 @@ i965 i915 \
 
 dri_drivers=$(echo $dri_drivers | xargs | tr ' ' ',')
 
-gallium_drivers="svga virgl \
-swrast
+gallium_drivers="virgl swrast \
+%ifarch %{ix86} %{x8664} x32
+svga \
+%endif
 %if %{with gallium_radeon}
 r300 r600 radeonsi \
 %endif
@@ -1211,8 +1213,7 @@ nouveau
 %ifarch %{arm} aarch64
 etnaviv \
 freedreno \
-imx \
-pl111 \
+kmsro \
 tegra \
 v3d \
 vc4 \
