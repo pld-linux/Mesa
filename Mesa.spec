@@ -2,6 +2,7 @@
 #
 # Conditional build:
 %bcond_without	gallium		# gallium drivers
+%bcond_with	gallium_i915	# gallium i915 driver instead of dri i915 driver
 %bcond_without	gallium_nouveau	# gallium nouveau driver
 %bcond_without	gallium_radeon	# gallium radeon drivers
 %bcond_without	egl		# EGL libraries
@@ -33,6 +34,7 @@
 %define		gcc_ver 		6:4.8.0
 
 %if %{without gallium}
+%undefine	with_gallium_i915
 %undefine	with_gallium_nouveau
 %undefine	with_gallium_radeon
 %undefine	with_nine
@@ -712,13 +714,13 @@ Requires:	zlib >= %{zlib_ver}
 X.org Gallium DRI driver for ATI Southern Islands card family (Radeon
 HD 7700-8000, R9, APU). It supports TAHITI, PITCAIRN, VERDE, OLAND,
 HAINAN, BONAIRE, KABINI, MULLINS, KAVERI, HAWAII, ICELAND, TONGA,
-CARRIZO, FIJI, POLARIS, STONEY chips.
+CARRIZO, FIJI, POLARIS, STONEY, VEGA, RAVEN chips.
 
 %description dri-driver-ati-radeon-SI -l pl.UTF-8
 Sterownik X.org DRI Gallium dla rodziny kart ATI Southern Islands
 (Radeon HD 7700-8000, R9, APU). Obsługuje układy TAHITI, PITCAIRN,
 VERDE, OLAND, HAINAN, BONAIRE, KABINI, MULLINS, KAVERI, HAWAII,
-ICELAND, TONGA, CARRIZO, FIJI, POLARIS, STONEY.
+ICELAND, TONGA, CARRIZO, FIJI, POLARIS, STONEY, VEGA, RAVEN.
 
 %package dri-driver-etnaviv
 Summary:	X.org DRI driver for Vivante 3D chips
@@ -731,10 +733,10 @@ Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 
 %description dri-driver-etnaviv
-X.org DRI driver for Vivante 3D chips.
+X.org Gallium DRI driver for Vivante 3D chips.
 
 %description dri-driver-etnaviv -l pl.UTF-8
-Sterownik X.org DRI dla układów Vivante 3D.
+Sterownik X.org DRI Gallium dla układów Vivante 3D.
 
 %package dri-driver-freedreno
 Summary:	X.org DRI driver for Adreno chips
@@ -747,10 +749,10 @@ Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 
 %description dri-driver-freedreno
-X.org DRI driver for Adreno chips.
+X.org Gallium DRI driver for Adreno chips.
 
 %description dri-driver-freedreno -l pl.UTF-8
-Sterownik X.org DRI dla układów Adreno.
+Sterownik X.org DRI Gallium dla układów Adreno.
 
 %package dri-driver-intel-i915
 Summary:	X.org DRI driver for Intel i915 card family
@@ -786,13 +788,69 @@ Obsoletes:	X11-driver-i810-dri < 1:7.0.0
 X.org (non-Gallium) DRI driver for Intel i965 card family (946GZ,
 965G, 965Q, 965GM, 965GME, GM45, G41, B43, Q45/Q43, G45/G43, Ironlake,
 Sandybridge, Ivybridge, Haswell, Ray Trail, Broadwell, Cherrytrail,
-Braswell, Cherryview, Skylake, Broxton, Kabylake, Geminilake);
+Braswell, Cherryview, Skylake, Broxton, Kabylake, Coffeelake,
+Geminilake, Whiskey Lake, Comet Lake, Cannonlake, Ice Lake, Elkhart
+Lake).
 
 %description dri-driver-intel-i965 -l pl.UTF-8
 Sterownik X.org DRI (nie Gallium) dla rodziny kart Intel i965 (946GZ,
 965G, 965Q, 965GM, 965GME, GM45, G41, B43, Q45/Q43, G45/G43, Ironlake,
 Sandybridge, Ivybridge, Haswell, Ray Trail, Broadwell, Cherrytrail,
-Braswell, Cherryview, Skylake, Broxton, Kabylake, Geminilake);
+Braswell, Cherryview, Skylake, Broxton, Kabylake, Coffeelake,
+Geminilake, Whiskey Lake, Comet Lake, Cannonlake, Ice Lake, Elkhart
+Lake).
+
+%package dri-driver-intel-iris
+Summary:	X.org DRI driver for Intel Iris (Gen8+) card family
+Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel Iris (Gen8+)
+License:	MIT
+Group:		X11/Libraries
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
+
+%description dri-driver-intel-iris
+X.org Gallium DRI driver for Intel Iris (Gen8+) card family
+(Broadwell, Skylake, Broxton, Kabylake, Coffeelake, Geminilake,
+Whiskey Lake, Comet Lake, Cannonlake, Ice Lake, Elkhart Lake).
+
+%description dri-driver-intel-iris -l pl.UTF-8
+Sterownik X.org DRI Gallium dla rodziny kart Intel Iris (Gen8+:
+Broadwell, Skylake, Broxton, Kabylake, Coffeelake, Geminilake,
+Whiskey Lake, Comet Lake, Cannonlake, Ice Lake, Elkhart Lake).
+
+%package dri-driver-kmsro
+Summary:	X.org Gallium DRI driver using KMS Render-Only architecture
+Summary(pl.UTF-8):	Sterownik X.org DRI Gallium wykorzystujący architekturę KMS Render-Only
+License:	MIT
+Group:		X11/Libraries
+#Requires:	xorg-driver-video-?
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
+
+%description dri-driver-kmsro
+X.org Gallium DRI driver using KMS Render-Only architecture.
+
+%description dri-driver-kmsro -l pl.UTF-8
+Sterownik X.org DRI Gallium wykorzystujący architekturę KMS
+Render-Only.
+
+%package dri-driver-lima
+Summary:	X.org DRI driver for Mali Utgard chips
+Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Mali Utgard
+License:	MIT
+Group:		X11/Libraries
+#Requires:	xorg-driver-video-???
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
+
+%description dri-driver-lima
+X.org Gallium DRI driver for Mali Utgard chips.
+
+%description dri-driver-lima -l pl.UTF-8
+Sterownik X.org DRI Gallium dla układów Mali Utgard.
 
 %package dri-driver-nouveau
 Summary:	X.org DRI driver for NVIDIA card family
@@ -810,6 +868,22 @@ X.org DRI drivers for NVIDIA card family.
 %description dri-driver-nouveau -l pl.UTF-8
 Sterowniki X.org DRI dla rodziny kart NVIDIA.
 
+%package dri-driver-panfrost
+Summary:	X.org DRI driver for Mali Midgard/Bifrost chips
+Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Mali Midgard/Bifrost
+License:	MIT
+Group:		X11/Libraries
+#Requires:	xorg-driver-video-???
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
+
+%description dri-driver-panfrost
+X.org Gallium DRI driver for Mali Midgard/Bifrost chips.
+
+%description dri-driver-panfrost -l pl.UTF-8
+Sterownik X.org DRI Gallium dla układów Mali Midgard/Bifrost.
+
 %package dri-driver-swrast
 Summary:	X.org DRI software rasterizer driver
 Summary(pl.UTF-8):	Sterownik X.org DRI obsługujący rysowanie programowe
@@ -825,6 +899,38 @@ X.org DRI software rasterizer driver.
 %description dri-driver-swrast -l pl.UTF-8
 Sterownik X.org DRI obsługujący rysowanie programowe.
 
+%package dri-driver-tegra
+Summary:	X.org DRI driver for Tegra SoC chips
+Summary(pl.UTF-8):	Sterownik X.org DRI dla układów SoC Tegra
+License:	MIT
+Group:		X11/Libraries
+#Requires:	xorg-driver-video-???
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
+
+%description dri-driver-tegra
+X.org Gallium DRI driver for Tegra SoC chips.
+
+%description dri-driver-tegra -l pl.UTF-8
+Sterownik X.org DRI Gallium dla układów Tegra SoC.
+
+%package dri-driver-v3d
+Summary:	X.org DRI driver for Broadcom VC5 chips
+Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Broadcom VC5
+License:	MIT
+Group:		X11/Libraries
+Requires:	xorg-driver-video-modesetting
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
+
+%description dri-driver-v3d
+X.org Gallium DRI driver for Broadcom VC5 chips.
+
+%description dri-driver-v3d -l pl.UTF-8
+Sterownik X.org DRI Gallium dla układów Broadcom VC5.
+
 %package dri-driver-vc4
 Summary:	X.org DRI driver for Broadcom VC4 chips
 Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Broadcom VC4
@@ -836,10 +942,10 @@ Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 
 %description dri-driver-vc4
-X.org DRI driver for Broadcom VC4 chips.
+X.org Gallium DRI driver for Broadcom VC4 chips.
 
 %description dri-driver-vc4 -l pl.UTF-8
-Sterownik X.org DRI dla układów Broadcom VC4.
+Sterownik X.org DRI Gallium dla układów Broadcom VC4.
 
 %package dri-driver-virgl
 Summary:	X.org DRI driver for QEMU VirGL
@@ -871,6 +977,22 @@ X.org DRI driver for VMWare.
 
 %description dri-driver-vmwgfx -l pl.UTF-8
 Sterownik X.org DRI dla VMware.
+
+%package pipe-driver-i915
+Summary:       i915 driver for Mesa Gallium dynamic pipe loader
+Summary(pl.UTF-8):     Sterownik i915 dla dynamicznego systemu potoków szkieletu Mesa Gallium
+Group:	       Libraries
+Requires:      zlib >= %{zlib_ver}
+Obsoletes:     Mesa-gbm-driver-i915
+Obsoletes:     Mesa-opencl-driver-i915
+
+%description pipe-driver-i915
+i915 driver for Mesa Gallium dynamic pipe loader. It supports Intel
+915/945/G33/Q33/Q35/Pineview chips.
+
+%description pipe-driver-i915 -l pl.UTF-8
+Sterownik i915 dla dynamicznego systemu potoków szkieletu Mesa
+Gallium. Obsługuje układy Intela z serii 915/945/G33/Q33/Q35/Pineview.
 
 %package pipe-driver-msm
 Summary:	msm (freedreno) driver for Mesa Gallium dynamic pipe loader
@@ -1194,7 +1316,7 @@ dri_drivers="nouveau r100 r200 \
 swrast
 %endif
 %ifarch %{ix86} %{x8664} x32
-i965 i915 \
+i965 %{!?with_gallium_i915:i915} \
 %endif
 "
 
@@ -1202,7 +1324,7 @@ dri_drivers=$(echo $dri_drivers | xargs | tr ' ' ',')
 
 gallium_drivers="virgl swrast \
 %ifarch %{ix86} %{x8664} x32
-svga \
+svga iris swr %{?with_gallium_i915:i915} \
 %endif
 %if %{with gallium_radeon}
 r300 r600 radeonsi \
@@ -1214,6 +1336,8 @@ nouveau
 etnaviv \
 freedreno \
 kmsro \
+lima \
+panfrost \
 tegra \
 v3d \
 vc4 \
@@ -1535,6 +1659,12 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i965_dri.so
 
+%if %{with gallium}
+%files dri-driver-intel-iris
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/iris_dri.so
+%endif
+
 %files dri-driver-nouveau
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_vieux_dri.so
@@ -1561,6 +1691,39 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/kgsl_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/msm_dri.so
 
+%files dri-driver-kmsro
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/armada-drm_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/exynos_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/hx8357d_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/ili9225_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/ili9341_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/imx-drm_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/meson_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/mi0283qt_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/pl111_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/repaper_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/rockchip_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/st7586_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/st7735r_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/sun4i-drm_dri.so
+
+%files dri-driver-lima
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/lima_dri.so
+
+%files dri-driver-panfrost
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/panfrost_dri.so
+
+%files dri-driver-tegra
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/tegra_dri.so
+
+%files dri-driver-v3d
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/v3d_dri.so
+
 %files dri-driver-vc4
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/vc4_dri.so
@@ -1577,6 +1740,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %if %{with gallium}
 %if %{with opencl}
+%ifarch %{ix86} %{x8664} x32
+%if %{with gallium_i915}
+%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_i915.so
+%endif
+%endif
+
 %ifarch %{arm}
 %files pipe-driver-msm
 %defattr(644,root,root,755)
@@ -1613,13 +1782,11 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 # currently disabled as cannot be built with swrast
-%if 0
-%ifarch %{x8664}
+%ifarch %{ix86} %{x8664} x32
 %files swr
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libswrAVX.so
-%attr(755,root,root) %{_libdir}/libswrAVX2.so
-%endif
+%attr(755,root,root) %{_libdir}/libswrAVX.so*
+%attr(755,root,root) %{_libdir}/libswrAVX2.so*
 %endif
 %endif
 
