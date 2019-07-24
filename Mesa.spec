@@ -55,14 +55,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	19.1.2
+Version:	19.1.3
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
-# Source0-md5:	1630532ee6431b67c5dc31d2a385963e
+# Source0-md5:	bbd1b6075bed2395e739703285a5e26f
 Patch0:		nouveau_no_rtti.patch
 URL:		http://www.mesa3d.org/
 %{?with_opencl:BuildRequires:	clang-devel >= %{llvm_ver}}
