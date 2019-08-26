@@ -56,7 +56,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	19.1.5
-Release:	1
+Release:	2
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
@@ -64,6 +64,7 @@ Group:		X11/Libraries
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
 # Source0-md5:	751a9f0fc21b7c0c58518adff8b5ec2b
 Patch0:		nouveau_no_rtti.patch
+Patch1:		i9x5-tex-ignore-the-diff-between-GL_TEXTURE_2D-and-GL_TEXTURE_RECTANGLE.patch
 URL:		http://www.mesa3d.org/
 %{?with_opencl:BuildRequires:	clang-devel >= %{llvm_ver}}
 BuildRequires:	elfutils-devel
@@ -1299,8 +1300,8 @@ radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD.
 
 %prep
 %setup -q -n mesa-mesa-%{version}
-
 %patch0 -p1
+%patch1 -p1
 
 %build
 

@@ -1,0 +1,81 @@
+i965/tex: ignore the diff between GL_TEXTURE_2D and GL_TEXTURE_RECTANGLE
+
+the difference between GL_TEXTURE_2D and GL_TEXTURE_RECTANGLE
+doesn't matter as far as the miptree is concerned;
+genX(update_sampler_state) only looks at the
+gl_texture_object and not the miptree when determining whether or
+not to use normalized coordinates.
+
+Signed-off-by: Andrii Simiklit <andrii.simiklit@globallogic.com>
+
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=107117
+---
+ src/mesa/drivers/dri/i965/intel_mipmap_tree.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/src/mesa/drivers/dri/i965/intel_mipmap_tree.c b/src/mesa/drivers/dri/i965/intel_mipmap_tree.c
+index 7d1fa96..dc45a06 100644
+--- a/src/mesa/drivers/dri/i965/intel_mipmap_tree.c
++++ b/src/mesa/drivers/dri/i965/intel_mipmap_tree.c
+@@ -58,6 +58,12 @@ static void *intel_miptree_map_raw(struct brw_context *brw,
+ 
+ static void intel_miptree_unmap_raw(struct intel_mipmap_tree *mt);
+ 
++static GLenum
++tex_rect_to_tex2d(GLenum val)
++{
++    return (GL_TEXTURE_RECTANGLE == val) ? GL_TEXTURE_2D : val;
++}
++
+ static bool
+ intel_miptree_supports_mcs(struct brw_context *brw,
+                            const struct intel_mipmap_tree *mt)
+@@ -1320,13 +1326,15 @@ intel_miptree_match_image(struct intel_mipmap_tree *mt,
+ {
+    struct intel_texture_image *intelImage = intel_texture_image(image);
+    GLuint level = intelImage->base.Base.Level;
++   GLenum texObjTarget = tex_rect_to_tex2d(mt->target);
++   GLenum mipmapTreeTarget = tex_rect_to_tex2d(image->TexObject->Target);
+    int width, height, depth;
+ 
+    /* glTexImage* choose the texture object based on the target passed in, and
+     * objects can't change targets over their lifetimes, so this should be
+     * true.
+     */
+-   assert(image->TexObject->Target == mt->target);
++   assert(texObjTarget == mipmapTreeTarget);
+ 
+    mesa_format mt_format = mt->format;
+    if (mt->format == MESA_FORMAT_Z24_UNORM_X8_UINT && mt->stencil_mt)
+--- mesa-mesa-19.1.5/src/mesa/drivers/dri/i915/intel_mipmap_tree.c.orig	2019-08-26 23:37:27.779941449 +0200
++++ mesa-mesa-19.1.5/src/mesa/drivers/dri/i915/intel_mipmap_tree.c	2019-08-26 23:38:47.553273174 +0200
+@@ -403,6 +403,12 @@
+    }
+ }
+ 
++static GLenum
++tex_rect_to_tex2d(GLenum val)
++{
++    return (GL_TEXTURE_RECTANGLE == val) ? GL_TEXTURE_2D : val;
++}
++
+ /**
+  * Can the image be pulled into a unified mipmap tree?  This mirrors
+  * the completeness test in a lot of ways.
+@@ -415,13 +421,15 @@
+ {
+    struct intel_texture_image *intelImage = intel_texture_image(image);
+    GLuint level = intelImage->base.Base.Level;
++   GLenum texObjTarget = tex_rect_to_tex2d(mt->target);
++   GLenum mipmapTreeTarget = tex_rect_to_tex2d(image->TexObject->Target);
+    int width, height, depth;
+ 
+    /* glTexImage* choose the texture object based on the target passed in, and
+     * objects can't change targets over their lifetimes, so this should be
+     * true.
+     */
+-   assert(target_to_target(image->TexObject->Target) == mt->target);
++   assert(texObjTarget == mipmapTreeTarget);
+ 
+    mesa_format mt_format = mt->format;
+ 
