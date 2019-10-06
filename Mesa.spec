@@ -55,17 +55,17 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	19.1.6
+Version:	19.1.7
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
-# Source0-md5:	090aae399f31f7518f44be4a93a5f4b7
+# Source0-md5:	77c1b518e5a29d8a5c4d57adcaefbe12
 Patch0:		nouveau_no_rtti.patch
 Patch1:		i9x5-tex-ignore-the-diff-between-GL_TEXTURE_2D-and-GL_TEXTURE_RECTANGLE.patch
-Patch2:		bug111552.patch
+Patch2:		%{name}-xvmc-link.patch
 URL:		http://www.mesa3d.org/
 %{?with_opencl:BuildRequires:	clang-devel >= %{llvm_ver}}
 BuildRequires:	elfutils-devel
@@ -93,7 +93,7 @@ BuildRequires:	pkgconfig(xcb-dri3) >= 1.13
 BuildRequires:	pkgconfig(xcb-glx) >= 1.8.1
 BuildRequires:	pkgconfig(xcb-present) >= 1.13
 BuildRequires:	pkgconfig(xcb-randr) >= 1.12
-BuildRequires:	python3
+BuildRequires:	python3 >= 1:3.2
 BuildRequires:	python3-Mako >= 0.8.0
 BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
@@ -1306,7 +1306,6 @@ radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD.
 %patch2 -p1
 
 %build
-
 %if %{with opencl}
 if [ "$(llvm-config --has-rtti)" != "YES" ] ; then
 	echo "Clover (gallium OpenCL) requires LLVM with RTTI!"
