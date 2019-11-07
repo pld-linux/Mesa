@@ -25,7 +25,7 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver		7.1.0
 # other packages
-%define		libdrm_ver		2.4.97
+%define		libdrm_ver		2.4.99
 %define		dri2proto_ver		2.8
 %define		glproto_ver		1.4.14
 %define		zlib_ver		1.2.8
@@ -55,14 +55,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	19.1.8
+Version:	19.2.3
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
-# Source0-md5:	7fd386faf84961cd2f08aeadfb9b09e6
+# Source0-md5:	08662d84b92067784fbcf1e1f762add2
 Patch0:		nouveau_no_rtti.patch
 Patch1:		i9x5-tex-ignore-the-diff-between-GL_TEXTURE_2D-and-GL_TEXTURE_RECTANGLE.patch
 URL:		http://www.mesa3d.org/
@@ -104,6 +104,7 @@ BuildRequires:	xorg-lib-libXdamage-devel >= 1.1
 BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXfixes-devel
 BuildRequires:	xorg-lib-libXrandr-devel >= 1.3
+BuildRequires:	xorg-lib-libXv-devel
 BuildRequires:	xorg-lib-libXvMC-devel >= 1.0.6
 BuildRequires:	xorg-lib-libXxf86vm-devel
 BuildRequires:	xorg-lib-libxshmfence-devel >= 1.1
@@ -252,7 +253,7 @@ Requires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 Requires:	xorg-proto-glproto-devel >= %{glproto_ver}
 Suggests:	OpenGL-doc-man
 Provides:	OpenGL-GLX-devel = 1.4
-Provides:	OpenGL-devel = 4.5
+Provides:	OpenGL-devel = 4.6
 Obsoletes:	Mesa-devel
 Obsoletes:	X11-OpenGL-devel < 1:7.0.0
 Obsoletes:	X11-OpenGL-devel-base < 1:7.0.0
@@ -1355,7 +1356,7 @@ intel \
 vulkan_drivers=$(echo $vulkan_drivers | xargs | tr ' ' ',')
 
 %meson build \
-	-Dplatforms=x11,drm,%{?with_wayland:,wayland},surfaceless \
+	-Dplatforms=x11,drm%{?with_wayland:,wayland},surfaceless \
 	-Ddri3=true \
 	-Ddri-drivers=${dri_drivers} \
 	-Ddri-drivers-path=%{_libdir}/xorg/modules/dri \
@@ -1488,10 +1489,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/gl.h
 %{_includedir}/GL/glcorearb.h
 %{_includedir}/GL/glext.h
-%{_includedir}/GL/gl_mangle.h
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glxext.h
-%{_includedir}/GL/glx_mangle.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
 %{_pkgconfigdir}/dri.pc
