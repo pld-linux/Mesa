@@ -15,10 +15,12 @@
 %bcond_without	va		# VA library
 %bcond_without	wayland		# Wayland EGL
 %bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
+%bcond_without	radv		# disable build of the radeon Vulkan driver
+%bcond_with	swr		# OpenSWR software rasterizer (x86 SIMD only; due to broken design
+				# propagates AVX code over Gallium DRI megadriver, swrast pipe driver and libOSMesa)
 %bcond_with	hud_extra	# HUD block/NIC I/O HUD stats support
 %bcond_with	lm_sensors	# HUD lm_sensors support
 %bcond_with	tests		# tests
-%bcond_without	radv		# disable build of the radeon Vulkan driver
 #
 # glapi version (glapi tables in dri drivers and libglx must be in sync);
 # set to current Mesa version on ABI break, when xserver tables get regenerated
@@ -40,6 +42,7 @@
 %undefine	with_nine
 %undefine	with_omx
 %undefine	with_opencl
+%undefine	with_swr
 %undefine	with_xa
 %endif
 
@@ -52,11 +55,15 @@
 %undefine	with_ocl_icd
 %endif
 
+%ifnarch %{ix86} %{x8664} x32
+%undefine	with_swr
+%endif
+
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	19.2.7
-Release:	1
+Release:	2
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
@@ -333,6 +340,7 @@ Summary:	OSMesa (off-screen renderer) library
 Summary(pl.UTF-8):	Biblioteka OSMesa (renderująca bitmapy w pamięci)
 License:	MIT
 Group:		Libraries
+%{?with_swr:Requires:	cpuinfo(avx)}
 Requires:	zlib >= %{zlib_ver}
 
 %description libOSMesa
@@ -656,6 +664,7 @@ Summary:	X.org DRI driver for ATI R300 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R300
 License:	MIT
 Group:		X11/Libraries
+%{?with_swr:Requires:	cpuinfo(avx)}
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
@@ -681,6 +690,7 @@ Summary:	X.org DRI driver for ATI R600 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R600
 License:	MIT
 Group:		X11/Libraries
+%{?with_swr:Requires:	cpuinfo(avx)}
 Requires:	radeon-ucode
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
@@ -706,6 +716,7 @@ Summary:	X.org DRI driver for ATI Southern Islands card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI Southern Islands
 License:	MIT
 Group:		X11/Libraries
+%{?with_swr:Requires:	cpuinfo(avx)}
 Requires:	radeon-ucode
 Requires:	xorg-driver-video-ati
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
@@ -729,6 +740,7 @@ Summary:	X.org DRI driver for Vivante 3D chips
 Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Vivante 3D
 License:	MIT
 Group:		X11/Libraries
+%{?with_swr:Requires:	cpuinfo(avx)}
 #Requires:	xorg-driver-video-?
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
@@ -745,6 +757,7 @@ Summary:	X.org DRI driver for Adreno chips
 Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Adreno
 License:	MIT
 Group:		X11/Libraries
+%{?with_swr:Requires:	cpuinfo(avx)}
 Requires:	xorg-driver-video-freedreno
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
@@ -761,6 +774,9 @@ Summary:	X.org DRI driver for Intel i915 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i915
 License:	MIT
 Group:		X11/Libraries
+%if %{with gallium_i915}
+%{?with_swr:Requires:	cpuinfo(avx)}
+%endif
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
@@ -807,6 +823,7 @@ Summary:	X.org DRI driver for Intel Iris (Gen8+) card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel Iris (Gen8+)
 License:	MIT
 Group:		X11/Libraries
+%{?with_swr:Requires:	cpuinfo(avx)}
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
@@ -826,6 +843,7 @@ Summary:	X.org Gallium DRI driver using KMS Render-Only architecture
 Summary(pl.UTF-8):	Sterownik X.org DRI Gallium wykorzystujący architekturę KMS Render-Only
 License:	MIT
 Group:		X11/Libraries
+%{?with_swr:Requires:	cpuinfo(avx)}
 #Requires:	xorg-driver-video-?
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
@@ -843,6 +861,7 @@ Summary:	X.org DRI driver for Mali Utgard chips
 Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Mali Utgard
 License:	MIT
 Group:		X11/Libraries
+%{?with_swr:Requires:	cpuinfo(avx)}
 #Requires:	xorg-driver-video-???
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
@@ -859,6 +878,9 @@ Summary:	X.org DRI driver for NVIDIA card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart NVIDIA
 License:	MIT
 Group:		X11/Libraries
+%if %{with gallium_nouveau}
+%{?with_swr:Requires:	cpuinfo(avx)}
+%endif
 Requires:	xorg-driver-video-nouveau
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
@@ -875,6 +897,7 @@ Summary:	X.org DRI driver for Mali Midgard/Bifrost chips
 Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Mali Midgard/Bifrost
 License:	MIT
 Group:		X11/Libraries
+%{?with_swr:Requires:	cpuinfo(avx)}
 #Requires:	xorg-driver-video-???
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
@@ -891,6 +914,7 @@ Summary:	X.org DRI software rasterizer driver
 Summary(pl.UTF-8):	Sterownik X.org DRI obsługujący rysowanie programowe
 License:	MIT
 Group:		X11/Libraries
+%{?with_swr:Requires:	cpuinfo(avx)}
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
@@ -906,6 +930,7 @@ Summary:	X.org DRI driver for Tegra SoC chips
 Summary(pl.UTF-8):	Sterownik X.org DRI dla układów SoC Tegra
 License:	MIT
 Group:		X11/Libraries
+%{?with_swr:Requires:	cpuinfo(avx)}
 #Requires:	xorg-driver-video-???
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
@@ -922,6 +947,7 @@ Summary:	X.org DRI driver for Broadcom VC5 chips
 Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Broadcom VC5
 License:	MIT
 Group:		X11/Libraries
+%{?with_swr:Requires:	cpuinfo(avx)}
 Requires:	xorg-driver-video-modesetting
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
@@ -938,6 +964,7 @@ Summary:	X.org DRI driver for Broadcom VC4 chips
 Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Broadcom VC4
 License:	MIT
 Group:		X11/Libraries
+%{?with_swr:Requires:	cpuinfo(avx)}
 Requires:	xorg-driver-video-modesetting
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
@@ -954,31 +981,33 @@ Summary:	X.org DRI driver for QEMU VirGL
 Summary(pl.UTF-8):	Sterownik X.org DRI dla QEMU VirGL
 License:	MIT
 Group:		X11/Libraries
+%{?with_swr:Requires:	cpuinfo(avx)}
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 
 %description dri-driver-virgl
-X.org DRI driver for QEMU VirGL.
+X.org Gallium DRI driver for QEMU VirGL.
 
 %description dri-driver-virgl -l pl.UTF-8
-Sterownik X.org DRI dla QEMU VirGL.
+Sterownik X.org DRI Gallium dla QEMU VirGL.
 
 %package dri-driver-vmwgfx
 Summary:	X.org DRI driver for VMware
 Summary(pl.UTF-8):	Sterownik X.org DRI dla VMware
 License:	MIT
 Group:		X11/Libraries
+%{?with_swr:Requires:	cpuinfo(avx)}
 Requires:	xorg-driver-video-vmware
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 
 %description dri-driver-vmwgfx
-X.org DRI driver for VMWare.
+X.org Gallium DRI driver for VMWare.
 
 %description dri-driver-vmwgfx -l pl.UTF-8
-Sterownik X.org DRI dla VMware.
+Sterownik X.org DRI Gallium dla VMware.
 
 %package pipe-driver-i915
 Summary:       i915 driver for Mesa Gallium dynamic pipe loader
@@ -1083,6 +1112,7 @@ Southern Islands.
 Summary:	Software (swrast) driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik programowy (swrast) dla dynamicznego systemu potoków szkieletu Mesa Gallium
 Group:		Libraries
+%{?with_swr:Requires:	cpuinfo(avx)}
 Requires:	zlib >= %{zlib_ver}
 Obsoletes:	Mesa-gbm-driver-swrast
 Obsoletes:	Mesa-opencl-driver-swrast
@@ -1325,7 +1355,7 @@ dri_drivers=$(echo $dri_drivers | xargs | tr ' ' ',')
 
 gallium_drivers="virgl swrast \
 %ifarch %{ix86} %{x8664} x32
-svga iris swr %{?with_gallium_i915:i915} \
+svga iris %{?with_swr:swr} %{?with_gallium_i915:i915} \
 %endif
 %if %{with gallium_radeon}
 r300 r600 radeonsi \
@@ -1781,7 +1811,7 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 # currently disabled as cannot be built with swrast
-%ifarch %{ix86} %{x8664} x32
+%if %{with swr}
 %files swr
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libswrAVX.so*
