@@ -27,12 +27,12 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver		7.1.0
 # other packages
-%define		libdrm_ver		2.4.99
+%define		libdrm_ver		2.4.100
 %define		dri2proto_ver		2.8
 %define		glproto_ver		1.4.14
 %define		zlib_ver		1.2.8
 %define		wayland_ver		1.11
-%define		llvm_ver		7.0.0
+%define		llvm_ver		8.0.0
 %define		gcc_ver 		6:4.8.0
 
 %if %{without gallium}
@@ -62,14 +62,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	19.2.8
+Version:	19.3.1
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
-# Source0-md5:	8763b925722251abd03babd9dcb3dcc7
+# Source0-md5:	2a0aacce2847e171c2d662f0e456617f
 Patch0:		nouveau_no_rtti.patch
 Patch1:		i9x5-tex-ignore-the-diff-between-GL_TEXTURE_2D-and-GL_TEXTURE_RECTANGLE.patch
 URL:		http://www.mesa3d.org/
@@ -90,7 +90,7 @@ BuildRequires:	libxcb-devel >= 1.13
 %{?with_radv:BuildRequires:	llvm-devel >= %{llvm_ver}}
 %{?with_opencl:BuildRequires:	llvm-libclc}
 %{?with_omx:BuildRequires:	libomxil-bellagio-devel}
-BuildRequires:	meson >= 0.46
+BuildRequires:	meson >= 0.51
 BuildRequires:	ninja >= 1.5
 BuildRequires:	pkgconfig
 BuildRequires:	pkgconfig(talloc) >= 2.0.1
