@@ -1,4 +1,5 @@
 # TODO: libtizonia >= 0.10.0 as an alternative for bellagio?
+# opencl-spirv? BR: spirv-tools-devel >= 2018.0, pkgconfig(LLVMSPIRVLib) >= 0.2.1
 #
 # Conditional build:
 %bcond_without	gallium		# gallium drivers
@@ -62,14 +63,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	19.3.1
+Version:	19.3.3
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
-# Source0-md5:	2a0aacce2847e171c2d662f0e456617f
+# Source0-md5:	56141f1a25ce387139ca9235b47a8b62
 Patch0:		nouveau_no_rtti.patch
 Patch1:		i9x5-tex-ignore-the-diff-between-GL_TEXTURE_2D-and-GL_TEXTURE_RECTANGLE.patch
 URL:		http://www.mesa3d.org/
@@ -215,7 +216,7 @@ Requires:	%{name}-libglapi = %{version}-%{release}
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libxcb >= 1.13
 Requires:	xorg-lib-libXdamage >= 1.1
-Provides:	OpenGL = 4.5
+Provides:	OpenGL = 4.6
 Provides:	OpenGL-GLX = 1.4
 Obsoletes:	Mesa
 Obsoletes:	Mesa-dri
@@ -231,7 +232,7 @@ Silicon Graphics, Inc. However, the author does not possess an OpenGL
 license from SGI, and makes no claim that Mesa is in any way a
 compatible replacement for OpenGL or associated with SGI.
 
-This package contains libGL which implements OpenGL 4.5 and GLX 1.4
+This package contains libGL which implements OpenGL 4.6 and GLX 1.4
 specifications. It uses DRI for rendering.
 
 %description libGL -l pl.UTF-8
@@ -241,7 +242,7 @@ autoryzacją Silicon Graphics, Inc. Jednak autor nie posiada licencji
 OpenGL od SGI i nie twierdzi, że Mesa jest kompatybilnym zamiennikiem
 OpenGL ani powiązana z SGI.
 
-Ten pakiet zawiera libGL implementującą specyfikacje OpenGL 4.5 oraz
+Ten pakiet zawiera libGL implementującą specyfikacje OpenGL 4.6 oraz
 GLX 1.4. Używa DRI do renderowania.
 
 %package libGL-devel
@@ -279,7 +280,7 @@ Summary(pl.UTF-8):	Statyczna biblioteka libGL z projektu Mesa3D
 License:	MIT
 Group:		X11/Development/Libraries
 Requires:	%{name}-libGL-devel = %{version}-%{release}
-Provides:	OpenGL-static = 4.5
+Provides:	OpenGL-static = 4.6
 Obsoletes:	Mesa-static
 Obsoletes:	X11-OpenGL-static < 1:7.0.0
 Obsoletes:	XFree86-OpenGL-static < 1:7.0.0
