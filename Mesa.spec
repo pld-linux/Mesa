@@ -63,14 +63,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	19.3.4
+Version:	20.0.1
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
-# Source0-md5:	628030785d89aa280d66d07716a1a34a
+# Source0-md5:	77ee1e00093bd52ba0222f271a71eb5f
 Patch0:		nouveau_no_rtti.patch
 Patch1:		i9x5-tex-ignore-the-diff-between-GL_TEXTURE_2D-and-GL_TEXTURE_RECTANGLE.patch
 URL:		http://www.mesa3d.org/
@@ -79,7 +79,7 @@ BuildRequires:	elfutils-devel
 BuildRequires:	expat-devel >= 1.95
 BuildRequires:	gcc >= %{gcc_ver}
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
-%{?with_glvnd:BuildRequires:	libglvnd-devel >= 0.2.0}
+%{?with_glvnd:BuildRequires:	libglvnd-devel >= 1.2.0}
 BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= %{gcc_ver}
 BuildRequires:	libunwind-devel
@@ -1487,14 +1487,14 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libEGL_mesa.so
 %else
 %attr(755,root,root) %{_libdir}/libEGL.so
-%endif
 %dir %{_includedir}/EGL
 %{_includedir}/EGL/egl.h
 %{_includedir}/EGL/eglext.h
-%{_includedir}/EGL/eglextchromium.h
-%{_includedir}/EGL/eglmesaext.h
 %{_includedir}/EGL/eglplatform.h
 %{_pkgconfigdir}/egl.pc
+%endif
+%{_includedir}/EGL/eglextchromium.h
+%{_includedir}/EGL/eglmesaext.h
 %endif
 
 %files libGL
@@ -1516,26 +1516,31 @@ rm -rf $RPM_BUILD_ROOT
 %files libGL-devel
 %defattr(644,root,root,755)
 %doc docs/specs/*
+%if %{without glvnd}
 %dir %{_includedir}/GL
 %{_includedir}/GL/gl.h
 %{_includedir}/GL/glcorearb.h
 %{_includedir}/GL/glext.h
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glxext.h
+%{_pkgconfigdir}/gl.pc
+%endif
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
 %{_pkgconfigdir}/dri.pc
-%{_pkgconfigdir}/gl.pc
 
 %files libGLES
 %defattr(644,root,root,755)
+%if %{without glvnd}
 %attr(755,root,root) %{_libdir}/libGLESv1_CM.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libGLESv1_CM.so.1
 %attr(755,root,root) %{_libdir}/libGLESv2.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libGLESv2.so.2
+%endif
 
 %files libGLES-devel
 %defattr(644,root,root,755)
+%if %{without glvnd}
 %attr(755,root,root) %{_libdir}/libGLESv1_CM.so
 %attr(755,root,root) %{_libdir}/libGLESv2.so
 %{_includedir}/GLES
@@ -1543,6 +1548,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GLES3
 %{_pkgconfigdir}/glesv1_cm.pc
 %{_pkgconfigdir}/glesv2.pc
+%endif
 
 %files libOSMesa
 %defattr(644,root,root,755)
@@ -1651,10 +1657,12 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %if %{with egl}
+%if %{without glvnd}
 %files khrplatform-devel
 %defattr(644,root,root,755)
 %dir %{_includedir}/KHR
 %{_includedir}/KHR/khrplatform.h
+%endif
 %endif
 
 %files dri-driver-ati-radeon-R100
