@@ -190,7 +190,9 @@ Requires:	xorg-lib-libXfixes-devel
 Requires:	xorg-lib-libXxf86vm-devel
 Requires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 Requires:	xorg-proto-glproto-devel >= %{glproto_ver}
+%if %{without glvnd}
 Provides:	EGL-devel = 1.5
+%endif
 
 %description libEGL-devel
 Header files for Mesa implementation of EGL library.
@@ -265,8 +267,10 @@ Requires:	xorg-lib-libXxf86vm-devel
 Requires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 Requires:	xorg-proto-glproto-devel >= %{glproto_ver}
 Suggests:	OpenGL-doc-man
+%if %{without glvnd}
 Provides:	OpenGL-GLX-devel = 1.4
 Provides:	OpenGL-devel = 4.6
+%endif
 Obsoletes:	Mesa-devel
 Obsoletes:	X11-OpenGL-devel < 1:7.0.0
 Obsoletes:	X11-OpenGL-devel-base < 1:7.0.0
@@ -330,10 +334,12 @@ Requires:	%{name}-khrplatform-devel = %{version}-%{release}
 # <EGL/egl.h> for <GLES/egl.h>
 Requires:	%{name}-libEGL-devel = %{version}-%{release}
 Requires:	%{name}-libGLES = %{version}-%{release}
+%if %{without glvnd}
 Provides:	OpenGLES-devel
 Provides:	OpenGLESv1-devel = 1.1
 Provides:	OpenGLESv2-devel = 2.0
 Provides:	OpenGLESv3-devel = 3.2
+%endif
 
 %description libGLES-devel
 Header files for Mesa GLES libraries.
