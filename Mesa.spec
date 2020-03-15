@@ -1,15 +1,16 @@
 # TODO: libtizonia >= 0.10.0 as an alternative for bellagio?
-# opencl-spirv? BR: spirv-tools-devel >= 2018.0, pkgconfig(LLVMSPIRVLib) >= 0.2.1
 #
 # Conditional build:
 %bcond_without	gallium		# gallium drivers
 %bcond_with	gallium_i915	# gallium i915 driver instead of dri i915 driver
 %bcond_without	gallium_nouveau	# gallium nouveau driver
 %bcond_without	gallium_radeon	# gallium radeon drivers
+%bcond_without	gallium_zink	# gallium zink driver (based on vulkan)
 %bcond_without	egl		# EGL libraries
 %bcond_without	gbm		# Graphics Buffer Manager
 %bcond_without	nine		# Nine Direct3D 9+ state tracker (for Wine)
 %bcond_without	opencl		# OpenCL support
+%bcond_without	opencl_spirv	# OpenCL SPIRV support
 %bcond_without	ocl_icd		# OpenCL as ICD (installable client driver)
 %bcond_with	glvnd		# OpenGL vendor neutral dispatcher support
 %bcond_without	omx		# OpenMAX (Bellagio OMXIL) support
@@ -64,7 +65,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	20.0.1
-Release:	1
+Release:	2
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
@@ -74,6 +75,8 @@ Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa
 Patch0:		nouveau_no_rtti.patch
 Patch1:		i9x5-tex-ignore-the-diff-between-GL_TEXTURE_2D-and-GL_TEXTURE_RECTANGLE.patch
 URL:		http://www.mesa3d.org/
+%{?with_opencl_spirv:BuildRequires:	SPIRV-LLVM-Translator-devel >= 0.2.1}
+%{?with_gallium_zink:BuildRequires:	Vulkan-Loader-devel}
 %{?with_opencl:BuildRequires:	clang-devel >= %{llvm_ver}}
 BuildRequires:	elfutils-devel
 BuildRequires:	expat-devel >= 1.95
@@ -104,6 +107,7 @@ BuildRequires:	python3 >= 1:3.2
 BuildRequires:	python3-Mako >= 0.8.0
 BuildRequires:	rpmbuild(macros) >= 1.470
 BuildRequires:	sed >= 4.0
+%{?with_opencl_spirv:BuildRequires:	spirv-tools-devel >= 2018.0}
 # wayland-{client,server}
 %{?with_wayland:BuildRequires:	wayland-devel >= %{wayland_ver}}
 %{?with_wayland:BuildRequires:	wayland-protocols >= 1.8}
@@ -122,6 +126,7 @@ BuildRequires:	xorg-proto-glproto-devel >= %{glproto_ver}
 %{?with_lm_sensors:BuildRequires:	lm_sensors-devel}
 %endif
 BuildRequires:	zlib-devel >= %{zlib_ver}
+BuildRequires:	zstd-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # libGLESv1_CM, libGLESv2, libGL, libOSMesa:
@@ -307,7 +312,7 @@ This package contains shared libraries of Mesa implementation of GLES
 (OpenGL ES) - cross-platform API for full-function 2D and 3D graphics
 on embedded systems. OpenGL ES specification can be found on Khronos
 Group site: <http://www.khronos.org/opengles/>. Mesa implements OpenGL
-ES 1.1 and 2.0.
+ES 1.1 and 2.0/3.2.
 
 %description libGLES -l pl.UTF-8
 Ten pakiet zawiera biblioteki współdzielone implementacji Mesa
@@ -315,7 +320,7 @@ standardu GLES (OpenGL ES) - wieloplatformowego API do w pełni
 funkcjonalnej grafiki 2D i 3D na systemach wbudowanych. Specyfikację
 OpenGL ES można znaleźć na stronie Khronos Group:
 <http://www.khronos.org/opengles/>. Mesa zawiera implementacją OpenGL
-ES 1.1 i 2.0.
+ES 1.1 i 2.0/3.2.
 
 %package libGLES-devel
 Summary:	Header files for Mesa GLES libraries
@@ -1010,6 +1015,21 @@ X.org Gallium DRI driver for VMWare.
 %description dri-driver-vmwgfx -l pl.UTF-8
 Sterownik X.org DRI Gallium dla VMware.
 
+%package dri-driver-zink
+Summary:	X.org DRI driver based on Vulkan
+Summary(pl.UTF-8):	Sterownik X.org DRI oparty na Vulkanie
+License:	MIT
+Group:		X11/Libraries
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
+
+%description dri-driver-zink
+X.org Gallium DRI driver based on Vulkan.
+
+%description dri-driver-zink -l pl.UTF-8
+Sterownik X.org DRI Gallium oparty na Vulkanie.
+
 %package pipe-driver-i915
 Summary:       i915 driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):     Sterownik i915 dla dynamicznego systemu potoków szkieletu Mesa Gallium
@@ -1354,7 +1374,7 @@ i965 %{!?with_gallium_i915:i915} \
 
 dri_drivers=$(echo $dri_drivers | xargs | tr ' ' ',')
 
-gallium_drivers="virgl swrast \
+gallium_drivers="virgl swrast %{?with_gallium_zink:zink} \
 %ifarch %{ix86} %{x8664} x32
 svga iris %{?with_swr:swr} %{?with_gallium_i915:i915} \
 %endif
@@ -1413,6 +1433,7 @@ vulkan_drivers=$(echo $vulkan_drivers | xargs | tr ' ' ',')
 	-Dglvnd=%{?with_glvnd:true}%{!?with_glvnd:false} \
 	-Dlibunwind=true \
 	-Dlmsensors=%{?with_lm_sensors:true}%{!?with_lm_sensors:false} \
+	%{?with_opencl_spirv:-Dopencl-spirv=true} \
 	-Dosmesa=%{?with_gallium:gallium}%{!?with_gallium:classic} \
 	-Dselinux=true \
 	-Dva-libs-path=%{_libdir}/libva/dri \
@@ -1774,6 +1795,12 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-vmwgfx
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/vmwgfx_dri.so
+
+%if %{with gallium_zink}
+%files dri-driver-zink
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/zink_dri.so
+%endif
 %endif
 
 %if %{with gallium}
