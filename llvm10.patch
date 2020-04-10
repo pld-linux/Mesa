@@ -1,0 +1,24 @@
+--- mesa-mesa-20.0.4.orig/src/gallium/targets/opencl/meson.build	2020-04-03 11:25:46.000000000 +0200
++++ mesa-mesa-20.0.4/src/gallium/targets/opencl/meson.build	2020-04-10 17:40:42.912810510 +0200
+@@ -31,6 +31,13 @@
+ 
+ llvm_libdir = dep_llvm.get_configtool_variable('libdir')
+ 
++polly_dep = null_dep
++polly_isl_dep = null_dep
++if dep_llvm.version().version_compare('>=10.0.0')
++  polly_dep = cpp.find_library('Polly', dirs : llvm_libdir, required : false)
++  polly_isl_dep = cpp.find_library('PollyISL', dirs : llvm_libdir, required : false)
++endif
++
+ opencl_libname = with_opencl_icd ? 'MesaOpenCL' : 'OpenCL'
+ 
+ libopencl = shared_library(
+@@ -56,6 +63,7 @@
+     cpp.find_library('clangEdit', dirs : llvm_libdir),
+     cpp.find_library('clangLex', dirs : llvm_libdir),
+     cpp.find_library('clangBasic', dirs : llvm_libdir),
++    polly_dep, polly_isl_dep,
+   ],
+   version : '@0@.0.0'.format(opencl_version),
+   install : true,

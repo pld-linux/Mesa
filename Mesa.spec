@@ -74,6 +74,7 @@ Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa
 # Source0-md5:	4468786b0e8faeed8f417f5e1414eab4
 Patch0:		nouveau_no_rtti.patch
 Patch1:		i9x5-tex-ignore-the-diff-between-GL_TEXTURE_2D-and-GL_TEXTURE_RECTANGLE.patch
+Patch2:		llvm10.patch
 URL:		http://www.mesa3d.org/
 %{?with_opencl_spirv:BuildRequires:	SPIRV-LLVM-Translator-devel >= 0.2.1}
 %{?with_gallium_zink:BuildRequires:	Vulkan-Loader-devel}
@@ -1360,6 +1361,7 @@ radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD.
 %setup -q -n mesa-mesa-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 %if %{with opencl}
