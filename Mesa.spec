@@ -61,6 +61,11 @@
 %undefine	with_swr
 %endif
 
+%if %{with gallium_radeon} || %{with gallium_nouveau}
+%define		with_vdpau	1
+%define		with_xvmc	1
+%endif
+
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
@@ -89,7 +94,7 @@ BuildRequires:	libstdc++-devel >= %{gcc_ver}
 BuildRequires:	libunwind-devel
 %{?with_va:BuildRequires:	libva-devel}
 %{?with_va:BuildRequires:	pkgconfig(libva) >= 0.39.0}
-BuildRequires:	libvdpau-devel >= 1.1
+%{?with_vdpau:BuildRequires:	libvdpau-devel >= 1.1}
 BuildRequires:	libxcb-devel >= 1.13
 %{?with_gallium:BuildRequires:	llvm-devel >= %{llvm_ver}}
 %{?with_radv:BuildRequires:	llvm-devel >= %{llvm_ver}}
@@ -118,7 +123,7 @@ BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXfixes-devel
 BuildRequires:	xorg-lib-libXrandr-devel >= 1.3
 BuildRequires:	xorg-lib-libXv-devel
-BuildRequires:	xorg-lib-libXvMC-devel >= 1.0.6
+%{?with_xvmc:BuildRequires:	xorg-lib-libXvMC-devel >= 1.0.6}
 BuildRequires:	xorg-lib-libXxf86vm-devel
 BuildRequires:	xorg-lib-libxshmfence-devel >= 1.1
 BuildRequires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
@@ -1434,8 +1439,8 @@ vulkan_drivers=$(echo $vulkan_drivers | xargs | tr ' ' ',')
 	-Dgallium-opencl=disabled \
 %endif
 	-Dgallium-va=%{?with_va:true}%{!?with_va:false} \
-	-Dgallium-vdpau=true \
-	-Dgallium-xvmc=true \
+	%{?with_vdpau:-Dgallium-vdpau=true} \
+	%{?with_xvmc:-Dgallium-xvmc=true} \
 	-Dgallium-xa=%{?with_xa:true}%{!?with_xa:false} \
 	-Dgbm=%{?with_gbm:true}%{!?with_gbm:false} \
 	-Dglvnd=%{?with_glvnd:true}%{!?with_glvnd:false} \
