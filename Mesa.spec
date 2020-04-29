@@ -1398,7 +1398,7 @@ freedreno \
 kmsro \
 lima \
 panfrost \
-tegra \
+%{?with_gallium_nouveau:tegra} \
 v3d \
 vc4 \
 %endif
@@ -1783,9 +1783,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/panfrost_dri.so
 
+%if %{with gallium_nouveau}
 %files dri-driver-tegra
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/tegra_dri.so
+%endif
 
 %files dri-driver-v3d
 %defattr(644,root,root,755)
