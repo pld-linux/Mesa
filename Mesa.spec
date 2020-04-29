@@ -1723,6 +1723,7 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %endif
 
+%ifarch %{ix86} %{x8664} x32
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
@@ -1735,6 +1736,7 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-intel-iris
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/iris_dri.so
+%endif
 %endif
 
 %files dri-driver-nouveau
@@ -1807,9 +1809,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/virtio_gpu_dri.so
 
+%ifarch %{ix86} %{x8664} x32
 %files dri-driver-vmwgfx
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/vmwgfx_dri.so
+%endif
 
 %if %{with gallium_zink}
 %files dri-driver-zink
@@ -1923,6 +1927,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/bellagio/libomx_mesa.so
 %endif
 
+%ifarch %{ix86} %{x8664} x32
 %files vulkan-icd-intel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libvulkan_intel.so
@@ -1931,6 +1936,7 @@ rm -rf $RPM_BUILD_ROOT
 %files vulkan-icd-intel-devel
 %defattr(644,root,root,755)
 %{_includedir}/vulkan/vulkan_intel.h
+%endif
 
 %if %{with radv}
 %files vulkan-icd-radeon
