@@ -1754,7 +1754,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
 
 %if %{with gallium}
-%ifarch %{arm}
+%ifarch %{arm} aarch64
 %files dri-driver-etnaviv
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/etnaviv_dri.so
