@@ -1772,13 +1772,17 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/ili9225_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/ili9341_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/imx-drm_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/ingenic-drm_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/mcde_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/meson_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mi0283qt_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/mxsfb-drm_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/pl111_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/repaper_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/rockchip_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/st7586_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/st7735r_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/stm_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/sun4i-drm_dri.so
 
 %files dri-driver-lima
