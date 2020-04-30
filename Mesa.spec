@@ -1758,7 +1758,6 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-etnaviv
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/etnaviv_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/imx-drm_dri.so
 
 %files dri-driver-freedreno
 %defattr(644,root,root,755)
