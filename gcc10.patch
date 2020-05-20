@@ -1,0 +1,74 @@
+From 283e815339a15fa99039c69f1e225269790ae955 Mon Sep 17 00:00:00 2001
+From: Pierre-Eric Pelloux-Prayer <pierre-eric.pelloux-prayer@amd.com>
+Date: Thu, 5 Mar 2020 09:37:58 +0100
+Subject: [PATCH 1/2] omx: fix build with gcc 10
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+bellagio/omx header files reference a global variable without the
+extern keyworkd.
+Now that gcc-10 enables the '-fno-common' by default the build fails.
+Since these are external headers we can't easily fix them, so for
+now build the omx module with the '-fcommon' flag to keep the
+previous behavior.
+
+See https://gitlab.freedesktop.org/mesa/mesa/issues/2385
+
+Reviewed-by: Michel Dänzer <mdaenzer@redhat.com>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/4058>
+---
+ src/gallium/state_trackers/omx/meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/gallium/state_trackers/omx/meson.build b/src/gallium/state_trackers/omx/meson.build
+index 3aa82090c91..987d3e23c84 100644
+--- a/src/gallium/state_trackers/omx/meson.build
++++ b/src/gallium/state_trackers/omx/meson.build
+@@ -65,7 +65,7 @@ endif
+ libomx_st = static_library(
+   'omx_st',
+   files_omx,
+-  c_args : [c_vis_args],
++  c_args : [c_vis_args, '-fcommon'],
+   include_directories : inc_st_omx,
+   dependencies : dep_st_omx,
+ )
+-- 
+2.26.2
+
+
+From 33b255e107b470b8d2ea5bd96d82c613244aaf47 Mon Sep 17 00:00:00 2001
+From: Pierre-Eric Pelloux-Prayer <pierre-eric.pelloux-prayer@amd.com>
+Date: Thu, 5 Mar 2020 11:00:28 +0100
+Subject: [PATCH 2/2] meson: enable -fno-common by default
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This flag is enabled by default starting with gcc 10.
+All the compilation issues have been fixed, so use it by default
+to make sure we're not introducing regressions.
+
+Reviewed-by: Michel Dänzer <mdaenzer@redhat.com>
+Tested-by: Marge Bot <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/4058>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/4058>
+---
+ meson.build | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/meson.build b/meson.build
+index 1484e7fec5d..bf306605645 100644
+--- a/meson.build
++++ b/meson.build
+@@ -958,6 +958,7 @@ else
+     '-fno-math-errno',
+     '-fno-trapping-math',
+     '-Qunused-arguments',
++    '-fno-common',
+   ]
+   # MinGW chokes on format specifiers and I can't get it all working
+   if not (cc.get_id() == 'gcc' and host_machine.system() == 'windows')
+-- 
+2.26.2
+
