@@ -69,14 +69,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	20.1.3
+Version:	20.1.4
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
-# Source0-md5:	1ff1570843462b7dabdbe91ebb05fc1e
+# Source0-md5:	610de62e19f4bbabb916d48b5272faf5
 Patch0:		nouveau_no_rtti.patch
 Patch1:		i9x5-tex-ignore-the-diff-between-GL_TEXTURE_2D-and-GL_TEXTURE_RECTANGLE.patch
 URL:		http://www.mesa3d.org/
@@ -1622,12 +1622,16 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium_nouveau}
 %files libXvMC-nouveau
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libXvMCnouveau.so.1.*.*
+%attr(755,root,root) %ghost %{_libdir}/libXvMCnouveau.so.1
 %attr(755,root,root) %{_libdir}/libXvMCnouveau.so
 %endif
 
 %if %{with gallium_radeon}
 %files libXvMC-r600
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libXvMCr600.so.1.*.*
+%attr(755,root,root) %ghost %{_libdir}/libXvMCr600.so.1
 %attr(755,root,root) %{_libdir}/libXvMCr600.so
 %endif
 
