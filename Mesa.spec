@@ -1472,6 +1472,9 @@ strip -R .note.ABI-tag $RPM_BUILD_ROOT%{_libdir}/libGL.so.*.*
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%post	OpenCL-icd -p /sbin/ldconfig
+%postun	OpenCL-icd -p /sbin/ldconfig
+
 %post	libEGL -p /sbin/ldconfig
 %postun	libEGL -p /sbin/ldconfig
 
