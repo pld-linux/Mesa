@@ -82,9 +82,11 @@ Patch1:		i9x5-tex-ignore-the-diff-between-GL_TEXTURE_2D-and-GL_TEXTURE_RECTANGLE
 URL:		http://www.mesa3d.org/
 %{?with_opencl_spirv:BuildRequires:	SPIRV-LLVM-Translator-devel >= 0.2.1}
 %{?with_gallium_zink:BuildRequires:	Vulkan-Loader-devel}
+BuildRequires:	bison >= 2.3
 %{?with_opencl:BuildRequires:	clang-devel >= %{llvm_ver}}
 BuildRequires:	elfutils-devel
 BuildRequires:	expat-devel >= 1.95
+BuildRequires:	flex
 BuildRequires:	gcc >= %{gcc_ver}
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
 %{?with_glvnd:BuildRequires:	libglvnd-devel >= 1.3.2}
