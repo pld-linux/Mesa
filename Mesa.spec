@@ -33,7 +33,7 @@
 %define		dri2proto_ver		2.8
 %define		glproto_ver		1.4.14
 %define		zlib_ver		1.2.8
-%define		wayland_ver		1.11
+%define		wayland_ver		1.15
 %define		llvm_ver		8.0.0
 %define		gcc_ver 		6:4.8.0
 
@@ -69,20 +69,20 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	20.2.3
+Version:	20.3.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
-# Source0-md5:	0d783b59aa2bcd6969468e51044d4f36
+# Source0-md5:	2f9046ee74a5d72042e6ce86535a7a56
 Patch0:		nouveau_no_rtti.patch
 Patch1:		i9x5-tex-ignore-the-diff-between-GL_TEXTURE_2D-and-GL_TEXTURE_RECTANGLE.patch
 URL:		http://www.mesa3d.org/
-%{?with_opencl_spirv:BuildRequires:	SPIRV-LLVM-Translator-devel >= 0.2.1}
+%{?with_opencl_spirv:BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3}
 %{?with_gallium_zink:BuildRequires:	Vulkan-Loader-devel}
-BuildRequires:	bison >= 2.3
+BuildRequires:	bison > 2.3
 %{?with_opencl:BuildRequires:	clang-devel >= %{llvm_ver}}
 BuildRequires:	elfutils-devel
 BuildRequires:	expat-devel >= 1.95
@@ -119,6 +119,7 @@ BuildRequires:	sed >= 4.0
 %{?with_wayland:BuildRequires:	wayland-devel >= %{wayland_ver}}
 %{?with_wayland:BuildRequires:	wayland-protocols >= 1.8}
 %{?with_wayland:BuildRequires:	wayland-egl-devel >= %{wayland_ver}}
+BuildRequires:	xorg-lib-libX11-devel
 BuildRequires:	xorg-lib-libXdamage-devel >= 1.1
 BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXfixes-devel >= 2.0
@@ -1059,6 +1060,24 @@ i915 driver for Mesa Gallium dynamic pipe loader. It supports Intel
 Sterownik i915 dla dynamicznego systemu potoków szkieletu Mesa
 Gallium. Obsługuje układy Intela z serii 915/945/G33/Q33/Q35/Pineview.
 
+%package pipe-driver-iris
+Summary:       iris driver for Mesa Gallium dynamic pipe loader
+Summary(pl.UTF-8):     Sterownik iris dla dynamicznego systemu potoków szkieletu Mesa Gallium
+Group:	       Libraries
+Requires:      zlib >= %{zlib_ver}
+
+%description pipe-driver-iris
+iris driver for Mesa Gallium dynamic pipe loader. It supports Intel
+Iris (Gen8+) card family (Broadwell, Skylake, Broxton, Kabylake,
+Coffeelake, Geminilake, Whiskey Lake, Comet Lake, Cannonlake, Ice
+Lake, Elkhart Lake).
+
+%description pipe-driver-iris -l pl.UTF-8
+Sterownik iris dla dynamicznego systemu potoków szkieletu Mesa
+Gallium. Obsługuje układy Intela z rodziny kart Intel Iris (Gen8+:
+Broadwell, Skylake, Broxton, Kabylake, Coffeelake, Geminilake, Whiskey
+Lake, Comet Lake, Cannonlake, Ice Lake, Elkhart Lake).
+
 %package pipe-driver-msm
 Summary:	msm (freedreno) driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik msm (freedreno) dla dynamicznego systemu potoków szkieletu Mesa Gallium
@@ -1840,6 +1859,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/gallium-pipe/pipe_i915.so
 %endif
+
+%files pipe-driver-iris
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_iris.so
 %endif
 
 %ifarch %{arm}
