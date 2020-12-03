@@ -1797,9 +1797,11 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/hx8357d_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/ili9225_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/ili9341_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/imx-dcss_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/imx-drm_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/ingenic-drm_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mcde_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/mediatek_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/meson_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mi0283qt_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mxsfb-drm_dri.so
