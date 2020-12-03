@@ -1327,6 +1327,48 @@ Mesa driver for Bellagio OpenMAX IL API.
 %description -n omxil-mesa -l pl.UTF-8
 Sterownik Mesa dla API Bellagio OpenMAX IL.
 
+%package vulkan-icd-broadcom
+Summary:	v3dv - Mesa Vulkan driver for Raspberry Pi 4
+Summary(pl.UTF-8):	v3dv - sterownik Vulkan dla Raspberry Pi 4
+License:	MIT
+Group:		Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	libxcb >= 1.13
+Requires:	xorg-lib-libXrandr >= 1.3
+Requires:	xorg-lib-libxshmfence >= 1.1
+# wayland-client
+Requires:	wayland >= %{wayland_ver}
+Requires:	zlib >= %{zlib_ver}
+Suggests:	vulkan(loader)
+Provides:	vulkan(icd) = 1.0.3
+
+%description vulkan-icd-broadcom
+v3dv - Mesa Vulkan driver for Raspberry Pi 4.
+
+%description vulkan-icd-broadcom -l pl.UTF-8
+v3dv - sterownik Vulkan dla Raspberry Pi 4.
+
+%package vulkan-icd-freedreno
+Summary:	turnip - Mesa Vulkan driver for Adreno chips
+Summary(pl.UTF-8):	turnip - sterownik Vulkan dla układów Adreno
+License:	MIT
+Group:		Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	libxcb >= 1.13
+Requires:	xorg-lib-libXrandr >= 1.3
+Requires:	xorg-lib-libxshmfence >= 1.1
+# wayland-client
+Requires:	wayland >= %{wayland_ver}
+Requires:	zlib >= %{zlib_ver}
+Suggests:	vulkan(loader)
+Provides:	vulkan(icd) = 1.0.3
+
+%description vulkan-icd-freedreno
+turnip - Mesa Vulkan driver for Adreno chips.
+
+%description vulkan-icd-freedreno -l pl.UTF-8
+turnip - sterownik Vulkan dla układów Adreno.
+
 %package vulkan-icd-intel
 Summary:	Mesa Vulkan driver for Intel GPUs
 Summary(pl.UTF-8):	Sterownik Vulkan dla GPU firmy Intel
@@ -1360,6 +1402,27 @@ eader files for Mesa Intel GPU Vulkan driver.
 
 %description vulkan-icd-intel-devel -l pl.UTF-8
 Pliki nagłówkowe sterownika Vulkan dla GPU Intel.
+
+%package vulkan-icd-lavapipe
+Summary:	lavapipe - Mesa software Vulkan driver
+Summary(pl.UTF-8):	lavapipe - programowy sterownik Vulkan
+License:	MIT
+Group:		Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	libxcb >= 1.13
+Requires:	xorg-lib-libXrandr >= 1.3
+Requires:	xorg-lib-libxshmfence >= 1.1
+# wayland-client
+Requires:	wayland >= %{wayland_ver}
+Requires:	zlib >= %{zlib_ver}
+Suggests:	vulkan(loader)
+Provides:	vulkan(icd) = 1.0.3
+
+%description vulkan-icd-lavapipe
+lavapipe - Mesa software Vulkan driver.
+
+%description vulkan-icd-lavapipe -l pl.UTF-8
+lavapipe - programowy sterownik Vulkan.
 
 %package vulkan-icd-radeon
 Summary:	radv - experimental Mesa Vulkan driver for AMD Radeon GPUs
@@ -1430,9 +1493,12 @@ vc4 \
 
 gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 
-vulkan_drivers="%{?with_radv:amd} \
+vulkan_drivers="swrast %{?with_radv:amd} \
 %ifarch %{ix86} %{x8664} x32
 intel \
+%endif
+%ifarch %{arm} aarch64
+freedreno broadcom \
 %endif
 "
 
@@ -1964,6 +2030,18 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/bellagio/libomx_mesa.so
 %endif
 
+%ifarch %{arm} aarch64
+%files vulkan-icd-broadcom
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libvulkan_broadcom.so
+%{_datadir}/vulkan/icd.d/broadcom_icd.*.json
+
+%files vulkan-icd-freedreno
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libvulkan_freedreno.so
+%{_datadir}/vulkan/icd.d/freedreno_icd.*.json
+%endif
+
 %ifarch %{ix86} %{x8664} x32
 %files vulkan-icd-intel
 %defattr(644,root,root,755)
@@ -1974,6 +2052,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %{_includedir}/vulkan/vulkan_intel.h
 %endif
+
+%files vulkan-icd-lavapipe
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libvulkan_lvp.so
+%{_datadir}/vulkan/icd.d/lvp_icd.*.json
 
 %if %{with radv}
 %files vulkan-icd-radeon
