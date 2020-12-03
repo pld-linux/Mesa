@@ -1836,6 +1836,8 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with opencl}
 %ifarch %{ix86} %{x8664} x32
 %if %{with gallium_i915}
+%files pipe-driver-i915
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/gallium-pipe/pipe_i915.so
 %endif
 %endif
