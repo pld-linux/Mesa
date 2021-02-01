@@ -112,7 +112,7 @@ BuildRequires:	pkgconfig(xcb-present) >= 1.13
 BuildRequires:	pkgconfig(xcb-randr) >= 1.12
 BuildRequires:	python3 >= 1:3.2
 BuildRequires:	python3-Mako >= 0.8.0
-BuildRequires:	rpmbuild(macros) >= 1.470
+BuildRequires:	rpmbuild(macros) >= 1.736
 BuildRequires:	sed >= 4.0
 %{?with_opencl_spirv:BuildRequires:	spirv-tools-devel >= 2018.0}
 # wayland-{client,server}
@@ -1538,14 +1538,14 @@ vulkan_drivers=$(echo $vulkan_drivers | xargs | tr ' ' ',')
 	-Dvulkan-drivers=${vulkan_drivers} \
 	-Dvulkan-icd-dir=/usr/share/vulkan/icd.d
 
-%meson_build -C build
+%ninja_build -C build
 
-%{?with_tests:%meson_test -C build}
+%{?with_tests:%ninja_test -C build}
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%meson_install -C build
+%ninja_install -C build
 
 # not used externally
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libglapi.so
