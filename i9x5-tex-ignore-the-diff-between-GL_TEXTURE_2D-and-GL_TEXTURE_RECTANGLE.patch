@@ -27,9 +27,9 @@ index 7d1fa96..dc45a06 100644
 +    return (GL_TEXTURE_RECTANGLE == val) ? GL_TEXTURE_2D : val;
 +}
 +
- static bool
- intel_miptree_supports_mcs(struct brw_context *brw,
-                            const struct intel_mipmap_tree *mt)
+ /**
+  * Return true if the format that will be used to access the miptree is
+  * CCS_E-compatible with the miptree's linear/non-sRGB format.
 @@ -1320,13 +1326,15 @@ intel_miptree_match_image(struct intel_mipmap_tree *mt,
  {
     struct intel_texture_image *intelImage = intel_texture_image(image);

@@ -33,7 +33,7 @@
 %define		dri2proto_ver		2.8
 %define		glproto_ver		1.4.14
 %define		zlib_ver		1.2.8
-%define		wayland_ver		1.15
+%define		wayland_ver		1.18
 %define		llvm_ver		8.0.0
 %define		gcc_ver 		6:4.8.0
 
@@ -69,14 +69,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	20.3.4
+Version:	21.0.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
-# Source0-md5:	ad5feb0518815f9df11fb60f1034ca40
+# Source0-md5:	07cfd25ab952133364c435189edc8a19
 Patch0:		nouveau_no_rtti.patch
 Patch1:		i9x5-tex-ignore-the-diff-between-GL_TEXTURE_2D-and-GL_TEXTURE_RECTANGLE.patch
 URL:		http://www.mesa3d.org/
@@ -120,7 +120,6 @@ BuildRequires:	sed >= 4.0
 %{?with_wayland:BuildRequires:	wayland-protocols >= 1.8}
 %{?with_wayland:BuildRequires:	wayland-egl-devel >= %{wayland_ver}}
 BuildRequires:	xorg-lib-libX11-devel
-BuildRequires:	xorg-lib-libXdamage-devel >= 1.1
 BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXfixes-devel >= 2.0
 BuildRequires:	xorg-lib-libXrandr-devel >= 1.3
@@ -166,7 +165,7 @@ Requires:	%{name}-libglapi = %{version}-%{release}
 Requires:	OpenGL >= 1.2
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libxcb >= 1.13
-%{?with_wayland:Requires:	wayland >= 1.11.0}
+%{?with_wayland:Requires:	wayland >= %{wayland_ver}}
 %if %{with gbm}
 Requires:	%{name}-libgbm = %{version}-%{release}
 %endif
@@ -192,7 +191,6 @@ Requires:	%{name}-khrplatform-devel = %{version}-%{release}
 Requires:	%{name}-libEGL = %{version}-%{release}
 Requires:	libdrm-devel >= %{libdrm_ver}
 Requires:	xorg-lib-libX11-devel
-Requires:	xorg-lib-libXdamage-devel >= 1.1
 Requires:	xorg-lib-libXext-devel >= 1.0.5
 Requires:	xorg-lib-libXfixes-devel >= 2.0
 Requires:	xorg-lib-libXxf86vm-devel
@@ -230,7 +228,6 @@ Group:		X11/Libraries
 Requires:	%{name}-libglapi = %{version}-%{release}
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libxcb >= 1.13
-Requires:	xorg-lib-libXdamage >= 1.1
 Provides:	OpenGL = 4.6
 Provides:	OpenGL-GLX = 1.4
 Obsoletes:	Mesa
@@ -269,7 +266,6 @@ Group:		X11/Development/Libraries
 Requires:	OpenGL >= 1.5
 Requires:	libdrm-devel >= %{libdrm_ver}
 Requires:	xorg-lib-libX11-devel
-Requires:	xorg-lib-libXdamage-devel >= 1.1
 Requires:	xorg-lib-libXext-devel >= 1.0.5
 Requires:	xorg-lib-libXxf86vm-devel
 Requires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
@@ -1532,7 +1528,7 @@ vulkan_drivers=$(echo $vulkan_drivers | xargs | tr ' ' ',')
 	-Dlibunwind=enabled \
 	-Dlmsensors=%{?with_lm_sensors:enabled}%{!?with_lm_sensors:disabled} \
 	%{?with_opencl_spirv:-Dopencl-spirv=true} \
-	-Dosmesa=%{?with_gallium:gallium}%{!?with_gallium:classic} \
+	-Dosmesa=true \
 	-Dselinux=true \
 	-Dva-libs-path=%{_libdir}/libva/dri \
 	-Dvulkan-drivers=${vulkan_drivers} \
