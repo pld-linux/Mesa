@@ -29,7 +29,7 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver		7.1.0
 # other packages
-%define		libdrm_ver		2.4.102
+%define		libdrm_ver		2.4.105
 %define		dri2proto_ver		2.8
 %define		glproto_ver		1.4.14
 %define		zlib_ver		1.2.8
@@ -69,16 +69,15 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	21.0.3
+Version:	21.1.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
-# Source0-md5:	6dda027f1af6c76f5afe9a828dde0139
+# Source0-md5:	7482dd659c3708bdda247c96449d9d79
 Patch0:		nouveau_no_rtti.patch
-Patch1:		i9x5-tex-ignore-the-diff-between-GL_TEXTURE_2D-and-GL_TEXTURE_RECTANGLE.patch
 URL:		http://www.mesa3d.org/
 %{?with_opencl_spirv:BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3}
 %{?with_gallium_zink:BuildRequires:	Vulkan-Loader-devel}
@@ -1444,7 +1443,6 @@ radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD.
 %prep
 %setup -q -n mesa-mesa-%{version}
 %patch0 -p1
-%patch1 -p1
 
 %build
 %if %{with opencl}
@@ -1478,7 +1476,6 @@ nouveau
 %ifarch %{arm} aarch64
 etnaviv \
 freedreno \
-kmsro \
 lima \
 panfrost \
 %{?with_gallium_nouveau:tegra} \
