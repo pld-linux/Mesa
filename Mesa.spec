@@ -1378,25 +1378,13 @@ Requires:	wayland >= %{wayland_ver}
 Requires:	zlib >= %{zlib_ver}
 Suggests:	vulkan(loader)
 Provides:	vulkan(icd) = 1.0.3
+Obsoletes:	Mesa-vulkan-icd-intel-devel < 21.1.0
 
 %description vulkan-icd-intel
 Mesa Vulkan driver for Intel GPUs.
 
 %description vulkan-icd-intel -l pl.UTF-8
 Sterownik Vulkan dla GPU Intela.
-
-%package vulkan-icd-intel-devel
-Summary:	Header files for Mesa Intel GPU Vulkan driver
-Summary(pl.UTF-8):	Pliki nagłówkowe sterownika Vulkan dla GPU Intela
-License:	MIT
-Group:		Development/Libraries
-Requires:	%{name}-vulkan-icd-intel = %{version}-%{release}
-
-%description vulkan-icd-intel-devel
-eader files for Mesa Intel GPU Vulkan driver.
-
-%description vulkan-icd-intel-devel -l pl.UTF-8
-Pliki nagłówkowe sterownika Vulkan dla GPU Intel.
 
 %package vulkan-icd-lavapipe
 Summary:	lavapipe - Mesa software Vulkan driver
@@ -2040,10 +2028,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libvulkan_intel.so
 %{_datadir}/vulkan/icd.d/intel_icd.*.json
-
-%files vulkan-icd-intel-devel
-%defattr(644,root,root,755)
-%{_includedir}/vulkan/vulkan_intel.h
 %endif
 
 %files vulkan-icd-lavapipe
