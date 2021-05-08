@@ -1,0 +1,29 @@
+--- mesa-mesa-21.1.0/src/gallium/drivers/zink/zink_framebuffer.c.orig	2021-05-05 19:05:43.000000000 +0200
++++ mesa-mesa-21.1.0/src/gallium/drivers/zink/zink_framebuffer.c	2021-05-08 11:40:04.291968475 +0200
+@@ -64,7 +64,7 @@
+                          struct zink_framebuffer *fb)
+ {
+    hash_table_foreach(&fb->objects, he) {
+-#if defined(_WIN64) || defined(__x86_64__)
++#if defined(_WIN64) || (defined(__x86_64__) && !defined(__ILP32__))
+       vkDestroyFramebuffer(screen->dev, he->data, NULL);
+ #else
+       VkFramebuffer *ptr = he->data;
+@@ -89,7 +89,7 @@
+ 
+    struct hash_entry *he = _mesa_hash_table_search_pre_hashed(&fb->objects, hash, rp);
+    if (he) {
+-#if defined(_WIN64) || defined(__x86_64__)
++#if defined(_WIN64) || (defined(__x86_64__) && !defined(__ILP32__))
+       ret = (VkFramebuffer)he->data;
+ #else
+       VkFramebuffer *ptr = he->data;
+@@ -109,7 +109,7 @@
+ 
+    if (vkCreateFramebuffer(screen->dev, &fci, NULL, &ret) != VK_SUCCESS)
+       return;
+-#if defined(_WIN64) || defined(__x86_64__)
++#if defined(_WIN64) || (defined(__x86_64__) && !defined(__ILP32__))
+    _mesa_hash_table_insert_pre_hashed(&fb->objects, hash, rp, ret);
+ #else
+    VkFramebuffer *ptr = ralloc(fb, VkFramebuffer);
