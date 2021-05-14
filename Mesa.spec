@@ -139,7 +139,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # libGLESv1_CM, libGLESv2, libGL, libOSMesa:
 #  _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
-%define		skip_post_check_so      libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libOSMesa.so.* libGLX_mesa.so.0.*
+%define		skip_post_check_so	libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libOSMesa.so.* libGLX_mesa.so.0.*
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
@@ -1023,12 +1023,12 @@ X.org Gallium DRI driver based on Vulkan.
 Sterownik X.org DRI Gallium oparty na Vulkanie.
 
 %package pipe-driver-i915
-Summary:       i915 driver for Mesa Gallium dynamic pipe loader
-Summary(pl.UTF-8):     Sterownik i915 dla dynamicznego systemu potoków szkieletu Mesa Gallium
-Group:	       Libraries
-Requires:      zlib >= %{zlib_ver}
-Obsoletes:     Mesa-gbm-driver-i915 < 11.1.1
-Obsoletes:     Mesa-opencl-driver-i915 < 9.1
+Summary:	i915 driver for Mesa Gallium dynamic pipe loader
+Summary(pl.UTF-8):	Sterownik i915 dla dynamicznego systemu potoków szkieletu Mesa Gallium
+Group:		Libraries
+Requires:	zlib >= %{zlib_ver}
+Obsoletes:	Mesa-gbm-driver-i915 < 11.1.1
+Obsoletes:	Mesa-opencl-driver-i915 < 9.1
 
 %description pipe-driver-i915
 i915 driver for Mesa Gallium dynamic pipe loader. It supports Intel
@@ -1039,10 +1039,10 @@ Sterownik i915 dla dynamicznego systemu potoków szkieletu Mesa
 Gallium. Obsługuje układy Intela z serii 915/945/G33/Q33/Q35/Pineview.
 
 %package pipe-driver-iris
-Summary:       iris driver for Mesa Gallium dynamic pipe loader
-Summary(pl.UTF-8):     Sterownik iris dla dynamicznego systemu potoków szkieletu Mesa Gallium
-Group:	       Libraries
-Requires:      zlib >= %{zlib_ver}
+Summary:	iris driver for Mesa Gallium dynamic pipe loader
+Summary(pl.UTF-8):	Sterownik iris dla dynamicznego systemu potoków szkieletu Mesa Gallium
+Group:		Libraries
+Requires:	zlib >= %{zlib_ver}
 
 %description pipe-driver-iris
 iris driver for Mesa Gallium dynamic pipe loader. It supports Intel
