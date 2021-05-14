@@ -242,8 +242,8 @@ Requires:	libglvnd-libGL >= %{libglvnd_ver}
 %endif
 Provides:	OpenGL = 4.6
 Provides:	OpenGL-GLX = 1.4
-Obsoletes:	Mesa
-Obsoletes:	Mesa-dri
+Obsoletes:	Mesa < 6.4-2
+Obsoletes:	Mesa-dri < 6.4.1-3
 Obsoletes:	Mesa-dri-core < 10.0.0
 Obsoletes:	X11-OpenGL-libGL < 1:7.0.0
 Obsoletes:	XFree86-OpenGL-libGL < 1:7.0.0
@@ -291,7 +291,7 @@ Suggests:	OpenGL-doc-man
 Provides:	OpenGL-GLX-devel = 1.4
 Provides:	OpenGL-devel = 4.6
 %endif
-Obsoletes:	Mesa-devel
+Obsoletes:	Mesa-devel < 6.4-2
 Obsoletes:	X11-OpenGL-devel < 1:7.0.0
 Obsoletes:	X11-OpenGL-devel-base < 1:7.0.0
 Obsoletes:	XFree86-OpenGL-devel < 1:7.0.0
@@ -310,7 +310,7 @@ License:	MIT
 Group:		X11/Development/Libraries
 Requires:	%{name}-libGL-devel = %{version}-%{release}
 Provides:	OpenGL-static = 4.6
-Obsoletes:	Mesa-static
+Obsoletes:	Mesa-static < 6.4-2
 Obsoletes:	X11-OpenGL-static < 1:7.0.0
 Obsoletes:	XFree86-OpenGL-static < 1:7.0.0
 
@@ -819,7 +819,7 @@ Group:		X11/Libraries
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
-Obsoletes:	Mesa-dri-driver-intel-i830
+Obsoletes:	Mesa-dri-driver-intel-i830 < 6.5
 Obsoletes:	X11-driver-i810-dri < 1:7.0.0
 
 %description dri-driver-intel-i915
@@ -838,7 +838,7 @@ Group:		X11/Libraries
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
-Obsoletes:	Mesa-dri-driver-intel-i830
+Obsoletes:	Mesa-dri-driver-intel-i830 < 6.5
 Obsoletes:	X11-driver-i810-dri < 1:7.0.0
 
 %description dri-driver-intel-i965
@@ -1068,8 +1068,8 @@ Summary:       i915 driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):     Sterownik i915 dla dynamicznego systemu potok처w szkieletu Mesa Gallium
 Group:	       Libraries
 Requires:      zlib >= %{zlib_ver}
-Obsoletes:     Mesa-gbm-driver-i915
-Obsoletes:     Mesa-opencl-driver-i915
+Obsoletes:     Mesa-gbm-driver-i915 < 11.1.1
+Obsoletes:     Mesa-opencl-driver-i915 < 9.1
 
 %description pipe-driver-i915
 i915 driver for Mesa Gallium dynamic pipe loader. It supports Intel
@@ -1116,8 +1116,8 @@ Summary:	nouveau driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik nouveau dla dynamicznego systemu potok처w szkieletu Mesa Gallium
 Group:		Libraries
 Requires:	zlib >= %{zlib_ver}
-Obsoletes:	Mesa-gbm-driver-nouveau
-Obsoletes:	Mesa-opencl-driver-nouveau
+Obsoletes:	Mesa-gbm-driver-nouveau < 11.1.1
+Obsoletes:	Mesa-opencl-driver-nouveau < 9.1
 
 %description pipe-driver-nouveau
 nouveau driver for Mesa Gallium dynamic pipe loader. It supports
@@ -1132,8 +1132,8 @@ Summary:	r300 driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik r300 dla dynamicznego systemu potok처w szkieletu Mesa Gallium
 Group:		Libraries
 Requires:	zlib >= %{zlib_ver}
-Obsoletes:	Mesa-gbm-driver-r300
-Obsoletes:	Mesa-opencl-driver-r300
+Obsoletes:	Mesa-gbm-driver-r300 < 11.1.1
+Obsoletes:	Mesa-opencl-driver-r300 < 9.1
 
 %description pipe-driver-r300
 r300 driver for Mesa Gallium dynamic pipe loader. It supports ATI
@@ -1149,9 +1149,9 @@ Summary:	r600 driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik r600 dla dynamicznego systemu potok처w szkieletu Mesa Gallium
 Group:		Libraries
 Requires:	zlib >= %{zlib_ver}
-Obsoletes:	Mesa-gbm-driver-r600
-Obsoletes:	Mesa-libllvmradeon
-Obsoletes:	Mesa-opencl-driver-r600
+Obsoletes:	Mesa-gbm-driver-r600 < 11.1.1
+Obsoletes:	Mesa-libllvmradeon < 9.2
+Obsoletes:	Mesa-opencl-driver-r600 < 9.1
 
 %description pipe-driver-r600
 r600 driver for Mesa Gallium dynamic pipe loader. It supports ATI
@@ -1167,9 +1167,9 @@ Summary:	radeonsi driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik radeonsi dla dynamicznego systemu potok처w szkieletu Mesa Gallium
 Group:		Libraries
 Requires:	zlib >= %{zlib_ver}
-Obsoletes:	Mesa-gbm-driver-radeonsi
-Obsoletes:	Mesa-libllvmradeon
-Obsoletes:	Mesa-opencl-driver-radeonsi
+Obsoletes:	Mesa-gbm-driver-radeonsi < 11.1.1
+Obsoletes:	Mesa-libllvmradeon < 9.2
+Obsoletes:	Mesa-opencl-driver-radeonsi < 9.1
 
 %description pipe-driver-radeonsi
 radeonsi driver for Mesa Gallium dynamic pipe loader. It supports ATI
@@ -1186,8 +1186,8 @@ Summary(pl.UTF-8):	Sterownik programowy (swrast) dla dynamicznego systemu potok�
 Group:		Libraries
 %{?with_swr:Requires:	cpuinfo(avx)}
 Requires:	zlib >= %{zlib_ver}
-Obsoletes:	Mesa-gbm-driver-swrast
-Obsoletes:	Mesa-opencl-driver-swrast
+Obsoletes:	Mesa-gbm-driver-swrast < 11.1.1
+Obsoletes:	Mesa-opencl-driver-swrast < 9.1
 
 %description pipe-driver-swrast
 Software (swrast) driver for Mesa Gallium dynamic pipe loader.
@@ -1201,8 +1201,8 @@ Summary:	vmwgfx driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik vmwgfx dla dynamicznego systemu potok처w szkieletu Mesa Gallium
 Group:		Libraries
 Requires:	zlib >= %{zlib_ver}
-Obsoletes:	Mesa-gbm-driver-vmwgfx
-Obsoletes:	Mesa-opencl-driver-vmwgfx
+Obsoletes:	Mesa-gbm-driver-vmwgfx < 11.1.1
+Obsoletes:	Mesa-opencl-driver-vmwgfx < 9.1
 
 %description pipe-driver-vmwgfx
 vmwgfx driver for Mesa Gallium dynamic pipe loader. It supports VMware
@@ -1317,7 +1317,7 @@ Requires:	libdrm >= %{libdrm_ver}
 Requires:	libvdpau >= 1.1
 Requires:	zlib >= %{zlib_ver}
 Conflicts:	libvdpau-driver-mesa
-Obsoletes:	Mesa-libllvmradeon
+Obsoletes:	Mesa-libllvmradeon < 9.2
 
 %description -n libvdpau-driver-mesa-radeonsi
 Mesa radeonsi driver for the vdpau API. It supports ATI Radeon
@@ -1336,9 +1336,9 @@ Requires:	libdrm >= %{libdrm_ver}
 Requires:	libxcb >= 1.13
 Requires:	libomxil-bellagio
 Requires:	zlib >= %{zlib_ver}
-Obsoletes:	omxil-mesa-nouveau
-Obsoletes:	omxil-mesa-r600
-Obsoletes:	omxil-mesa-radeonsi
+Obsoletes:	omxil-mesa-nouveau < 10.3
+Obsoletes:	omxil-mesa-r600 < 10.3
+Obsoletes:	omxil-mesa-radeonsi < 10.3
 
 %description -n omxil-mesa
 Mesa driver for Bellagio OpenMAX IL API.
