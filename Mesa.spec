@@ -262,8 +262,7 @@ Summary:	Header files for Mesa3D libGL library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki libGL z projektu Mesa3D
 License:	MIT
 Group:		X11/Development/Libraries
-# loose dependency on libGL to use with other libGL binaries
-Requires:	OpenGL >= 1.5
+Requires:	%{name}-libGL = %{version}-%{release}
 Requires:	libdrm-devel >= %{libdrm_ver}
 Requires:	xorg-lib-libX11-devel
 Requires:	xorg-lib-libXext-devel >= 1.0.5
