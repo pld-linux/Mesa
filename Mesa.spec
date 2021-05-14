@@ -34,6 +34,7 @@
 %define		glproto_ver		1.4.14
 %define		zlib_ver		1.2.8
 %define		wayland_ver		1.18
+%define		libglvnd_ver		1.3.2
 %define		llvm_ver		8.0.0
 %define		gcc_ver 		6:4.8.0
 
@@ -89,7 +90,7 @@ BuildRequires:	expat-devel >= 1.95
 BuildRequires:	flex
 BuildRequires:	gcc >= %{gcc_ver}
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
-%{?with_glvnd:BuildRequires:	libglvnd-devel >= 1.3.2}
+%{?with_glvnd:BuildRequires:	libglvnd-devel >= %{libglvnd_ver}}
 BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= %{gcc_ver}
 BuildRequires:	libunwind-devel
@@ -169,6 +170,9 @@ Requires:	libxcb >= 1.13
 %if %{with gbm}
 Requires:	%{name}-libgbm = %{version}-%{release}
 %endif
+%if %{with glvnd}
+Requires:	libglvnd-libEGL >= %{libglvnd_ver}
+%endif
 Provides:	EGL = 1.5
 
 %description libEGL
@@ -187,16 +191,20 @@ Summary:	Header files for Mesa implementation of EGL library
 Summary(pl.UTF-8):	Pliki nagłówkowe implementacji Mesa biblioteki EGL
 License:	MIT
 Group:		Development/Libraries
-Requires:	%{name}-khrplatform-devel = %{version}-%{release}
 Requires:	%{name}-libEGL = %{version}-%{release}
+Requires:	xorg-lib-libX11-devel
+%if %{with glvnd}
+Requires:	libglvnd-libEGL-devel >= %{libglvnd_ver}
+%else
+Requires:	%{name}-khrplatform-devel = %{version}-%{release}
 Requires:	libdrm-devel >= %{libdrm_ver}
 Requires:	libxcb-devel >= 1.13
 Requires:	pkgconfig(xcb-dri2) >= 1.8
 Requires:	pkgconfig(xcb-glx) >= 1.8.1
-Requires:	xorg-lib-libX11-devel
 Requires:	xorg-lib-libXext-devel >= 1.0.5
 Requires:	xorg-lib-libXfixes-devel >= 2.0
 Requires:	xorg-lib-libXxf86vm-devel
+%endif
 %if %{without glvnd}
 Provides:	EGL-devel = 1.5
 %endif
@@ -229,6 +237,9 @@ Group:		X11/Libraries
 Requires:	%{name}-libglapi = %{version}-%{release}
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libxcb >= 1.13
+%if %{with glvnd}
+Requires:	libglvnd-libGL >= %{libglvnd_ver}
+%endif
 Provides:	OpenGL = 4.6
 Provides:	OpenGL-GLX = 1.4
 Obsoletes:	Mesa
@@ -263,8 +274,11 @@ Summary:	Header files for Mesa3D libGL library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki libGL z projektu Mesa3D
 License:	MIT
 Group:		X11/Development/Libraries
-Requires:	%{name}-libGL = %{version}-%{release}
 Requires:	libdrm-devel >= %{libdrm_ver}
+%if %{with glvnd}
+Requires:	libglvnd-libGL-devel >= %{libglvnd_ver}
+%else
+Requires:	%{name}-libGL = %{version}-%{release}
 Requires:	libxcb-devel >= 1.13
 Requires:	pkgconfig(xcb-dri2) >= 1.8
 Requires:	pkgconfig(xcb-glx) >= 1.8.1
@@ -312,6 +326,9 @@ Summary:	Mesa implementation of GLES (OpenGL ES) libraries
 Summary(pl.UTF-8):	Implementacja Mesa bibliotek GLES (OpenGL ES)
 Group:		Libraries
 Requires:	%{name}-libglapi = %{version}-%{release}
+%if %{with glvnd}
+Requires:	libglvnd-libGLES >= %{libglvnd_ver}
+%endif
 Provides:	OpenGLES
 Provides:	OpenGLESv1 = 1.1
 Provides:	OpenGLESv2 = 2.0
@@ -336,10 +353,14 @@ ES 1.1 i 2.0/3.2.
 Summary:	Header files for Mesa GLES libraries
 Summary(pl.UTF-8):	Pliki nagłówkowe bibliotek Mesa GLES
 Group:		Development/Libraries
+Requires:	%{name}-libGLES = %{version}-%{release}
+%if %{with glvnd}
+Requires:	libglvnd-libGLES-devel >= %{libglvnd_ver}
+%else
 Requires:	%{name}-khrplatform-devel = %{version}-%{release}
 # <EGL/egl.h> for <GLES/egl.h>
 Requires:	%{name}-libEGL-devel = %{version}-%{release}
-Requires:	%{name}-libGLES = %{version}-%{release}
+%endif
 %if %{without glvnd}
 Provides:	OpenGLES-devel
 Provides:	OpenGLESv1-devel = 1.1
