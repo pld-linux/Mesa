@@ -190,12 +190,13 @@ Group:		Development/Libraries
 Requires:	%{name}-khrplatform-devel = %{version}-%{release}
 Requires:	%{name}-libEGL = %{version}-%{release}
 Requires:	libdrm-devel >= %{libdrm_ver}
+Requires:	libxcb-devel >= 1.13
+Requires:	pkgconfig(xcb-dri2) >= 1.8
+Requires:	pkgconfig(xcb-glx) >= 1.8.1
 Requires:	xorg-lib-libX11-devel
 Requires:	xorg-lib-libXext-devel >= 1.0.5
 Requires:	xorg-lib-libXfixes-devel >= 2.0
 Requires:	xorg-lib-libXxf86vm-devel
-Requires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
-Requires:	xorg-proto-glproto-devel >= %{glproto_ver}
 %if %{without glvnd}
 Provides:	EGL-devel = 1.5
 %endif
@@ -264,11 +265,13 @@ License:	MIT
 Group:		X11/Development/Libraries
 Requires:	%{name}-libGL = %{version}-%{release}
 Requires:	libdrm-devel >= %{libdrm_ver}
+Requires:	libxcb-devel >= 1.13
+Requires:	pkgconfig(xcb-dri2) >= 1.8
+Requires:	pkgconfig(xcb-glx) >= 1.8.1
 Requires:	xorg-lib-libX11-devel
 Requires:	xorg-lib-libXext-devel >= 1.0.5
+Requires:	xorg-lib-libXfixes-devel >= 2.0
 Requires:	xorg-lib-libXxf86vm-devel
-Requires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
-Requires:	xorg-proto-glproto-devel >= %{glproto_ver}
 Suggests:	OpenGL-doc-man
 %if %{without glvnd}
 Provides:	OpenGL-GLX-devel = 1.4
@@ -425,8 +428,8 @@ oraz urządzeniach przenośnych/wbudowanych. Specyfikację OpenCL można
 znaleźć na stronie Khronos Group: <http://www.khronos.org/opencl/>.
 Mesa zawiera implementację OpenCL w wersji 1.1.
 
-Implementacja dostarczona jest w postaci instalowalnego sterownika klienta
-(ICD), który może być użyty z loaderem ocl-icd.
+Implementacja dostarczona jest w postaci instalowalnego sterownika
+klienta (ICD), który może być użyty z loaderem ocl-icd.
 
 %package libOpenCL
 Summary:	Mesa implementation of OpenCL (Compuing Language) API
