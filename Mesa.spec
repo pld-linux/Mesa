@@ -208,26 +208,13 @@ Requires:	xorg-lib-libXxf86vm-devel
 %if %{without glvnd}
 Provides:	EGL-devel = 1.5
 %endif
+Obsoletes:	Mesa-libEGL-static < 18.3
 
 %description libEGL-devel
 Header files for Mesa implementation of EGL library.
 
 %description libEGL-devel -l pl.UTF-8
 Pliki nagłówkowe implementacji Mesa biblioteki EGL.
-
-%package libEGL-static
-Summary:	Static Mesa EGL library
-Summary(pl.UTF-8):	Statyczna biblioteka Mesa EGL
-License:	MIT
-Group:		Development/Libraries
-Requires:	%{name}-libEGL-devel = %{version}-%{release}
-Provides:	EGL-static = 1.5
-
-%description libEGL-static
-Static Mesa EGL library.
-
-%description libEGL-static -l pl.UTF-8
-Statyczna biblioteka Mesa EGL.
 
 %package libGL
 Summary:	Free Mesa3D implementation of libGL OpenGL library
@@ -292,34 +279,20 @@ Provides:	OpenGL-GLX-devel = 1.4
 Provides:	OpenGL-devel = 4.6
 %endif
 Obsoletes:	Mesa-devel < 6.4-2
+Obsoletes:	Mesa-libGL-static < 18.3
+Obsoletes:	Mesa-static < 6.4-2
 Obsoletes:	X11-OpenGL-devel < 1:7.0.0
 Obsoletes:	X11-OpenGL-devel-base < 1:7.0.0
+Obsoletes:	X11-OpenGL-static < 1:7.0.0
 Obsoletes:	XFree86-OpenGL-devel < 1:7.0.0
 Obsoletes:	XFree86-OpenGL-devel-base < 1:7.0.0
+Obsoletes:	XFree86-OpenGL-static < 1:7.0.0
 
 %description libGL-devel
 Header files for Mesa3D libGL library.
 
 %description libGL-devel -l pl.UTF-8
 Pliki nagłówkowe biblioteki libGL z projektu Mesa3D.
-
-%package libGL-static
-Summary:	Static Mesa3D libGL library
-Summary(pl.UTF-8):	Statyczna biblioteka libGL z projektu Mesa3D
-License:	MIT
-Group:		X11/Development/Libraries
-Requires:	%{name}-libGL-devel = %{version}-%{release}
-Provides:	OpenGL-static = 4.6
-Obsoletes:	Mesa-static < 6.4-2
-Obsoletes:	X11-OpenGL-static < 1:7.0.0
-Obsoletes:	XFree86-OpenGL-static < 1:7.0.0
-
-%description libGL-static
-Static Mesa3D libGL library. It uses software renderer.
-
-%description libGL-static -l pl.UTF-8
-Statyczna biblioteka libGL z projektu Mesa3D. Używa programowego
-renderingu.
 
 %package libGLES
 Summary:	Mesa implementation of GLES (OpenGL ES) libraries
@@ -397,27 +370,13 @@ Requires:	%{name}-libOSMesa = %{version}-%{release}
 # for <GL/gl.h> only
 Requires:	OpenGL-devel
 Requires:	libselinux-devel
+Obsoletes:	Mesa-libOSMesa-static < 18.3
 
 %description libOSMesa-devel
 Header file for OSMesa (off-screen renderer) library.
 
 %description libOSMesa-devel -l pl.UTF-8
 Plik nagłówkowy biblioteki OSMesa (renderującej bitmapy w pamięci).
-
-%package libOSMesa-static
-Summary:	Static OSMesa (off-screen renderer) library
-Summary(pl.UTF-8):	Biblioteka statyczna OSMesa (renderująca bitmapy w pamięci)
-License:	MIT
-Group:		Development/Libraries
-Requires:	%{name}-libOSMesa-devel = %{version}-%{release}
-# this static build of OSMesa needs static non-dri Mesa implementation
-Requires:	%{name}-libGL-static = %{version}-%{release}
-
-%description libOSMesa-static
-Static OSMesa (off-screen renderer) library.
-
-%description libOSMesa-static -l pl.UTF-8
-Biblioteka statyczna OSMesa (renderująca bitmapy w pamięci).
 
 %package OpenCL-icd
 Summary:	Mesa implementation of OpenCL (Compuing Language) API ICD
