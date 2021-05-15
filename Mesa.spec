@@ -72,7 +72,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	21.1.0
-Release:	1
+Release:	2
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
@@ -262,11 +262,11 @@ Summary:	Header files for Mesa3D libGL library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki libGL z projektu Mesa3D
 License:	MIT
 Group:		X11/Development/Libraries
-Requires:	libdrm-devel >= %{libdrm_ver}
 %if %{with glvnd}
 Requires:	libglvnd-libGL-devel >= %{libglvnd_ver}
 %else
 Requires:	%{name}-libGL = %{version}-%{release}
+Requires:	libdrm-devel >= %{libdrm_ver}
 Requires:	libxcb-devel >= 1.13
 Requires:	pkgconfig(xcb-dri2) >= 1.8
 Requires:	pkgconfig(xcb-glx) >= 1.8.1
@@ -528,6 +528,25 @@ Khronos platform header file.
 
 %description khrplatform-devel -l pl.UTF-8
 Plik nagłówkowy platformy Khronos.
+
+%package dri-devel
+Summary:	Direct Rendering Infrastructure interface header file
+Summary(pl.UTF-8):	Plik nagłówkowy interfejsu DRI (Direct Rendering Infrastructure)
+Group:		Development/Libraries
+Requires:	libdrm-devel >= %{libdrm_ver}
+# <GL/gl.h>
+%if %{with glvnd}
+Requires:	libglvnd-libGL-devel >= %{libglvnd_ver}
+Conflicts:	Mesa-libGL-devel < 22.1.0-2
+%else
+Requires:	Mesa-libGL-devel = %{version}-%{release}
+%endif
+
+%description dri-devel
+Direct Rendering Infrastructure interface header file.
+
+%description dri-devel -l pl.UTF-8
+Plik nagłówkowy interfejsu DRI (Direct Rendering Infrastructure).
 
 %package libXvMC-nouveau
 Summary:	Mesa implementation of XvMC API for NVidia adapters
@@ -1616,9 +1635,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/glxext.h
 %{_pkgconfigdir}/gl.pc
 %endif
-%dir %{_includedir}/GL/internal
-%{_includedir}/GL/internal/dri_interface.h
-%{_pkgconfigdir}/dri.pc
 
 %files libGLES
 %defattr(644,root,root,755)
@@ -1712,14 +1728,18 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/xatracker.pc
 %endif
 
-%if %{with egl}
-%if %{without glvnd}
+%if %{with egl} && %{without glvnd}
 %files khrplatform-devel
 %defattr(644,root,root,755)
 %dir %{_includedir}/KHR
 %{_includedir}/KHR/khrplatform.h
 %endif
-%endif
+
+%files dri-devel
+%defattr(644,root,root,755)
+%dir %{_includedir}/GL/internal
+%{_includedir}/GL/internal/dri_interface.h
+%{_pkgconfigdir}/dri.pc
 
 ### drivers: XvMC
 
