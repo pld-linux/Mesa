@@ -273,6 +273,7 @@ Requires:	xorg-lib-libX11-devel
 Requires:	xorg-lib-libXext-devel >= 1.0.5
 Requires:	xorg-lib-libXfixes-devel >= 2.0
 Requires:	xorg-lib-libXxf86vm-devel
+%endif
 Suggests:	OpenGL-doc-man
 %if %{without glvnd}
 Provides:	OpenGL-GLX-devel = 1.4
