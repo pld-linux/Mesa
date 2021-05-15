@@ -46,6 +46,7 @@
 %undefine	with_omx
 %undefine	with_opencl
 %undefine	with_swr
+%undefine	with_va
 %undefine	with_xa
 %endif
 
@@ -80,7 +81,7 @@ Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa
 # Source0-md5:	7482dd659c3708bdda247c96449d9d79
 Patch0:		nouveau_no_rtti.patch
 Patch1:		zink_x32.patch
-URL:		http://www.mesa3d.org/
+URL:		https://www.mesa3d.org/
 %{?with_opencl_spirv:BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3}
 %{?with_gallium_zink:BuildRequires:	Vulkan-Loader-devel}
 BuildRequires:	bison > 2.3
@@ -450,98 +451,6 @@ Header files for Mesa OpenCL library.
 %description libOpenCL-devel -l pl.UTF-8
 Pliki nagłówkowe biblioteki Mesa OpenCL.
 
-%package libXvMC-nouveau
-Summary:	Mesa implementation of XvMC API for NVidia adapters
-Summary(pl.UTF-8):	Implementacja Mesa API XvMC dla kart NVidia
-License:	MIT
-Group:		Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	xorg-lib-libXvMC >= 1.0.6
-Requires:	zlib >= %{zlib_ver}
-Conflicts:	Mesa-libXvMC
-
-%description libXvMC-nouveau
-Mesa implementation of XvMC API for NVidia adapters (NV40-NV96, NVa0).
-
-%description libXvMC-nouveau -l pl.UTF-8
-Implementacja Mesa API XvMC dla kart NVidia (NV40-NV96, NVa0).
-
-%package libXvMC-r600
-Summary:	Mesa implementation of XvMC API for ATI Radeon R600 series adapters
-Summary(pl.UTF-8):	Implementacja Mesa API XvMC dla kart ATI Radeon z serii R600
-License:	MIT
-Group:		Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	xorg-lib-libXvMC >= 1.0.6
-Requires:	zlib >= %{zlib_ver}
-Conflicts:	Mesa-libXvMC
-
-%description libXvMC-r600
-Mesa implementation of XvMC API for ATI Radeon adapters based on
-R600/R700 chips.
-
-%description libXvMC-r600 -l pl.UTF-8
-Implementacja Mesa API XvMC dla kart ATI Radeon opartych na układach
-R600/R700.
-
-%package -n libva-driver-gallium
-Summary:	VA driver for Gallium State Tracker
-Summary(pl.UTF-8):	Sterowniki VA do Gallium
-Group:		Libraries
-%if %{with gallium_radeon}
-Requires:	libva-driver-r600
-Requires:	libva-driver-radeonsi
-%endif
-%if %{with gallium_nouveau}
-Requires:	libva-driver-nouveau
-%endif
-
-%description -n libva-driver-gallium
-VA drivers for Gallium State Tracker (r600, radeonsi & nouveau).
-
-%description -n libva-driver-gallium -l pl.UTF-8
-Sterowniki VA do Gallium (r600, radeonsi & nouveau).
-
-%package -n libva-driver-r600
-Summary:	VA driver for ATI Radeon R600 series adapters
-Summary(pl.UTF-8):	Sterownik VA dla kart ATI Radeon z serii R600
-Group:		Libraries
-Requires:	libva >= 1.6.0
-Requires:	zlib >= %{zlib_ver}
-
-%description -n libva-driver-r600
-VA driver for ATI Radeon R600 series adapters.
-
-%description -n libva-driver-r600 -l pl.UTF-8
-Sterownik VA dla kart ATI Radeon z serii R600.
-
-%package -n libva-driver-radeonsi
-Summary:	VA driver for ATI Radeon SI adapters
-Summary(pl.UTF-8):	Sterownik VA dla kart ATI Radeon SI
-Group:		Libraries
-Requires:	libva >= 1.6.0
-Requires:	zlib >= %{zlib_ver}
-
-%description -n libva-driver-radeonsi
-VA driver for ATI Radeon adapters based on Southern Islands chips.
-
-%description -n libva-driver-radeonsi -l pl.UTF-8
-Sterownik VA dla kart ATI Radeon opartych na układach Southern
-Islands.
-
-%package -n libva-driver-nouveau
-Summary:	VA driver for NVidia adapters
-Summary(pl.UTF-8):	Sterownik VA dla kart NVidia
-Group:		Libraries
-Requires:	libva >= 1.6.0
-Requires:	zlib >= %{zlib_ver}
-
-%description -n libva-driver-nouveau
-VA driver for NVidia adapters.
-
-%description -n libva-driver-nouveau -l pl.UTF-8
-Sterownik VA dla kart NVidia.
-
 %package libgbm
 Summary:	Mesa Graphics Buffer Manager library
 Summary(pl.UTF-8):	Biblioteka Mesa Graphics Buffer Manager
@@ -619,6 +528,65 @@ Khronos platform header file.
 
 %description khrplatform-devel -l pl.UTF-8
 Plik nagłówkowy platformy Khronos.
+
+%package libXvMC-nouveau
+Summary:	Mesa implementation of XvMC API for NVidia adapters
+Summary(pl.UTF-8):	Implementacja Mesa API XvMC dla kart NVidia
+License:	MIT
+Group:		Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	xorg-lib-libXvMC >= 1.0.6
+Requires:	zlib >= %{zlib_ver}
+Conflicts:	Mesa-libXvMC
+
+%description libXvMC-nouveau
+Mesa implementation of XvMC API for NVidia adapters (NV40-NV96, NVa0).
+
+%description libXvMC-nouveau -l pl.UTF-8
+Implementacja Mesa API XvMC dla kart NVidia (NV40-NV96, NVa0).
+
+%package libXvMC-r600
+Summary:	Mesa implementation of XvMC API for ATI Radeon R600 series adapters
+Summary(pl.UTF-8):	Implementacja Mesa API XvMC dla kart ATI Radeon z serii R600
+License:	MIT
+Group:		Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	xorg-lib-libXvMC >= 1.0.6
+Requires:	zlib >= %{zlib_ver}
+Conflicts:	Mesa-libXvMC
+
+%description libXvMC-r600
+Mesa implementation of XvMC API for ATI Radeon adapters based on
+R600/R700 chips.
+
+%description libXvMC-r600 -l pl.UTF-8
+Implementacja Mesa API XvMC dla kart ATI Radeon opartych na układach
+R600/R700.
+
+%package d3d
+Summary:	Nine Direct3D9 driver (for Wine)
+Summary(pl.UTF-8):	Sterownik Direct3D9 Nine (dla Wine)
+Group:		Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	zlib >= %{zlib_ver}
+
+%description d3d
+Nine Direct3D9 driver (for Wine).
+
+%description d3d -l pl.UTF-8
+Sterownik Direct3D9 Nine (dla Wine).
+
+%package d3d-devel
+Summary:	Nine Direct3D9 driver API
+Summary(pl.UTF-8):	API sterownika Direct3D9 Nine
+Group:		Development/Libraries
+Requires:	libdrm-devel >= %{libdrm_ver}
+
+%description d3d-devel
+Nine Direct3D9 driver API.
+
+%description d3d-devel -l pl.UTF-8
+API sterownika Direct3D9 Nine.
 
 %package dri-driver-ati-radeon-R100
 Summary:	X.org DRI driver for ATI R100 card family
@@ -1189,30 +1157,63 @@ Moduły programowego rasteryzera OpenSWR dla Mesy, wykorzystujące
 zestawy instrukcji x86 AVX lub AVX2. Mogą być wczytywane przez
 sterownik potoków swrast lub bibliotekę OSMesa.
 
-%package d3d
-Summary:	Nine Direct3D9 driver (for Wine)
-Summary(pl.UTF-8):	Sterownik Direct3D9 Nine (dla Wine)
+%package -n libva-driver-gallium
+Summary:	VA driver for Gallium State Tracker
+Summary(pl.UTF-8):	Sterowniki VA do Gallium
 Group:		Libraries
-Requires:	libdrm >= %{libdrm_ver}
+%if %{with gallium_radeon}
+Requires:	libva-driver-r600 = %{version}-%{release}
+Requires:	libva-driver-radeonsi = %{version}-%{release}
+%endif
+%if %{with gallium_nouveau}
+Requires:	libva-driver-nouveau = %{version}-%{release}
+%endif
+
+%description -n libva-driver-gallium
+VA drivers for Gallium State Tracker (r600, radeonsi & nouveau).
+
+%description -n libva-driver-gallium -l pl.UTF-8
+Sterowniki VA do Gallium (r600, radeonsi & nouveau).
+
+%package -n libva-driver-r600
+Summary:	VA driver for ATI Radeon R600 series adapters
+Summary(pl.UTF-8):	Sterownik VA dla kart ATI Radeon z serii R600
+Group:		Libraries
+Requires:	libva >= 1.6.0
 Requires:	zlib >= %{zlib_ver}
 
-%description d3d
-Nine Direct3D9 driver (for Wine).
+%description -n libva-driver-r600
+VA driver for ATI Radeon R600 series adapters.
 
-%description d3d -l pl.UTF-8
-Sterownik Direct3D9 Nine (dla Wine).
+%description -n libva-driver-r600 -l pl.UTF-8
+Sterownik VA dla kart ATI Radeon z serii R600.
 
-%package d3d-devel
-Summary:	Nine Direct3D9 driver API
-Summary(pl.UTF-8):	API sterownika Direct3D9 Nine
-Group:		Development/Libraries
-Requires:	libdrm-devel >= %{libdrm_ver}
+%package -n libva-driver-radeonsi
+Summary:	VA driver for ATI Radeon SI adapters
+Summary(pl.UTF-8):	Sterownik VA dla kart ATI Radeon SI
+Group:		Libraries
+Requires:	libva >= 1.6.0
+Requires:	zlib >= %{zlib_ver}
 
-%description d3d-devel
-Nine Direct3D9 driver API.
+%description -n libva-driver-radeonsi
+VA driver for ATI Radeon adapters based on Southern Islands chips.
 
-%description d3d-devel -l pl.UTF-8
-API sterownika Direct3D9 Nine.
+%description -n libva-driver-radeonsi -l pl.UTF-8
+Sterownik VA dla kart ATI Radeon opartych na układach Southern
+Islands.
+
+%package -n libva-driver-nouveau
+Summary:	VA driver for NVidia adapters
+Summary(pl.UTF-8):	Sterownik VA dla kart NVidia
+Group:		Libraries
+Requires:	libva >= 1.6.0
+Requires:	zlib >= %{zlib_ver}
+
+%description -n libva-driver-nouveau
+VA driver for NVidia adapters.
+
+%description -n libva-driver-nouveau -l pl.UTF-8
+Sterownik VA dla kart NVidia.
 
 %package -n libvdpau-driver-mesa-nouveau
 Summary:	Mesa nouveau driver for the vdpau API
@@ -1525,9 +1526,6 @@ strip -R .note.ABI-tag $RPM_BUILD_ROOT%{_libdir}/libGL.so.*.*
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post	OpenCL-icd -p /sbin/ldconfig
-%postun	OpenCL-icd -p /sbin/ldconfig
-
 %post	libEGL -p /sbin/ldconfig
 %postun	libEGL -p /sbin/ldconfig
 
@@ -1540,13 +1538,11 @@ rm -rf $RPM_BUILD_ROOT
 %post	libOSMesa -p /sbin/ldconfig
 %postun	libOSMesa -p /sbin/ldconfig
 
+%post	OpenCL-icd -p /sbin/ldconfig
+%postun	OpenCL-icd -p /sbin/ldconfig
+
 %post	libOpenCL -p /sbin/ldconfig
 %postun	libOpenCL -p /sbin/ldconfig
-
-%post	libXvMC-nouveau -p /sbin/ldconfig
-%postun	libXvMC-nouveau -p /sbin/ldconfig
-%post	libXvMC-r600 -p /sbin/ldconfig
-%postun	libXvMC-r600 -p /sbin/ldconfig
 
 %post	libgbm -p /sbin/ldconfig
 %postun	libgbm -p /sbin/ldconfig
@@ -1556,6 +1552,13 @@ rm -rf $RPM_BUILD_ROOT
 
 %post	libxatracker -p /sbin/ldconfig
 %postun	libxatracker -p /sbin/ldconfig
+
+%post	libXvMC-nouveau -p /sbin/ldconfig
+%postun	libXvMC-nouveau -p /sbin/ldconfig
+%post	libXvMC-r600 -p /sbin/ldconfig
+%postun	libXvMC-r600 -p /sbin/ldconfig
+
+### libraries
 
 %if %{with egl}
 %files libEGL
@@ -1674,45 +1677,6 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %endif
 
-%if %{with gallium}
-%if %{with gallium_nouveau}
-%files libXvMC-nouveau
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libXvMCnouveau.so.1.*.*
-%attr(755,root,root) %ghost %{_libdir}/libXvMCnouveau.so.1
-%attr(755,root,root) %{_libdir}/libXvMCnouveau.so
-%endif
-
-%if %{with gallium_radeon}
-%files libXvMC-r600
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libXvMCr600.so.1.*.*
-%attr(755,root,root) %ghost %{_libdir}/libXvMCr600.so.1
-%attr(755,root,root) %{_libdir}/libXvMCr600.so
-%endif
-
-%if %{with va}
-%files -n libva-driver-gallium
-%defattr(644,root,root,755)
-
-%if %{with gallium_radeon}
-%files -n libva-driver-r600
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libva/dri/r600_drv_video.so
-
-%files -n libva-driver-radeonsi
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libva/dri/radeonsi_drv_video.so
-%endif
-
-%if %{with gallium_nouveau}
-%files -n libva-driver-nouveau
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libva/dri/nouveau_drv_video.so
-%endif
-%endif
-%endif
-
 %if %{with gbm}
 %files libgbm
 %defattr(644,root,root,755)
@@ -1757,6 +1721,40 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %endif
 
+### drivers: XvMC
+
+%if %{with gallium_nouveau}
+%files libXvMC-nouveau
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libXvMCnouveau.so.1.*.*
+%attr(755,root,root) %ghost %{_libdir}/libXvMCnouveau.so.1
+%attr(755,root,root) %{_libdir}/libXvMCnouveau.so
+%endif
+
+%if %{with gallium_radeon}
+%files libXvMC-r600
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libXvMCr600.so.1.*.*
+%attr(755,root,root) %ghost %{_libdir}/libXvMCr600.so.1
+%attr(755,root,root) %{_libdir}/libXvMCr600.so
+%endif
+
+### drivers: d3d
+
+%if %{with nine}
+%files d3d
+%defattr(644,root,root,755)
+%dir %{_libdir}/d3d
+%attr(755,root,root) %{_libdir}/d3d/d3dadapter9.so*
+
+%files d3d-devel
+%defattr(644,root,root,755)
+%{_includedir}/d3dadapter
+%{_pkgconfigdir}/d3d.pc
+%endif
+
+### drivers: dri
+
 %files dri-driver-ati-radeon-R100
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/radeon_dri.so
@@ -1765,7 +1763,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/r200_dri.so
 
-%if %{with gallium}
 %if %{with gallium_radeon}
 %files dri-driver-ati-radeon-R300
 %defattr(644,root,root,755)
@@ -1778,7 +1775,6 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-ati-radeon-SI
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/radeonsi_dri.so
-%endif
 %endif
 
 %ifarch %{ix86} %{x8664} x32
@@ -1885,6 +1881,8 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %endif
 
+### drivers: pipe
+
 %if %{with gallium}
 %if %{with opencl}
 %ifarch %{ix86} %{x8664} x32
@@ -1943,19 +1941,32 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %endif
 
-%if %{with nine}
-%files d3d
-%defattr(644,root,root,755)
-%dir %{_libdir}/d3d
-%attr(755,root,root) %{_libdir}/d3d/d3dadapter9.so*
+### drivers: va
 
-%files d3d-devel
+%if %{with va}
+%files -n libva-driver-gallium
 %defattr(644,root,root,755)
-%{_includedir}/d3dadapter
-%{_pkgconfigdir}/d3d.pc
+
+%if %{with gallium_radeon}
+%files -n libva-driver-r600
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libva/dri/r600_drv_video.so
+
+%files -n libva-driver-radeonsi
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libva/dri/radeonsi_drv_video.so
 %endif
 
-%if %{with gallium}
+%if %{with gallium_nouveau}
+%files -n libva-driver-nouveau
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libva/dri/nouveau_drv_video.so
+%endif
+%endif
+
+### drivers: vdpau
+
+%if %{with vdpau}
 # ldconfig is not used in vdpau tree, so package all symlinks
 %if %{with gallium_nouveau}
 %files -n libvdpau-driver-mesa-nouveau
@@ -1990,11 +2001,15 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %endif
 
-%if %{with gallium} && %{with omx}
+### drivers: omxil
+
+%if %{with omx}
 %files -n omxil-mesa
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/bellagio/libomx_mesa.so
 %endif
+
+### drivers: vulkan
 
 %ifarch %{arm} aarch64
 %files vulkan-icd-broadcom
