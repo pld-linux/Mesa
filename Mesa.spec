@@ -1917,7 +1917,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/gallium-pipe/pipe_iris.so
 %endif
 
-%ifarch %{arm}
+%ifarch %{arm} aarch64
 %files pipe-driver-msm
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/gallium-pipe/pipe_msm.so
