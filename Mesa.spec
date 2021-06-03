@@ -1044,6 +1044,19 @@ Gallium. Obsługuje układy Intela z rodziny kart Intel Iris (Gen8+:
 Broadwell, Skylake, Broxton, Kabylake, Coffeelake, Geminilake, Whiskey
 Lake, Comet Lake, Cannonlake, Ice Lake, Elkhart Lake).
 
+%package pipe-driver-kmsro
+Summary:	kmsro driver for Mesa Gallium dynamic pipe loader
+Summary(pl.UTF-8):	Sterownik kmsro dla dynamicznego systemu potoków szkieletu Mesa Gallium
+Group:		Libraries
+Requires:	zlib >= %{zlib_ver}
+
+%description pipe-driver-kmsro
+kmsro driver for Mesa Gallium dynamic pipe loader.
+
+%description pipe-driver-kmsro -l pl.UTF-8
+Sterownik kmsro dla dynamicznego systemu potoków szkieletu Mesa
+Gallium.
+
 %package pipe-driver-msm
 Summary:	msm (freedreno) driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik msm (freedreno) dla dynamicznego systemu potoków szkieletu Mesa Gallium
@@ -1918,6 +1931,10 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %ifarch %{arm} aarch64
+%files pipe-driver-kmsro
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_kmsro.so
+
 %files pipe-driver-msm
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/gallium-pipe/pipe_msm.so
