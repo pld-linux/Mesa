@@ -1947,9 +1947,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/gallium-pipe/pipe_swrast.so
 
+%ifarch %{ix86} %{x8664} x32
 %files pipe-driver-vmwgfx
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/gallium-pipe/pipe_vmwgfx.so
+%endif
 %endif
 
 # currently disabled as cannot be built with swrast
