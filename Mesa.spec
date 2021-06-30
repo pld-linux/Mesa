@@ -265,6 +265,7 @@ Group:		X11/Development/Libraries
 %if %{with glvnd}
 Requires:	libglvnd-libGL-devel >= %{libglvnd_ver}
 %else
+Requires:	%{name}-khrplatform-devel = %{version}-%{release}
 Requires:	%{name}-libGL = %{version}-%{release}
 Requires:	libdrm-devel >= %{libdrm_ver}
 Requires:	libxcb-devel >= 1.13
