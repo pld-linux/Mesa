@@ -29,13 +29,13 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver		7.1.0
 # other packages
-%define		libdrm_ver		2.4.105
+%define		libdrm_ver		2.4.107
 %define		dri2proto_ver		2.8
 %define		glproto_ver		1.4.14
 %define		zlib_ver		1.2.8
 %define		wayland_ver		1.18
 %define		libglvnd_ver		1.3.2
-%define		llvm_ver		8.0.0
+%define		llvm_ver		11.0.0
 %define		gcc_ver 		6:4.8.0
 
 %if %{without gallium}
@@ -71,16 +71,15 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	21.1.6
+Version:	21.2.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
-# Source0-md5:	3800fb2fb50deaa2526d5f339b580483
-Patch0:		nouveau_no_rtti.patch
-Patch1:		zink_x32.patch
+# Source0-md5:	af7c00765ed15bfbf3c69ea06d8d5182
+Patch0:		zink_x32.patch
 URL:		https://www.mesa3d.org/
 %{?with_opencl_spirv:BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3}
 %{?with_gallium_zink:BuildRequires:	Vulkan-Loader-devel}
@@ -96,7 +95,7 @@ BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= %{gcc_ver}
 BuildRequires:	libunwind-devel
 %{?with_va:BuildRequires:	libva-devel}
-%{?with_va:BuildRequires:	pkgconfig(libva) >= 0.39.0}
+%{?with_va:BuildRequires:	pkgconfig(libva) >= 1.1.0}
 %{?with_vdpau:BuildRequires:	libvdpau-devel >= 1.1}
 BuildRequires:	libxcb-devel >= 1.13
 %{?with_gallium:BuildRequires:	llvm-devel >= %{llvm_ver}}
@@ -756,6 +755,22 @@ X.org Gallium DRI driver for Adreno chips.
 %description dri-driver-freedreno -l pl.UTF-8
 Sterownik X.org DRI Gallium dla układów Adreno.
 
+%package dri-driver-intel-crocus
+Summary:	X.org DRI driver for Intel Gen4-Gen7 chips
+Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Intel Gen4-Gen7
+License:	MIT
+Group:		X11/Libraries
+%{?with_swr:Requires:	cpuinfo(avx)}
+Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
+Requires:	xorg-xserver-server >= %{xserver_ver}
+Requires:	zlib >= %{zlib_ver}
+
+%description dri-driver-intel-crocus
+X.org Gallium DRI driver for Intel Gen4/Gen5/Gen6/Gen7 chips.
+
+%description dri-driver-intel-crocus -l pl.UTF-8
+Sterownik X.org DRI dla układów Intel Gen4/Gen5/Gen6/Gen7.
+
 %package dri-driver-intel-i915
 Summary:	X.org DRI driver for Intel i915 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i915
@@ -1010,6 +1025,20 @@ X.org Gallium DRI driver based on Vulkan.
 
 %description dri-driver-zink -l pl.UTF-8
 Sterownik X.org DRI Gallium oparty na Vulkanie.
+
+%package pipe-driver-crocus
+Summary:	crocus driver for Mesa Gallium dynamic pipe loader
+Summary(pl.UTF-8):	Sterownik crocus dla dynamicznego systemu potoków szkieletu Mesa Gallium
+Group:		Libraries
+Requires:	zlib >= %{zlib_ver}
+
+%description pipe-driver-crocus
+crocus driver for Mesa Gallium dynamic pipe loader. It supports Intel
+Gen4/Gen5/Gen6/Gen7 chips.
+
+%description pipe-driver-crocus -l pl.UTF-8
+Sterownik crocus dla dynamicznego systemu potoków szkieletu Mesa
+Gallium. Obsługuje układy Intela Gen4/Gen5/Gen6/Gen7.
 
 %package pipe-driver-i915
 Summary:	i915 driver for Mesa Gallium dynamic pipe loader
@@ -1425,6 +1454,27 @@ lavapipe - Mesa software Vulkan driver.
 %description vulkan-icd-lavapipe -l pl.UTF-8
 lavapipe - programowy sterownik Vulkan.
 
+%package vulkan-icd-panfrost
+Summary:	panfrost - Mesa Vulkan driver for Mali Midgard and Bifrost GPUs
+Summary(pl.UTF-8):	panfrost - sterownik Vulkan dla układów Mali Midgard i Bifrost
+License:	MIT
+Group:		Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	libxcb >= 1.13
+Requires:	xorg-lib-libXrandr >= 1.3
+Requires:	xorg-lib-libxshmfence >= 1.1
+# wayland-client
+Requires:	wayland >= %{wayland_ver}
+Requires:	zlib >= %{zlib_ver}
+Suggests:	vulkan(loader)
+Provides:	vulkan(icd) = 1.0.3
+
+%description vulkan-icd-panfrost
+panfrost - Mesa Vulkan driver for Mali Midgard and Bifrost GPUs.
+
+%description vulkan-icd-panfrost -l pl.UTF-8
+panfrost - sterownik Vulkan dla układów Mali Midgard i Bifrost.
+
 %package vulkan-icd-radeon
 Summary:	radv - experimental Mesa Vulkan driver for AMD Radeon GPUs
 Summary(pl.UTF-8):	radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD
@@ -1449,7 +1499,6 @@ radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD.
 %prep
 %setup -q -n mesa-mesa-%{version}
 %patch0 -p1
-%patch1 -p1
 
 %build
 %if %{with opencl}
@@ -1472,7 +1521,7 @@ dri_drivers=$(echo $dri_drivers | xargs | tr ' ' ',')
 
 gallium_drivers="virgl swrast %{?with_gallium_zink:zink} \
 %ifarch %{ix86} %{x8664} x32
-svga iris %{?with_swr:swr} %{?with_gallium_i915:i915} \
+svga iris %{?with_swr:swr} %{?with_gallium_i915:i915} crocus \
 %endif
 %if %{with gallium_radeon}
 r300 r600 radeonsi \
@@ -1498,7 +1547,7 @@ vulkan_drivers="swrast %{?with_radv:amd} \
 intel \
 %endif
 %ifarch %{arm} aarch64
-freedreno broadcom \
+freedreno broadcom panfrost \
 %endif
 "
 
@@ -1814,6 +1863,7 @@ rm -rf $RPM_BUILD_ROOT
 %ifarch %{ix86} %{x8664} x32
 %files dri-driver-intel-i915
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/i830_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
 
 %files dri-driver-intel-i965
@@ -1821,6 +1871,10 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i965_dri.so
 
 %if %{with gallium}
+%files dri-driver-intel-crocus
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/crocus_dri.so
+
 %files dri-driver-intel-iris
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/iris_dri.so
@@ -1862,6 +1916,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/imx-dcss_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/imx-drm_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/ingenic-drm_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/mali-dp_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mcde_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mediatek_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/meson_dri.so
@@ -1920,6 +1975,10 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium}
 %if %{with opencl}
 %ifarch %{ix86} %{x8664} x32
+%files pipe-driver-crocus
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/gallium-pipe/pipe_crocus.so
+
 %if %{with gallium_i915}
 %files pipe-driver-i915
 %defattr(644,root,root,755)
@@ -2061,6 +2120,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libvulkan_freedreno.so
 %{_datadir}/vulkan/icd.d/freedreno_icd.*.json
+
+%files vulkan-icd-panfrost
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libvulkan_panfrost.so
+%{_datadir}/vulkan/icd.d/panfrost_icd.*.json
 %endif
 
 %ifarch %{ix86} %{x8664} x32
