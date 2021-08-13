@@ -521,6 +521,7 @@ Pliki nagłówkowe biblioteki akceleracji Gallium3D dla Xorg.
 Summary:	Khronos platform header file
 Summary(pl.UTF-8):	Plik nagłówkowy platformy Khronos
 Group:		Development/Libraries
+Provides:	khrplatform-devel
 Conflicts:	Mesa-libEGL-devel < 8.0.1-2
 
 %description khrplatform-devel
