@@ -1597,6 +1597,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %ninja_install -C build
 
+install -d $RPM_BUILD_ROOT%{_libdir}/gbm
+
 # not used externally
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libglapi.so
 
@@ -1762,6 +1764,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libgbm.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libgbm.so.1
+%dir %{_libdir}/gbm
 
 %files libgbm-devel
 %defattr(644,root,root,755)
