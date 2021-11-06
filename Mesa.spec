@@ -613,12 +613,13 @@ Summary:	X.org DRI driver for ATI R100 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R100
 License:	MIT
 Group:		X11/Libraries
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 Suggests:	xorg-driver-video-amdgpu
 Suggests:	xorg-driver-video-ati
 Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-ati-radeon-R100
 X.org DRI driver for ATI R100 card family (Radeon 7000-7500). It
@@ -633,12 +634,13 @@ Summary:	X.org DRI driver for ATI R200 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R200
 License:	MIT
 Group:		X11/Libraries
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 Suggests:	xorg-driver-video-amdgpu
 Suggests:	xorg-driver-video-ati
 Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-ati-radeon-R200
 X.org DRI driver for ATI R200 card family (Radeon 8500-92xx). It
@@ -654,12 +656,13 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R300
 License:	MIT
 Group:		X11/Libraries
 %{?with_swr:Requires:	cpuinfo(avx)}
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 Suggests:	xorg-driver-video-amdgpu
 Suggests:	xorg-driver-video-ati
 Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-ati-radeon-R300
 X.org Gallium DRI driver for ATI R300/R400/RS690/R500 card family
@@ -682,11 +685,12 @@ License:	MIT
 Group:		X11/Libraries
 %{?with_swr:Requires:	cpuinfo(avx)}
 Requires:	radeon-ucode
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 Suggests:	xorg-driver-video-amdgpu
 Suggests:	xorg-driver-video-ati
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-ati-radeon-R600
 X.org Gallium DRI driver for ATI R600/R700 card family (Radeon HD
@@ -709,11 +713,12 @@ License:	MIT
 Group:		X11/Libraries
 %{?with_swr:Requires:	cpuinfo(avx)}
 Requires:	radeon-ucode
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 Suggests:	xorg-driver-video-amdgpu
 Suggests:	xorg-driver-video-ati
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-ati-radeon-SI
 X.org Gallium DRI driver for ATI Southern Islands card family (Radeon
@@ -733,10 +738,11 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Vivante 3D
 License:	MIT
 Group:		X11/Libraries
 %{?with_swr:Requires:	cpuinfo(avx)}
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 #Suggests:	xorg-driver-video-?
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-etnaviv
 X.org Gallium DRI driver for Vivante 3D chips.
@@ -750,10 +756,11 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Adreno
 License:	MIT
 Group:		X11/Libraries
 %{?with_swr:Requires:	cpuinfo(avx)}
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 Suggests:	xorg-driver-video-freedreno
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-freedreno
 X.org Gallium DRI driver for Adreno chips.
@@ -767,9 +774,10 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Intel Gen4-Gen7
 License:	MIT
 Group:		X11/Libraries
 %{?with_swr:Requires:	cpuinfo(avx)}
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-intel-crocus
 X.org Gallium DRI driver for Intel Gen4/Gen5/Gen6/Gen7 chips.
@@ -785,11 +793,12 @@ Group:		X11/Libraries
 %if %{with gallium_i915}
 %{?with_swr:Requires:	cpuinfo(avx)}
 %endif
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 Obsoletes:	Mesa-dri-driver-intel-i830 < 6.5
 Obsoletes:	X11-driver-i810-dri < 1:7.0.0
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-intel-i915
 X.org DRI driver for Intel i915 card family (830, 845, 852/855, 865,
@@ -804,11 +813,12 @@ Summary:	X.org DRI driver for Intel i965 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i965
 License:	MIT
 Group:		X11/Libraries
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 Obsoletes:	Mesa-dri-driver-intel-i830 < 6.5
 Obsoletes:	X11-driver-i810-dri < 1:7.0.0
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-intel-i965
 X.org (non-Gallium) DRI driver for Intel i965 card family (946GZ,
@@ -832,9 +842,10 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel Iris (Gen8+)
 License:	MIT
 Group:		X11/Libraries
 %{?with_swr:Requires:	cpuinfo(avx)}
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-intel-iris
 X.org Gallium DRI driver for Intel Iris (Gen8+) card family
@@ -852,10 +863,11 @@ Summary(pl.UTF-8):	Sterownik X.org DRI Gallium wykorzystujący architekturę KMS
 License:	MIT
 Group:		X11/Libraries
 %{?with_swr:Requires:	cpuinfo(avx)}
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 #Suggests:	xorg-driver-video-?
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-kmsro
 X.org Gallium DRI driver using KMS Render-Only architecture.
@@ -870,10 +882,11 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Mali Utgard
 License:	MIT
 Group:		X11/Libraries
 %{?with_swr:Requires:	cpuinfo(avx)}
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 #Suggests:	xorg-driver-video-???
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-lima
 X.org Gallium DRI driver for Mali Utgard chips.
@@ -889,10 +902,11 @@ Group:		X11/Libraries
 %if %{with gallium_nouveau}
 %{?with_swr:Requires:	cpuinfo(avx)}
 %endif
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 Suggests:	xorg-driver-video-nouveau
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-nouveau
 X.org DRI drivers for NVIDIA card family.
@@ -906,10 +920,11 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Mali Midgard/Bifrost
 License:	MIT
 Group:		X11/Libraries
 %{?with_swr:Requires:	cpuinfo(avx)}
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 #Suggests:	xorg-driver-video-???
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-panfrost
 X.org Gallium DRI driver for Mali Midgard/Bifrost chips.
@@ -923,9 +938,10 @@ Summary(pl.UTF-8):	Sterownik X.org DRI obsługujący rysowanie programowe
 License:	MIT
 Group:		X11/Libraries
 %{?with_swr:Requires:	cpuinfo(avx)}
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-swrast
 X.org DRI software rasterizer driver.
@@ -939,10 +955,11 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla układów SoC Tegra
 License:	MIT
 Group:		X11/Libraries
 %{?with_swr:Requires:	cpuinfo(avx)}
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 #Suggests:	xorg-driver-video-???
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-tegra
 X.org Gallium DRI driver for Tegra SoC chips.
@@ -956,10 +973,11 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Broadcom VC5
 License:	MIT
 Group:		X11/Libraries
 %{?with_swr:Requires:	cpuinfo(avx)}
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 Suggests:	xorg-driver-video-modesetting
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-v3d
 X.org Gallium DRI driver for Broadcom VC5 chips.
@@ -973,10 +991,11 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Broadcom VC4
 License:	MIT
 Group:		X11/Libraries
 %{?with_swr:Requires:	cpuinfo(avx)}
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 Suggests:	xorg-driver-video-modesetting
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-vc4
 X.org Gallium DRI driver for Broadcom VC4 chips.
@@ -990,9 +1009,10 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla QEMU VirGL
 License:	MIT
 Group:		X11/Libraries
 %{?with_swr:Requires:	cpuinfo(avx)}
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-virgl
 X.org Gallium DRI driver for QEMU VirGL.
@@ -1006,10 +1026,11 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla VMware
 License:	MIT
 Group:		X11/Libraries
 %{?with_swr:Requires:	cpuinfo(avx)}
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
 Suggests:	xorg-driver-video-vmware
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-vmwgfx
 X.org Gallium DRI driver for VMWare.
@@ -1022,9 +1043,10 @@ Summary:	X.org DRI driver based on Vulkan
 Summary(pl.UTF-8):	Sterownik X.org DRI oparty na Vulkanie
 License:	MIT
 Group:		X11/Libraries
-Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
-Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+Conflicts:	xorg-xserver-server < %{xserver_ver}
 
 %description dri-driver-zink
 X.org Gallium DRI driver based on Vulkan.
