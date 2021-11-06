@@ -616,9 +616,9 @@ Group:		X11/Libraries
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
-Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 Suggests:	xorg-driver-video-amdgpu
 Suggests:	xorg-driver-video-ati
+Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 
 %description dri-driver-ati-radeon-R100
 X.org DRI driver for ATI R100 card family (Radeon 7000-7500). It
@@ -636,9 +636,9 @@ Group:		X11/Libraries
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
-Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 Suggests:	xorg-driver-video-amdgpu
 Suggests:	xorg-driver-video-ati
+Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 
 %description dri-driver-ati-radeon-R200
 X.org DRI driver for ATI R200 card family (Radeon 8500-92xx). It
@@ -657,9 +657,9 @@ Group:		X11/Libraries
 Requires:	xorg-xserver-libglx(glapi) = %{glapi_ver}
 Requires:	xorg-xserver-server >= %{xserver_ver}
 Requires:	zlib >= %{zlib_ver}
-Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 Suggests:	xorg-driver-video-amdgpu
 Suggests:	xorg-driver-video-ati
+Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 
 %description dri-driver-ati-radeon-R300
 X.org Gallium DRI driver for ATI R300/R400/RS690/R500 card family
@@ -1345,8 +1345,8 @@ Group:		X11/Libraries
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libvdpau >= 1.1
 Requires:	zlib >= %{zlib_ver}
-Conflicts:	libvdpau-driver-mesa
 Obsoletes:	Mesa-libllvmradeon < 9.2
+Conflicts:	libvdpau-driver-mesa
 
 %description -n libvdpau-driver-mesa-radeonsi
 Mesa radeonsi driver for the vdpau API. It supports ATI Radeon
@@ -1362,8 +1362,8 @@ Summary(pl.UTF-8):	Sterownik Mesa nouveau dla API Bellagio OpenMAX IL
 License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm >= %{libdrm_ver}
-Requires:	libxcb >= 1.13
 Requires:	libomxil-bellagio
+Requires:	libxcb >= 1.13
 Requires:	zlib >= %{zlib_ver}
 Obsoletes:	omxil-mesa-nouveau < 10.3
 Obsoletes:	omxil-mesa-r600 < 10.3
