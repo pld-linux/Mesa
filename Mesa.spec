@@ -71,14 +71,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	21.2.5
-Release:	3
+Version:	21.3.0
+Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
-# Source0-md5:	99938a412df9231870d7ed07837252a2
+# Source0-md5:	3230a374056e951e73c3206de3453211
 Patch0:		zink_x32.patch
 URL:		https://www.mesa3d.org/
 %{?with_opencl_spirv:BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3}
@@ -95,7 +95,7 @@ BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= %{gcc_ver}
 BuildRequires:	libunwind-devel
 %{?with_va:BuildRequires:	libva-devel}
-%{?with_va:BuildRequires:	pkgconfig(libva) >= 1.1.0}
+%{?with_va:BuildRequires:	pkgconfig(libva) >= 1.8.0}
 %{?with_vdpau:BuildRequires:	libvdpau-devel >= 1.1}
 BuildRequires:	libxcb-devel >= 1.13
 %{?with_gallium:BuildRequires:	llvm-devel >= %{llvm_ver}}
@@ -1247,7 +1247,7 @@ Sterowniki VA do Gallium (r600, radeonsi & nouveau).
 Summary:	VA driver for ATI Radeon R600 series adapters
 Summary(pl.UTF-8):	Sterownik VA dla kart ATI Radeon z serii R600
 Group:		Libraries
-Requires:	libva >= 1.6.0
+Requires:	libva >= 1.8.0
 Requires:	zlib >= %{zlib_ver}
 
 %description -n libva-driver-r600
@@ -1260,7 +1260,7 @@ Sterownik VA dla kart ATI Radeon z serii R600.
 Summary:	VA driver for ATI Radeon SI adapters
 Summary(pl.UTF-8):	Sterownik VA dla kart ATI Radeon SI
 Group:		Libraries
-Requires:	libva >= 1.6.0
+Requires:	libva >= 1.8.0
 Requires:	zlib >= %{zlib_ver}
 
 %description -n libva-driver-radeonsi
@@ -1274,7 +1274,7 @@ Islands.
 Summary:	VA driver for NVidia adapters
 Summary(pl.UTF-8):	Sterownik VA dla kart NVidia
 Group:		Libraries
-Requires:	libva >= 1.6.0
+Requires:	libva >= 1.8.0
 Requires:	zlib >= %{zlib_ver}
 
 %description -n libva-driver-nouveau
@@ -1925,6 +1925,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/imx-dcss_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/imx-drm_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/ingenic-drm_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/kirin_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mali-dp_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mcde_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mediatek_dri.so
