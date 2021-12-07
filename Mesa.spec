@@ -12,7 +12,7 @@
 %bcond_without	opencl		# OpenCL support
 %bcond_without	opencl_spirv	# OpenCL SPIRV support
 %bcond_without	ocl_icd		# OpenCL as ICD (installable client driver)
-%bcond_with	glvnd		# OpenGL vendor neutral dispatcher support
+%bcond_without	glvnd		# OpenGL vendor neutral dispatcher support
 %bcond_without	omx		# OpenMAX (Bellagio OMXIL) support
 %bcond_without	va		# VA library
 %bcond_without	wayland		# Wayland EGL
@@ -34,7 +34,7 @@
 %define		glproto_ver		1.4.14
 %define		zlib_ver		1.2.8
 %define		wayland_ver		1.18
-%define		libglvnd_ver		1.3.2
+%define		libglvnd_ver		1.3.4-2
 %define		llvm_ver		11.0.0
 %define		gcc_ver 		6:4.8.0
 
@@ -72,7 +72,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	21.3.1
-Release:	1
+Release:	2
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
