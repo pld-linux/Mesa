@@ -72,7 +72,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	21.3.1
-Release:	2
+Release:	3
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
@@ -538,7 +538,7 @@ Requires:	libdrm-devel >= %{libdrm_ver}
 # <GL/gl.h>
 %if %{with glvnd}
 Requires:	libglvnd-libGL-devel >= %{libglvnd_ver}
-Conflicts:	Mesa-libGL-devel < 22.1.0-2
+Conflicts:	Mesa-libGL-devel < 21.1.0-2
 %else
 Requires:	Mesa-libGL-devel = %{version}-%{release}
 %endif
