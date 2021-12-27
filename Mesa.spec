@@ -1,4 +1,6 @@
-# TODO: libtizonia >= 0.10.0 as an alternative for bellagio?
+# TODO:
+# - libtizonia >= 0.10.0 as an alternative for bellagio?
+# - bcond for perfetto peformance analysis? (BR: perfetto)
 #
 # Conditional build:
 %bcond_without	gallium		# gallium drivers
@@ -1545,6 +1547,7 @@ v3d \
 vc4 \
 %endif
 "
+# TODO: asahi (Apple Silicon) - arm/aarch64?
 
 gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 
