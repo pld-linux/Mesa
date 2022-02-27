@@ -20,6 +20,7 @@
 %bcond_without	wayland		# Wayland EGL
 %bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
 %bcond_without	radv		# disable build of the radeon Vulkan driver
+%bcond_with	sse2		# SSE2 instructions
 %bcond_with	swr		# OpenSWR software rasterizer (x86 SIMD only; due to broken design
 				# propagates AVX code over Gallium DRI megadriver, swrast pipe driver and libOSMesa)
 %bcond_with	hud_extra	# HUD block/NIC I/O HUD stats support
@@ -70,11 +71,15 @@
 %define		with_xvmc	1
 %endif
 
+%ifarch %{x86_with_sse2}
+%define		with_sse2	1
+%endif
+
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	21.3.7
-Release:	1
+Release:	2
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
@@ -116,7 +121,7 @@ BuildRequires:	pkgconfig(xcb-present) >= 1.13
 BuildRequires:	pkgconfig(xcb-randr) >= 1.12
 BuildRequires:	python3 >= 1:3.2
 BuildRequires:	python3-Mako >= 0.8.0
-BuildRequires:	rpmbuild(macros) >= 1.736
+BuildRequires:	rpmbuild(macros) >= 2.007
 BuildRequires:	sed >= 4.0
 %{?with_opencl_spirv:BuildRequires:	spirv-tools-devel >= 2018.0}
 # wayland-{client,server}
@@ -1594,6 +1599,7 @@ vulkan_drivers=$(echo $vulkan_drivers | xargs | tr ' ' ',')
 	%{?with_opencl_spirv:-Dopencl-spirv=true} \
 	-Dosmesa=true \
 	-Dselinux=true \
+	-Dsse2=%{__true_false sse2} \
 	-Dva-libs-path=%{_libdir}/libva/dri \
 	-Dvulkan-drivers=${vulkan_drivers} \
 	-Dvulkan-icd-dir=/usr/share/vulkan/icd.d
