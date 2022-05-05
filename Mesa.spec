@@ -71,14 +71,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	22.0.2
+Version:	22.0.3
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
-# Source0-md5:	cdafa9d36321cba32030d2ccbc5b0db7
+# Source0-md5:	bfe1aa59094b2c28e9a5a3c236078e10
 Patch0:		zink_x32.patch
 URL:		https://www.mesa3d.org/
 %{?with_opencl_spirv:BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3}
