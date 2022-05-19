@@ -30,7 +30,7 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver		7.1.0
 # other packages
-%define		libdrm_ver		2.4.109
+%define		libdrm_ver		2.4.110
 %define		dri2proto_ver		2.8
 %define		glproto_ver		1.4.14
 %define		zlib_ver		1.2.8
@@ -71,14 +71,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	22.0.3
+Version:	22.1.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
-# Source0-md5:	bfe1aa59094b2c28e9a5a3c236078e10
+# Source0-md5:	f7c130d69f0c6928ef1f9a250755081b
 Patch0:		zink_x32.patch
 URL:		https://www.mesa3d.org/
 %{?with_opencl_spirv:BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3}
@@ -1311,6 +1311,27 @@ turnip - Mesa Vulkan driver for Adreno chips.
 %description vulkan-icd-freedreno -l pl.UTF-8
 turnip - sterownik Vulkan dla układów Adreno.
 
+%package vulkan-icd-powervr
+Summary:	powervr - Mesa Vulkan driver for Imagination Technologies Rogue GPUs
+Summary(pl.UTF-8):	powervr - sterownik Vulkan dla układów Imagination Technologies Rogue
+License:	MIT
+Group:		Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	libxcb >= 1.13
+Requires:	xorg-lib-libXrandr >= 1.3
+Requires:	xorg-lib-libxshmfence >= 1.1
+# wayland-client
+Requires:	wayland >= %{wayland_ver}
+Requires:	zlib >= %{zlib_ver}
+Suggests:	vulkan(loader)
+Provides:	vulkan(icd) = 1.1.204
+
+%description vulkan-icd-powervr
+powervr - Mesa Vulkan driver for Imagination Technologies Rogue GPUs.
+
+%description vulkan-icd-powervr -l pl.UTF-8
+powervr - sterownik Vulkan dla układów Imagination Technologies Rogue.
+
 %package vulkan-icd-intel
 Summary:	Mesa Vulkan driver for Intel GPUs
 Summary(pl.UTF-8):	Sterownik Vulkan dla GPU firmy Intel
@@ -1438,7 +1459,7 @@ vulkan_drivers="swrast %{?with_radv:amd} \
 intel \
 %endif
 %ifarch %{arm} aarch64
-freedreno broadcom panfrost \
+freedreno broadcom imagination-experimental panfrost \
 %endif
 "
 
@@ -1476,7 +1497,11 @@ vulkan_drivers=$(echo $vulkan_drivers | xargs | tr ' ' ',')
 	-Dsse2=%{__true_false sse2} \
 	-Dva-libs-path=%{_libdir}/libva/dri \
 	-Dvulkan-drivers=${vulkan_drivers} \
-	-Dvulkan-icd-dir=/usr/share/vulkan/icd.d
+	-Dvulkan-icd-dir=/usr/share/vulkan/icd.d \
+%ifarch %{arm} aarch64
+	-Dfreedreno-virtio=true \
+	-Dimagination-srv=true
+%endif
 
 %ninja_build -C build
 
@@ -1995,6 +2020,12 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libvulkan_freedreno.so
 %{_datadir}/vulkan/icd.d/freedreno_icd.*.json
+
+%files vulkan-icd-powervr
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libpowervr_rogue.so
+%attr(755,root,root) %{_libdir}/libvulkan_powervr_mesa.so
+%{_datadir}/vulkan/icd.d/powervr_mesa_icd.*.json
 
 %files vulkan-icd-panfrost
 %defattr(644,root,root,755)
