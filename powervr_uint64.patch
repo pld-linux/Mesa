@@ -1,0 +1,28 @@
+From 2d46abb200f6631d8689ecf8f18d55e9c2bb2cc6 Mon Sep 17 00:00:00 2001
+From: Jan Palus <jpalus@fastmail.com>
+Date: Fri, 20 May 2022 11:20:33 +0200
+Subject: [PATCH] pvr: use UINT64_C for 64-bit constant
+
+Closes: https://gitlab.freedesktop.org/mesa/mesa/-/issues/6528
+
+Signed-off-by: Jan Palus <jpalus@fastmail.com>
+---
+ src/imagination/vulkan/pvr_cmd_buffer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/imagination/vulkan/pvr_cmd_buffer.c b/src/imagination/vulkan/pvr_cmd_buffer.c
+index f043054bcb0b..0afd463e2fb0 100644
+--- a/src/imagination/vulkan/pvr_cmd_buffer.c
++++ b/src/imagination/vulkan/pvr_cmd_buffer.c
+@@ -2760,7 +2760,7 @@ static VkResult pvr_setup_descriptor_mappings(
+                PVR_ROGUE_PDSINST_DOUT_FIELDS_DOUTD_SRC1_BSIZE_CLRMSK;
+ 
+             PVR_WRITE(qword_buffer,
+-                      0UL,
++                      UINT64_C(0),
+                       desc_set_entry->const_offset,
+                       pds_info->data_size_in_dwords);
+ 
+-- 
+GitLab
+
