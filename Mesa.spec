@@ -89,6 +89,9 @@ BuildRequires:	elfutils-devel
 BuildRequires:	expat-devel >= 1.95
 BuildRequires:	flex
 BuildRequires:	gcc >= %{gcc_ver}
+%ifarch %{armv6}
+BuildRequires:	libatomic-devel
+%endif
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
 %{?with_glvnd:BuildRequires:	libglvnd-devel >= %{libglvnd_ver}}
 BuildRequires:	libselinux-devel
