@@ -237,6 +237,7 @@ Provides:	OpenGL-GLX = 1.4
 Obsoletes:	Mesa < 6.4-2
 Obsoletes:	Mesa-dri < 6.4.1-3
 Obsoletes:	Mesa-dri-core < 10.0.0
+Obsoletes:	Mesa-swr < 22
 Obsoletes:	X11-OpenGL-libGL < 1:7.0.0
 Obsoletes:	XFree86-OpenGL-libGL < 1:7.0.0
 
