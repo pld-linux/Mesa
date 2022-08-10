@@ -81,6 +81,7 @@ Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa
 # Source0-md5:	403e7858bebe7ccdd774baf34ae65017
 Patch0:		zink_x32.patch
 Patch1:		powervr_uint64.patch
+Patch2:		bifrost_crash.patch
 URL:		https://www.mesa3d.org/
 %{?with_opencl_spirv:BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3}
 %{?with_gallium_zink:BuildRequires:	Vulkan-Loader-devel}
@@ -1427,6 +1428,7 @@ radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD.
 %patch0 -p1
 %ifarch %{arm} aarch64
 %patch1 -p1
+%patch2 -p1
 %endif
 
 %build
