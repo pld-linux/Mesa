@@ -71,16 +71,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	22.1.7
+Version:	22.2.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
-Source0:	https://gitlab.freedesktop.org/mesa/mesa/-/archive/mesa-%{version}/mesa-mesa-%{version}.tar.bz2
-# Source0-md5:	3ae6822caa25e912f099ce1927f9fbc6
-Patch0:		zink_x32.patch
-Patch1:		powervr_uint64.patch
+Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
+# Source0-md5:	731cdd53d5f9dd695aae1b3a37081d5f
 URL:		https://www.mesa3d.org/
 %{?with_opencl_spirv:BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3}
 %{?with_gallium_zink:BuildRequires:	Vulkan-Loader-devel}
@@ -120,6 +118,7 @@ BuildRequires:	python3-Mako >= 0.8.0
 BuildRequires:	rpmbuild(macros) >= 2.007
 BuildRequires:	sed >= 4.0
 %{?with_opencl_spirv:BuildRequires:	spirv-tools-devel >= 2018.0}
+BuildRequires:	tar >= 1:1.22
 BuildRequires:	udev-devel
 # wayland-{client,server}
 %{?with_wayland:BuildRequires:	wayland-devel >= %{wayland_ver}}
@@ -137,6 +136,7 @@ BuildRequires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 BuildRequires:	xorg-proto-glproto-devel >= %{glproto_ver}
 %if %{with gallium}
 %{?with_lm_sensors:BuildRequires:	lm_sensors-devel}
+BuildRequires:	xz
 %endif
 BuildRequires:	zlib-devel >= %{zlib_ver}
 BuildRequires:	zstd-devel
@@ -1423,11 +1423,7 @@ radv - experimental Mesa Vulkan driver for AMD Radeon GPUs.
 radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD.
 
 %prep
-%setup -q -n mesa-mesa-%{version}
-%patch0 -p1
-%ifarch %{arm} aarch64
-%patch1 -p1
-%endif
+%setup -q -n mesa-%{version}
 
 %build
 %if %{with opencl}
@@ -1504,6 +1500,7 @@ vulkan_drivers=$(echo $vulkan_drivers | xargs | tr ' ' ',')
 	-Dselinux=true \
 	-Dsse2=%{__true_false sse2} \
 	-Dva-libs-path=%{_libdir}/libva/dri \
+	-Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec \
 	-Dvulkan-drivers=${vulkan_drivers} \
 	-Dvulkan-icd-dir=/usr/share/vulkan/icd.d \
 %ifarch %{arm} aarch64
@@ -1828,6 +1825,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/ili9341_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/imx-dcss_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/imx-drm_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/imx-lcdif_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/ingenic-drm_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/kirin_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/komeda_dri.so
