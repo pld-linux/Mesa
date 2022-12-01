@@ -1506,6 +1506,12 @@ freedreno broadcom imagination-experimental panfrost \
 
 vulkan_drivers=$(echo $vulkan_drivers | xargs | tr ' ' ',')
 
+%if %{with gallium_rusticl}
+%ifarch %{arm32_with_hf}
+export BINDGEN_EXTRA_CLANG_ARGS="-mfloat-abi=hard"
+%endif
+%endif
+
 %meson build \
 	-Dplatforms=x11%{?with_wayland:,wayland} \
 	-Ddri3=enabled \
