@@ -7,6 +7,7 @@
 %bcond_without	gallium_i915	# gallium i915 driver
 %bcond_without	gallium_nouveau	# gallium nouveau driver
 %bcond_without	gallium_radeon	# gallium radeon drivers
+%bcond_without	gallium_rusticl	# gallium OpenCL frontend
 %bcond_without	gallium_zink	# gallium zink driver (based on vulkan)
 %bcond_without	egl		# EGL libraries
 %bcond_without	gbm		# Graphics Buffer Manager
@@ -37,12 +38,13 @@
 %define		wayland_ver		1.18
 %define		libglvnd_ver		1.3.4-2
 %define		llvm_ver		11.0.0
-%define		gcc_ver 		6:4.8.0
+%define		gcc_ver 		6:5
 
 %if %{without gallium}
 %undefine	with_gallium_i915
 %undefine	with_gallium_nouveau
 %undefine	with_gallium_radeon
+%undefine	with_gallium_rusticl
 %undefine	with_nine
 %undefine	with_omx
 %undefine	with_opencl
@@ -56,12 +58,12 @@
 %endif
 
 %if %{without opencl}
+%undefine	with_gallium_rusticl
 %undefine	with_ocl_icd
 %endif
 
-%if %{with gallium_radeon} || %{with gallium_nouveau}
+%if %{with gallium}
 %define		with_vdpau	1
-%define		with_xvmc	1
 %endif
 
 %ifarch %{x86_with_sse2}
@@ -71,16 +73,19 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	22.2.4
+Version:	22.3.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	a258a3d590d76bc1ff89a204f063e3b8
+# Source0-md5:	f44da76e397e35a5dd9b35caa0a09dea
+Patch0:		vdpau-virgl-only.patch
 URL:		https://www.mesa3d.org/
-%{?with_opencl_spirv:BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3}
+%if %{with opencl_spirv} || %{with gallium_rusticl}
+BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3
+%endif
 %{?with_gallium_zink:BuildRequires:	Vulkan-Loader-devel}
 BuildRequires:	bison > 2.3
 %{?with_opencl:BuildRequires:	clang-devel >= %{llvm_ver}}
@@ -102,9 +107,11 @@ BuildRequires:	libunwind-devel
 BuildRequires:	libxcb-devel >= 1.13
 %{?with_gallium:BuildRequires:	llvm-devel >= %{llvm_ver}}
 %{?with_radv:BuildRequires:	llvm-devel >= %{llvm_ver}}
-%{?with_opencl:BuildRequires:	llvm-libclc}
+%if %{with opencl} || %{with gallium_rusticl}
+BuildRequires:	llvm-libclc
+%endif
 %{?with_omx:BuildRequires:	libomxil-bellagio-devel}
-BuildRequires:	meson >= 0.53
+BuildRequires:	meson >= 0.61.4
 BuildRequires:	ninja >= 1.5
 BuildRequires:	pkgconfig
 BuildRequires:	pkgconfig(talloc) >= 2.0.1
@@ -116,8 +123,12 @@ BuildRequires:	pkgconfig(xcb-randr) >= 1.12
 BuildRequires:	python3 >= 1:3.2
 BuildRequires:	python3-Mako >= 0.8.0
 BuildRequires:	rpmbuild(macros) >= 2.007
+%{?with_gallium_rusticl:BuildRequires:	rust >= 1.59}
+%{?with_gallium_rusticl:BuildRequires:	rust-bindgen >= 0.58.0}
 BuildRequires:	sed >= 4.0
-%{?with_opencl_spirv:BuildRequires:	spirv-tools-devel >= 2018.0}
+%if %{with opencl_spirv} || %{with gallium_rusticl}
+BuildRequires:	spirv-tools-devel >= 2018.0
+%endif
 BuildRequires:	tar >= 1:1.22
 BuildRequires:	udev-devel
 # wayland-{client,server}
@@ -128,8 +139,6 @@ BuildRequires:	xorg-lib-libX11-devel
 BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXfixes-devel >= 2.0
 BuildRequires:	xorg-lib-libXrandr-devel >= 1.3
-BuildRequires:	xorg-lib-libXv-devel
-%{?with_xvmc:BuildRequires:	xorg-lib-libXvMC-devel >= 1.0.6}
 BuildRequires:	xorg-lib-libXxf86vm-devel
 BuildRequires:	xorg-lib-libxshmfence-devel >= 1.1
 BuildRequires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
@@ -463,6 +472,39 @@ Group:		Libraries
 Requires:	%{name}-libglapi = %{version}-%{release}
 Conflicts:	Mesa-libEGL < 8.0.1-2
 
+%package Rusticl-icd
+Summary:	Rusticl implementation of OpenCL (Compuing Language) API ICD
+Summary(pl.UTF-8):	Implementacja Rusticl API OpenCL (języka obliczeń) ICD
+License:	MIT
+Group:		Libraries
+Requires:	filesystem >= 4.0-29
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	llvm-libclc
+Requires:	zlib >= %{zlib_ver}
+Provides:	OpenCL = 3.0
+Provides:	ocl-icd-driver
+
+%description Rusticl-icd
+This package contains Rusticl implementation of OpenCL - standard for
+cross-platform, parallel programming of modern processors found in
+personal computers, servers and handheld/embedded devices. OpenCL
+specification can be found on Khronos Group site:
+<http://www.khronos.org/opencl/>. Rusticl implements OpenCL 3.0.
+
+The implementation is provided as an installable client driver (ICD)
+for use with the ocl-icd loader.
+
+%description Rusticl-icd -l pl.UTF-8
+Ten pakiet zawiera implementację Rusticl standardu OpenCL - standardu
+wieloplatformowego, równoległego programowania nowoczesnych
+procesorów, jakie znajdują się w komputerach osobistych, serwerach
+oraz urządzeniach przenośnych/wbudowanych. Specyfikację OpenCL można
+znaleźć na stronie Khronos Group: <http://www.khronos.org/opencl/>.
+Rusticl zawiera implementację OpenCL w wersji 3.0.
+
+Implementacja dostarczona jest w postaci instalowalnego sterownika
+klienta (ICD), który może być użyty z loaderem ocl-icd.
+
 %description libgbm
 Mesa Graphics Buffer Manager library.
 
@@ -553,40 +595,6 @@ Direct Rendering Infrastructure interface header file.
 
 %description dri-devel -l pl.UTF-8
 Plik nagłówkowy interfejsu DRI (Direct Rendering Infrastructure).
-
-%package libXvMC-nouveau
-Summary:	Mesa implementation of XvMC API for NVidia adapters
-Summary(pl.UTF-8):	Implementacja Mesa API XvMC dla kart NVidia
-License:	MIT
-Group:		Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	xorg-lib-libXvMC >= 1.0.6
-Requires:	zlib >= %{zlib_ver}
-Conflicts:	Mesa-libXvMC
-
-%description libXvMC-nouveau
-Mesa implementation of XvMC API for NVidia adapters (NV40-NV96, NVa0).
-
-%description libXvMC-nouveau -l pl.UTF-8
-Implementacja Mesa API XvMC dla kart NVidia (NV40-NV96, NVa0).
-
-%package libXvMC-r600
-Summary:	Mesa implementation of XvMC API for ATI Radeon R600 series adapters
-Summary(pl.UTF-8):	Implementacja Mesa API XvMC dla kart ATI Radeon z serii R600
-License:	MIT
-Group:		Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	xorg-lib-libXvMC >= 1.0.6
-Requires:	zlib >= %{zlib_ver}
-Conflicts:	Mesa-libXvMC
-
-%description libXvMC-r600
-Mesa implementation of XvMC API for ATI Radeon adapters based on
-R600/R700 chips.
-
-%description libXvMC-r600 -l pl.UTF-8
-Implementacja Mesa API XvMC dla kart ATI Radeon opartych na układach
-R600/R700.
 
 %package d3d
 Summary:	Nine Direct3D9 driver (for Wine)
@@ -1182,6 +1190,19 @@ VA driver for NVidia adapters.
 %description -n libva-driver-nouveau -l pl.UTF-8
 Sterownik VA dla kart NVidia.
 
+%package -n libva-driver-virtio
+Summary:	VA driver for VirtIO adapters
+Summary(pl.UTF-8):	Sterownik VA dla kart VirtIO
+Group:		Libraries
+Requires:	libva >= 1.8.0
+Requires:	zlib >= %{zlib_ver}
+
+%description -n libva-driver-virtio
+VA driver for VirtIO adapters.
+
+%description -n libva-driver-virtio -l pl.UTF-8
+Sterownik VA dla kart VirtIO.
+
 %package -n libvdpau-driver-mesa-nouveau
 Summary:	Mesa nouveau driver for the vdpau API
 Summary(pl.UTF-8):	Sterownik Mesa nouveau dla API vdpau
@@ -1254,6 +1275,21 @@ adapters based on Southern Islands chips.
 %description -n libvdpau-driver-mesa-radeonsi -l pl.UTF-8
 Sterownik Mesa radeonsi dla API vdpau. Obsługuje karty ATI Radeon
 oparte na układach Southern Islands.
+
+%package -n libvdpau-driver-mesa-virtio
+Summary:	Mesa virtio driver for the vdpau API
+Summary(pl.UTF-8):	Sterownik Mesa virtio dla API vdpau
+License:	MIT
+Group:		X11/Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	libvdpau >= 1.1
+Requires:	zlib >= %{zlib_ver}
+
+%description -n libvdpau-driver-mesa-virtio
+Mesa virtio driver for the vdpau API.
+
+%description -n libvdpau-driver-mesa-virtio -l pl.UTF-8
+Sterownik Mesa virtio dla API vdpau.
 
 %package -n omxil-mesa
 Summary:	Mesa driver for Bellagio OpenMAX IL API
@@ -1424,6 +1460,7 @@ radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD.
 
 %prep
 %setup -q -n mesa-%{version}
+%patch0 -p1
 
 %build
 %if %{with opencl}
@@ -1484,12 +1521,12 @@ vulkan_drivers=$(echo $vulkan_drivers | xargs | tr ' ' ',')
 %else
 	-Dgallium-opencl=standalone \
 %endif
+	%{?with_gallium_rusticl:-Dgallium-rusticl=true -Drust_std=2021} \
 %else
 	-Dgallium-opencl=disabled \
 %endif
 	-Dgallium-va=%{?with_va:enabled}%{!?with_va:disabled} \
 	%{?with_vdpau:-Dgallium-vdpau=enabled} \
-	%{?with_xvmc:-Dgallium-xvmc=enabled} \
 	-Dgallium-xa=%{?with_xa:enabled}%{!?with_xa:disabled} \
 	-Dgbm=%{?with_gbm:enabled}%{!?with_gbm:disabled} \
 	-Dglvnd=%{?with_glvnd:true}%{!?with_glvnd:false} \
@@ -1558,11 +1595,6 @@ rm -rf $RPM_BUILD_ROOT
 %post	libxatracker -p /sbin/ldconfig
 %postun	libxatracker -p /sbin/ldconfig
 
-%post	libXvMC-nouveau -p /sbin/ldconfig
-%postun	libXvMC-nouveau -p /sbin/ldconfig
-%post	libXvMC-r600 -p /sbin/ldconfig
-%postun	libXvMC-r600 -p /sbin/ldconfig
-
 ### libraries
 
 %if %{with egl}
@@ -1589,7 +1621,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/EGL/eglplatform.h
 %{_pkgconfigdir}/egl.pc
 %endif
-%{_includedir}/EGL/eglextchromium.h
+%{_includedir}/EGL/eglext_angle.h
 %{_includedir}/EGL/eglmesaext.h
 %endif
 
@@ -1655,6 +1687,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/osmesa.pc
 
 %if %{with opencl}
+%if %{with gallium_rusticl}
+%files Rusticl-icd
+%defattr(644,root,root,755)
+/etc/OpenCL/vendors/rusticl.icd
+%attr(755,root,root) %{_libdir}/libRusticlOpenCL.so
+%attr(755,root,root) %{_libdir}/libRusticlOpenCL.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libRusticlOpenCL.so.1
+%endif
 %if %{with ocl_icd}
 %files OpenCL-icd
 %defattr(644,root,root,755)
@@ -1727,24 +1767,6 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
 %{_pkgconfigdir}/dri.pc
-
-### drivers: XvMC
-
-%if %{with gallium_nouveau}
-%files libXvMC-nouveau
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libXvMCnouveau.so.1.*.*
-%attr(755,root,root) %ghost %{_libdir}/libXvMCnouveau.so.1
-%attr(755,root,root) %{_libdir}/libXvMCnouveau.so
-%endif
-
-%if %{with gallium_radeon}
-%files libXvMC-r600
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libXvMCr600.so.1.*.*
-%attr(755,root,root) %ghost %{_libdir}/libXvMCr600.so.1
-%attr(755,root,root) %{_libdir}/libXvMCr600.so
-%endif
 
 ### drivers: d3d
 
@@ -1967,6 +1989,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libva/dri/nouveau_drv_video.so
 %endif
+
+%files -n libva-driver-virtio
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libva/dri/virtio_gpu_drv_video.so
 %endif
 
 ### drivers: vdpau
@@ -2004,6 +2030,13 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so
 %endif
+
+%files -n libvdpau-driver-mesa-virtio
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_virtio_gpu.so.1.0.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_virtio_gpu.so.1.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_virtio_gpu.so.1
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_virtio_gpu.so
 %endif
 
 ### drivers: omxil
