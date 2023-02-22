@@ -1587,6 +1587,9 @@ rm -rf $RPM_BUILD_ROOT
 %post	OpenCL-icd -p /sbin/ldconfig
 %postun	OpenCL-icd -p /sbin/ldconfig
 
+%post	Rusticl-icd -p /sbin/ldconfig
+%postun	Rusticl-icd -p /sbin/ldconfig
+
 %post	libOpenCL -p /sbin/ldconfig
 %postun	libOpenCL -p /sbin/ldconfig
 
