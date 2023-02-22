@@ -464,13 +464,6 @@ Header files for Mesa OpenCL library.
 %description libOpenCL-devel -l pl.UTF-8
 Pliki nagłówkowe biblioteki Mesa OpenCL.
 
-%package libgbm
-Summary:	Mesa Graphics Buffer Manager library
-Summary(pl.UTF-8):	Biblioteka Mesa Graphics Buffer Manager
-Group:		Libraries
-Requires:	%{name}-libglapi = %{version}-%{release}
-Conflicts:	Mesa-libEGL < 8.0.1-2
-
 %package Rusticl-icd
 Summary:	Rusticl implementation of OpenCL (Compuing Language) API ICD
 Summary(pl.UTF-8):	Implementacja Rusticl API OpenCL (języka obliczeń) ICD
@@ -503,6 +496,13 @@ Rusticl zawiera implementację OpenCL w wersji 3.0.
 
 Implementacja dostarczona jest w postaci instalowalnego sterownika
 klienta (ICD), który może być użyty z loaderem ocl-icd.
+
+%package libgbm
+Summary:	Mesa Graphics Buffer Manager library
+Summary(pl.UTF-8):	Biblioteka Mesa Graphics Buffer Manager
+Group:		Libraries
+Requires:	%{name}-libglapi = %{version}-%{release}
+Conflicts:	Mesa-libEGL < 8.0.1-2
 
 %description libgbm
 Mesa Graphics Buffer Manager library.
