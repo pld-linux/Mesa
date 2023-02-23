@@ -73,14 +73,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	22.3.6
+Version:	23.0.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	ed6e3e529f3ec8d802625d19cd44ea07
+# Source0-md5:	86d15af0f92c5102005e57a28329bcb1
 URL:		https://www.mesa3d.org/
 %if %{with opencl_spirv} || %{with gallium_rusticl}
 BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3
@@ -110,7 +110,7 @@ BuildRequires:	libxcb-devel >= 1.13
 BuildRequires:	llvm-libclc
 %endif
 %{?with_omx:BuildRequires:	libomxil-bellagio-devel}
-BuildRequires:	meson >= 0.61.4
+BuildRequires:	meson >= 1.0.0
 BuildRequires:	ninja >= 1.5
 BuildRequires:	pkgconfig
 BuildRequires:	pkgconfig(talloc) >= 2.0.1
