@@ -73,14 +73,14 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	23.0.3
+Version:	23.1.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 #Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
 ## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	3d5025f4f135a1d9131183ac75ba91e4
+# Source0-md5:	786ef9e01490654da0d4deb0f7a75700
 URL:		https://www.mesa3d.org/
 %if %{with opencl_spirv} || %{with gallium_rusticl}
 BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3
@@ -1545,7 +1545,7 @@ export BINDGEN_EXTRA_CLANG_ARGS="-mfloat-abi=hard"
 	-Dvulkan-drivers=${vulkan_drivers} \
 	-Dvulkan-icd-dir=/usr/share/vulkan/icd.d \
 %ifarch %{arm} aarch64
-	-Dfreedreno-virtio=true \
+	-Dfreedreno-kmds=msm,virtio \
 	-Dimagination-srv=true
 %endif
 
