@@ -1220,24 +1220,6 @@ Mesa nouveau driver for the vdpau API. It supports NVidia adapters
 Sterownik Mesa nouveau dla API vdpau. Obsługuje karty NVidia
 (NV40-NV96, NVa0).
 
-%package -n libvdpau-driver-mesa-r300
-Summary:	Mesa r300 driver for the vdpau API
-Summary(pl.UTF-8):	Sterownik Mesa r300 dla API vdpau
-License:	MIT
-Group:		X11/Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	libvdpau >= 1.1
-Requires:	zlib >= %{zlib_ver}
-Conflicts:	libvdpau-driver-mesa
-
-%description -n libvdpau-driver-mesa-r300
-Mesa r300 driver for the vdpau API. It supports ATI Radeon adapters
-based on R300 chips.
-
-%description -n libvdpau-driver-mesa-r300 -l pl.UTF-8
-Sterownik Mesa r300 dla API vdpau. Obsługuje karty ATI Radeon oparte
-na układach R300.
-
 %package -n libvdpau-driver-mesa-r600
 Summary:	Mesa r600 driver for the vdpau API
 Summary(pl.UTF-8):	Sterownik Mesa r600 dla API vdpau
@@ -2016,13 +1998,6 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %if %{with gallium_radeon}
-%files -n libvdpau-driver-mesa-r300
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1.0.0
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1.0
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so.1
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r300.so
-
 %files -n libvdpau-driver-mesa-r600
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0.0
