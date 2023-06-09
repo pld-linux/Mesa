@@ -1584,8 +1584,6 @@ rm -rf $RPM_BUILD_ROOT
 %post	libxatracker -p /sbin/ldconfig
 %postun	libxatracker -p /sbin/ldconfig
 
-### libraries
-
 %if %{with egl}
 %files libEGL
 %defattr(644,root,root,755)
