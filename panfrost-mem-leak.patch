@@ -1,0 +1,76 @@
+From 88c6429e4babcb00eb4d324089e4a6916d0a62aa Mon Sep 17 00:00:00 2001
+From: Robert Beckett <bob.beckett@collabora.com>
+Date: Wed, 26 Apr 2023 13:28:40 +0100
+Subject: [PATCH] panfrost: fix scanout buffer alloc
+
+Use ro->bo_map to alloc scanout.
+This fixes leaking the scanout.
+
+Fixes: ad4d7ca83324 ("kmsro: Fix renderonly_scanout BO aliasing")
+Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+Cc: mesa-stable
+---
+ .../winsys/panfrost/drm/panfrost_drm_winsys.c | 25 +++++++++++--------
+ 1 file changed, 14 insertions(+), 11 deletions(-)
+
+diff --git a/src/gallium/winsys/panfrost/drm/panfrost_drm_winsys.c b/src/gallium/winsys/panfrost/drm/panfrost_drm_winsys.c
+index b5ec50d49ef0e..2710217a5b44e 100644
+--- a/src/gallium/winsys/panfrost/drm/panfrost_drm_winsys.c
++++ b/src/gallium/winsys/panfrost/drm/panfrost_drm_winsys.c
+@@ -63,26 +63,32 @@ panfrost_create_kms_dumb_buffer_for_resource(struct pipe_resource *rsc,
+    };
+    struct drm_mode_destroy_dumb destroy_dumb = {0};
+ 
+-   /* Align width to end up with a buffer that's aligned on 64 bytes. */
+-
+-   struct renderonly_scanout *scanout = CALLOC_STRUCT(renderonly_scanout);
+-   if (!scanout)
+-      return NULL;
+-
+    /* create dumb buffer at scanout GPU */
+    int err = drmIoctl(ro->kms_fd, DRM_IOCTL_MODE_CREATE_DUMB, &create_dumb);
+    if (err < 0) {
+       fprintf(stderr, "DRM_IOCTL_MODE_CREATE_DUMB failed: %s\n",
+               strerror(errno));
+-      goto free_scanout;
++      return NULL;
+    }
+ 
+    if (create_dumb.pitch % 64)
+       goto free_dumb;
+ 
++   struct renderonly_scanout *scanout;
++
++   simple_mtx_lock(&ro->bo_map_lock);
++   scanout = util_sparse_array_get(&ro->bo_map, create_dumb.handle);
++   simple_mtx_unlock(&ro->bo_map_lock);
++
++   if (!scanout)
++      goto free_dumb;
++
+    scanout->handle = create_dumb.handle;
+    scanout->stride = create_dumb.pitch;
+ 
++   assert(p_atomic_read(&scanout->refcnt) == 0);
++   p_atomic_set(&scanout->refcnt, 1);
++
+    if (!out_handle)
+       return scanout;
+ 
+@@ -101,12 +107,9 @@ panfrost_create_kms_dumb_buffer_for_resource(struct pipe_resource *rsc,
+    return scanout;
+ 
+ free_dumb:
+-   destroy_dumb.handle = scanout->handle;
++   destroy_dumb.handle = create_dumb.handle;
+    drmIoctl(ro->kms_fd, DRM_IOCTL_MODE_DESTROY_DUMB, &destroy_dumb);
+ 
+-free_scanout:
+-   FREE(scanout);
+-
+    return NULL;
+ }
+ 
+-- 
+GitLab
+
