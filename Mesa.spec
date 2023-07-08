@@ -630,6 +630,12 @@ Requires:	zlib >= %{zlib_ver}
 Suggests:	xorg-driver-video-amdgpu
 Suggests:	xorg-driver-video-ati
 Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
+Conflicts:	%{name}-libEGL > %{version}
+Conflicts:	%{name}-libEGL < %{version}
+Conflicts:	%{name}-libGL > %{version}
+Conflicts:	%{name}-libGL < %{version}
+Conflicts:	%{name}-libgbm > %{version}
+Conflicts:	%{name}-libgbm < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -656,6 +662,12 @@ Requires:	radeon-ucode
 Requires:	zlib >= %{zlib_ver}
 Suggests:	xorg-driver-video-amdgpu
 Suggests:	xorg-driver-video-ati
+Conflicts:	%{name}-libEGL > %{version}
+Conflicts:	%{name}-libEGL < %{version}
+Conflicts:	%{name}-libGL > %{version}
+Conflicts:	%{name}-libGL < %{version}
+Conflicts:	%{name}-libgbm > %{version}
+Conflicts:	%{name}-libgbm < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -682,6 +694,12 @@ Requires:	radeon-ucode
 Requires:	zlib >= %{zlib_ver}
 Suggests:	xorg-driver-video-amdgpu
 Suggests:	xorg-driver-video-ati
+Conflicts:	%{name}-libEGL > %{version}
+Conflicts:	%{name}-libEGL < %{version}
+Conflicts:	%{name}-libGL > %{version}
+Conflicts:	%{name}-libGL < %{version}
+Conflicts:	%{name}-libgbm > %{version}
+Conflicts:	%{name}-libgbm < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -704,6 +722,12 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	zlib >= %{zlib_ver}
 #Suggests:	xorg-driver-video-?
+Conflicts:	%{name}-libEGL > %{version}
+Conflicts:	%{name}-libEGL < %{version}
+Conflicts:	%{name}-libGL > %{version}
+Conflicts:	%{name}-libGL < %{version}
+Conflicts:	%{name}-libgbm > %{version}
+Conflicts:	%{name}-libgbm < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -720,6 +744,12 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	zlib >= %{zlib_ver}
 Suggests:	xorg-driver-video-freedreno
+Conflicts:	%{name}-libEGL > %{version}
+Conflicts:	%{name}-libEGL < %{version}
+Conflicts:	%{name}-libGL > %{version}
+Conflicts:	%{name}-libGL < %{version}
+Conflicts:	%{name}-libgbm > %{version}
+Conflicts:	%{name}-libgbm < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -736,6 +766,12 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	zlib >= %{zlib_ver}
 Obsoletes:	Mesa-dri-driver-intel-i965 < 22.0.0
+Conflicts:	%{name}-libEGL > %{version}
+Conflicts:	%{name}-libEGL < %{version}
+Conflicts:	%{name}-libGL > %{version}
+Conflicts:	%{name}-libGL < %{version}
+Conflicts:	%{name}-libgbm > %{version}
+Conflicts:	%{name}-libgbm < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -753,6 +789,12 @@ Group:		X11/Libraries
 Requires:	zlib >= %{zlib_ver}
 Obsoletes:	Mesa-dri-driver-intel-i830 < 6.5
 Obsoletes:	X11-driver-i810-dri < 1:7.0.0
+Conflicts:	%{name}-libEGL > %{version}
+Conflicts:	%{name}-libEGL < %{version}
+Conflicts:	%{name}-libGL > %{version}
+Conflicts:	%{name}-libGL < %{version}
+Conflicts:	%{name}-libgbm > %{version}
+Conflicts:	%{name}-libgbm < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -770,6 +812,12 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel Iris (Gen8+)
 License:	MIT
 Group:		X11/Libraries
 Requires:	zlib >= %{zlib_ver}
+Conflicts:	%{name}-libEGL > %{version}
+Conflicts:	%{name}-libEGL < %{version}
+Conflicts:	%{name}-libGL > %{version}
+Conflicts:	%{name}-libGL < %{version}
+Conflicts:	%{name}-libgbm > %{version}
+Conflicts:	%{name}-libgbm < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -790,6 +838,12 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	zlib >= %{zlib_ver}
 #Suggests:	xorg-driver-video-?
+Conflicts:	%{name}-libEGL > %{version}
+Conflicts:	%{name}-libEGL < %{version}
+Conflicts:	%{name}-libGL > %{version}
+Conflicts:	%{name}-libGL < %{version}
+Conflicts:	%{name}-libgbm > %{version}
+Conflicts:	%{name}-libgbm < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -807,6 +861,12 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	zlib >= %{zlib_ver}
 #Suggests:	xorg-driver-video-???
+Conflicts:	%{name}-libEGL > %{version}
+Conflicts:	%{name}-libEGL < %{version}
+Conflicts:	%{name}-libGL > %{version}
+Conflicts:	%{name}-libGL < %{version}
+Conflicts:	%{name}-libgbm > %{version}
+Conflicts:	%{name}-libgbm < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -823,6 +883,12 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	zlib >= %{zlib_ver}
 Suggests:	xorg-driver-video-nouveau
+Conflicts:	%{name}-libEGL > %{version}
+Conflicts:	%{name}-libEGL < %{version}
+Conflicts:	%{name}-libGL > %{version}
+Conflicts:	%{name}-libGL < %{version}
+Conflicts:	%{name}-libgbm > %{version}
+Conflicts:	%{name}-libgbm < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -839,6 +905,12 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	zlib >= %{zlib_ver}
 #Suggests:	xorg-driver-video-???
+Conflicts:	%{name}-libEGL > %{version}
+Conflicts:	%{name}-libEGL < %{version}
+Conflicts:	%{name}-libGL > %{version}
+Conflicts:	%{name}-libGL < %{version}
+Conflicts:	%{name}-libgbm > %{version}
+Conflicts:	%{name}-libgbm < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -854,6 +926,12 @@ Summary(pl.UTF-8):	Sterownik X.org DRI obsługujący rysowanie programowe
 License:	MIT
 Group:		X11/Libraries
 Requires:	zlib >= %{zlib_ver}
+Conflicts:	%{name}-libEGL > %{version}
+Conflicts:	%{name}-libEGL < %{version}
+Conflicts:	%{name}-libGL > %{version}
+Conflicts:	%{name}-libGL < %{version}
+Conflicts:	%{name}-libgbm > %{version}
+Conflicts:	%{name}-libgbm < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -870,6 +948,12 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	zlib >= %{zlib_ver}
 #Suggests:	xorg-driver-video-???
+Conflicts:	%{name}-libEGL > %{version}
+Conflicts:	%{name}-libEGL < %{version}
+Conflicts:	%{name}-libGL > %{version}
+Conflicts:	%{name}-libGL < %{version}
+Conflicts:	%{name}-libgbm > %{version}
+Conflicts:	%{name}-libgbm < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -886,6 +970,12 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	zlib >= %{zlib_ver}
 Suggests:	xorg-driver-video-modesetting
+Conflicts:	%{name}-libEGL > %{version}
+Conflicts:	%{name}-libEGL < %{version}
+Conflicts:	%{name}-libGL > %{version}
+Conflicts:	%{name}-libGL < %{version}
+Conflicts:	%{name}-libgbm > %{version}
+Conflicts:	%{name}-libgbm < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -902,6 +992,12 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	zlib >= %{zlib_ver}
 Suggests:	xorg-driver-video-modesetting
+Conflicts:	%{name}-libEGL > %{version}
+Conflicts:	%{name}-libEGL < %{version}
+Conflicts:	%{name}-libGL > %{version}
+Conflicts:	%{name}-libGL < %{version}
+Conflicts:	%{name}-libgbm > %{version}
+Conflicts:	%{name}-libgbm < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -917,6 +1013,12 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla QEMU VirGL
 License:	MIT
 Group:		X11/Libraries
 Requires:	zlib >= %{zlib_ver}
+Conflicts:	%{name}-libEGL > %{version}
+Conflicts:	%{name}-libEGL < %{version}
+Conflicts:	%{name}-libGL > %{version}
+Conflicts:	%{name}-libGL < %{version}
+Conflicts:	%{name}-libgbm > %{version}
+Conflicts:	%{name}-libgbm < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -933,6 +1035,12 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	zlib >= %{zlib_ver}
 Suggests:	xorg-driver-video-vmware
+Conflicts:	%{name}-libEGL > %{version}
+Conflicts:	%{name}-libEGL < %{version}
+Conflicts:	%{name}-libGL > %{version}
+Conflicts:	%{name}-libGL < %{version}
+Conflicts:	%{name}-libgbm > %{version}
+Conflicts:	%{name}-libgbm < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -948,6 +1056,12 @@ Summary(pl.UTF-8):	Sterownik X.org DRI oparty na Vulkanie
 License:	MIT
 Group:		X11/Libraries
 Requires:	zlib >= %{zlib_ver}
+Conflicts:	%{name}-libEGL > %{version}
+Conflicts:	%{name}-libEGL < %{version}
+Conflicts:	%{name}-libGL > %{version}
+Conflicts:	%{name}-libGL < %{version}
+Conflicts:	%{name}-libgbm > %{version}
+Conflicts:	%{name}-libgbm < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
