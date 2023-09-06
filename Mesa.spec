@@ -77,8 +77,6 @@ Version:	23.1.7
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
-#Source0:	ftp://ftp.freedesktop.org/pub/mesa/mesa-%{version}.tar.xz
-## Source0-md5:	7c61a801311fb8d2f7b3cceb7b5cf308
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
 # Source0-md5:	1b95b46eb977b2b34cd9c02e93ca4659
 URL:		https://www.mesa3d.org/
