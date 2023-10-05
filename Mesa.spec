@@ -73,12 +73,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	23.1.8
+Version:	23.1.9
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	6c89b2d1335993d708e1810eacfba9e4
+# Source0-md5:	85e088185a4b751fcb9d4f1fb1f0028e
 URL:		https://www.mesa3d.org/
 %if %{with opencl_spirv} || %{with gallium_rusticl}
 BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3
