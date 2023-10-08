@@ -37,7 +37,7 @@
 %define		zlib_ver		1.2.8
 %define		wayland_ver		1.18
 %define		libglvnd_ver		1.3.4-2
-%define		llvm_ver		11.0.0
+%define		llvm_ver		15.0.0
 %define		gcc_ver 		6:5
 
 %if %{without gallium}
@@ -73,12 +73,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	23.1.9
+Version:	23.2.1
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	85e088185a4b751fcb9d4f1fb1f0028e
+# Source0-md5:	0d89ec154ac9f06a1e876214114ed9af
 URL:		https://www.mesa3d.org/
 %if %{with opencl_spirv} || %{with gallium_rusticl}
 BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3
@@ -132,6 +132,7 @@ BuildRequires:	udev-devel
 %{?with_wayland:BuildRequires:	wayland-devel >= %{wayland_ver}}
 %{?with_wayland:BuildRequires:	wayland-protocols >= 1.24}
 %{?with_wayland:BuildRequires:	wayland-egl-devel >= %{wayland_ver}}
+BuildRequires:	xcb-util-keysyms-devel
 BuildRequires:	xorg-lib-libX11-devel
 BuildRequires:	xorg-lib-libXext-devel >= 1.0.5
 BuildRequires:	xorg-lib-libXfixes-devel >= 2.0
