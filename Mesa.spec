@@ -80,6 +80,7 @@ Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
 # Source0-md5:	0d89ec154ac9f06a1e876214114ed9af
 Patch0:		llvm17.patch
+Patch1:		no-rust-proc-macro-link.patch
 URL:		https://www.mesa3d.org/
 %if %{with opencl_spirv} || %{with gallium_rusticl}
 BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3
@@ -1556,6 +1557,7 @@ radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD.
 %prep
 %setup -q -n mesa-%{version}
 %patch0 -p1
+%patch1 -p1
 
 %build
 %if %{with opencl}
