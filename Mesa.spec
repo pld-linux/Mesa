@@ -70,6 +70,10 @@
 %define		with_sse2	1
 %endif
 
+%ifarch %{ix86} %{x8664} x32
+%define		with_intel_vk	1
+%endif
+
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
@@ -92,6 +96,9 @@ BuildRequires:	elfutils-devel
 BuildRequires:	expat-devel >= 1.95
 BuildRequires:	flex
 BuildRequires:	gcc >= %{gcc_ver}
+%if %{with radv} || %{with intel_vk}
+BuildRequires:	glslang
+%endif
 %ifarch %{armv6}
 BuildRequires:	libatomic-devel
 %endif
@@ -1593,9 +1600,7 @@ vc4 \
 gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 
 vulkan_drivers="swrast %{?with_radv:amd} \
-%ifarch %{ix86} %{x8664} x32
-intel \
-%endif
+%{?with_intel_vk:intel} \
 %ifarch %{arm} aarch64
 freedreno broadcom imagination-experimental panfrost \
 %endif
