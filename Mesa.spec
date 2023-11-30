@@ -77,14 +77,13 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	23.2.1
+Version:	23.3.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	0d89ec154ac9f06a1e876214114ed9af
-Patch0:		llvm17.patch
-Patch1:		no-rust-proc-macro-link.patch
+# Source0-md5:	30e60f8c466fee52034f303f1afeece2
+Patch0:		no-rust-proc-macro-link.patch
 URL:		https://www.mesa3d.org/
 %if %{with opencl_spirv} || %{with gallium_rusticl}
 BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3
@@ -117,7 +116,7 @@ BuildRequires:	libxcb-devel >= 1.13
 BuildRequires:	llvm-libclc
 %endif
 %{?with_omx:BuildRequires:	libomxil-bellagio-devel}
-BuildRequires:	meson >= 1.0.0
+BuildRequires:	meson >= 1.2.0
 BuildRequires:	ninja >= 1.5
 BuildRequires:	pkgconfig
 BuildRequires:	pkgconfig(talloc) >= 2.0.1
@@ -139,7 +138,7 @@ BuildRequires:	tar >= 1:1.22
 BuildRequires:	udev-devel
 # wayland-{client,server}
 %{?with_wayland:BuildRequires:	wayland-devel >= %{wayland_ver}}
-%{?with_wayland:BuildRequires:	wayland-protocols >= 1.24}
+%{?with_wayland:BuildRequires:	wayland-protocols >= 1.30}
 %{?with_wayland:BuildRequires:	wayland-egl-devel >= %{wayland_ver}}
 BuildRequires:	xcb-util-keysyms-devel
 BuildRequires:	xorg-lib-libX11-devel
@@ -1564,7 +1563,6 @@ radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD.
 %prep
 %setup -q -n mesa-%{version}
 %patch0 -p1
-%patch1 -p1
 
 %build
 %if %{with opencl}
@@ -1752,7 +1750,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files libGL-devel
 %defattr(644,root,root,755)
-%doc docs/_extra/specs/*
+%doc docs/_static/specs/*
 %if %{without glvnd}
 %dir %{_includedir}/GL
 %{_includedir}/GL/gl.h
@@ -1951,6 +1949,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/armada-drm_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/exynos_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/hdlcd_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/hx8357d_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/ili9225_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/ili9341_dri.so
