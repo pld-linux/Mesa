@@ -20,7 +20,8 @@
 %bcond_without	va		# VA library
 %bcond_without	wayland		# Wayland EGL
 %bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
-%bcond_without	radv		# disable build of the radeon Vulkan driver
+%bcond_without	nvk		# nvidia Vulkan driver
+%bcond_without	radv		# radeon Vulkan driver
 %bcond_with	sse2		# SSE2 instructions
 %bcond_with	hud_extra	# HUD block/NIC I/O HUD stats support
 %bcond_with	lm_sensors	# HUD lm_sensors support
@@ -38,7 +39,7 @@
 %define		wayland_ver		1.18
 %define		libglvnd_ver		1.3.4-2
 %define		llvm_ver		15.0.0
-%define		gcc_ver 		6:5
+%define		gcc_ver 		6:8
 
 %if %{without gallium}
 %undefine	with_gallium_i915
@@ -89,11 +90,11 @@ URL:		https://www.mesa3d.org/
 BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3
 %endif
 %{?with_gallium_zink:BuildRequires:	Vulkan-Loader-devel}
-BuildRequires:	bison > 2.3
+BuildRequires:	bison >= 2.4.1
 %{?with_opencl:BuildRequires:	clang-devel >= %{llvm_ver}}
 BuildRequires:	elfutils-devel
 BuildRequires:	expat-devel >= 1.95
-BuildRequires:	flex
+BuildRequires:	flex >= 2.5.35
 BuildRequires:	gcc >= %{gcc_ver}
 %if %{with radv} || %{with intel_vk}
 BuildRequires:	glslang
@@ -128,8 +129,8 @@ BuildRequires:	pkgconfig(xcb-randr) >= 1.12
 BuildRequires:	python3 >= 1:3.2
 BuildRequires:	python3-Mako >= 0.8.0
 BuildRequires:	rpmbuild(macros) >= 2.007
-%{?with_gallium_rusticl:BuildRequires:	rust >= 1.59}
-%{?with_gallium_rusticl:BuildRequires:	rust-bindgen >= 0.58.0}
+%{?with_gallium_rusticl:BuildRequires:	rust >= 1.66}
+%{?with_gallium_rusticl:BuildRequires:	rust-bindgen >= 0.62.0}
 BuildRequires:	sed >= 4.0
 %if %{with opencl_spirv} || %{with gallium_rusticl}
 BuildRequires:	spirv-tools-devel >= 2018.0
@@ -1425,7 +1426,7 @@ Requires:	xorg-lib-libxshmfence >= 1.1
 Requires:	wayland >= %{wayland_ver}
 Requires:	zlib >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.1.204
+Provides:	vulkan(icd) = 1.2.267
 
 %description vulkan-icd-broadcom
 v3dv - Mesa Vulkan driver for Raspberry Pi 4.
@@ -1446,13 +1447,34 @@ Requires:	xorg-lib-libxshmfence >= 1.1
 Requires:	wayland >= %{wayland_ver}
 Requires:	zlib >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.1.204
+Provides:	vulkan(icd) = 1.1.267
 
 %description vulkan-icd-freedreno
 turnip - Mesa Vulkan driver for Adreno chips.
 
 %description vulkan-icd-freedreno -l pl.UTF-8
 turnip - sterownik Vulkan dla układów Adreno.
+
+%package vulkan-icd-panfrost
+Summary:	panfrost - Mesa Vulkan driver for Mali Midgard and Bifrost GPUs
+Summary(pl.UTF-8):	panfrost - sterownik Vulkan dla układów Mali Midgard i Bifrost
+License:	MIT
+Group:		Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	libxcb >= 1.13
+Requires:	xorg-lib-libXrandr >= 1.3
+Requires:	xorg-lib-libxshmfence >= 1.1
+# wayland-client
+Requires:	wayland >= %{wayland_ver}
+Requires:	zlib >= %{zlib_ver}
+Suggests:	vulkan(loader)
+Provides:	vulkan(icd) = 1.0.267
+
+%description vulkan-icd-panfrost
+panfrost - Mesa Vulkan driver for Mali Midgard and Bifrost GPUs.
+
+%description vulkan-icd-panfrost -l pl.UTF-8
+panfrost - sterownik Vulkan dla układów Mali Midgard i Bifrost.
 
 %package vulkan-icd-powervr
 Summary:	powervr - Mesa Vulkan driver for Imagination Technologies Rogue GPUs
@@ -1467,7 +1489,7 @@ Requires:	xorg-lib-libxshmfence >= 1.1
 Requires:	wayland >= %{wayland_ver}
 Requires:	zlib >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.1.204
+Provides:	vulkan(icd) = 1.1.267
 
 %description vulkan-icd-powervr
 powervr - Mesa Vulkan driver for Imagination Technologies Rogue GPUs.
@@ -1482,13 +1504,12 @@ License:	MIT
 Group:		Libraries
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libxcb >= 1.13
-Requires:	xorg-lib-libXrandr >= 1.3
 Requires:	xorg-lib-libxshmfence >= 1.1
 # wayland-client
 Requires:	wayland >= %{wayland_ver}
 Requires:	zlib >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.3.204
+Provides:	vulkan(icd) = 1.3.267
 Obsoletes:	Mesa-vulkan-icd-intel-devel < 21.1.0
 
 %description vulkan-icd-intel
@@ -1510,7 +1531,7 @@ Requires:	xorg-lib-libxshmfence >= 1.1
 Requires:	wayland >= %{wayland_ver}
 Requires:	zlib >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.1.204
+Provides:	vulkan(icd) = 1.1.267
 
 %description vulkan-icd-lavapipe
 lavapipe - Mesa software Vulkan driver.
@@ -1518,47 +1539,65 @@ lavapipe - Mesa software Vulkan driver.
 %description vulkan-icd-lavapipe -l pl.UTF-8
 lavapipe - programowy sterownik Vulkan.
 
-%package vulkan-icd-panfrost
-Summary:	panfrost - Mesa Vulkan driver for Mali Midgard and Bifrost GPUs
-Summary(pl.UTF-8):	panfrost - sterownik Vulkan dla układów Mali Midgard i Bifrost
+%package vulkan-icd-nouveau
+Summary:	nvk - experimental Mesa Vulkan driver for NVIDIA GPUs
+Summary(pl.UTF-8):	nvk - eksperymentalny sterownik Vulkan dla GPU firmy NVIDIA
 License:	MIT
 Group:		Libraries
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libxcb >= 1.13
-Requires:	xorg-lib-libXrandr >= 1.3
 Requires:	xorg-lib-libxshmfence >= 1.1
 # wayland-client
 Requires:	wayland >= %{wayland_ver}
 Requires:	zlib >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.1.204
+Provides:	vulkan(icd) = 1.3.267
 
-%description vulkan-icd-panfrost
-panfrost - Mesa Vulkan driver for Mali Midgard and Bifrost GPUs.
+%description vulkan-icd-nouveau
+nvk - experimental Mesa Vulkan driver for NVIDIA GPUs.
 
-%description vulkan-icd-panfrost -l pl.UTF-8
-panfrost - sterownik Vulkan dla układów Mali Midgard i Bifrost.
+%description vulkan-icd-nouveau -l pl.UTF-8
+nvk - eksperymentalny sterownik Vulkan dla GPU firmy NVIDIA.
 
 %package vulkan-icd-radeon
-Summary:	radv - experimental Mesa Vulkan driver for AMD Radeon GPUs
-Summary(pl.UTF-8):	radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD
+Summary:	radv - Mesa Vulkan driver for AMD Radeon GPUs
+Summary(pl.UTF-8):	radv - sterownik Vulkan dla GPU firmy AMD
 License:	MIT
 Group:		Libraries
 Requires:	libdrm >= %{libdrm_ver}
 Requires:	libxcb >= 1.13
-Requires:	xorg-lib-libXrandr >= 1.3
 Requires:	xorg-lib-libxshmfence >= 1.1
 # wayland-client
 Requires:	wayland >= %{wayland_ver}
 Requires:	zlib >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.3.204
+Provides:	vulkan(icd) = 1.3.267
 
 %description vulkan-icd-radeon
-radv - experimental Mesa Vulkan driver for AMD Radeon GPUs.
+radv - Mesa Vulkan driver for AMD Radeon GPUs.
 
 %description vulkan-icd-radeon -l pl.UTF-8
-radv - eksperymentalny sterownik Vulkan dla GPU firmy AMD.
+radv - sterownik Vulkan dla GPU firmy AMD.
+
+%package vulkan-icd-virtio
+Summary:	Mesa Vulkan driver for VirtIO adapters
+Summary(pl.UTF-8):	Sterownik Vulkan dla kart VirtIO
+License:	MIT
+Group:		Libraries
+Requires:	libdrm >= %{libdrm_ver}
+Requires:	libxcb >= 1.13
+Requires:	xorg-lib-libxshmfence >= 1.1
+# wayland-client
+Requires:	wayland >= %{wayland_ver}
+Requires:	zlib >= %{zlib_ver}
+Suggests:	vulkan(loader)
+Provides:	vulkan(icd) = 1.3.267
+
+%description vulkan-icd-virtio
+Mesa Vulkan driver for VirtIO adapters.
+
+%description vulkan-icd-virtio -l pl.UTF-8
+Sterownik Vulkan dla kart VirtIO.
 
 %prep
 %setup -q -n mesa-%{version}
@@ -1597,10 +1636,9 @@ vc4 \
 
 gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 
-vulkan_drivers="swrast %{?with_radv:amd} \
-%{?with_intel_vk:intel} \
+vulkan_drivers="swrast virtio %{?with_radv:amd} %{?with_intel_vk:intel intel_hasvk} %{?with_nvk:nouveau-experimental} \
 %ifarch %{arm} aarch64
-freedreno broadcom imagination-experimental panfrost \
+broadcom freedreno imagination-experimental panfrost \
 %endif
 "
 
@@ -2161,23 +2199,25 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libvulkan_freedreno.so
 %{_datadir}/vulkan/icd.d/freedreno_icd.*.json
 
+%files vulkan-icd-panfrost
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libvulkan_panfrost.so
+%{_datadir}/vulkan/icd.d/panfrost_icd.*.json
+
 %files vulkan-icd-powervr
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libpowervr_rogue.so
 %attr(755,root,root) %{_libdir}/libvulkan_powervr_mesa.so
 %{_datadir}/vulkan/icd.d/powervr_mesa_icd.*.json
-
-%files vulkan-icd-panfrost
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libvulkan_panfrost.so
-%{_datadir}/vulkan/icd.d/panfrost_icd.*.json
 %endif
 
 %ifarch %{ix86} %{x8664} x32
 %files vulkan-icd-intel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libvulkan_intel.so
+%attr(755,root,root) %{_libdir}/libvulkan_intel_hasvk.so
 %{_datadir}/vulkan/icd.d/intel_icd.*.json
+%{_datadir}/vulkan/icd.d/intel_hasvk_icd.*.json
 %endif
 
 %files vulkan-icd-lavapipe
@@ -2185,9 +2225,21 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libvulkan_lvp.so
 %{_datadir}/vulkan/icd.d/lvp_icd.*.json
 
+%if %{with nvk}
+%files vulkan-icd-nouveau
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libvulkan_nouveau.so
+%{_datadir}/vulkan/icd.d/nouveau_icd.*.json
+%endif
+
 %if %{with radv}
 %files vulkan-icd-radeon
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libvulkan_radeon.so
 %{_datadir}/vulkan/icd.d/radeon_icd.*.json
 %endif
+
+%files vulkan-icd-virtio
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libvulkan_virtio.so
+%{_datadir}/vulkan/icd.d/virtio_icd.*.json
