@@ -182,17 +182,17 @@ Summary:	Mesa implementation of EGL Native Platform Graphics Interface library
 Summary(pl.UTF-8):	Implementacja Mesa biblioteki interfejsu EGL
 License:	MIT
 Group:		Libraries
-Requires:	%{name}-libglapi = %{version}-%{release}
+Requires:	%{name}-libglapi%{?_isa} = %{version}-%{release}
 # glx driver in libEGL dlopens libGL.so
 Requires:	OpenGL >= 1.2
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	libxcb >= 1.13
-%{?with_wayland:Requires:	wayland >= %{wayland_ver}}
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
+Requires:	libxcb%{?_isa} >= 1.13
+%{?with_wayland:Requires:	wayland%{?_isa} >= %{wayland_ver}}
 %if %{with gbm}
-Requires:	%{name}-libgbm = %{version}-%{release}
+Requires:	%{name}-libgbm%{?_isa} = %{version}-%{release}
 %endif
 %if %{with glvnd}
-Requires:	libglvnd-libEGL >= %{libglvnd_ver}
+Requires:	libglvnd-libEGL%{?_isa} >= %{libglvnd_ver}
 %endif
 Provides:	EGL = 1.5
 
@@ -212,19 +212,19 @@ Summary:	Header files for Mesa implementation of EGL library
 Summary(pl.UTF-8):	Pliki nagłówkowe implementacji Mesa biblioteki EGL
 License:	MIT
 Group:		Development/Libraries
-Requires:	%{name}-libEGL = %{version}-%{release}
-Requires:	xorg-lib-libX11-devel
+Requires:	%{name}-libEGL%{?_isa} = %{version}-%{release}
+Requires:	xorg-lib-libX11-devel%{?_isa}
 %if %{with glvnd}
-Requires:	libglvnd-libEGL-devel >= %{libglvnd_ver}
+Requires:	libglvnd-libEGL-devel%{?_isa} >= %{libglvnd_ver}
 %else
-Requires:	%{name}-khrplatform-devel = %{version}-%{release}
-Requires:	libdrm-devel >= %{libdrm_ver}
-Requires:	libxcb-devel >= 1.13
+Requires:	%{name}-khrplatform-devel%{?_isa} = %{version}-%{release}
+Requires:	libdrm-devel%{?_isa} >= %{libdrm_ver}
+Requires:	libxcb-devel%{?_isa} >= 1.13
 Requires:	pkgconfig(xcb-dri2) >= 1.8
 Requires:	pkgconfig(xcb-glx) >= 1.8.1
-Requires:	xorg-lib-libXext-devel >= 1.0.5
-Requires:	xorg-lib-libXfixes-devel >= 2.0
-Requires:	xorg-lib-libXxf86vm-devel
+Requires:	xorg-lib-libXext-devel%{?_isa} >= 1.0.5
+Requires:	xorg-lib-libXfixes-devel%{?_isa} >= 2.0
+Requires:	xorg-lib-libXxf86vm-devel%{?_isa}
 %endif
 %if %{without glvnd}
 Provides:	EGL-devel = 1.5
@@ -242,11 +242,11 @@ Summary:	Free Mesa3D implementation of libGL OpenGL library
 Summary(pl.UTF-8):	Wolnodostępna implementacja Mesa3D biblioteki libGL ze standardu OpenGL
 License:	MIT
 Group:		X11/Libraries
-Requires:	%{name}-libglapi = %{version}-%{release}
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	libxcb >= 1.13
+Requires:	%{name}-libglapi%{?_isa} = %{version}-%{release}
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
+Requires:	libxcb%{?_isa} >= 1.13
 %if %{with glvnd}
-Requires:	libglvnd-libGL >= %{libglvnd_ver}
+Requires:	libglvnd-libGL%{?_isa} >= %{libglvnd_ver}
 %endif
 Provides:	OpenGL = 4.6
 Provides:	OpenGL-GLX = 1.4
@@ -284,18 +284,18 @@ Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki libGL z projektu Mesa3D
 License:	MIT
 Group:		X11/Development/Libraries
 %if %{with glvnd}
-Requires:	libglvnd-libGL-devel >= %{libglvnd_ver}
+Requires:	libglvnd-libGL-devel%{?_isa} >= %{libglvnd_ver}
 %else
-Requires:	%{name}-khrplatform-devel = %{version}-%{release}
-Requires:	%{name}-libGL = %{version}-%{release}
-Requires:	libdrm-devel >= %{libdrm_ver}
-Requires:	libxcb-devel >= 1.13
+Requires:	%{name}-khrplatform-devel%{?_isa} = %{version}-%{release}
+Requires:	%{name}-libGL%{?_isa} = %{version}-%{release}
+Requires:	libdrm-devel%{?_isa} >= %{libdrm_ver}
+Requires:	libxcb-devel%{?_isa} >= 1.13
 Requires:	pkgconfig(xcb-dri2) >= 1.8
 Requires:	pkgconfig(xcb-glx) >= 1.8.1
-Requires:	xorg-lib-libX11-devel
-Requires:	xorg-lib-libXext-devel >= 1.0.5
-Requires:	xorg-lib-libXfixes-devel >= 2.0
-Requires:	xorg-lib-libXxf86vm-devel
+Requires:	xorg-lib-libX11-devel%{?_isa}
+Requires:	xorg-lib-libXext-devel%{?_isa} >= 1.0.5
+Requires:	xorg-lib-libXfixes-devel%{?_isa} >= 2.0
+Requires:	xorg-lib-libXxf86vm-devel%{?_isa}
 %endif
 Suggests:	OpenGL-doc-man
 %if %{without glvnd}
@@ -322,9 +322,9 @@ Pliki nagłówkowe biblioteki libGL z projektu Mesa3D.
 Summary:	Mesa implementation of GLES (OpenGL ES) libraries
 Summary(pl.UTF-8):	Implementacja Mesa bibliotek GLES (OpenGL ES)
 Group:		Libraries
-Requires:	%{name}-libglapi = %{version}-%{release}
+Requires:	%{name}-libglapi%{?_isa} = %{version}-%{release}
 %if %{with glvnd}
-Requires:	libglvnd-libGLES >= %{libglvnd_ver}
+Requires:	libglvnd-libGLES%{?_isa} >= %{libglvnd_ver}
 %endif
 Provides:	OpenGLES
 Provides:	OpenGLESv1 = 1.1
@@ -350,13 +350,13 @@ ES 1.1 i 2.0/3.2.
 Summary:	Header files for Mesa GLES libraries
 Summary(pl.UTF-8):	Pliki nagłówkowe bibliotek Mesa GLES
 Group:		Development/Libraries
-Requires:	%{name}-libGLES = %{version}-%{release}
+Requires:	%{name}-libGLES%{?_isa} = %{version}-%{release}
 %if %{with glvnd}
-Requires:	libglvnd-libGLES-devel >= %{libglvnd_ver}
+Requires:	libglvnd-libGLES-devel%{?_isa} >= %{libglvnd_ver}
 %else
-Requires:	%{name}-khrplatform-devel = %{version}-%{release}
+Requires:	%{name}-khrplatform-devel%{?_isa} = %{version}-%{release}
 # <EGL/egl.h> for <GLES/egl.h>
-Requires:	%{name}-libEGL-devel = %{version}-%{release}
+Requires:	%{name}-libEGL-devel%{?_isa} = %{version}-%{release}
 %endif
 %if %{without glvnd}
 Provides:	OpenGLES-devel
@@ -376,7 +376,7 @@ Summary:	OSMesa (off-screen renderer) library
 Summary(pl.UTF-8):	Biblioteka OSMesa (renderująca bitmapy w pamięci)
 License:	MIT
 Group:		Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 
 %description libOSMesa
 OSMesa (off-screen renderer) library.
@@ -389,10 +389,10 @@ Summary:	Header file for OSMesa (off-screen renderer) library
 Summary(pl.UTF-8):	Plik nagłówkowy biblioteki OSMesa (renderującej bitmapy w pamięci)
 License:	MIT
 Group:		Development/Libraries
-Requires:	%{name}-libOSMesa = %{version}-%{release}
+Requires:	%{name}-libOSMesa%{?_isa} = %{version}-%{release}
 # for <GL/gl.h> only
 Requires:	OpenGL-devel
-Requires:	libselinux-devel
+Requires:	libselinux-devel%{?_isa}
 Obsoletes:	Mesa-libOSMesa-static < 18.3
 
 %description libOSMesa-devel
@@ -407,9 +407,9 @@ Summary(pl.UTF-8):	Implementacja Mesa API OpenCL (języka obliczeń) ICD
 License:	MIT
 Group:		Libraries
 Requires:	filesystem >= 4.0-29
-Requires:	libdrm >= %{libdrm_ver}
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
 Requires:	llvm-libclc
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Provides:	OpenCL = 1.1
 Provides:	ocl-icd-driver
 
@@ -439,7 +439,7 @@ Summary:	Mesa implementation of OpenCL (Compuing Language) API
 Summary(pl.UTF-8):	Implementacja Mesa API OpenCL (języka obliczeń)
 License:	MIT
 Group:		Libraries
-Requires:	libdrm >= %{libdrm_ver}
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
 Requires:	llvm-libclc
 Provides:	OpenCL = 1.1
 
@@ -463,7 +463,7 @@ Summary:	Header files for Mesa OpenCL library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki Mesa OpenCL
 License:	MIT
 Group:		Development/Libraries
-Requires:	%{name}-libOpenCL = %{version}-%{release}
+Requires:	%{name}-libOpenCL%{?_isa} = %{version}-%{release}
 Provides:	OpenCL-devel = 1.2
 
 %description libOpenCL-devel
@@ -478,9 +478,9 @@ Summary(pl.UTF-8):	Implementacja Rusticl API OpenCL (języka obliczeń) ICD
 License:	MIT
 Group:		Libraries
 Requires:	filesystem >= 4.0-29
-Requires:	libdrm >= %{libdrm_ver}
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
 Requires:	llvm-libclc
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Provides:	OpenCL = 3.0
 Provides:	ocl-icd-driver
 
@@ -509,7 +509,7 @@ klienta (ICD), który może być użyty z loaderem ocl-icd.
 Summary:	Mesa Graphics Buffer Manager library
 Summary(pl.UTF-8):	Biblioteka Mesa Graphics Buffer Manager
 Group:		Libraries
-Requires:	%{name}-libglapi = %{version}-%{release}
+Requires:	%{name}-libglapi%{?_isa} = %{version}-%{release}
 Conflicts:	Mesa-libEGL < 8.0.1-2
 
 %description libgbm
@@ -522,7 +522,7 @@ Biblioteka Mesa Graphics Buffer Manager (zarządcy bufora graficznego).
 Summary:	Header file for Mesa Graphics Buffer Manager library
 Summary(pl.UTF-8):	Plik nagłówkowy biblioteki Mesa Graphics Buffer Manager
 Group:		Development/Libraries
-Requires:	%{name}-libgbm = %{version}-%{release}
+Requires:	%{name}-libgbm%{?_isa} = %{version}-%{release}
 
 %description libgbm-devel
 Header file for Mesa Graphics Buffer Manager library.
@@ -548,8 +548,8 @@ GL, GLES).
 Summary:	Xorg Gallium3D accelleration library
 Summary(pl.UTF-8):	Biblioteka akceleracji Gallium3D dla Xorg
 Group:		X11/Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	zlib >= %{zlib_ver}
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 
 %description libxatracker
 Xorg Gallium3D accelleration library (used by new vmwgfx driver).
@@ -562,8 +562,8 @@ sterownik vmwgfx).
 Summary:	Header files for Xorg Gallium3D accelleration library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki akceleracji Gallium3D dla Xorg
 Group:		X11/Development/Libraries
-Requires:	%{name}-libxatracker = %{version}-%{release}
-Requires:	libdrm-devel >= %{libdrm_ver}
+Requires:	%{name}-libxatracker%{?_isa} = %{version}-%{release}
+Requires:	libdrm-devel%{?_isa} >= %{libdrm_ver}
 
 %description libxatracker-devel
 Header files for Xorg Gallium3D accelleration library.
@@ -588,13 +588,13 @@ Plik nagłówkowy platformy Khronos.
 Summary:	Direct Rendering Infrastructure interface header file
 Summary(pl.UTF-8):	Plik nagłówkowy interfejsu DRI (Direct Rendering Infrastructure)
 Group:		Development/Libraries
-Requires:	libdrm-devel >= %{libdrm_ver}
+Requires:	libdrm-devel%{?_isa} >= %{libdrm_ver}
 # <GL/gl.h>
 %if %{with glvnd}
-Requires:	libglvnd-libGL-devel >= %{libglvnd_ver}
+Requires:	libglvnd-libGL-devel%{?_isa} >= %{libglvnd_ver}
 Conflicts:	Mesa-libGL-devel < 21.1.0-2
 %else
-Requires:	Mesa-libGL-devel = %{version}-%{release}
+Requires:	Mesa-libGL-devel%{?_isa} = %{version}-%{release}
 %endif
 
 %description dri-devel
@@ -607,8 +607,8 @@ Plik nagłówkowy interfejsu DRI (Direct Rendering Infrastructure).
 Summary:	Nine Direct3D9 driver (for Wine)
 Summary(pl.UTF-8):	Sterownik Direct3D9 Nine (dla Wine)
 Group:		Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	zlib >= %{zlib_ver}
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 
 %description d3d
 Nine Direct3D9 driver (for Wine).
@@ -620,7 +620,7 @@ Sterownik Direct3D9 Nine (dla Wine).
 Summary:	Nine Direct3D9 driver API
 Summary(pl.UTF-8):	API sterownika Direct3D9 Nine
 Group:		Development/Libraries
-Requires:	libdrm-devel >= %{libdrm_ver}
+Requires:	libdrm-devel%{?_isa} >= %{libdrm_ver}
 
 %description d3d-devel
 Nine Direct3D9 driver API.
@@ -633,16 +633,16 @@ Summary:	X.org DRI driver for ATI R300 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R300
 License:	MIT
 Group:		X11/Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	xorg-driver-video-amdgpu
 Suggests:	xorg-driver-video-ati
 Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
-Conflicts:	%{name}-libEGL > %{version}
-Conflicts:	%{name}-libEGL < %{version}
-Conflicts:	%{name}-libGL > %{version}
-Conflicts:	%{name}-libGL < %{version}
-Conflicts:	%{name}-libgbm > %{version}
-Conflicts:	%{name}-libgbm < %{version}
+Conflicts:	%{name}-libEGL%{?_isa} > %{version}
+Conflicts:	%{name}-libEGL%{?_isa} < %{version}
+Conflicts:	%{name}-libGL%{?_isa} > %{version}
+Conflicts:	%{name}-libGL%{?_isa} < %{version}
+Conflicts:	%{name}-libgbm%{?_isa} > %{version}
+Conflicts:	%{name}-libgbm%{?_isa} < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -666,15 +666,15 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R600
 License:	MIT
 Group:		X11/Libraries
 Requires:	radeon-ucode
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	xorg-driver-video-amdgpu
 Suggests:	xorg-driver-video-ati
-Conflicts:	%{name}-libEGL > %{version}
-Conflicts:	%{name}-libEGL < %{version}
-Conflicts:	%{name}-libGL > %{version}
-Conflicts:	%{name}-libGL < %{version}
-Conflicts:	%{name}-libgbm > %{version}
-Conflicts:	%{name}-libgbm < %{version}
+Conflicts:	%{name}-libEGL%{?_isa} > %{version}
+Conflicts:	%{name}-libEGL%{?_isa} < %{version}
+Conflicts:	%{name}-libGL%{?_isa} > %{version}
+Conflicts:	%{name}-libGL%{?_isa} < %{version}
+Conflicts:	%{name}-libgbm%{?_isa} > %{version}
+Conflicts:	%{name}-libgbm%{?_isa} < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -698,15 +698,15 @@ Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI Southern Islands
 License:	MIT
 Group:		X11/Libraries
 Requires:	radeon-ucode
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	xorg-driver-video-amdgpu
 Suggests:	xorg-driver-video-ati
-Conflicts:	%{name}-libEGL > %{version}
-Conflicts:	%{name}-libEGL < %{version}
-Conflicts:	%{name}-libGL > %{version}
-Conflicts:	%{name}-libGL < %{version}
-Conflicts:	%{name}-libgbm > %{version}
-Conflicts:	%{name}-libgbm < %{version}
+Conflicts:	%{name}-libEGL%{?_isa} > %{version}
+Conflicts:	%{name}-libEGL%{?_isa} < %{version}
+Conflicts:	%{name}-libGL%{?_isa} > %{version}
+Conflicts:	%{name}-libGL%{?_isa} < %{version}
+Conflicts:	%{name}-libgbm%{?_isa} > %{version}
+Conflicts:	%{name}-libgbm%{?_isa} < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -727,14 +727,14 @@ Summary:	X.org DRI driver for Vivante 3D chips
 Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Vivante 3D
 License:	MIT
 Group:		X11/Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 #Suggests:	xorg-driver-video-?
-Conflicts:	%{name}-libEGL > %{version}
-Conflicts:	%{name}-libEGL < %{version}
-Conflicts:	%{name}-libGL > %{version}
-Conflicts:	%{name}-libGL < %{version}
-Conflicts:	%{name}-libgbm > %{version}
-Conflicts:	%{name}-libgbm < %{version}
+Conflicts:	%{name}-libEGL%{?_isa} > %{version}
+Conflicts:	%{name}-libEGL%{?_isa} < %{version}
+Conflicts:	%{name}-libGL%{?_isa} > %{version}
+Conflicts:	%{name}-libGL%{?_isa} < %{version}
+Conflicts:	%{name}-libgbm%{?_isa} > %{version}
+Conflicts:	%{name}-libgbm%{?_isa} < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -749,14 +749,14 @@ Summary:	X.org DRI driver for Adreno chips
 Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Adreno
 License:	MIT
 Group:		X11/Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	xorg-driver-video-freedreno
-Conflicts:	%{name}-libEGL > %{version}
-Conflicts:	%{name}-libEGL < %{version}
-Conflicts:	%{name}-libGL > %{version}
-Conflicts:	%{name}-libGL < %{version}
-Conflicts:	%{name}-libgbm > %{version}
-Conflicts:	%{name}-libgbm < %{version}
+Conflicts:	%{name}-libEGL%{?_isa} > %{version}
+Conflicts:	%{name}-libEGL%{?_isa} < %{version}
+Conflicts:	%{name}-libGL%{?_isa} > %{version}
+Conflicts:	%{name}-libGL%{?_isa} < %{version}
+Conflicts:	%{name}-libgbm%{?_isa} > %{version}
+Conflicts:	%{name}-libgbm%{?_isa} < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -771,14 +771,14 @@ Summary:	X.org DRI driver for Intel Gen4-Gen7 chips
 Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Intel Gen4-Gen7
 License:	MIT
 Group:		X11/Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Obsoletes:	Mesa-dri-driver-intel-i965 < 22.0.0
-Conflicts:	%{name}-libEGL > %{version}
-Conflicts:	%{name}-libEGL < %{version}
-Conflicts:	%{name}-libGL > %{version}
-Conflicts:	%{name}-libGL < %{version}
-Conflicts:	%{name}-libgbm > %{version}
-Conflicts:	%{name}-libgbm < %{version}
+Conflicts:	%{name}-libEGL%{?_isa} > %{version}
+Conflicts:	%{name}-libEGL%{?_isa} < %{version}
+Conflicts:	%{name}-libGL%{?_isa} > %{version}
+Conflicts:	%{name}-libGL%{?_isa} < %{version}
+Conflicts:	%{name}-libgbm%{?_isa} > %{version}
+Conflicts:	%{name}-libgbm%{?_isa} < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -793,15 +793,15 @@ Summary:	X.org DRI driver for Intel i915 card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i915
 License:	MIT
 Group:		X11/Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Obsoletes:	Mesa-dri-driver-intel-i830 < 6.5
 Obsoletes:	X11-driver-i810-dri < 1:7.0.0
-Conflicts:	%{name}-libEGL > %{version}
-Conflicts:	%{name}-libEGL < %{version}
-Conflicts:	%{name}-libGL > %{version}
-Conflicts:	%{name}-libGL < %{version}
-Conflicts:	%{name}-libgbm > %{version}
-Conflicts:	%{name}-libgbm < %{version}
+Conflicts:	%{name}-libEGL%{?_isa} > %{version}
+Conflicts:	%{name}-libEGL%{?_isa} < %{version}
+Conflicts:	%{name}-libGL%{?_isa} > %{version}
+Conflicts:	%{name}-libGL%{?_isa} < %{version}
+Conflicts:	%{name}-libgbm%{?_isa} > %{version}
+Conflicts:	%{name}-libgbm%{?_isa} < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -818,13 +818,13 @@ Summary:	X.org DRI driver for Intel Iris (Gen8+) card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel Iris (Gen8+)
 License:	MIT
 Group:		X11/Libraries
-Requires:	zlib >= %{zlib_ver}
-Conflicts:	%{name}-libEGL > %{version}
-Conflicts:	%{name}-libEGL < %{version}
-Conflicts:	%{name}-libGL > %{version}
-Conflicts:	%{name}-libGL < %{version}
-Conflicts:	%{name}-libgbm > %{version}
-Conflicts:	%{name}-libgbm < %{version}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
+Conflicts:	%{name}-libEGL%{?_isa} > %{version}
+Conflicts:	%{name}-libEGL%{?_isa} < %{version}
+Conflicts:	%{name}-libGL%{?_isa} > %{version}
+Conflicts:	%{name}-libGL%{?_isa} < %{version}
+Conflicts:	%{name}-libgbm%{?_isa} > %{version}
+Conflicts:	%{name}-libgbm%{?_isa} < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -843,14 +843,14 @@ Summary:	X.org Gallium DRI driver using KMS Render-Only architecture
 Summary(pl.UTF-8):	Sterownik X.org DRI Gallium wykorzystujący architekturę KMS Render-Only
 License:	MIT
 Group:		X11/Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 #Suggests:	xorg-driver-video-?
-Conflicts:	%{name}-libEGL > %{version}
-Conflicts:	%{name}-libEGL < %{version}
-Conflicts:	%{name}-libGL > %{version}
-Conflicts:	%{name}-libGL < %{version}
-Conflicts:	%{name}-libgbm > %{version}
-Conflicts:	%{name}-libgbm < %{version}
+Conflicts:	%{name}-libEGL%{?_isa} > %{version}
+Conflicts:	%{name}-libEGL%{?_isa} < %{version}
+Conflicts:	%{name}-libGL%{?_isa} > %{version}
+Conflicts:	%{name}-libGL%{?_isa} < %{version}
+Conflicts:	%{name}-libgbm%{?_isa} > %{version}
+Conflicts:	%{name}-libgbm%{?_isa} < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -866,14 +866,14 @@ Summary:	X.org DRI driver for Mali Utgard chips
 Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Mali Utgard
 License:	MIT
 Group:		X11/Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 #Suggests:	xorg-driver-video-???
-Conflicts:	%{name}-libEGL > %{version}
-Conflicts:	%{name}-libEGL < %{version}
-Conflicts:	%{name}-libGL > %{version}
-Conflicts:	%{name}-libGL < %{version}
-Conflicts:	%{name}-libgbm > %{version}
-Conflicts:	%{name}-libgbm < %{version}
+Conflicts:	%{name}-libEGL%{?_isa} > %{version}
+Conflicts:	%{name}-libEGL%{?_isa} < %{version}
+Conflicts:	%{name}-libGL%{?_isa} > %{version}
+Conflicts:	%{name}-libGL%{?_isa} < %{version}
+Conflicts:	%{name}-libgbm%{?_isa} > %{version}
+Conflicts:	%{name}-libgbm%{?_isa} < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -888,14 +888,14 @@ Summary:	X.org DRI driver for NVIDIA card family
 Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart NVIDIA
 License:	MIT
 Group:		X11/Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	xorg-driver-video-nouveau
-Conflicts:	%{name}-libEGL > %{version}
-Conflicts:	%{name}-libEGL < %{version}
-Conflicts:	%{name}-libGL > %{version}
-Conflicts:	%{name}-libGL < %{version}
-Conflicts:	%{name}-libgbm > %{version}
-Conflicts:	%{name}-libgbm < %{version}
+Conflicts:	%{name}-libEGL%{?_isa} > %{version}
+Conflicts:	%{name}-libEGL%{?_isa} < %{version}
+Conflicts:	%{name}-libGL%{?_isa} > %{version}
+Conflicts:	%{name}-libGL%{?_isa} < %{version}
+Conflicts:	%{name}-libgbm%{?_isa} > %{version}
+Conflicts:	%{name}-libgbm%{?_isa} < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -910,14 +910,14 @@ Summary:	X.org DRI driver for Mali Midgard/Bifrost chips
 Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Mali Midgard/Bifrost
 License:	MIT
 Group:		X11/Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 #Suggests:	xorg-driver-video-???
-Conflicts:	%{name}-libEGL > %{version}
-Conflicts:	%{name}-libEGL < %{version}
-Conflicts:	%{name}-libGL > %{version}
-Conflicts:	%{name}-libGL < %{version}
-Conflicts:	%{name}-libgbm > %{version}
-Conflicts:	%{name}-libgbm < %{version}
+Conflicts:	%{name}-libEGL%{?_isa} > %{version}
+Conflicts:	%{name}-libEGL%{?_isa} < %{version}
+Conflicts:	%{name}-libGL%{?_isa} > %{version}
+Conflicts:	%{name}-libGL%{?_isa} < %{version}
+Conflicts:	%{name}-libgbm%{?_isa} > %{version}
+Conflicts:	%{name}-libgbm%{?_isa} < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -932,13 +932,13 @@ Summary:	X.org DRI software rasterizer driver
 Summary(pl.UTF-8):	Sterownik X.org DRI obsługujący rysowanie programowe
 License:	MIT
 Group:		X11/Libraries
-Requires:	zlib >= %{zlib_ver}
-Conflicts:	%{name}-libEGL > %{version}
-Conflicts:	%{name}-libEGL < %{version}
-Conflicts:	%{name}-libGL > %{version}
-Conflicts:	%{name}-libGL < %{version}
-Conflicts:	%{name}-libgbm > %{version}
-Conflicts:	%{name}-libgbm < %{version}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
+Conflicts:	%{name}-libEGL%{?_isa} > %{version}
+Conflicts:	%{name}-libEGL%{?_isa} < %{version}
+Conflicts:	%{name}-libGL%{?_isa} > %{version}
+Conflicts:	%{name}-libGL%{?_isa} < %{version}
+Conflicts:	%{name}-libgbm%{?_isa} > %{version}
+Conflicts:	%{name}-libgbm%{?_isa} < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -953,14 +953,14 @@ Summary:	X.org DRI driver for Tegra SoC chips
 Summary(pl.UTF-8):	Sterownik X.org DRI dla układów SoC Tegra
 License:	MIT
 Group:		X11/Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 #Suggests:	xorg-driver-video-???
-Conflicts:	%{name}-libEGL > %{version}
-Conflicts:	%{name}-libEGL < %{version}
-Conflicts:	%{name}-libGL > %{version}
-Conflicts:	%{name}-libGL < %{version}
-Conflicts:	%{name}-libgbm > %{version}
-Conflicts:	%{name}-libgbm < %{version}
+Conflicts:	%{name}-libEGL%{?_isa} > %{version}
+Conflicts:	%{name}-libEGL%{?_isa} < %{version}
+Conflicts:	%{name}-libGL%{?_isa} > %{version}
+Conflicts:	%{name}-libGL%{?_isa} < %{version}
+Conflicts:	%{name}-libgbm%{?_isa} > %{version}
+Conflicts:	%{name}-libgbm%{?_isa} < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -975,14 +975,14 @@ Summary:	X.org DRI driver for Broadcom VC5 chips
 Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Broadcom VC5
 License:	MIT
 Group:		X11/Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	xorg-driver-video-modesetting
-Conflicts:	%{name}-libEGL > %{version}
-Conflicts:	%{name}-libEGL < %{version}
-Conflicts:	%{name}-libGL > %{version}
-Conflicts:	%{name}-libGL < %{version}
-Conflicts:	%{name}-libgbm > %{version}
-Conflicts:	%{name}-libgbm < %{version}
+Conflicts:	%{name}-libEGL%{?_isa} > %{version}
+Conflicts:	%{name}-libEGL%{?_isa} < %{version}
+Conflicts:	%{name}-libGL%{?_isa} > %{version}
+Conflicts:	%{name}-libGL%{?_isa} < %{version}
+Conflicts:	%{name}-libgbm%{?_isa} > %{version}
+Conflicts:	%{name}-libgbm%{?_isa} < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -997,14 +997,14 @@ Summary:	X.org DRI driver for Broadcom VC4 chips
 Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Broadcom VC4
 License:	MIT
 Group:		X11/Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	xorg-driver-video-modesetting
-Conflicts:	%{name}-libEGL > %{version}
-Conflicts:	%{name}-libEGL < %{version}
-Conflicts:	%{name}-libGL > %{version}
-Conflicts:	%{name}-libGL < %{version}
-Conflicts:	%{name}-libgbm > %{version}
-Conflicts:	%{name}-libgbm < %{version}
+Conflicts:	%{name}-libEGL%{?_isa} > %{version}
+Conflicts:	%{name}-libEGL%{?_isa} < %{version}
+Conflicts:	%{name}-libGL%{?_isa} > %{version}
+Conflicts:	%{name}-libGL%{?_isa} < %{version}
+Conflicts:	%{name}-libgbm%{?_isa} > %{version}
+Conflicts:	%{name}-libgbm%{?_isa} < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -1019,13 +1019,13 @@ Summary:	X.org DRI driver for QEMU VirGL
 Summary(pl.UTF-8):	Sterownik X.org DRI dla QEMU VirGL
 License:	MIT
 Group:		X11/Libraries
-Requires:	zlib >= %{zlib_ver}
-Conflicts:	%{name}-libEGL > %{version}
-Conflicts:	%{name}-libEGL < %{version}
-Conflicts:	%{name}-libGL > %{version}
-Conflicts:	%{name}-libGL < %{version}
-Conflicts:	%{name}-libgbm > %{version}
-Conflicts:	%{name}-libgbm < %{version}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
+Conflicts:	%{name}-libEGL%{?_isa} > %{version}
+Conflicts:	%{name}-libEGL%{?_isa} < %{version}
+Conflicts:	%{name}-libGL%{?_isa} > %{version}
+Conflicts:	%{name}-libGL%{?_isa} < %{version}
+Conflicts:	%{name}-libgbm%{?_isa} > %{version}
+Conflicts:	%{name}-libgbm%{?_isa} < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -1040,14 +1040,14 @@ Summary:	X.org DRI driver for VMware
 Summary(pl.UTF-8):	Sterownik X.org DRI dla VMware
 License:	MIT
 Group:		X11/Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	xorg-driver-video-vmware
-Conflicts:	%{name}-libEGL > %{version}
-Conflicts:	%{name}-libEGL < %{version}
-Conflicts:	%{name}-libGL > %{version}
-Conflicts:	%{name}-libGL < %{version}
-Conflicts:	%{name}-libgbm > %{version}
-Conflicts:	%{name}-libgbm < %{version}
+Conflicts:	%{name}-libEGL%{?_isa} > %{version}
+Conflicts:	%{name}-libEGL%{?_isa} < %{version}
+Conflicts:	%{name}-libGL%{?_isa} > %{version}
+Conflicts:	%{name}-libGL%{?_isa} < %{version}
+Conflicts:	%{name}-libgbm%{?_isa} > %{version}
+Conflicts:	%{name}-libgbm%{?_isa} < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -1062,13 +1062,13 @@ Summary:	X.org DRI driver based on Vulkan
 Summary(pl.UTF-8):	Sterownik X.org DRI oparty na Vulkanie
 License:	MIT
 Group:		X11/Libraries
-Requires:	zlib >= %{zlib_ver}
-Conflicts:	%{name}-libEGL > %{version}
-Conflicts:	%{name}-libEGL < %{version}
-Conflicts:	%{name}-libGL > %{version}
-Conflicts:	%{name}-libGL < %{version}
-Conflicts:	%{name}-libgbm > %{version}
-Conflicts:	%{name}-libgbm < %{version}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
+Conflicts:	%{name}-libEGL%{?_isa} > %{version}
+Conflicts:	%{name}-libEGL%{?_isa} < %{version}
+Conflicts:	%{name}-libGL%{?_isa} > %{version}
+Conflicts:	%{name}-libGL%{?_isa} < %{version}
+Conflicts:	%{name}-libgbm%{?_isa} > %{version}
+Conflicts:	%{name}-libgbm%{?_isa} < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
@@ -1082,7 +1082,7 @@ Sterownik X.org DRI Gallium oparty na Vulkanie.
 Summary:	crocus driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik crocus dla dynamicznego systemu potoków szkieletu Mesa Gallium
 Group:		Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 
 %description pipe-driver-crocus
 crocus driver for Mesa Gallium dynamic pipe loader. It supports Intel
@@ -1096,7 +1096,7 @@ Gallium. Obsługuje układy Intela Gen4/Gen5/Gen6/Gen7.
 Summary:	i915 driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik i915 dla dynamicznego systemu potoków szkieletu Mesa Gallium
 Group:		Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Obsoletes:	Mesa-gbm-driver-i915 < 11.1.1
 Obsoletes:	Mesa-opencl-driver-i915 < 9.1
 
@@ -1112,7 +1112,7 @@ Gallium. Obsługuje układy Intela z serii 915/945/G33/Q33/Q35/Pineview.
 Summary:	iris driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik iris dla dynamicznego systemu potoków szkieletu Mesa Gallium
 Group:		Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 
 %description pipe-driver-iris
 iris driver for Mesa Gallium dynamic pipe loader. It supports Intel
@@ -1130,7 +1130,7 @@ Lake, Comet Lake, Cannonlake, Ice Lake, Elkhart Lake).
 Summary:	kmsro driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik kmsro dla dynamicznego systemu potoków szkieletu Mesa Gallium
 Group:		Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 
 %description pipe-driver-kmsro
 kmsro driver for Mesa Gallium dynamic pipe loader.
@@ -1143,7 +1143,7 @@ Gallium.
 Summary:	msm (freedreno) driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik msm (freedreno) dla dynamicznego systemu potoków szkieletu Mesa Gallium
 Group:		Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 
 %description pipe-driver-msm
 msm (freedreno) driver for Mesa Gallium dynamic pipe loader. It
@@ -1157,7 +1157,7 @@ Mesa Gallium. Obsługuje układy Adreno.
 Summary:	nouveau driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik nouveau dla dynamicznego systemu potoków szkieletu Mesa Gallium
 Group:		Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Obsoletes:	Mesa-gbm-driver-nouveau < 11.1.1
 Obsoletes:	Mesa-opencl-driver-nouveau < 9.1
 
@@ -1173,7 +1173,7 @@ Gallium. Obsługuje karty graficzne firmy NVidia.
 Summary:	r300 driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik r300 dla dynamicznego systemu potoków szkieletu Mesa Gallium
 Group:		Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Obsoletes:	Mesa-gbm-driver-r300 < 11.1.1
 Obsoletes:	Mesa-opencl-driver-r300 < 9.1
 
@@ -1190,7 +1190,7 @@ R300/R400/RS690/R500.
 Summary:	r600 driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik r600 dla dynamicznego systemu potoków szkieletu Mesa Gallium
 Group:		Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Obsoletes:	Mesa-gbm-driver-r600 < 11.1.1
 Obsoletes:	Mesa-libllvmradeon < 9.2
 Obsoletes:	Mesa-opencl-driver-r600 < 9.1
@@ -1208,7 +1208,7 @@ R600/R700.
 Summary:	radeonsi driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik radeonsi dla dynamicznego systemu potoków szkieletu Mesa Gallium
 Group:		Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Obsoletes:	Mesa-gbm-driver-radeonsi < 11.1.1
 Obsoletes:	Mesa-libllvmradeon < 9.2
 Obsoletes:	Mesa-opencl-driver-radeonsi < 9.1
@@ -1226,7 +1226,7 @@ Southern Islands.
 Summary:	Software (swrast) driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik programowy (swrast) dla dynamicznego systemu potoków szkieletu Mesa Gallium
 Group:		Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Obsoletes:	Mesa-gbm-driver-swrast < 11.1.1
 Obsoletes:	Mesa-opencl-driver-swrast < 9.1
 
@@ -1241,7 +1241,7 @@ szkieletu Mesa Gallium.
 Summary:	vmwgfx driver for Mesa Gallium dynamic pipe loader
 Summary(pl.UTF-8):	Sterownik vmwgfx dla dynamicznego systemu potoków szkieletu Mesa Gallium
 Group:		Libraries
-Requires:	zlib >= %{zlib_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Obsoletes:	Mesa-gbm-driver-vmwgfx < 11.1.1
 Obsoletes:	Mesa-opencl-driver-vmwgfx < 9.1
 
@@ -1258,11 +1258,11 @@ Summary:	VA driver for Gallium State Tracker
 Summary(pl.UTF-8):	Sterowniki VA do Gallium
 Group:		Libraries
 %if %{with gallium_radeon}
-Requires:	libva-driver-r600 = %{version}-%{release}
-Requires:	libva-driver-radeonsi = %{version}-%{release}
+Requires:	libva-driver-r600%{?_isa} = %{version}-%{release}
+Requires:	libva-driver-radeonsi%{?_isa} = %{version}-%{release}
 %endif
 %if %{with gallium_nouveau}
-Requires:	libva-driver-nouveau = %{version}-%{release}
+Requires:	libva-driver-nouveau%{?_isa} = %{version}-%{release}
 %endif
 
 %description -n libva-driver-gallium
@@ -1275,8 +1275,8 @@ Sterowniki VA do Gallium (r600, radeonsi & nouveau).
 Summary:	VA driver for ATI Radeon R600 series adapters
 Summary(pl.UTF-8):	Sterownik VA dla kart ATI Radeon z serii R600
 Group:		Libraries
-Requires:	libva >= 1.8.0
-Requires:	zlib >= %{zlib_ver}
+Requires:	libva%{?_isa} >= 1.8.0
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 
 %description -n libva-driver-r600
 VA driver for ATI Radeon R600 series adapters.
@@ -1288,8 +1288,8 @@ Sterownik VA dla kart ATI Radeon z serii R600.
 Summary:	VA driver for ATI Radeon SI adapters
 Summary(pl.UTF-8):	Sterownik VA dla kart ATI Radeon SI
 Group:		Libraries
-Requires:	libva >= 1.8.0
-Requires:	zlib >= %{zlib_ver}
+Requires:	libva%{?_isa} >= 1.8.0
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 
 %description -n libva-driver-radeonsi
 VA driver for ATI Radeon adapters based on Southern Islands chips.
@@ -1302,8 +1302,8 @@ Islands.
 Summary:	VA driver for NVidia adapters
 Summary(pl.UTF-8):	Sterownik VA dla kart NVidia
 Group:		Libraries
-Requires:	libva >= 1.8.0
-Requires:	zlib >= %{zlib_ver}
+Requires:	libva%{?_isa} >= 1.8.0
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 
 %description -n libva-driver-nouveau
 VA driver for NVidia adapters.
@@ -1315,8 +1315,8 @@ Sterownik VA dla kart NVidia.
 Summary:	VA driver for VirtIO adapters
 Summary(pl.UTF-8):	Sterownik VA dla kart VirtIO
 Group:		Libraries
-Requires:	libva >= 1.8.0
-Requires:	zlib >= %{zlib_ver}
+Requires:	libva%{?_isa} >= 1.8.0
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 
 %description -n libva-driver-virtio
 VA driver for VirtIO adapters.
@@ -1329,9 +1329,9 @@ Summary:	Mesa nouveau driver for the vdpau API
 Summary(pl.UTF-8):	Sterownik Mesa nouveau dla API vdpau
 License:	MIT
 Group:		X11/Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	libvdpau >= 1.1
-Requires:	zlib >= %{zlib_ver}
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
+Requires:	libvdpau%{?_isa} >= 1.1
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Conflicts:	libvdpau-driver-mesa
 
 %description -n libvdpau-driver-mesa-nouveau
@@ -1347,9 +1347,9 @@ Summary:	Mesa r600 driver for the vdpau API
 Summary(pl.UTF-8):	Sterownik Mesa r600 dla API vdpau
 License:	MIT
 Group:		X11/Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	libvdpau >= 1.1
-Requires:	zlib >= %{zlib_ver}
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
+Requires:	libvdpau%{?_isa} >= 1.1
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Conflicts:	libvdpau-driver-mesa
 
 %description -n libvdpau-driver-mesa-r600
@@ -1365,9 +1365,9 @@ Summary:	Mesa radeonsi driver for the vdpau API
 Summary(pl.UTF-8):	Sterownik Mesa radeonsi dla API vdpau
 License:	MIT
 Group:		X11/Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	libvdpau >= 1.1
-Requires:	zlib >= %{zlib_ver}
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
+Requires:	libvdpau%{?_isa} >= 1.1
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Obsoletes:	Mesa-libllvmradeon < 9.2
 Conflicts:	libvdpau-driver-mesa
 
@@ -1384,9 +1384,9 @@ Summary:	Mesa virtio driver for the vdpau API
 Summary(pl.UTF-8):	Sterownik Mesa virtio dla API vdpau
 License:	MIT
 Group:		X11/Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	libvdpau >= 1.1
-Requires:	zlib >= %{zlib_ver}
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
+Requires:	libvdpau%{?_isa} >= 1.1
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 
 %description -n libvdpau-driver-mesa-virtio
 Mesa virtio driver for the vdpau API.
@@ -1399,10 +1399,10 @@ Summary:	Mesa driver for Bellagio OpenMAX IL API
 Summary(pl.UTF-8):	Sterownik Mesa nouveau dla API Bellagio OpenMAX IL
 License:	MIT
 Group:		X11/Libraries
-Requires:	libdrm >= %{libdrm_ver}
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
 Requires:	libomxil-bellagio
-Requires:	libxcb >= 1.13
-Requires:	zlib >= %{zlib_ver}
+Requires:	libxcb%{?_isa} >= 1.13
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Obsoletes:	omxil-mesa-nouveau < 10.3
 Obsoletes:	omxil-mesa-r600 < 10.3
 Obsoletes:	omxil-mesa-radeonsi < 10.3
@@ -1418,13 +1418,13 @@ Summary:	v3dv - Mesa Vulkan driver for Raspberry Pi 4
 Summary(pl.UTF-8):	v3dv - sterownik Vulkan dla Raspberry Pi 4
 License:	MIT
 Group:		Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	libxcb >= 1.13
-Requires:	xorg-lib-libXrandr >= 1.3
-Requires:	xorg-lib-libxshmfence >= 1.1
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
+Requires:	libxcb%{?_isa} >= 1.13
+Requires:	xorg-lib-libXrandr%{?_isa} >= 1.3
+Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 # wayland-client
-Requires:	wayland >= %{wayland_ver}
-Requires:	zlib >= %{zlib_ver}
+Requires:	wayland%{?_isa} >= %{wayland_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
 Provides:	vulkan(icd) = 1.2.267
 
@@ -1439,13 +1439,13 @@ Summary:	turnip - Mesa Vulkan driver for Adreno chips
 Summary(pl.UTF-8):	turnip - sterownik Vulkan dla układów Adreno
 License:	MIT
 Group:		Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	libxcb >= 1.13
-Requires:	xorg-lib-libXrandr >= 1.3
-Requires:	xorg-lib-libxshmfence >= 1.1
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
+Requires:	libxcb%{?_isa} >= 1.13
+Requires:	xorg-lib-libXrandr%{?_isa} >= 1.3
+Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 # wayland-client
-Requires:	wayland >= %{wayland_ver}
-Requires:	zlib >= %{zlib_ver}
+Requires:	wayland%{?_isa} >= %{wayland_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
 Provides:	vulkan(icd) = 1.1.267
 
@@ -1460,13 +1460,13 @@ Summary:	panfrost - Mesa Vulkan driver for Mali Midgard and Bifrost GPUs
 Summary(pl.UTF-8):	panfrost - sterownik Vulkan dla układów Mali Midgard i Bifrost
 License:	MIT
 Group:		Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	libxcb >= 1.13
-Requires:	xorg-lib-libXrandr >= 1.3
-Requires:	xorg-lib-libxshmfence >= 1.1
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
+Requires:	libxcb%{?_isa} >= 1.13
+Requires:	xorg-lib-libXrandr%{?_isa} >= 1.3
+Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 # wayland-client
-Requires:	wayland >= %{wayland_ver}
-Requires:	zlib >= %{zlib_ver}
+Requires:	wayland%{?_isa} >= %{wayland_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
 Provides:	vulkan(icd) = 1.0.267
 
@@ -1481,13 +1481,13 @@ Summary:	powervr - Mesa Vulkan driver for Imagination Technologies Rogue GPUs
 Summary(pl.UTF-8):	powervr - sterownik Vulkan dla układów Imagination Technologies Rogue
 License:	MIT
 Group:		Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	libxcb >= 1.13
-Requires:	xorg-lib-libXrandr >= 1.3
-Requires:	xorg-lib-libxshmfence >= 1.1
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
+Requires:	libxcb%{?_isa} >= 1.13
+Requires:	xorg-lib-libXrandr%{?_isa} >= 1.3
+Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 # wayland-client
-Requires:	wayland >= %{wayland_ver}
-Requires:	zlib >= %{zlib_ver}
+Requires:	wayland%{?_isa} >= %{wayland_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
 Provides:	vulkan(icd) = 1.1.267
 
@@ -1502,12 +1502,12 @@ Summary:	Mesa Vulkan driver for Intel GPUs
 Summary(pl.UTF-8):	Sterownik Vulkan dla GPU firmy Intel
 License:	MIT
 Group:		Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	libxcb >= 1.13
-Requires:	xorg-lib-libxshmfence >= 1.1
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
+Requires:	libxcb%{?_isa} >= 1.13
+Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 # wayland-client
-Requires:	wayland >= %{wayland_ver}
-Requires:	zlib >= %{zlib_ver}
+Requires:	wayland%{?_isa} >= %{wayland_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
 Provides:	vulkan(icd) = 1.3.267
 Obsoletes:	Mesa-vulkan-icd-intel-devel < 21.1.0
@@ -1523,13 +1523,13 @@ Summary:	lavapipe - Mesa software Vulkan driver
 Summary(pl.UTF-8):	lavapipe - programowy sterownik Vulkan
 License:	MIT
 Group:		Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	libxcb >= 1.13
-Requires:	xorg-lib-libXrandr >= 1.3
-Requires:	xorg-lib-libxshmfence >= 1.1
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
+Requires:	libxcb%{?_isa} >= 1.13
+Requires:	xorg-lib-libXrandr%{?_isa} >= 1.3
+Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 # wayland-client
-Requires:	wayland >= %{wayland_ver}
-Requires:	zlib >= %{zlib_ver}
+Requires:	wayland%{?_isa} >= %{wayland_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
 Provides:	vulkan(icd) = 1.1.267
 
@@ -1544,12 +1544,12 @@ Summary:	nvk - experimental Mesa Vulkan driver for NVIDIA GPUs
 Summary(pl.UTF-8):	nvk - eksperymentalny sterownik Vulkan dla GPU firmy NVIDIA
 License:	MIT
 Group:		Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	libxcb >= 1.13
-Requires:	xorg-lib-libxshmfence >= 1.1
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
+Requires:	libxcb%{?_isa} >= 1.13
+Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 # wayland-client
-Requires:	wayland >= %{wayland_ver}
-Requires:	zlib >= %{zlib_ver}
+Requires:	wayland%{?_isa} >= %{wayland_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
 Provides:	vulkan(icd) = 1.3.267
 
@@ -1564,12 +1564,12 @@ Summary:	radv - Mesa Vulkan driver for AMD Radeon GPUs
 Summary(pl.UTF-8):	radv - sterownik Vulkan dla GPU firmy AMD
 License:	MIT
 Group:		Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	libxcb >= 1.13
-Requires:	xorg-lib-libxshmfence >= 1.1
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
+Requires:	libxcb%{?_isa} >= 1.13
+Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 # wayland-client
-Requires:	wayland >= %{wayland_ver}
-Requires:	zlib >= %{zlib_ver}
+Requires:	wayland%{?_isa} >= %{wayland_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
 Provides:	vulkan(icd) = 1.3.267
 
@@ -1584,12 +1584,12 @@ Summary:	Mesa Vulkan driver for VirtIO adapters
 Summary(pl.UTF-8):	Sterownik Vulkan dla kart VirtIO
 License:	MIT
 Group:		Libraries
-Requires:	libdrm >= %{libdrm_ver}
-Requires:	libxcb >= 1.13
-Requires:	xorg-lib-libxshmfence >= 1.1
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
+Requires:	libxcb%{?_isa} >= 1.13
+Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 # wayland-client
-Requires:	wayland >= %{wayland_ver}
-Requires:	zlib >= %{zlib_ver}
+Requires:	wayland%{?_isa} >= %{wayland_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
 Provides:	vulkan(icd) = 1.3.267
 
