@@ -195,7 +195,7 @@ Requires:	%{name}-libgbm%{?_isa} = %{version}-%{release}
 Requires:	libglvnd-libEGL%{?_isa} >= %{libglvnd_ver}
 %endif
 Provides:	EGL = 1.5
-Provides:	glvnd(EGL)%{?_isa}
+%{?with_glvnd:Provides:	glvnd(EGL)%{?_isa}}
 
 %description libEGL
 This package contains shared libEGL - Mesa implementation of EGL
@@ -251,7 +251,7 @@ Requires:	libglvnd-libGL%{?_isa} >= %{libglvnd_ver}
 %endif
 Provides:	OpenGL = 4.6
 Provides:	OpenGL-GLX = 1.4
-Provides:	glvnd(GL)%{?_isa}
+%{?with_glvnd:Provides:	glvnd(GL)%{?_isa}}
 Obsoletes:	Mesa < 6.4-2
 Obsoletes:	Mesa-dri < 6.4.1-3
 Obsoletes:	Mesa-dri-core < 10.0.0
@@ -332,7 +332,7 @@ Provides:	OpenGLES
 Provides:	OpenGLESv1 = 1.1
 Provides:	OpenGLESv2 = 2.0
 Provides:	OpenGLESv3 = 3.2
-Provides:	glvnd(GLES)%{?_isa}
+%{?with_glvnd:Provides:	glvnd(GLES)%{?_isa}}
 
 %description libGLES
 This package contains shared libraries of Mesa implementation of GLES
