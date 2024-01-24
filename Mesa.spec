@@ -78,12 +78,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	23.3.3
+Version:	23.3.4
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	96763c2dc3ebe6e06a442af004db5b19
+# Source0-md5:	bc6aaf45d316acf1f558fc6232aa8587
 Patch0:		no-rust-proc-macro-link.patch
 URL:		https://www.mesa3d.org/
 %if %{with opencl_spirv} || %{with gallium_rusticl}
