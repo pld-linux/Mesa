@@ -26,13 +26,19 @@
 %bcond_with	hud_extra	# HUD block/NIC I/O HUD stats support
 %bcond_with	lm_sensors	# HUD lm_sensors support
 %bcond_with	tests		# tests
+
+%define		syn_crate_ver		2.0.39
+%define		unicode_ident_crate_ver	1.0.12
+%define		quote_crate_ver		1.0.33
+%define		proc_macro2_crate_ver	1.0.70
+
 #
 # glapi version (glapi tables in dri drivers and libglx must be in sync);
 # set to current Mesa version on ABI break, when xserver tables get regenerated
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver		7.1.0
 # other packages
-%define		libdrm_ver		2.4.110
+%define		libdrm_ver		2.4.119
 %define		dri2proto_ver		2.8
 %define		glproto_ver		1.4.14
 %define		zlib_ver		1.2.8
@@ -78,13 +84,20 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	23.3.5
+Version:	24.0.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	47c97505ed37d81e848545671654d887
-Patch0:		no-rust-proc-macro-link.patch
+# Source0-md5:	367c6b186780326de6e4ad6aacd23ae8
+Source1:	https://crates.io/api/v1/crates/syn/%{syn_crate_ver}/download?/syn-%{syn_crate_ver}.tar.gz
+# Source1-md5:	16236f1edd28a8895ad8c3de8de226d8
+Source2:	https://crates.io/api/v1/crates/unicode-ident/%{unicode_ident_crate_ver}/download?/unicode-ident-%{unicode_ident_crate_ver}.tar.gz
+# Source2-md5:	ca65153603a1a7240bbd9d2ce19f2d67
+Source3:	https://crates.io/api/v1/crates/quote/%{quote_crate_ver}/download?/quote-%{quote_crate_ver}.tar.gz
+# Source3-md5:	0ddb8bccd3198892d0dd0ec7151f7cd3
+Source4:	https://crates.io/api/v1/crates/proc-macro2/%{proc_macro2_crate_ver}/download?/proc-macro2-%{proc_macro2_crate_ver}.tar.gz
+# Source4-md5:	3f210fd91912a2d7d2f0af5038704d17
 URL:		https://www.mesa3d.org/
 %if %{with opencl_spirv} || %{with gallium_rusticl}
 BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3
@@ -111,13 +124,12 @@ BuildRequires:	libunwind-devel
 %{?with_va:BuildRequires:	pkgconfig(libva) >= 1.8.0}
 %{?with_vdpau:BuildRequires:	libvdpau-devel >= 1.1}
 BuildRequires:	libxcb-devel >= 1.13
-%{?with_gallium:BuildRequires:	llvm-devel >= %{llvm_ver}}
-%{?with_radv:BuildRequires:	llvm-devel >= %{llvm_ver}}
+BuildRequires:	llvm-devel >= %{llvm_ver}
 %if %{with opencl} || %{with gallium_rusticl}
 BuildRequires:	llvm-libclc
 %endif
 %{?with_omx:BuildRequires:	libomxil-bellagio-devel}
-BuildRequires:	meson >= 1.2.0
+BuildRequires:	meson >= 1.3.1
 BuildRequires:	ninja >= 1.5
 BuildRequires:	pkgconfig
 BuildRequires:	pkgconfig(talloc) >= 2.0.1
@@ -129,7 +141,9 @@ BuildRequires:	pkgconfig(xcb-randr) >= 1.12
 BuildRequires:	python3 >= 1:3.2
 BuildRequires:	python3-Mako >= 0.8.0
 BuildRequires:	rpmbuild(macros) >= 2.007
-%{?with_gallium_rusticl:BuildRequires:	rust >= 1.66}
+%if %{with gallium_rusticl} || %{with nvk}
+BuildRequires:	rust >= 1.73.0
+%endif
 %{?with_gallium_rusticl:BuildRequires:	rust-bindgen >= 0.62.0}
 BuildRequires:	sed >= 4.0
 %if %{with opencl_spirv} || %{with gallium_rusticl}
@@ -1604,7 +1618,9 @@ Sterownik Vulkan dla kart VirtIO.
 
 %prep
 %setup -q -n mesa-%{version}
-%patch0 -p1
+
+install -d subprojects/packagecache
+cp -p %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} subprojects/packagecache
 
 %build
 %if %{with opencl}
@@ -1654,6 +1670,7 @@ export BINDGEN_EXTRA_CLANG_ARGS="-mfloat-abi=hard"
 %endif
 
 %meson build \
+	--force-fallback-for=syn,unicode-ident,quote,proc-macro2 \
 	-Dplatforms=x11%{?with_wayland:,wayland} \
 	-Ddri3=enabled \
 	-Ddri-drivers-path=%{_libdir}/xorg/modules/dri \
@@ -1684,7 +1701,7 @@ export BINDGEN_EXTRA_CLANG_ARGS="-mfloat-abi=hard"
 	-Dselinux=true \
 	-Dsse2=%{__true_false sse2} \
 	-Dva-libs-path=%{_libdir}/libva/dri \
-	-Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec \
+	-Dvideo-codecs=all \
 	-Dvulkan-drivers=${vulkan_drivers} \
 	-Dvulkan-icd-dir=/usr/share/vulkan/icd.d \
 %ifarch %{arm} aarch64
@@ -1990,10 +2007,13 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/armada-drm_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/exynos_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/gm12u320_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/hdlcd_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/hx8357d_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/ili9163_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/ili9225_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/ili9341_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/ili9486_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/imx-dcss_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/imx-drm_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/imx-lcdif_dri.so
@@ -2006,14 +2026,17 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/meson_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mi0283qt_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/mxsfb-drm_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/panel-mipi-dbi_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/pl111_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/rcar-du_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/repaper_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/rockchip_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/st7586_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/st7735r_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/sti_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/stm_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/sun4i-drm_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/udl_dri.so
 
 %files dri-driver-lima
 %defattr(644,root,root,755)
