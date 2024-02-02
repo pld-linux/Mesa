@@ -1443,7 +1443,7 @@ Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 Requires:	wayland%{?_isa} >= %{wayland_ver}
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.2.267
+Provides:	vulkan(icd) = 1.2.274
 
 %description vulkan-icd-broadcom
 v3dv - Mesa Vulkan driver for Raspberry Pi 4.
@@ -1464,7 +1464,7 @@ Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 Requires:	wayland%{?_isa} >= %{wayland_ver}
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.1.267
+Provides:	vulkan(icd) = 1.2.274
 
 %description vulkan-icd-freedreno
 turnip - Mesa Vulkan driver for Adreno chips.
@@ -1485,7 +1485,7 @@ Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 Requires:	wayland%{?_isa} >= %{wayland_ver}
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.0.267
+Provides:	vulkan(icd) = 1.0.274
 
 %description vulkan-icd-panfrost
 panfrost - Mesa Vulkan driver for Mali Midgard and Bifrost GPUs.
@@ -1506,7 +1506,7 @@ Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 Requires:	wayland%{?_isa} >= %{wayland_ver}
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.1.267
+Provides:	vulkan(icd) = 1.0.274
 
 %description vulkan-icd-powervr
 powervr - Mesa Vulkan driver for Imagination Technologies Rogue GPUs.
@@ -1526,7 +1526,7 @@ Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 Requires:	wayland%{?_isa} >= %{wayland_ver}
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.3.267
+Provides:	vulkan(icd) = 1.3.274
 Obsoletes:	Mesa-vulkan-icd-intel-devel < 21.1.0
 
 %description vulkan-icd-intel
@@ -1548,7 +1548,7 @@ Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 Requires:	wayland%{?_isa} >= %{wayland_ver}
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.1.267
+Provides:	vulkan(icd) = 1.1.274
 
 %description vulkan-icd-lavapipe
 lavapipe - Mesa software Vulkan driver.
@@ -1568,7 +1568,7 @@ Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 Requires:	wayland%{?_isa} >= %{wayland_ver}
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.3.267
+Provides:	vulkan(icd) = 1.1.274
 
 %description vulkan-icd-nouveau
 nvk - experimental Mesa Vulkan driver for NVIDIA GPUs.
@@ -1588,7 +1588,7 @@ Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 Requires:	wayland%{?_isa} >= %{wayland_ver}
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.3.267
+Provides:	vulkan(icd) = 1.3.274
 
 %description vulkan-icd-radeon
 radv - Mesa Vulkan driver for AMD Radeon GPUs.
@@ -1608,7 +1608,7 @@ Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 Requires:	wayland%{?_isa} >= %{wayland_ver}
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.3.267
+Provides:	vulkan(icd) = 1.3.274
 
 %description vulkan-icd-virtio
 Mesa Vulkan driver for VirtIO adapters.
