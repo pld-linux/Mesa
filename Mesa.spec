@@ -84,12 +84,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	24.0.2
+Version:	24.0.3
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	178e138328ff57c7ae2a50621c99d4f7
+# Source0-md5:	fb1794acf5f714e4835be3bf2ab010fe
 Source1:	https://crates.io/api/v1/crates/syn/%{syn_crate_ver}/download?/syn-%{syn_crate_ver}.tar.gz
 # Source1-md5:	16236f1edd28a8895ad8c3de8de226d8
 Source2:	https://crates.io/api/v1/crates/unicode-ident/%{unicode_ident_crate_ver}/download?/unicode-ident-%{unicode_ident_crate_ver}.tar.gz
@@ -122,7 +122,7 @@ BuildRequires:	libstdc++-devel >= %{gcc_ver}
 BuildRequires:	libunwind-devel
 %{?with_va:BuildRequires:	libva-devel}
 %{?with_va:BuildRequires:	pkgconfig(libva) >= 1.8.0}
-%{?with_vdpau:BuildRequires:	libvdpau-devel >= 1.1}
+%{?with_vdpau:BuildRequires:	libvdpau-devel >= 1.4}
 BuildRequires:	libxcb-devel >= 1.13
 BuildRequires:	llvm-devel >= %{llvm_ver}
 %if %{with opencl} || %{with gallium_rusticl}
@@ -1347,7 +1347,7 @@ Summary(pl.UTF-8):	Sterownik Mesa nouveau dla API vdpau
 License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libvdpau%{?_isa} >= 1.1
+Requires:	libvdpau%{?_isa} >= 1.4
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Conflicts:	libvdpau-driver-mesa
 
@@ -1365,7 +1365,7 @@ Summary(pl.UTF-8):	Sterownik Mesa r600 dla API vdpau
 License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libvdpau%{?_isa} >= 1.1
+Requires:	libvdpau%{?_isa} >= 1.4
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Conflicts:	libvdpau-driver-mesa
 
@@ -1383,7 +1383,7 @@ Summary(pl.UTF-8):	Sterownik Mesa radeonsi dla API vdpau
 License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libvdpau%{?_isa} >= 1.1
+Requires:	libvdpau%{?_isa} >= 1.4
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Obsoletes:	Mesa-libllvmradeon < 9.2
 Conflicts:	libvdpau-driver-mesa
@@ -1402,7 +1402,7 @@ Summary(pl.UTF-8):	Sterownik Mesa virtio dla API vdpau
 License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libvdpau%{?_isa} >= 1.1
+Requires:	libvdpau%{?_isa} >= 1.4
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 
 %description -n libvdpau-driver-mesa-virtio
