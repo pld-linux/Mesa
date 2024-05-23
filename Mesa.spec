@@ -31,6 +31,7 @@
 %define		unicode_ident_crate_ver	1.0.12
 %define		quote_crate_ver		1.0.33
 %define		proc_macro2_crate_ver	1.0.70
+%define		paste_crate_ver		1.0.14
 
 #
 # glapi version (glapi tables in dri drivers and libglx must be in sync);
@@ -84,12 +85,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	24.0.8
+Version:	24.1.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	a19dd32c64e33de82119dfb37c2320f6
+# Source0-md5:	a4765bf146091455f22b905c3082835f
 Source1:	https://crates.io/api/v1/crates/syn/%{syn_crate_ver}/download?/syn-%{syn_crate_ver}.tar.gz
 # Source1-md5:	16236f1edd28a8895ad8c3de8de226d8
 Source2:	https://crates.io/api/v1/crates/unicode-ident/%{unicode_ident_crate_ver}/download?/unicode-ident-%{unicode_ident_crate_ver}.tar.gz
@@ -98,6 +99,8 @@ Source3:	https://crates.io/api/v1/crates/quote/%{quote_crate_ver}/download?/quot
 # Source3-md5:	0ddb8bccd3198892d0dd0ec7151f7cd3
 Source4:	https://crates.io/api/v1/crates/proc-macro2/%{proc_macro2_crate_ver}/download?/proc-macro2-%{proc_macro2_crate_ver}.tar.gz
 # Source4-md5:	3f210fd91912a2d7d2f0af5038704d17
+Source5:	https://crates.io/api/v1/crates/paste/%{paste_crate_ver}/download?/paste-%{paste_crate_ver}.tar.gz
+# Source5-md5:	1781b204ec7b6b1ef9232d429e6a973a
 URL:		https://www.mesa3d.org/
 %if %{with opencl_spirv} || %{with gallium_rusticl}
 BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3
@@ -123,8 +126,8 @@ BuildRequires:	libstdc++-devel >= %{gcc_ver}
 BuildRequires:	libunwind-devel
 %{?with_va:BuildRequires:	libva-devel}
 %{?with_va:BuildRequires:	pkgconfig(libva) >= 1.8.0}
-%{?with_vdpau:BuildRequires:	libvdpau-devel >= 1.4}
-BuildRequires:	libxcb-devel >= 1.13
+%{?with_vdpau:BuildRequires:	libvdpau-devel >= 1.5}
+BuildRequires:	libxcb-devel >= 1.17
 BuildRequires:	llvm-devel >= %{llvm_ver}
 %if %{with opencl} || %{with gallium_rusticl}
 BuildRequires:	llvm-libclc
@@ -135,17 +138,21 @@ BuildRequires:	ninja >= 1.5
 BuildRequires:	pkgconfig
 BuildRequires:	pkgconfig(talloc) >= 2.0.1
 BuildRequires:	pkgconfig(xcb-dri2) >= 1.8
-BuildRequires:	pkgconfig(xcb-dri3) >= 1.13
+BuildRequires:	pkgconfig(xcb-dri3) >= 1.17
 BuildRequires:	pkgconfig(xcb-glx) >= 1.8.1
-BuildRequires:	pkgconfig(xcb-present) >= 1.13
+BuildRequires:	pkgconfig(xcb-present) >= 1.17
 BuildRequires:	pkgconfig(xcb-randr) >= 1.12
 BuildRequires:	python3 >= 1:3.2
 BuildRequires:	python3-Mako >= 0.8.0
+%ifarch %{arm} aarch64
+BuildRequires:	python3-pycparser >= 2.20
+%endif
 BuildRequires:	rpmbuild(macros) >= 2.007
 %if %{with gallium_rusticl} || %{with nvk}
 BuildRequires:	rust >= 1.73.0
 %endif
 %{?with_gallium_rusticl:BuildRequires:	rust-bindgen >= 0.62.0}
+%{?with_nvk:BuildRequires:	rust-cbindgen >= 0.25}
 BuildRequires:	sed >= 4.0
 %if %{with opencl_spirv} || %{with gallium_rusticl}
 BuildRequires:	spirv-tools-devel >= 2018.0
@@ -154,7 +161,7 @@ BuildRequires:	tar >= 1:1.22
 BuildRequires:	udev-devel
 # wayland-{client,server}
 %{?with_wayland:BuildRequires:	wayland-devel >= %{wayland_ver}}
-%{?with_wayland:BuildRequires:	wayland-protocols >= 1.30}
+%{?with_wayland:BuildRequires:	wayland-protocols >= 1.34}
 %{?with_wayland:BuildRequires:	wayland-egl-devel >= %{wayland_ver}}
 BuildRequires:	xcb-util-keysyms-devel
 BuildRequires:	xorg-lib-libX11-devel
@@ -201,7 +208,7 @@ Requires:	%{name}-libglapi%{?_isa} = %{version}-%{release}
 # glx driver in libEGL dlopens libGL.so
 Requires:	OpenGL >= 1.2
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libxcb%{?_isa} >= 1.13
+Requires:	libxcb%{?_isa} >= 1.17
 %{?with_wayland:Requires:	wayland%{?_isa} >= %{wayland_ver}}
 %if %{with gbm}
 Requires:	%{name}-libgbm%{?_isa} = %{version}-%{release}
@@ -235,7 +242,7 @@ Requires:	libglvnd-libEGL-devel%{?_isa} >= %{libglvnd_ver}
 %else
 Requires:	%{name}-khrplatform-devel%{?_isa} = %{version}-%{release}
 Requires:	libdrm-devel%{?_isa} >= %{libdrm_ver}
-Requires:	libxcb-devel%{?_isa} >= 1.13
+Requires:	libxcb-devel%{?_isa} >= 1.17
 Requires:	pkgconfig(xcb-dri2) >= 1.8
 Requires:	pkgconfig(xcb-glx) >= 1.8.1
 Requires:	xorg-lib-libXext-devel%{?_isa} >= 1.0.5
@@ -260,7 +267,7 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	%{name}-libglapi%{?_isa} = %{version}-%{release}
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libxcb%{?_isa} >= 1.13
+Requires:	libxcb%{?_isa} >= 1.17
 %if %{with glvnd}
 Requires:	libglvnd-libGL%{?_isa} >= %{libglvnd_ver}
 %endif
@@ -306,7 +313,7 @@ Requires:	libglvnd-libGL-devel%{?_isa} >= %{libglvnd_ver}
 Requires:	%{name}-khrplatform-devel%{?_isa} = %{version}-%{release}
 Requires:	%{name}-libGL%{?_isa} = %{version}-%{release}
 Requires:	libdrm-devel%{?_isa} >= %{libdrm_ver}
-Requires:	libxcb-devel%{?_isa} >= 1.13
+Requires:	libxcb-devel%{?_isa} >= 1.17
 Requires:	pkgconfig(xcb-dri2) >= 1.8
 Requires:	pkgconfig(xcb-glx) >= 1.8.1
 Requires:	xorg-lib-libX11-devel%{?_isa}
@@ -924,12 +931,11 @@ X.org DRI drivers for NVIDIA card family.
 Sterowniki X.org DRI dla rodziny kart NVIDIA.
 
 %package dri-driver-panfrost
-Summary:	X.org DRI driver for Mali Midgard/Bifrost chips
-Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Mali Midgard/Bifrost
+Summary:	X.org DRI driver for Mali Midgard/Bifrost/Valhall (1st/2nd Gen) chips
+Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Mali Midgard/Bifrost/Valhall (1st/2nd Gen)
 License:	MIT
 Group:		X11/Libraries
 Requires:	zlib%{?_isa} >= %{zlib_ver}
-#Suggests:	xorg-driver-video-???
 Conflicts:	%{name}-libEGL%{?_isa} > %{version}
 Conflicts:	%{name}-libEGL%{?_isa} < %{version}
 Conflicts:	%{name}-libGL%{?_isa} > %{version}
@@ -940,10 +946,31 @@ Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
 %description dri-driver-panfrost
-X.org Gallium DRI driver for Mali Midgard/Bifrost chips.
+X.org DRI driver for Mali Midgard/Bifrost/Valhall (1st/2nd Gen) chips.
 
 %description dri-driver-panfrost -l pl.UTF-8
-Sterownik X.org DRI Gallium dla układów Mali Midgard/Bifrost.
+Sterownik X.org DRI dla układów Mali Midgard/Bifrost/Valhall (1st/2nd Gen).
+
+%package dri-driver-panthor
+Summary:	X.org DRI driver for Mali Valhall (3rd Gen) chips
+Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Mali Valhall (3rd Gen)
+License:	MIT
+Group:		X11/Libraries
+Requires:	zlib%{?_isa} >= %{zlib_ver}
+Conflicts:	%{name}-libEGL%{?_isa} > %{version}
+Conflicts:	%{name}-libEGL%{?_isa} < %{version}
+Conflicts:	%{name}-libGL%{?_isa} > %{version}
+Conflicts:	%{name}-libGL%{?_isa} < %{version}
+Conflicts:	%{name}-libgbm%{?_isa} > %{version}
+Conflicts:	%{name}-libgbm%{?_isa} < %{version}
+Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
+Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
+
+%description dri-driver-panthor
+X.org DRI driver for Mali Valhall (3rd Gen) chips.
+
+%description dri-driver-panthor -l pl.UTF-8
+Sterownik X.org DRI dla układów Mali Valhall (3rd Gen).
 
 %package dri-driver-swrast
 Summary:	X.org DRI software rasterizer driver
@@ -1348,7 +1375,7 @@ Summary(pl.UTF-8):	Sterownik Mesa nouveau dla API vdpau
 License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libvdpau%{?_isa} >= 1.4
+Requires:	libvdpau%{?_isa} >= 1.5
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Conflicts:	libvdpau-driver-mesa
 
@@ -1366,7 +1393,7 @@ Summary(pl.UTF-8):	Sterownik Mesa r600 dla API vdpau
 License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libvdpau%{?_isa} >= 1.4
+Requires:	libvdpau%{?_isa} >= 1.5
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Conflicts:	libvdpau-driver-mesa
 
@@ -1384,7 +1411,7 @@ Summary(pl.UTF-8):	Sterownik Mesa radeonsi dla API vdpau
 License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libvdpau%{?_isa} >= 1.4
+Requires:	libvdpau%{?_isa} >= 1.5
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Obsoletes:	Mesa-libllvmradeon < 9.2
 Conflicts:	libvdpau-driver-mesa
@@ -1403,7 +1430,7 @@ Summary(pl.UTF-8):	Sterownik Mesa virtio dla API vdpau
 License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libvdpau%{?_isa} >= 1.4
+Requires:	libvdpau%{?_isa} >= 1.5
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 
 %description -n libvdpau-driver-mesa-virtio
@@ -1419,7 +1446,7 @@ License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
 Requires:	libomxil-bellagio
-Requires:	libxcb%{?_isa} >= 1.13
+Requires:	libxcb%{?_isa} >= 1.17
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Obsoletes:	omxil-mesa-nouveau < 10.3
 Obsoletes:	omxil-mesa-r600 < 10.3
@@ -1437,7 +1464,7 @@ Summary(pl.UTF-8):	v3dv - sterownik Vulkan dla Raspberry Pi 4
 License:	MIT
 Group:		Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libxcb%{?_isa} >= 1.13
+Requires:	libxcb%{?_isa} >= 1.17
 Requires:	xorg-lib-libXrandr%{?_isa} >= 1.3
 Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 # wayland-client
@@ -1458,7 +1485,7 @@ Summary(pl.UTF-8):	turnip - sterownik Vulkan dla układów Adreno
 License:	MIT
 Group:		Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libxcb%{?_isa} >= 1.13
+Requires:	libxcb%{?_isa} >= 1.17
 Requires:	xorg-lib-libXrandr%{?_isa} >= 1.3
 Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 # wayland-client
@@ -1479,7 +1506,7 @@ Summary(pl.UTF-8):	panfrost - sterownik Vulkan dla układów Mali Midgard i Bifr
 License:	MIT
 Group:		Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libxcb%{?_isa} >= 1.13
+Requires:	libxcb%{?_isa} >= 1.17
 Requires:	xorg-lib-libXrandr%{?_isa} >= 1.3
 Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 # wayland-client
@@ -1500,7 +1527,7 @@ Summary(pl.UTF-8):	powervr - sterownik Vulkan dla układów Imagination Technolo
 License:	MIT
 Group:		Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libxcb%{?_isa} >= 1.13
+Requires:	libxcb%{?_isa} >= 1.17
 Requires:	xorg-lib-libXrandr%{?_isa} >= 1.3
 Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 # wayland-client
@@ -1521,7 +1548,7 @@ Summary(pl.UTF-8):	Sterownik Vulkan dla GPU firmy Intel
 License:	MIT
 Group:		Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libxcb%{?_isa} >= 1.13
+Requires:	libxcb%{?_isa} >= 1.17
 Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 # wayland-client
 Requires:	wayland%{?_isa} >= %{wayland_ver}
@@ -1542,7 +1569,7 @@ Summary(pl.UTF-8):	lavapipe - programowy sterownik Vulkan
 License:	MIT
 Group:		Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libxcb%{?_isa} >= 1.13
+Requires:	libxcb%{?_isa} >= 1.17
 Requires:	xorg-lib-libXrandr%{?_isa} >= 1.3
 Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 # wayland-client
@@ -1563,7 +1590,7 @@ Summary(pl.UTF-8):	nvk - eksperymentalny sterownik Vulkan dla GPU firmy NVIDIA
 License:	MIT
 Group:		Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libxcb%{?_isa} >= 1.13
+Requires:	libxcb%{?_isa} >= 1.17
 Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 # wayland-client
 Requires:	wayland%{?_isa} >= %{wayland_ver}
@@ -1583,7 +1610,7 @@ Summary(pl.UTF-8):	radv - sterownik Vulkan dla GPU firmy AMD
 License:	MIT
 Group:		Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libxcb%{?_isa} >= 1.13
+Requires:	libxcb%{?_isa} >= 1.17
 Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 # wayland-client
 Requires:	wayland%{?_isa} >= %{wayland_ver}
@@ -1603,7 +1630,7 @@ Summary(pl.UTF-8):	Sterownik Vulkan dla kart VirtIO
 License:	MIT
 Group:		Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libxcb%{?_isa} >= 1.13
+Requires:	libxcb%{?_isa} >= 1.17
 Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 # wayland-client
 Requires:	wayland%{?_isa} >= %{wayland_ver}
@@ -1621,7 +1648,7 @@ Sterownik Vulkan dla kart VirtIO.
 %setup -q -n mesa-%{version}
 
 install -d subprojects/packagecache
-cp -p %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} subprojects/packagecache
+cp -p %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} %{SOURCE5} subprojects/packagecache
 
 %build
 %if %{with opencl}
@@ -1656,7 +1683,7 @@ vc4 \
 
 gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 
-vulkan_drivers="swrast virtio %{?with_radv:amd} %{?with_intel_vk:intel intel_hasvk} %{?with_nvk:nouveau-experimental} \
+vulkan_drivers="swrast virtio %{?with_radv:amd} %{?with_intel_vk:intel intel_hasvk} %{?with_nvk:nouveau} \
 %ifarch %{arm} aarch64
 broadcom freedreno imagination-experimental panfrost \
 %endif
@@ -1694,7 +1721,7 @@ export BINDGEN_EXTRA_CLANG_ARGS="-mfloat-abi=hard"
 	%{?with_vdpau:-Dgallium-vdpau=enabled} \
 	-Dgallium-xa=%{?with_xa:enabled}%{!?with_xa:disabled} \
 	-Dgbm=%{?with_gbm:enabled}%{!?with_gbm:disabled} \
-	-Dglvnd=%{?with_glvnd:true}%{!?with_glvnd:false} \
+	-Dglvnd=%{?with_glvnd:enabled}%{!?with_glvnd:disabled} \
 	-Dlibunwind=enabled \
 	-Dlmsensors=%{?with_lm_sensors:enabled}%{!?with_lm_sensors:disabled} \
 	%{?with_opencl_spirv:-Dopencl-spirv=true} \
@@ -2032,12 +2059,15 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/rcar-du_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/repaper_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/rockchip_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/rzg2l-du_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/ssd130x_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/st7586_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/st7735r_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/sti_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/stm_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/sun4i-drm_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/udl_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/zynqmp-dpsub_dri.so
 
 %files dri-driver-lima
 %defattr(644,root,root,755)
@@ -2046,6 +2076,10 @@ rm -rf $RPM_BUILD_ROOT
 %files dri-driver-panfrost
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/panfrost_dri.so
+
+%files dri-driver-panthor
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/panthor_dri.so
 
 %if %{with gallium_nouveau}
 %files dri-driver-tegra
