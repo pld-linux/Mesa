@@ -22,6 +22,7 @@
 %bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
 %bcond_without	nvk		# nvidia Vulkan driver
 %bcond_without	radv		# radeon Vulkan driver
+%bcond_without	intel_rt	# Intel Ray Tracing support
 %bcond_with	sse2		# SSE2 instructions
 %bcond_with	hud_extra	# HUD block/NIC I/O HUD stats support
 %bcond_with	lm_sensors	# HUD lm_sensors support
@@ -80,6 +81,10 @@
 
 %ifarch %{ix86} %{x8664} x32
 %define		with_intel_vk	1
+%endif
+
+%ifnarch %{x8664}
+%undefine	with_intel_rt
 %endif
 
 Summary:	Free OpenGL implementation
@@ -1722,6 +1727,7 @@ export BINDGEN_EXTRA_CLANG_ARGS="-mfloat-abi=hard"
 	-Dgallium-xa=%{?with_xa:enabled}%{!?with_xa:disabled} \
 	-Dgbm=%{?with_gbm:enabled}%{!?with_gbm:disabled} \
 	-Dglvnd=%{?with_glvnd:enabled}%{!?with_glvnd:disabled} \
+	-Dintel-rt=%{?with_intel_rt:enabled}%{!?with_intel_rt:disabled} \
 	-Dlibunwind=enabled \
 	-Dlmsensors=%{?with_lm_sensors:enabled}%{!?with_lm_sensors:disabled} \
 	%{?with_opencl_spirv:-Dopencl-spirv=true} \
