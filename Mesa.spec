@@ -28,10 +28,10 @@
 %bcond_with	lm_sensors	# HUD lm_sensors support
 %bcond_with	tests		# tests
 
-%define		syn_crate_ver		2.0.39
+%define		syn_crate_ver		2.0.68
 %define		unicode_ident_crate_ver	1.0.12
 %define		quote_crate_ver		1.0.33
-%define		proc_macro2_crate_ver	1.0.70
+%define		proc_macro2_crate_ver	1.0.86
 %define		paste_crate_ver		1.0.14
 
 #
@@ -40,7 +40,7 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver		7.1.0
 # other packages
-%define		libdrm_ver		2.4.119
+%define		libdrm_ver		2.4.121
 %define		dri2proto_ver		2.8
 %define		glproto_ver		1.4.14
 %define		zlib_ver		1.2.8
@@ -90,20 +90,20 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	24.1.6
-Release:	1
+Version:	24.2.0
+Release:	0.1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	c88c94e10cec36f44ed0d54514108a8c
+# Source0-md5:	6c2108ec2a6ba4d9d1192a12256b0d3c
 Source1:	https://crates.io/api/v1/crates/syn/%{syn_crate_ver}/download?/syn-%{syn_crate_ver}.tar.gz
-# Source1-md5:	16236f1edd28a8895ad8c3de8de226d8
+# Source1-md5:	01a9bc27d9bb67760e8736034737cd20
 Source2:	https://crates.io/api/v1/crates/unicode-ident/%{unicode_ident_crate_ver}/download?/unicode-ident-%{unicode_ident_crate_ver}.tar.gz
 # Source2-md5:	ca65153603a1a7240bbd9d2ce19f2d67
 Source3:	https://crates.io/api/v1/crates/quote/%{quote_crate_ver}/download?/quote-%{quote_crate_ver}.tar.gz
 # Source3-md5:	0ddb8bccd3198892d0dd0ec7151f7cd3
 Source4:	https://crates.io/api/v1/crates/proc-macro2/%{proc_macro2_crate_ver}/download?/proc-macro2-%{proc_macro2_crate_ver}.tar.gz
-# Source4-md5:	3f210fd91912a2d7d2f0af5038704d17
+# Source4-md5:	480a3b8e8201739e157bb648f9243962
 Source5:	https://crates.io/api/v1/crates/paste/%{paste_crate_ver}/download?/paste-%{paste_crate_ver}.tar.gz
 # Source5-md5:	1781b204ec7b6b1ef9232d429e6a973a
 URL:		https://www.mesa3d.org/
@@ -121,7 +121,7 @@ BuildRequires:	expat-devel >= 1.95
 BuildRequires:	flex >= 2.5.35
 BuildRequires:	gcc >= %{gcc_ver}
 %if %{with radv} || %{with intel_vk}
-BuildRequires:	glslang
+BuildRequires:	glslang >= 11.3.0
 %endif
 %ifarch %{armv6}
 BuildRequires:	libatomic-devel
@@ -140,7 +140,7 @@ BuildRequires:	llvm-devel >= %{llvm_ver}
 BuildRequires:	llvm-libclc
 %endif
 %{?with_omx:BuildRequires:	libomxil-bellagio-devel}
-BuildRequires:	meson >= 1.3.1
+BuildRequires:	meson >= 1.4.0
 BuildRequires:	ninja >= 1.5
 BuildRequires:	pkgconfig
 BuildRequires:	pkgconfig(talloc) >= 2.0.1
@@ -151,6 +151,7 @@ BuildRequires:	pkgconfig(xcb-present) >= 1.17
 BuildRequires:	pkgconfig(xcb-randr) >= 1.12
 BuildRequires:	python3 >= 1:3.2
 BuildRequires:	python3-Mako >= 0.8.0
+BuildRequires:	python3-PyYAML
 %ifarch %{arm} aarch64
 BuildRequires:	python3-pycparser >= 2.20
 %endif
@@ -159,7 +160,7 @@ BuildRequires:	rpmbuild(macros) >= 2.007
 BuildRequires:	rust >= 1.73.0
 %endif
 %if %{with gallium_rusticl} || %{with nvk}
-BuildRequires:	rust-bindgen >= 0.65.0}
+BuildRequires:	rust-bindgen >= 0.65.0
 %endif
 %{?with_nvk:BuildRequires:	rust-cbindgen >= 0.25}
 BuildRequires:	sed >= 4.0
@@ -219,6 +220,7 @@ Requires:	OpenGL >= 1.2
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
 Requires:	libxcb%{?_isa} >= 1.17
 %{?with_wayland:Requires:	wayland%{?_isa} >= %{wayland_ver}}
+Requires:	%{name}-libgallium%{?_isa} = %{version}-%{release}
 %if %{with gbm}
 Requires:	%{name}-libgbm%{?_isa} = %{version}-%{release}
 %endif
@@ -274,6 +276,7 @@ Summary:	Free Mesa3D implementation of libGL OpenGL library
 Summary(pl.UTF-8):	Wolnodostępna implementacja Mesa3D biblioteki libGL ze standardu OpenGL
 License:	MIT
 Group:		X11/Libraries
+Requires:	%{name}-libgallium%{?_isa} = %{version}-%{release}
 Requires:	%{name}-libglapi%{?_isa} = %{version}-%{release}
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
 Requires:	libxcb%{?_isa} >= 1.17
@@ -539,10 +542,22 @@ Rusticl zawiera implementację OpenCL w wersji 3.0.
 Implementacja dostarczona jest w postaci instalowalnego sterownika
 klienta (ICD), który może być użyty z loaderem ocl-icd.
 
+%package libgallium
+Summary:	Common Mesa Gallium library
+Summary(pl.UTF-8):	Wspólna biblioteka Mesa Gallium
+Group:		Libraries
+
+%description libgallium
+Common Mesa Gallium library.
+
+%description libgallium -l pl.UTF-8
+Wspólna biblioteka Mesa Gallium.
+
 %package libgbm
 Summary:	Mesa Graphics Buffer Manager library
 Summary(pl.UTF-8):	Biblioteka Mesa Graphics Buffer Manager
 Group:		Libraries
+Requires:	%{name}-libgallium%{?_isa} = %{version}-%{release}
 Requires:	%{name}-libglapi%{?_isa} = %{version}-%{release}
 Conflicts:	Mesa-libEGL < 8.0.1-2
 
@@ -662,14 +677,35 @@ Nine Direct3D9 driver API.
 %description d3d-devel -l pl.UTF-8
 API sterownika Direct3D9 Nine.
 
-%package dri-driver-ati-radeon-R300
-Summary:	X.org DRI driver for ATI R300 card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R300
+%package dri-driver
+Summary:	X.org DRI driver
+Summary(pl.UTF-8):	Sterownik X.org DRI
 License:	MIT
 Group:		X11/Libraries
 Requires:	zlib%{?_isa} >= %{zlib_ver}
-Suggests:	xorg-driver-video-amdgpu
-Suggests:	xorg-driver-video-ati
+Obsoletes:	Mesa-dri-driver-ati-radeon-R300 < 24.2.0
+Obsoletes:	Mesa-dri-driver-ati-radeon-R600 < 24.2.0
+Obsoletes:	Mesa-dri-driver-ati-radeon-SI < 24.2.0
+Obsoletes:	Mesa-dri-driver-etnaviv < 24.2.0
+Obsoletes:	Mesa-dri-driver-freedreno < 24.2.0
+Obsoletes:	Mesa-dri-driver-intel-crocus < 24.2.0
+Obsoletes:	Mesa-dri-driver-intel-i830 < 6.5
+Obsoletes:	Mesa-dri-driver-intel-i915 < 24.2.0
+Obsoletes:	Mesa-dri-driver-intel-i965 < 22.0.0
+Obsoletes:	Mesa-dri-driver-intel-iris < 24.2.0
+Obsoletes:	Mesa-dri-driver-kmsro < 24.2.0
+Obsoletes:	Mesa-dri-driver-lima < 24.2.0
+Obsoletes:	Mesa-dri-driver-nouveau < 24.2.0
+Obsoletes:	Mesa-dri-driver-panfrost < 24.2.0
+Obsoletes:	Mesa-dri-driver-panthor < 24.2.0
+Obsoletes:	Mesa-dri-driver-swrast < 24.2.0
+Obsoletes:	Mesa-dri-driver-tegra < 24.2.0
+Obsoletes:	Mesa-dri-driver-v3d < 24.2.0
+Obsoletes:	Mesa-dri-driver-vc4 < 24.2.0
+Obsoletes:	Mesa-dri-driver-virgl < 24.2.0
+Obsoletes:	Mesa-dri-driver-vmwgfx < 24.2.0
+Obsoletes:	Mesa-dri-driver-zink < 24.2.0
+Obsoletes:	X11-driver-i810-dri < 1:7.0.0
 Obsoletes:	X11-driver-radeon-dri < 1:7.0.0
 Conflicts:	%{name}-libEGL%{?_isa} > %{version}
 Conflicts:	%{name}-libEGL%{?_isa} < %{version}
@@ -680,457 +716,11 @@ Conflicts:	%{name}-libgbm%{?_isa} < %{version}
 Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
 Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
 
-%description dri-driver-ati-radeon-R300
-X.org Gallium DRI driver for ATI R300/R400/RS690/R500 card family
-(Radeon 9600-9800, X300-X2300). It supports R300, R350, R360, RV350,
-RV370, RV380, R420, R423, R430, R480, R481, RV410, RS400, RC410,
-RS480, RS482, R520, RV515, RV530, RV560, RV570, R580, RS600, RS690,
-RS740 chips.
+%description dri-driver
+X.org Gallium DRI driver.
 
-%description dri-driver-ati-radeon-R300 -l pl.UTF-8
-Sterownik X.org DRI Gallium dla rodziny kart ATI R300/R400/RS690/R500
-(Radeon 9600-9800, X300-X2300). Obsługuje układy R300, R350, R360,
-RV350, RV370, RV380, R420, R423, R430, R480, R481, RV410, RS400,
-RC410, RS480, RS482, R520, RV515, RV530, RV560, RV570, R580, RS600,
-RS690, RS740.
-
-%package dri-driver-ati-radeon-R600
-Summary:	X.org DRI driver for ATI R600 card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI R600
-License:	MIT
-Group:		X11/Libraries
-Requires:	radeon-ucode
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Suggests:	xorg-driver-video-amdgpu
-Suggests:	xorg-driver-video-ati
-Conflicts:	%{name}-libEGL%{?_isa} > %{version}
-Conflicts:	%{name}-libEGL%{?_isa} < %{version}
-Conflicts:	%{name}-libGL%{?_isa} > %{version}
-Conflicts:	%{name}-libGL%{?_isa} < %{version}
-Conflicts:	%{name}-libgbm%{?_isa} > %{version}
-Conflicts:	%{name}-libgbm%{?_isa} < %{version}
-Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
-Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
-
-%description dri-driver-ati-radeon-R600
-X.org Gallium DRI driver for ATI R600/R700 card family (Radeon HD
-2400-7000). It supports R600, RV610, RV630, RV670, RV620, RV635,
-RS780, RS880, RV770, RV730, RV710, RV740, CEDAR, REDWOOD, JUNIPER,
-CYPRESS, HEMLOCK, PALM, SUMO/SUMO2, CAYMAN, BARTS, TURKS, CAICOS,
-ARUBA chips.
-
-%description dri-driver-ati-radeon-R600 -l pl.UTF-8
-Sterownik X.org DRI Gallium dla rodziny kart ATI R600/R700 (Radeon HD
-2400-7000). Obsługuje układy R600, RV610, RV630, RV670, RV620, RV635,
-RS780, RS880, RV770, RV730, RV710, RV740, CEDAR, REDWOOD, JUNIPER,
-CYPRESS, HEMLOCK, PALM, SUMO/SUMO2, CAYMAN, BARTS, TURKS, CAICOS,
-ARUBA.
-
-%package dri-driver-ati-radeon-SI
-Summary:	X.org DRI driver for ATI Southern Islands card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart ATI Southern Islands
-License:	MIT
-Group:		X11/Libraries
-Requires:	radeon-ucode
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Suggests:	xorg-driver-video-amdgpu
-Suggests:	xorg-driver-video-ati
-Conflicts:	%{name}-libEGL%{?_isa} > %{version}
-Conflicts:	%{name}-libEGL%{?_isa} < %{version}
-Conflicts:	%{name}-libGL%{?_isa} > %{version}
-Conflicts:	%{name}-libGL%{?_isa} < %{version}
-Conflicts:	%{name}-libgbm%{?_isa} > %{version}
-Conflicts:	%{name}-libgbm%{?_isa} < %{version}
-Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
-Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
-
-%description dri-driver-ati-radeon-SI
-X.org Gallium DRI driver for ATI Southern Islands card family (Radeon
-HD 7700-8000, R9, APU). It supports TAHITI, PITCAIRN, VERDE, OLAND,
-HAINAN, BONAIRE, KABINI, MULLINS, KAVERI, HAWAII, ICELAND, TONGA,
-CARRIZO, FIJI, POLARIS, STONEY, VEGA, RAVEN chips.
-
-%description dri-driver-ati-radeon-SI -l pl.UTF-8
-Sterownik X.org DRI Gallium dla rodziny kart ATI Southern Islands
-(Radeon HD 7700-8000, R9, APU). Obsługuje układy TAHITI, PITCAIRN,
-VERDE, OLAND, HAINAN, BONAIRE, KABINI, MULLINS, KAVERI, HAWAII,
-ICELAND, TONGA, CARRIZO, FIJI, POLARIS, STONEY, VEGA, RAVEN.
-
-%package dri-driver-etnaviv
-Summary:	X.org DRI driver for Vivante 3D chips
-Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Vivante 3D
-License:	MIT
-Group:		X11/Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-#Suggests:	xorg-driver-video-?
-Conflicts:	%{name}-libEGL%{?_isa} > %{version}
-Conflicts:	%{name}-libEGL%{?_isa} < %{version}
-Conflicts:	%{name}-libGL%{?_isa} > %{version}
-Conflicts:	%{name}-libGL%{?_isa} < %{version}
-Conflicts:	%{name}-libgbm%{?_isa} > %{version}
-Conflicts:	%{name}-libgbm%{?_isa} < %{version}
-Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
-Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
-
-%description dri-driver-etnaviv
-X.org Gallium DRI driver for Vivante 3D chips.
-
-%description dri-driver-etnaviv -l pl.UTF-8
-Sterownik X.org DRI Gallium dla układów Vivante 3D.
-
-%package dri-driver-freedreno
-Summary:	X.org DRI driver for Adreno chips
-Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Adreno
-License:	MIT
-Group:		X11/Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Suggests:	xorg-driver-video-freedreno
-Conflicts:	%{name}-libEGL%{?_isa} > %{version}
-Conflicts:	%{name}-libEGL%{?_isa} < %{version}
-Conflicts:	%{name}-libGL%{?_isa} > %{version}
-Conflicts:	%{name}-libGL%{?_isa} < %{version}
-Conflicts:	%{name}-libgbm%{?_isa} > %{version}
-Conflicts:	%{name}-libgbm%{?_isa} < %{version}
-Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
-Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
-
-%description dri-driver-freedreno
-X.org Gallium DRI driver for Adreno chips.
-
-%description dri-driver-freedreno -l pl.UTF-8
-Sterownik X.org DRI Gallium dla układów Adreno.
-
-%package dri-driver-intel-crocus
-Summary:	X.org DRI driver for Intel Gen4-Gen7 chips
-Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Intel Gen4-Gen7
-License:	MIT
-Group:		X11/Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Obsoletes:	Mesa-dri-driver-intel-i965 < 22.0.0
-Conflicts:	%{name}-libEGL%{?_isa} > %{version}
-Conflicts:	%{name}-libEGL%{?_isa} < %{version}
-Conflicts:	%{name}-libGL%{?_isa} > %{version}
-Conflicts:	%{name}-libGL%{?_isa} < %{version}
-Conflicts:	%{name}-libgbm%{?_isa} > %{version}
-Conflicts:	%{name}-libgbm%{?_isa} < %{version}
-Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
-Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
-
-%description dri-driver-intel-crocus
-X.org Gallium DRI driver for Intel Gen4/Gen5/Gen6/Gen7 chips.
-
-%description dri-driver-intel-crocus -l pl.UTF-8
-Sterownik X.org DRI dla układów Intel Gen4/Gen5/Gen6/Gen7.
-
-%package dri-driver-intel-i915
-Summary:	X.org DRI driver for Intel i915 card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel i915
-License:	MIT
-Group:		X11/Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Obsoletes:	Mesa-dri-driver-intel-i830 < 6.5
-Obsoletes:	X11-driver-i810-dri < 1:7.0.0
-Conflicts:	%{name}-libEGL%{?_isa} > %{version}
-Conflicts:	%{name}-libEGL%{?_isa} < %{version}
-Conflicts:	%{name}-libGL%{?_isa} > %{version}
-Conflicts:	%{name}-libGL%{?_isa} < %{version}
-Conflicts:	%{name}-libgbm%{?_isa} > %{version}
-Conflicts:	%{name}-libgbm%{?_isa} < %{version}
-Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
-Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
-
-%description dri-driver-intel-i915
-X.org DRI driver for Intel i915 card family (830, 845, 852/855, 865,
-915, 945, G33, Q33, Q35, Pineview).
-
-%description dri-driver-intel-i915 -l pl.UTF-8
-Sterownik X.org DRI dla rodziny kart Intel i915 (830, 845, 852/855,
-865, 915, 945, G33, Q33, Q35, Pineview).
-
-%package dri-driver-intel-iris
-Summary:	X.org DRI driver for Intel Iris (Gen8+) card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart Intel Iris (Gen8+)
-License:	MIT
-Group:		X11/Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Conflicts:	%{name}-libEGL%{?_isa} > %{version}
-Conflicts:	%{name}-libEGL%{?_isa} < %{version}
-Conflicts:	%{name}-libGL%{?_isa} > %{version}
-Conflicts:	%{name}-libGL%{?_isa} < %{version}
-Conflicts:	%{name}-libgbm%{?_isa} > %{version}
-Conflicts:	%{name}-libgbm%{?_isa} < %{version}
-Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
-Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
-
-%description dri-driver-intel-iris
-X.org Gallium DRI driver for Intel Iris (Gen8+) card family
-(Broadwell, Skylake, Broxton, Kabylake, Coffeelake, Geminilake,
-Whiskey Lake, Comet Lake, Cannonlake, Ice Lake, Elkhart Lake).
-
-%description dri-driver-intel-iris -l pl.UTF-8
-Sterownik X.org DRI Gallium dla rodziny kart Intel Iris (Gen8+:
-Broadwell, Skylake, Broxton, Kabylake, Coffeelake, Geminilake,
-Whiskey Lake, Comet Lake, Cannonlake, Ice Lake, Elkhart Lake).
-
-%package dri-driver-kmsro
-Summary:	X.org Gallium DRI driver using KMS Render-Only architecture
-Summary(pl.UTF-8):	Sterownik X.org DRI Gallium wykorzystujący architekturę KMS Render-Only
-License:	MIT
-Group:		X11/Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-#Suggests:	xorg-driver-video-?
-Conflicts:	%{name}-libEGL%{?_isa} > %{version}
-Conflicts:	%{name}-libEGL%{?_isa} < %{version}
-Conflicts:	%{name}-libGL%{?_isa} > %{version}
-Conflicts:	%{name}-libGL%{?_isa} < %{version}
-Conflicts:	%{name}-libgbm%{?_isa} > %{version}
-Conflicts:	%{name}-libgbm%{?_isa} < %{version}
-Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
-Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
-
-%description dri-driver-kmsro
-X.org Gallium DRI driver using KMS Render-Only architecture.
-
-%description dri-driver-kmsro -l pl.UTF-8
-Sterownik X.org DRI Gallium wykorzystujący architekturę KMS
-Render-Only.
-
-%package dri-driver-lima
-Summary:	X.org DRI driver for Mali Utgard chips
-Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Mali Utgard
-License:	MIT
-Group:		X11/Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-#Suggests:	xorg-driver-video-???
-Conflicts:	%{name}-libEGL%{?_isa} > %{version}
-Conflicts:	%{name}-libEGL%{?_isa} < %{version}
-Conflicts:	%{name}-libGL%{?_isa} > %{version}
-Conflicts:	%{name}-libGL%{?_isa} < %{version}
-Conflicts:	%{name}-libgbm%{?_isa} > %{version}
-Conflicts:	%{name}-libgbm%{?_isa} < %{version}
-Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
-Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
-
-%description dri-driver-lima
-X.org Gallium DRI driver for Mali Utgard chips.
-
-%description dri-driver-lima -l pl.UTF-8
-Sterownik X.org DRI Gallium dla układów Mali Utgard.
-
-%package dri-driver-nouveau
-Summary:	X.org DRI driver for NVIDIA card family
-Summary(pl.UTF-8):	Sterownik X.org DRI dla rodziny kart NVIDIA
-License:	MIT
-Group:		X11/Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Suggests:	xorg-driver-video-nouveau
-Conflicts:	%{name}-libEGL%{?_isa} > %{version}
-Conflicts:	%{name}-libEGL%{?_isa} < %{version}
-Conflicts:	%{name}-libGL%{?_isa} > %{version}
-Conflicts:	%{name}-libGL%{?_isa} < %{version}
-Conflicts:	%{name}-libgbm%{?_isa} > %{version}
-Conflicts:	%{name}-libgbm%{?_isa} < %{version}
-Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
-Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
-
-%description dri-driver-nouveau
-X.org DRI drivers for NVIDIA card family.
-
-%description dri-driver-nouveau -l pl.UTF-8
-Sterowniki X.org DRI dla rodziny kart NVIDIA.
-
-%package dri-driver-panfrost
-Summary:	X.org DRI driver for Mali Midgard/Bifrost/Valhall (1st/2nd Gen) chips
-Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Mali Midgard/Bifrost/Valhall (1st/2nd Gen)
-License:	MIT
-Group:		X11/Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Conflicts:	%{name}-libEGL%{?_isa} > %{version}
-Conflicts:	%{name}-libEGL%{?_isa} < %{version}
-Conflicts:	%{name}-libGL%{?_isa} > %{version}
-Conflicts:	%{name}-libGL%{?_isa} < %{version}
-Conflicts:	%{name}-libgbm%{?_isa} > %{version}
-Conflicts:	%{name}-libgbm%{?_isa} < %{version}
-Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
-Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
-
-%description dri-driver-panfrost
-X.org DRI driver for Mali Midgard/Bifrost/Valhall (1st/2nd Gen) chips.
-
-%description dri-driver-panfrost -l pl.UTF-8
-Sterownik X.org DRI dla układów Mali Midgard/Bifrost/Valhall (1st/2nd Gen).
-
-%package dri-driver-panthor
-Summary:	X.org DRI driver for Mali Valhall (3rd Gen) chips
-Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Mali Valhall (3rd Gen)
-License:	MIT
-Group:		X11/Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Conflicts:	%{name}-libEGL%{?_isa} > %{version}
-Conflicts:	%{name}-libEGL%{?_isa} < %{version}
-Conflicts:	%{name}-libGL%{?_isa} > %{version}
-Conflicts:	%{name}-libGL%{?_isa} < %{version}
-Conflicts:	%{name}-libgbm%{?_isa} > %{version}
-Conflicts:	%{name}-libgbm%{?_isa} < %{version}
-Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
-Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
-
-%description dri-driver-panthor
-X.org DRI driver for Mali Valhall (3rd Gen) chips.
-
-%description dri-driver-panthor -l pl.UTF-8
-Sterownik X.org DRI dla układów Mali Valhall (3rd Gen).
-
-%package dri-driver-swrast
-Summary:	X.org DRI software rasterizer driver
-Summary(pl.UTF-8):	Sterownik X.org DRI obsługujący rysowanie programowe
-License:	MIT
-Group:		X11/Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Conflicts:	%{name}-libEGL%{?_isa} > %{version}
-Conflicts:	%{name}-libEGL%{?_isa} < %{version}
-Conflicts:	%{name}-libGL%{?_isa} > %{version}
-Conflicts:	%{name}-libGL%{?_isa} < %{version}
-Conflicts:	%{name}-libgbm%{?_isa} > %{version}
-Conflicts:	%{name}-libgbm%{?_isa} < %{version}
-Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
-Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
-
-%description dri-driver-swrast
-X.org DRI software rasterizer driver.
-
-%description dri-driver-swrast -l pl.UTF-8
-Sterownik X.org DRI obsługujący rysowanie programowe.
-
-%package dri-driver-tegra
-Summary:	X.org DRI driver for Tegra SoC chips
-Summary(pl.UTF-8):	Sterownik X.org DRI dla układów SoC Tegra
-License:	MIT
-Group:		X11/Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-#Suggests:	xorg-driver-video-???
-Conflicts:	%{name}-libEGL%{?_isa} > %{version}
-Conflicts:	%{name}-libEGL%{?_isa} < %{version}
-Conflicts:	%{name}-libGL%{?_isa} > %{version}
-Conflicts:	%{name}-libGL%{?_isa} < %{version}
-Conflicts:	%{name}-libgbm%{?_isa} > %{version}
-Conflicts:	%{name}-libgbm%{?_isa} < %{version}
-Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
-Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
-
-%description dri-driver-tegra
-X.org Gallium DRI driver for Tegra SoC chips.
-
-%description dri-driver-tegra -l pl.UTF-8
-Sterownik X.org DRI Gallium dla układów Tegra SoC.
-
-%package dri-driver-v3d
-Summary:	X.org DRI driver for Broadcom VC5 chips
-Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Broadcom VC5
-License:	MIT
-Group:		X11/Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Suggests:	xorg-driver-video-modesetting
-Conflicts:	%{name}-libEGL%{?_isa} > %{version}
-Conflicts:	%{name}-libEGL%{?_isa} < %{version}
-Conflicts:	%{name}-libGL%{?_isa} > %{version}
-Conflicts:	%{name}-libGL%{?_isa} < %{version}
-Conflicts:	%{name}-libgbm%{?_isa} > %{version}
-Conflicts:	%{name}-libgbm%{?_isa} < %{version}
-Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
-Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
-
-%description dri-driver-v3d
-X.org Gallium DRI driver for Broadcom VC5 chips.
-
-%description dri-driver-v3d -l pl.UTF-8
-Sterownik X.org DRI Gallium dla układów Broadcom VC5.
-
-%package dri-driver-vc4
-Summary:	X.org DRI driver for Broadcom VC4 chips
-Summary(pl.UTF-8):	Sterownik X.org DRI dla układów Broadcom VC4
-License:	MIT
-Group:		X11/Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Suggests:	xorg-driver-video-modesetting
-Conflicts:	%{name}-libEGL%{?_isa} > %{version}
-Conflicts:	%{name}-libEGL%{?_isa} < %{version}
-Conflicts:	%{name}-libGL%{?_isa} > %{version}
-Conflicts:	%{name}-libGL%{?_isa} < %{version}
-Conflicts:	%{name}-libgbm%{?_isa} > %{version}
-Conflicts:	%{name}-libgbm%{?_isa} < %{version}
-Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
-Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
-
-%description dri-driver-vc4
-X.org Gallium DRI driver for Broadcom VC4 chips.
-
-%description dri-driver-vc4 -l pl.UTF-8
-Sterownik X.org DRI Gallium dla układów Broadcom VC4.
-
-%package dri-driver-virgl
-Summary:	X.org DRI driver for QEMU VirGL
-Summary(pl.UTF-8):	Sterownik X.org DRI dla QEMU VirGL
-License:	MIT
-Group:		X11/Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Conflicts:	%{name}-libEGL%{?_isa} > %{version}
-Conflicts:	%{name}-libEGL%{?_isa} < %{version}
-Conflicts:	%{name}-libGL%{?_isa} > %{version}
-Conflicts:	%{name}-libGL%{?_isa} < %{version}
-Conflicts:	%{name}-libgbm%{?_isa} > %{version}
-Conflicts:	%{name}-libgbm%{?_isa} < %{version}
-Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
-Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
-
-%description dri-driver-virgl
-X.org Gallium DRI driver for QEMU VirGL.
-
-%description dri-driver-virgl -l pl.UTF-8
-Sterownik X.org DRI Gallium dla QEMU VirGL.
-
-%package dri-driver-vmwgfx
-Summary:	X.org DRI driver for VMware
-Summary(pl.UTF-8):	Sterownik X.org DRI dla VMware
-License:	MIT
-Group:		X11/Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Suggests:	xorg-driver-video-vmware
-Conflicts:	%{name}-libEGL%{?_isa} > %{version}
-Conflicts:	%{name}-libEGL%{?_isa} < %{version}
-Conflicts:	%{name}-libGL%{?_isa} > %{version}
-Conflicts:	%{name}-libGL%{?_isa} < %{version}
-Conflicts:	%{name}-libgbm%{?_isa} > %{version}
-Conflicts:	%{name}-libgbm%{?_isa} < %{version}
-Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
-Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
-
-%description dri-driver-vmwgfx
-X.org Gallium DRI driver for VMWare.
-
-%description dri-driver-vmwgfx -l pl.UTF-8
-Sterownik X.org DRI Gallium dla VMware.
-
-%package dri-driver-zink
-Summary:	X.org DRI driver based on Vulkan
-Summary(pl.UTF-8):	Sterownik X.org DRI oparty na Vulkanie
-License:	MIT
-Group:		X11/Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Conflicts:	%{name}-libEGL%{?_isa} > %{version}
-Conflicts:	%{name}-libEGL%{?_isa} < %{version}
-Conflicts:	%{name}-libGL%{?_isa} > %{version}
-Conflicts:	%{name}-libGL%{?_isa} < %{version}
-Conflicts:	%{name}-libgbm%{?_isa} > %{version}
-Conflicts:	%{name}-libgbm%{?_isa} < %{version}
-Conflicts:	xorg-xserver-libglx(glapi) > %{glapi_ver}
-Conflicts:	xorg-xserver-libglx(glapi) < %{glapi_ver}
-
-%description dri-driver-zink
-X.org Gallium DRI driver based on Vulkan.
-
-%description dri-driver-zink -l pl.UTF-8
-Sterownik X.org DRI Gallium oparty na Vulkanie.
+%description dri-driver -l pl.UTF-8
+Sterownik X.org DRI Gallium.
 
 %package pipe-driver-crocus
 Summary:	crocus driver for Mesa Gallium dynamic pipe loader
@@ -1307,146 +897,40 @@ virtual video adapter.
 Sterownik vmwgfx dla dynamicznego systemu potoków szkieletu Mesa
 Gallium. Obsługuje wirtualną kartę graficzną VMware.
 
-%package -n libva-driver-gallium
+%package -n libva-driver
 Summary:	VA driver for Gallium State Tracker
 Summary(pl.UTF-8):	Sterowniki VA do Gallium
 Group:		Libraries
-%if %{with gallium_radeon}
-Requires:	libva-driver-r600%{?_isa} = %{version}-%{release}
-Requires:	libva-driver-radeonsi%{?_isa} = %{version}-%{release}
-%endif
-%if %{with gallium_nouveau}
-Requires:	libva-driver-nouveau%{?_isa} = %{version}-%{release}
-%endif
+Obsoletes:	libva-driver-gallium < 24.2.0
+Obsoletes:	libva-driver-nouveau < 24.2.0
+Obsoletes:	libva-driver-r600 < 24.2.0
+Obsoletes:	libva-driver-radeonsi < 24.2.0
+Obsoletes:	libva-driver-virtio < 24.2.0
 
-%description -n libva-driver-gallium
-VA drivers for Gallium State Tracker (r600, radeonsi & nouveau).
+%description -n libva-driver
+VA drivers for Gallium State Tracker.
 
-%description -n libva-driver-gallium -l pl.UTF-8
-Sterowniki VA do Gallium (r600, radeonsi & nouveau).
+%description -n libva-driver -l pl.UTF-8
+Sterowniki VA do Gallium.
 
-%package -n libva-driver-r600
-Summary:	VA driver for ATI Radeon R600 series adapters
-Summary(pl.UTF-8):	Sterownik VA dla kart ATI Radeon z serii R600
-Group:		Libraries
-Requires:	libva%{?_isa} >= 1.8.0
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-
-%description -n libva-driver-r600
-VA driver for ATI Radeon R600 series adapters.
-
-%description -n libva-driver-r600 -l pl.UTF-8
-Sterownik VA dla kart ATI Radeon z serii R600.
-
-%package -n libva-driver-radeonsi
-Summary:	VA driver for ATI Radeon SI adapters
-Summary(pl.UTF-8):	Sterownik VA dla kart ATI Radeon SI
-Group:		Libraries
-Requires:	libva%{?_isa} >= 1.8.0
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-
-%description -n libva-driver-radeonsi
-VA driver for ATI Radeon adapters based on Southern Islands chips.
-
-%description -n libva-driver-radeonsi -l pl.UTF-8
-Sterownik VA dla kart ATI Radeon opartych na układach Southern
-Islands.
-
-%package -n libva-driver-nouveau
-Summary:	VA driver for NVidia adapters
-Summary(pl.UTF-8):	Sterownik VA dla kart NVidia
-Group:		Libraries
-Requires:	libva%{?_isa} >= 1.8.0
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-
-%description -n libva-driver-nouveau
-VA driver for NVidia adapters.
-
-%description -n libva-driver-nouveau -l pl.UTF-8
-Sterownik VA dla kart NVidia.
-
-%package -n libva-driver-virtio
-Summary:	VA driver for VirtIO adapters
-Summary(pl.UTF-8):	Sterownik VA dla kart VirtIO
-Group:		Libraries
-Requires:	libva%{?_isa} >= 1.8.0
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-
-%description -n libva-driver-virtio
-VA driver for VirtIO adapters.
-
-%description -n libva-driver-virtio -l pl.UTF-8
-Sterownik VA dla kart VirtIO.
-
-%package -n libvdpau-driver-mesa-nouveau
-Summary:	Mesa nouveau driver for the vdpau API
-Summary(pl.UTF-8):	Sterownik Mesa nouveau dla API vdpau
+%package -n libvdpau-driver-mesa
+Summary:	Mesa driver for the vdpau API
+Summary(pl.UTF-8):	Sterownik Mesa dla API vdpau
 License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
 Requires:	libvdpau%{?_isa} >= 1.5
 Requires:	zlib%{?_isa} >= %{zlib_ver}
-Conflicts:	libvdpau-driver-mesa
+Obsoletes:	libvdpau-driver-mesa-nouveau < 24.2.0
+Obsoletes:	libvdpau-driver-mesa-r600 < 24.2.0
+Obsoletes:	libvdpau-driver-mesa-radeonsi < 24.2.0
+Obsoletes:	libvdpau-driver-mesa-virtio < 24.2.0
 
-%description -n libvdpau-driver-mesa-nouveau
-Mesa nouveau driver for the vdpau API. It supports NVidia adapters
-(NV40-NV96, NVa0).
+%description -n libvdpau-driver-mesa
+Mesa driver for the vdpau API.
 
-%description -n libvdpau-driver-mesa-nouveau -l pl.UTF-8
-Sterownik Mesa nouveau dla API vdpau. Obsługuje karty NVidia
-(NV40-NV96, NVa0).
-
-%package -n libvdpau-driver-mesa-r600
-Summary:	Mesa r600 driver for the vdpau API
-Summary(pl.UTF-8):	Sterownik Mesa r600 dla API vdpau
-License:	MIT
-Group:		X11/Libraries
-Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libvdpau%{?_isa} >= 1.5
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Conflicts:	libvdpau-driver-mesa
-
-%description -n libvdpau-driver-mesa-r600
-Mesa r600 driver for the vdpau API. It supports ATI Radeon adapters
-based on R600/R700 chips.
-
-%description -n libvdpau-driver-mesa-r600 -l pl.UTF-8
-Sterownik Mesa r600 dla API vdpau. Obsługuje karty ATI Radeon oparte
-na układach R600/R700.
-
-%package -n libvdpau-driver-mesa-radeonsi
-Summary:	Mesa radeonsi driver for the vdpau API
-Summary(pl.UTF-8):	Sterownik Mesa radeonsi dla API vdpau
-License:	MIT
-Group:		X11/Libraries
-Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libvdpau%{?_isa} >= 1.5
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Obsoletes:	Mesa-libllvmradeon < 9.2
-Conflicts:	libvdpau-driver-mesa
-
-%description -n libvdpau-driver-mesa-radeonsi
-Mesa radeonsi driver for the vdpau API. It supports ATI Radeon
-adapters based on Southern Islands chips.
-
-%description -n libvdpau-driver-mesa-radeonsi -l pl.UTF-8
-Sterownik Mesa radeonsi dla API vdpau. Obsługuje karty ATI Radeon
-oparte na układach Southern Islands.
-
-%package -n libvdpau-driver-mesa-virtio
-Summary:	Mesa virtio driver for the vdpau API
-Summary(pl.UTF-8):	Sterownik Mesa virtio dla API vdpau
-License:	MIT
-Group:		X11/Libraries
-Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libvdpau%{?_isa} >= 1.5
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-
-%description -n libvdpau-driver-mesa-virtio
-Mesa virtio driver for the vdpau API.
-
-%description -n libvdpau-driver-mesa-virtio -l pl.UTF-8
-Sterownik Mesa virtio dla API vdpau.
+%description -n libvdpau-driver-mesa -l pl.UTF-8
+Sterownik Mesa dla API vdpau.
 
 %package -n omxil-mesa
 Summary:	Mesa driver for Bellagio OpenMAX IL API
@@ -1480,7 +964,7 @@ Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 Requires:	wayland%{?_isa} >= %{wayland_ver}
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.2.274
+Provides:	vulkan(icd) = 1.2.289
 
 %description vulkan-icd-broadcom
 v3dv - Mesa Vulkan driver for Raspberry Pi 4.
@@ -1501,7 +985,7 @@ Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 Requires:	wayland%{?_isa} >= %{wayland_ver}
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.2.274
+Provides:	vulkan(icd) = 1.1.289
 
 %description vulkan-icd-freedreno
 turnip - Mesa Vulkan driver for Adreno chips.
@@ -1522,7 +1006,7 @@ Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 Requires:	wayland%{?_isa} >= %{wayland_ver}
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.0.274
+Provides:	vulkan(icd) = 1.0.289
 
 %description vulkan-icd-panfrost
 panfrost - Mesa Vulkan driver for Mali Midgard and Bifrost GPUs.
@@ -1543,7 +1027,7 @@ Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 Requires:	wayland%{?_isa} >= %{wayland_ver}
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.0.274
+Provides:	vulkan(icd) = 1.0.289
 
 %description vulkan-icd-powervr
 powervr - Mesa Vulkan driver for Imagination Technologies Rogue GPUs.
@@ -1563,7 +1047,7 @@ Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 Requires:	wayland%{?_isa} >= %{wayland_ver}
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.3.274
+Provides:	vulkan(icd) = 1.3.289
 Obsoletes:	Mesa-vulkan-icd-intel-devel < 21.1.0
 
 %description vulkan-icd-intel
@@ -1585,7 +1069,7 @@ Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 Requires:	wayland%{?_isa} >= %{wayland_ver}
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.1.274
+Provides:	vulkan(icd) = 1.3.289
 
 %description vulkan-icd-lavapipe
 lavapipe - Mesa software Vulkan driver.
@@ -1605,7 +1089,7 @@ Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 Requires:	wayland%{?_isa} >= %{wayland_ver}
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.1.274
+Provides:	vulkan(icd) = 1.3.289
 
 %description vulkan-icd-nouveau
 nvk - experimental Mesa Vulkan driver for NVIDIA GPUs.
@@ -1625,7 +1109,7 @@ Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 Requires:	wayland%{?_isa} >= %{wayland_ver}
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.3.274
+Provides:	vulkan(icd) = 1.3.289
 
 %description vulkan-icd-radeon
 radv - Mesa Vulkan driver for AMD Radeon GPUs.
@@ -1645,7 +1129,7 @@ Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
 Requires:	wayland%{?_isa} >= %{wayland_ver}
 Requires:	zlib%{?_isa} >= %{zlib_ver}
 Suggests:	vulkan(loader)
-Provides:	vulkan(icd) = 1.3.274
+Provides:	vulkan(icd) = 1.3.289
 
 %description vulkan-icd-virtio
 Mesa Vulkan driver for VirtIO adapters.
@@ -1668,7 +1152,7 @@ fi
 %endif
 
 
-gallium_drivers="virgl swrast %{?with_gallium_zink:zink} \
+gallium_drivers="virgl llvmpipe softpipe %{?with_gallium_zink:zink} \
 %ifarch %{ix86} %{x8664} x32
 svga iris %{?with_gallium_i915:i915} crocus \
 %endif
@@ -1790,6 +1274,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %post	libOpenCL -p /sbin/ldconfig
 %postun	libOpenCL -p /sbin/ldconfig
+
+%post	libgallium -p /sbin/ldconfig
+%postun	libgallium -p /sbin/ldconfig
 
 %post	libgbm -p /sbin/ldconfig
 %postun	libgbm -p /sbin/ldconfig
@@ -1922,6 +1409,10 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %endif
 
+%files libgallium
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libgallium-%{version}.so
+
 %if %{with gbm}
 %files libgbm
 %defattr(644,root,root,755)
@@ -1985,64 +1476,31 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/d3d.pc
 %endif
 
-### drivers: dri
-
+%files dri-driver
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/libdril_dri.so
 %if %{with gallium_radeon}
-%files dri-driver-ati-radeon-R300
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/r300_dri.so
-
-%files dri-driver-ati-radeon-R600
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/r600_dri.so
-
-%files dri-driver-ati-radeon-SI
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/radeonsi_dri.so
 %endif
-
 %ifarch %{ix86} %{x8664} x32
-%files dri-driver-intel-i915
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
-
 %if %{with gallium}
-%files dri-driver-intel-crocus
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/crocus_dri.so
-
-%files dri-driver-intel-iris
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/iris_dri.so
 %endif
 %endif
-
-%files dri-driver-nouveau
-%defattr(644,root,root,755)
 %if %{with gallium_nouveau}
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
 %endif
-
-%files dri-driver-swrast
-%defattr(644,root,root,755)
 %if %{with gallium}
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/kms_swrast_dri.so
-%endif
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
-
-%if %{with gallium}
 %ifarch %{arm} aarch64
-%files dri-driver-etnaviv
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/etnaviv_dri.so
-
-%files dri-driver-freedreno
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/kgsl_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/msm_dri.so
-
-%files dri-driver-kmsro
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/armada-drm_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/exynos_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/gm12u320_dri.so
@@ -2077,49 +1535,20 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/stm_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/sun4i-drm_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/udl_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/vkms_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/zynqmp-dpsub_dri.so
-
-%files dri-driver-lima
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/lima_dri.so
-
-%files dri-driver-panfrost
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/panfrost_dri.so
-
-%files dri-driver-panthor
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/panthor_dri.so
-
 %if %{with gallium_nouveau}
-%files dri-driver-tegra
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/tegra_dri.so
 %endif
-
-%files dri-driver-v3d
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/v3d_dri.so
-
-%files dri-driver-vc4
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/vc4_dri.so
 %endif
-
-%files dri-driver-virgl
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/virtio_gpu_dri.so
-
 %ifarch %{ix86} %{x8664} x32
-%files dri-driver-vmwgfx
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/vmwgfx_dri.so
-%endif
-
-%if %{with gallium_zink}
-%files dri-driver-zink
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/zink_dri.so
 %endif
 %endif
 
@@ -2188,61 +1617,41 @@ rm -rf $RPM_BUILD_ROOT
 ### drivers: va
 
 %if %{with va}
-%files -n libva-driver-gallium
+%files -n libva-driver
 %defattr(644,root,root,755)
-
+%attr(755,root,root) %{_libdir}/libva/dri/libgallium_drv_video.so
 %if %{with gallium_radeon}
-%files -n libva-driver-r600
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libva/dri/r600_drv_video.so
-
-%files -n libva-driver-radeonsi
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libva/dri/radeonsi_drv_video.so
 %endif
-
 %if %{with gallium_nouveau}
-%files -n libva-driver-nouveau
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libva/dri/nouveau_drv_video.so
 %endif
-
-%files -n libva-driver-virtio
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libva/dri/virtio_gpu_drv_video.so
 %endif
 
-### drivers: vdpau
 
 %if %{with vdpau}
 # ldconfig is not used in vdpau tree, so package all symlinks
-%if %{with gallium_nouveau}
-%files -n libvdpau-driver-mesa-nouveau
+%files -n libvdpau-driver-mesa
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_gallium.so.1.0.0
+%if %{with gallium_nouveau}
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1.0.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so
 %endif
-
 %if %{with gallium_radeon}
-%files -n libvdpau-driver-mesa-r600
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so
-
-%files -n libvdpau-driver-mesa-radeonsi
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1.0.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so
 %endif
-
-%files -n libvdpau-driver-mesa-virtio
-%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_virtio_gpu.so.1.0.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_virtio_gpu.so.1.0
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_virtio_gpu.so.1
