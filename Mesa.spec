@@ -897,25 +897,24 @@ virtual video adapter.
 Sterownik vmwgfx dla dynamicznego systemu potoków szkieletu Mesa
 Gallium. Obsługuje wirtualną kartę graficzną VMware.
 
-%package -n libva-driver
+%package -n libva-driver-gallium
 Summary:	VA driver for Gallium State Tracker
 Summary(pl.UTF-8):	Sterowniki VA do Gallium
 Group:		Libraries
-Obsoletes:	libva-driver-gallium < 24.2.0
 Obsoletes:	libva-driver-nouveau < 24.2.0
 Obsoletes:	libva-driver-r600 < 24.2.0
 Obsoletes:	libva-driver-radeonsi < 24.2.0
 Obsoletes:	libva-driver-virtio < 24.2.0
 
-%description -n libva-driver
+%description -n libva-driver-gallium
 VA drivers for Gallium State Tracker.
 
-%description -n libva-driver -l pl.UTF-8
+%description -n libva-driver-gallium -l pl.UTF-8
 Sterowniki VA do Gallium.
 
-%package -n libvdpau-driver-mesa
-Summary:	Mesa driver for the vdpau API
-Summary(pl.UTF-8):	Sterownik Mesa dla API vdpau
+%package -n libvdpau-driver-gallium
+Summary:	Mesa Gallium driver for the vdpau API
+Summary(pl.UTF-8):	Sterownik Mesa Gallium dla API vdpau
 License:	MIT
 Group:		X11/Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
@@ -926,11 +925,11 @@ Obsoletes:	libvdpau-driver-mesa-r600 < 24.2.0
 Obsoletes:	libvdpau-driver-mesa-radeonsi < 24.2.0
 Obsoletes:	libvdpau-driver-mesa-virtio < 24.2.0
 
-%description -n libvdpau-driver-mesa
-Mesa driver for the vdpau API.
+%description -n libvdpau-driver-gallium
+Mesa Gallium driver for the vdpau API.
 
-%description -n libvdpau-driver-mesa -l pl.UTF-8
-Sterownik Mesa dla API vdpau.
+%description -n libvdpau-driver-gallium -l pl.UTF-8
+Sterownik Mesa Gallium dla API vdpau.
 
 %package -n omxil-mesa
 Summary:	Mesa driver for Bellagio OpenMAX IL API
@@ -1617,7 +1616,7 @@ rm -rf $RPM_BUILD_ROOT
 ### drivers: va
 
 %if %{with va}
-%files -n libva-driver
+%files -n libva-driver-gallium
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libva/dri/libgallium_drv_video.so
 %if %{with gallium_radeon}
@@ -1633,7 +1632,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %if %{with vdpau}
 # ldconfig is not used in vdpau tree, so package all symlinks
-%files -n libvdpau-driver-mesa
+%files -n libvdpau-driver-gallium
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_gallium.so.1.0.0
 %if %{with gallium_nouveau}
