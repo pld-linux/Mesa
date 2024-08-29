@@ -91,7 +91,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	24.2.1
-Release:	0.1
+Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
