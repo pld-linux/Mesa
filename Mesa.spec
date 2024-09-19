@@ -90,12 +90,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	24.2.2
+Version:	24.2.3
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	2efcf055c7d48b12cd2c9df2fc41f1b0
+# Source0-md5:	e3a195842c5cfbfb7234ed45f70af787
 Source1:	https://crates.io/api/v1/crates/syn/%{syn_crate_ver}/download?/syn-%{syn_crate_ver}.tar.gz
 # Source1-md5:	01a9bc27d9bb67760e8736034737cd20
 Source2:	https://crates.io/api/v1/crates/unicode-ident/%{unicode_ident_crate_ver}/download?/unicode-ident-%{unicode_ident_crate_ver}.tar.gz
@@ -547,6 +547,18 @@ klienta (ICD), który może być użyty z loaderem ocl-icd.
 Summary:	Common Mesa Gallium library
 Summary(pl.UTF-8):	Wspólna biblioteka Mesa Gallium
 Group:		Libraries
+Requires:	libdrm%{?_isa} >= %{libdrm_ver}
+Requires:	zlib%{?_isa} >= %{zlib_ver}
+Obsoletes:	libva-driver-gallium < 24.2.3
+Obsoletes:	libva-driver-nouveau < 24.2.0
+Obsoletes:	libva-driver-r600 < 24.2.0
+Obsoletes:	libva-driver-radeonsi < 24.2.0
+Obsoletes:	libva-driver-virtio < 24.2.0
+Obsoletes:	libvdpau-driver-gallium < 24.2.3
+Obsoletes:	libvdpau-driver-mesa-nouveau < 24.2.0
+Obsoletes:	libvdpau-driver-mesa-r600 < 24.2.0
+Obsoletes:	libvdpau-driver-mesa-radeonsi < 24.2.0
+Obsoletes:	libvdpau-driver-mesa-virtio < 24.2.0
 
 %description libgallium
 Common Mesa Gallium library.
@@ -897,40 +909,6 @@ virtual video adapter.
 %description pipe-driver-vmwgfx -l pl.UTF-8
 Sterownik vmwgfx dla dynamicznego systemu potoków szkieletu Mesa
 Gallium. Obsługuje wirtualną kartę graficzną VMware.
-
-%package -n libva-driver-gallium
-Summary:	VA driver for Gallium State Tracker
-Summary(pl.UTF-8):	Sterowniki VA do Gallium
-Group:		Libraries
-Obsoletes:	libva-driver-nouveau < 24.2.0
-Obsoletes:	libva-driver-r600 < 24.2.0
-Obsoletes:	libva-driver-radeonsi < 24.2.0
-Obsoletes:	libva-driver-virtio < 24.2.0
-
-%description -n libva-driver-gallium
-VA drivers for Gallium State Tracker.
-
-%description -n libva-driver-gallium -l pl.UTF-8
-Sterowniki VA do Gallium.
-
-%package -n libvdpau-driver-gallium
-Summary:	Mesa Gallium driver for the vdpau API
-Summary(pl.UTF-8):	Sterownik Mesa Gallium dla API vdpau
-License:	MIT
-Group:		X11/Libraries
-Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libvdpau%{?_isa} >= 1.5
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Obsoletes:	libvdpau-driver-mesa-nouveau < 24.2.0
-Obsoletes:	libvdpau-driver-mesa-r600 < 24.2.0
-Obsoletes:	libvdpau-driver-mesa-radeonsi < 24.2.0
-Obsoletes:	libvdpau-driver-mesa-virtio < 24.2.0
-
-%description -n libvdpau-driver-gallium
-Mesa Gallium driver for the vdpau API.
-
-%description -n libvdpau-driver-gallium -l pl.UTF-8
-Sterownik Mesa Gallium dla API vdpau.
 
 %package -n omxil-mesa
 Summary:	Mesa driver for Bellagio OpenMAX IL API
@@ -1413,6 +1391,39 @@ rm -rf $RPM_BUILD_ROOT
 %files libgallium
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libgallium-%{version}.so
+%if %{with va}
+%if %{with gallium_radeon}
+%attr(755,root,root) %{_libdir}/libva/dri/r600_drv_video.so
+%attr(755,root,root) %{_libdir}/libva/dri/radeonsi_drv_video.so
+%endif
+%if %{with gallium_nouveau}
+%attr(755,root,root) %{_libdir}/libva/dri/nouveau_drv_video.so
+%endif
+%attr(755,root,root) %{_libdir}/libva/dri/virtio_gpu_drv_video.so
+%endif
+%if %{with vdpau}
+# ldconfig is not used in vdpau tree, so package all symlinks
+%if %{with gallium_nouveau}
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1.0.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so
+%endif
+%if %{with gallium_radeon}
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1.0.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so
+%endif
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_virtio_gpu.so.1.0.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_virtio_gpu.so.1.0
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_virtio_gpu.so.1
+%attr(755,root,root) %{_libdir}/vdpau/libvdpau_virtio_gpu.so
+%endif
 
 %if %{with gbm}
 %files libgbm
@@ -1616,50 +1627,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/gallium-pipe/pipe_vmwgfx.so
 %endif
 %endif
-%endif
-
-### drivers: va
-
-%if %{with va}
-%files -n libva-driver-gallium
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libva/dri/libgallium_drv_video.so
-%if %{with gallium_radeon}
-%attr(755,root,root) %{_libdir}/libva/dri/r600_drv_video.so
-%attr(755,root,root) %{_libdir}/libva/dri/radeonsi_drv_video.so
-%endif
-%if %{with gallium_nouveau}
-%attr(755,root,root) %{_libdir}/libva/dri/nouveau_drv_video.so
-%endif
-%attr(755,root,root) %{_libdir}/libva/dri/virtio_gpu_drv_video.so
-%endif
-
-
-%if %{with vdpau}
-# ldconfig is not used in vdpau tree, so package all symlinks
-%files -n libvdpau-driver-gallium
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_gallium.so.1.0.0
-%if %{with gallium_nouveau}
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1.0.0
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1.0
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so.1
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_nouveau.so
-%endif
-%if %{with gallium_radeon}
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0.0
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1.0
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so.1
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_r600.so
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1.0.0
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1.0
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so.1
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_radeonsi.so
-%endif
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_virtio_gpu.so.1.0.0
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_virtio_gpu.so.1.0
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_virtio_gpu.so.1
-%attr(755,root,root) %{_libdir}/vdpau/libvdpau_virtio_gpu.so
 %endif
 
 ### drivers: omxil
