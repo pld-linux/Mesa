@@ -549,6 +549,26 @@ Summary(pl.UTF-8):	Wspólna biblioteka Mesa Gallium
 Group:		Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
 Requires:	zlib%{?_isa} >= %{zlib_ver}
+%if %{with va}
+%if %{with gallium_nouveau}
+Provides:	libva-driver-nouveau = %{version}
+%endif
+%if %{with gallium_radeon}
+Provides:	libva-driver-r600 = %{version}
+Provides:	libva-driver-radeonsi = %{version}
+%endif
+Provides:	libva-driver-virtio = %{version}
+%endif
+%if %{with vdpau}
+%if %{with gallium_nouveau}
+Provides:	libvdpau-driver-mesa-nouveau = %{version}
+%endif
+%if %{with gallium_radeon}
+Provides:	libvdpau-driver-mesa-r600 = %{version}
+Provides:	libvdpau-driver-mesa-radeonsi = %{version}
+%endif
+%endif
+Provides:	libvdpau-driver-mesa-virtio = %{version}
 Obsoletes:	libva-driver-gallium < 24.2.3
 Obsoletes:	libva-driver-nouveau < 24.2.0
 Obsoletes:	libva-driver-r600 < 24.2.0
@@ -696,6 +716,38 @@ Summary(pl.UTF-8):	Sterownik X.org DRI
 License:	MIT
 Group:		X11/Libraries
 Requires:	zlib%{?_isa} >= %{zlib_ver}
+%if %{with gallium_radeon}
+Provides:	Mesa-dri-driver-ati-radeon-R300 = %{version}
+Provides:	Mesa-dri-driver-ati-radeon-R600 = %{version}
+Provides:	Mesa-dri-driver-ati-radeon-SI = %{version}
+%endif
+Provides:	Mesa-dri-driver-intel-crocus = %{version}
+%if %{with gallium_i915}
+Provides:	Mesa-dri-driver-intel-i915 = %{version}
+%endif
+Provides:	Mesa-dri-driver-intel-iris = %{version}
+%if %{with gallium_nouveau}
+Provides:	Mesa-dri-driver-nouveau = %{version}
+%endif
+Provides:	Mesa-dri-driver-swrast = %{version}
+Provides:	Mesa-dri-driver-virgl = %{version}
+Provides:	Mesa-dri-driver-vmwgfx = %{version}
+%if %{with gallium_zink}
+Provides:	Mesa-dri-driver-zink = %{version}
+%endif
+%ifarch %{arm} aarch64
+Provides:	Mesa-dri-driver-etnaviv = %{version}
+Provides:	Mesa-dri-driver-freedreno = %{version}
+Provides:	Mesa-dri-driver-kmsro = %{version}
+Provides:	Mesa-dri-driver-lima = %{version}
+Provides:	Mesa-dri-driver-panfrost = %{version}
+Provides:	Mesa-dri-driver-panthor = %{version}
+%if %{with gallium_nouveau}
+Provides:	Mesa-dri-driver-tegra = %{version}
+%endif
+Provides:	Mesa-dri-driver-v3d = %{version}
+Provides:	Mesa-dri-driver-vc4 = %{version}
+%endif
 Obsoletes:	Mesa-dri-driver-ati-radeon-R300 < 24.2.0
 Obsoletes:	Mesa-dri-driver-ati-radeon-R600 < 24.2.0
 Obsoletes:	Mesa-dri-driver-ati-radeon-SI < 24.2.0
