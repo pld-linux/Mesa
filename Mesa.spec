@@ -91,7 +91,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	24.2.3
-Release:	1
+Release:	2
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
@@ -936,6 +936,7 @@ Gallium. Obsługuje wirtualną kartę graficzną VMware.
 Summary:	VA driver for Gallium State Tracker
 Summary(pl.UTF-8):	Sterowniki VA do Gallium
 Group:		Libraries
+Requires:	%{name}-libgallium%{?_isa} = %{version}-%{release}
 %if %{with va}
 %if %{with gallium_nouveau}
 Provides:	libva-driver-nouveau = %{version}
@@ -962,6 +963,7 @@ Summary:	Mesa Gallium driver for the vdpau API
 Summary(pl.UTF-8):	Sterownik Mesa Gallium dla API vdpau
 License:	MIT
 Group:		X11/Libraries
+Requires:	%{name}-libgallium%{?_isa} = %{version}-%{release}
 Requires:	libvdpau%{?_isa} >= 1.5
 %if %{with vdpau}
 %if %{with gallium_nouveau}
