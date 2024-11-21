@@ -34,6 +34,10 @@
 %define		proc_macro2_crate_ver	1.0.86
 %define		paste_crate_ver		1.0.14
 
+%define		va_api_version		%(pkg-config --modversion libva 2> /dev/null || echo ERROR)
+%define		va_api_major		%(echo %{va_api_version} | cut -d . -f 1)
+%define		va_api_minor		%(echo %{va_api_version} | cut -d . -f 2)
+
 #
 # glapi version (glapi tables in dri drivers and libglx must be in sync);
 # set to current Mesa version on ABI break, when xserver tables get regenerated
@@ -91,7 +95,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	24.2.7
-Release:	1
+Release:	2
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
@@ -937,6 +941,7 @@ Summary:	VA driver for Gallium State Tracker
 Summary(pl.UTF-8):	Sterowniki VA do Gallium
 Group:		Libraries
 Requires:	%{name}-libgallium%{?_isa} = %{version}-%{release}
+Requires:	libva(va-api)%{?_isa} >= %{va_api_major}.%{va_api_minor}
 %if %{with va}
 %if %{with gallium_nouveau}
 Provides:	libva-driver-nouveau = %{version}
