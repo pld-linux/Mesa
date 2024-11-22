@@ -16,7 +16,6 @@
 %bcond_without	opencl_spirv	# OpenCL SPIRV support
 %bcond_without	ocl_icd		# OpenCL as ICD (installable client driver)
 %bcond_without	glvnd		# OpenGL vendor neutral dispatcher support
-%bcond_without	omx		# OpenMAX (Bellagio OMXIL) support
 %bcond_without	va		# VA library
 %bcond_without	wayland		# Wayland EGL
 %bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
@@ -59,7 +58,6 @@
 %undefine	with_gallium_radeon
 %undefine	with_gallium_rusticl
 %undefine	with_nine
-%undefine	with_omx
 %undefine	with_opencl
 %undefine	with_va
 %undefine	with_xa
@@ -91,15 +89,28 @@
 %undefine	with_intel_rt
 %endif
 
+%if %{with intel_vk} || %{with gallium_rusticl} || %{with opencl_spirv}
+%define		with_clc	1
+%else
+%ifarch %{ix86} %{x8664} x32
+%if %{with gallium}
+%define		with_clc	1
+%endif
+%endif
+%ifarch aarch64
+%define		with_clc	1
+%endif
+%endif
+
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	24.2.7
-Release:	2
+Version:	24.3.0
+Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	c245ce6fe6ef8db7b5e62eb754c54449
+# Source0-md5:	ebe66cacd3d8e840ef893b0132da5a73
 Source1:	https://crates.io/api/v1/crates/syn/%{syn_crate_ver}/download?/syn-%{syn_crate_ver}.tar.gz
 # Source1-md5:	01a9bc27d9bb67760e8736034737cd20
 Source2:	https://crates.io/api/v1/crates/unicode-ident/%{unicode_ident_crate_ver}/download?/unicode-ident-%{unicode_ident_crate_ver}.tar.gz
@@ -133,7 +144,6 @@ BuildRequires:	libatomic-devel
 %endif
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
 %{?with_glvnd:BuildRequires:	libglvnd-devel >= %{libglvnd_ver}}
-BuildRequires:	libselinux-devel
 BuildRequires:	libstdc++-devel >= %{gcc_ver}
 BuildRequires:	libunwind-devel
 %{?with_va:BuildRequires:	libva-devel}
@@ -141,10 +151,9 @@ BuildRequires:	libunwind-devel
 %{?with_vdpau:BuildRequires:	libvdpau-devel >= 1.5}
 BuildRequires:	libxcb-devel >= 1.17
 BuildRequires:	llvm-devel >= %{llvm_ver}
-%if %{with opencl} || %{with gallium_rusticl}
+%if %{with opencl} || %{with clc}
 BuildRequires:	llvm-libclc
 %endif
-%{?with_omx:BuildRequires:	libomxil-bellagio-devel}
 BuildRequires:	meson >= 1.4.0
 BuildRequires:	ninja >= 1.5
 BuildRequires:	pkgconfig
@@ -162,21 +171,21 @@ BuildRequires:	python3-pycparser >= 2.20
 %endif
 BuildRequires:	rpmbuild(macros) >= 2.007
 %if %{with gallium_rusticl} || %{with nvk}
-BuildRequires:	rust >= 1.73.0
+BuildRequires:	rust >= 1.76.0
 %endif
 %if %{with gallium_rusticl} || %{with nvk}
 BuildRequires:	rust-bindgen >= 0.65.0
 %endif
 %{?with_nvk:BuildRequires:	rust-cbindgen >= 0.25}
 BuildRequires:	sed >= 4.0
-%if %{with opencl_spirv} || %{with gallium_rusticl}
-BuildRequires:	spirv-tools-devel >= 2018.0
+%if %{with opencl_spirv} || %{with clc}
+BuildRequires:	spirv-tools-devel >= 2022.1
 %endif
 BuildRequires:	tar >= 1:1.22
 BuildRequires:	udev-devel
 # wayland-{client,server}
 %{?with_wayland:BuildRequires:	wayland-devel >= %{wayland_ver}}
-%{?with_wayland:BuildRequires:	wayland-protocols >= 1.34}
+%{?with_wayland:BuildRequires:	wayland-protocols >= 1.38}
 %{?with_wayland:BuildRequires:	wayland-egl-devel >= %{wayland_ver}}
 BuildRequires:	xcb-util-keysyms-devel
 BuildRequires:	xorg-lib-libX11-devel
@@ -434,7 +443,6 @@ Group:		Development/Libraries
 Requires:	%{name}-libOSMesa%{?_isa} = %{version}-%{release}
 # for <GL/gl.h> only
 Requires:	OpenGL-devel
-Requires:	libselinux-devel%{?_isa}
 Obsoletes:	Mesa-libOSMesa-static < 18.3
 
 %description libOSMesa-devel
@@ -991,24 +999,26 @@ Mesa Gallium driver for the vdpau API.
 %description -n libvdpau-driver-gallium -l pl.UTF-8
 Sterownik Mesa Gallium dla API vdpau.
 
-%package -n omxil-mesa
-Summary:	Mesa driver for Bellagio OpenMAX IL API
-Summary(pl.UTF-8):	Sterownik Mesa nouveau dla API Bellagio OpenMAX IL
+%package vulkan-icd-asahi
+Summary:	asahi - Mesa Vulkan driver for Apple M1
+Summary(pl.UTF-8):	asahi - sterownik Vulkan dla Apple M1
 License:	MIT
-Group:		X11/Libraries
+Group:		Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	libomxil-bellagio
 Requires:	libxcb%{?_isa} >= 1.17
+Requires:	xorg-lib-libXrandr%{?_isa} >= 1.3
+Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
+# wayland-client
+Requires:	wayland%{?_isa} >= %{wayland_ver}
 Requires:	zlib%{?_isa} >= %{zlib_ver}
-Obsoletes:	omxil-mesa-nouveau < 10.3
-Obsoletes:	omxil-mesa-r600 < 10.3
-Obsoletes:	omxil-mesa-radeonsi < 10.3
+Suggests:	vulkan(loader)
+Provides:	vulkan(icd) = 1.0.289
 
-%description -n omxil-mesa
-Mesa driver for Bellagio OpenMAX IL API.
+%description vulkan-icd-asahi
+asahi - Mesa Vulkan driver for Apple M1.
 
-%description -n omxil-mesa -l pl.UTF-8
-Sterownik Mesa dla API Bellagio OpenMAX IL.
+%description vulkan-icd-asahi -l pl.UTF-8
+asahi - sterownik Vulkan dla Apple M1.
 
 %package vulkan-icd-broadcom
 Summary:	v3dv - Mesa Vulkan driver for Raspberry Pi 4
@@ -1223,6 +1233,9 @@ r300 r600 radeonsi \
 nouveau
 %endif
 %ifarch %{arm} aarch64
+%ifarch aarch64
+asahi
+%endif
 etnaviv \
 freedreno \
 lima \
@@ -1239,6 +1252,9 @@ gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 vulkan_drivers="swrast virtio %{?with_radv:amd} %{?with_intel_vk:intel intel_hasvk} %{?with_nvk:nouveau} \
 %ifarch %{arm} aarch64
 broadcom freedreno imagination-experimental panfrost \
+%ifarch aarch64
+asahi
+%endif
 %endif
 "
 
@@ -1253,13 +1269,11 @@ export BINDGEN_EXTRA_CLANG_ARGS="-mfloat-abi=hard"
 %meson build \
 	--force-fallback-for=syn,unicode-ident,quote,proc-macro2 \
 	-Dplatforms=x11%{?with_wayland:,wayland} \
-	-Ddri3=enabled \
 	-Ddri-drivers-path=%{_libdir}/xorg/modules/dri \
 	-Degl=%{?with_egl:enabled}%{!?with_egl:disabled} \
 	-Dgallium-drivers=${gallium_drivers} \
 	%{?with_hud_extra:-Dgallium-extra-hud=true} \
 	-Dgallium-nine=%{?with_nine:true}%{!?with_nine:false} \
-	-Dgallium-omx=%{?with_omx:bellagio}%{!?with_omx:disabled} \
 %if %{with opencl}
 %if %{with ocl_icd}
 	-Dgallium-opencl=icd \
@@ -1280,7 +1294,6 @@ export BINDGEN_EXTRA_CLANG_ARGS="-mfloat-abi=hard"
 	-Dlmsensors=%{?with_lm_sensors:enabled}%{!?with_lm_sensors:disabled} \
 	%{?with_opencl_spirv:-Dopencl-spirv=true} \
 	-Dosmesa=true \
-	-Dselinux=true \
 	-Dsse2=%{__true_false sse2} \
 	-Dva-libs-path=%{_libdir}/libva/dri \
 	-Dvideo-codecs=all \
@@ -1479,6 +1492,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libgbm.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libgbm.so.1
 %dir %{_libdir}/gbm
+%attr(755,root,root) %{_libdir}/gbm/dri_gbm.so
 
 %files libgbm-devel
 %defattr(644,root,root,755)
@@ -1561,6 +1575,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/kms_swrast_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
 %ifarch %{arm} aarch64
+%ifarch aarch64
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/asahi_dri.so
+%endif
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/etnaviv_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/kgsl_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/msm_dri.so
@@ -1719,17 +1736,16 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/vdpau/libvdpau_virtio_gpu.so
 %endif
 
-### drivers: omxil
-
-%if %{with omx}
-%files -n omxil-mesa
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/bellagio/libomx_mesa.so
-%endif
-
 ### drivers: vulkan
 
 %ifarch %{arm} aarch64
+%ifarch aarch64
+%files vulkan-icd-asahi
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_libdir}/libvulkan_asahi.so
+%{_datadir}/vulkan/icd.d/asahi_icd.*.json
+%endif
+
 %files vulkan-icd-broadcom
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libvulkan_broadcom.so
