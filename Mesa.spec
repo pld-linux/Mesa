@@ -572,8 +572,7 @@ Wspólna biblioteka Mesa Gallium.
 Summary:	Mesa Graphics Buffer Manager library
 Summary(pl.UTF-8):	Biblioteka Mesa Graphics Buffer Manager
 Group:		Libraries
-Requires:	%{name}-libgallium%{?_isa} = %{version}-%{release}
-Requires:	%{name}-libglapi%{?_isa} = %{version}-%{release}
+Suggests:	libgbm(backend)
 Conflicts:	Mesa-libEGL < 8.0.1-2
 
 %description libgbm
@@ -581,6 +580,19 @@ Mesa Graphics Buffer Manager library.
 
 %description libgbm -l pl.UTF-8
 Biblioteka Mesa Graphics Buffer Manager (zarządcy bufora graficznego).
+
+%package libgbm-backend-dri
+Summary:	DRI backend for libgbm library
+Summary(pl.UTF-8):	Backend DRI dla biblioteki libgbm
+Group:		Libraries
+Requires:	%{name}-libgallium%{?_isa} = %{version}-%{release}
+Provides:	libgbm(backend)
+
+%description libgbm-backend-dri
+DRI backend for libgbm library.
+
+%description libgbm-backend-dri -l pl.UTF-8
+Backend DRI dla biblioteki libgbm.
 
 %package libgbm-devel
 Summary:	Header file for Mesa Graphics Buffer Manager library
@@ -1492,6 +1504,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libgbm.so.*.*
 %attr(755,root,root) %ghost %{_libdir}/libgbm.so.1
 %dir %{_libdir}/gbm
+
+%files libgbm-backend-dri
+%defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/gbm/dri_gbm.so
 
 %files libgbm-devel
