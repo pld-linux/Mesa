@@ -106,7 +106,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	24.3.1
-Release:	1
+Release:	2
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
@@ -572,7 +572,7 @@ Wspólna biblioteka Mesa Gallium.
 Summary:	Mesa Graphics Buffer Manager library
 Summary(pl.UTF-8):	Biblioteka Mesa Graphics Buffer Manager
 Group:		Libraries
-Suggests:	libgbm(backend)
+Suggests:	libgbm(backend)%{?_isa}
 Conflicts:	Mesa-libEGL < 8.0.1-2
 
 %description libgbm
@@ -586,7 +586,7 @@ Summary:	DRI backend for libgbm library
 Summary(pl.UTF-8):	Backend DRI dla biblioteki libgbm
 Group:		Libraries
 Requires:	%{name}-libgallium%{?_isa} = %{version}-%{release}
-Provides:	libgbm(backend)
+Provides:	libgbm(backend)%{?_isa}
 
 %description libgbm-backend-dri
 DRI backend for libgbm library.
