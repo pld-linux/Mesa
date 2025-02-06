@@ -160,7 +160,7 @@ BuildRequires:	python3-PyYAML
 %ifarch %{arm} aarch64
 BuildRequires:	python3-pycparser >= 2.20
 %endif
-BuildRequires:	rpmbuild(macros) >= 2.007
+BuildRequires:	rpmbuild(macros) >= 2.042
 %if %{with gallium_rusticl} || %{with nvk}
 BuildRequires:	rust >= 1.73.0
 %endif
@@ -1250,9 +1250,10 @@ export BINDGEN_EXTRA_CLANG_ARGS="-mfloat-abi=hard"
 %endif
 %endif
 
-%meson build \
+%meson \
 	--force-fallback-for=syn,unicode-ident,quote,proc-macro2 \
 	-Dplatforms=x11%{?with_wayland:,wayland} \
+	-Dandroid-libbacktrace=disabled \
 	-Ddri3=enabled \
 	-Ddri-drivers-path=%{_libdir}/xorg/modules/dri \
 	-Degl=%{?with_egl:enabled}%{!?with_egl:disabled} \
@@ -1278,6 +1279,7 @@ export BINDGEN_EXTRA_CLANG_ARGS="-mfloat-abi=hard"
 	-Dintel-rt=%{?with_intel_rt:enabled}%{!?with_intel_rt:disabled} \
 	-Dlibunwind=enabled \
 	-Dlmsensors=%{?with_lm_sensors:enabled}%{!?with_lm_sensors:disabled} \
+	-Dmicrosoft-clc=disabled \
 	%{?with_opencl_spirv:-Dopencl-spirv=true} \
 	-Dosmesa=true \
 	-Dselinux=true \
@@ -1291,14 +1293,14 @@ export BINDGEN_EXTRA_CLANG_ARGS="-mfloat-abi=hard"
 	-Dimagination-srv=true
 %endif
 
-%ninja_build -C build
+%meson_build
 
-%{?with_tests:%ninja_test -C build}
+%{?with_tests:%meson_test}
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%ninja_install -C build
+%meson_install
 
 install -d $RPM_BUILD_ROOT%{_libdir}/gbm
 
