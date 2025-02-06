@@ -94,12 +94,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	24.2.7
-Release:	2
+Version:	24.2.8
+Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	c245ce6fe6ef8db7b5e62eb754c54449
+# Source0-md5:	8e80f63c4983a4cff5dec6ede74dd77c
 Source1:	https://crates.io/api/v1/crates/syn/%{syn_crate_ver}/download?/syn-%{syn_crate_ver}.tar.gz
 # Source1-md5:	01a9bc27d9bb67760e8736034737cd20
 Source2:	https://crates.io/api/v1/crates/unicode-ident/%{unicode_ident_crate_ver}/download?/unicode-ident-%{unicode_ident_crate_ver}.tar.gz
@@ -1198,7 +1198,7 @@ Sterownik Vulkan dla kart VirtIO.
 
 %prep
 %setup -q -n mesa-%{version}
-%patch0 -p1
+%patch -P0 -p1
 
 install -d subprojects/packagecache
 cp -p %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} %{SOURCE5} subprojects/packagecache
