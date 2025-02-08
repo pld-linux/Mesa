@@ -169,7 +169,7 @@ BuildRequires:	python3-PyYAML
 %ifarch %{arm} aarch64
 BuildRequires:	python3-pycparser >= 2.20
 %endif
-BuildRequires:	rpmbuild(macros) >= 2.007
+BuildRequires:	rpmbuild(macros) >= 2.042
 %if %{with gallium_rusticl} || %{with nvk}
 BuildRequires:	rust >= 1.76.0
 %endif
@@ -1220,7 +1220,7 @@ Sterownik Vulkan dla kart VirtIO.
 
 %prep
 %setup -q -n mesa-%{version}
-%patch0 -p1
+%patch -P0 -p1
 
 install -d subprojects/packagecache
 cp -p %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} %{SOURCE5} subprojects/packagecache
@@ -1278,9 +1278,10 @@ export BINDGEN_EXTRA_CLANG_ARGS="-mfloat-abi=hard"
 %endif
 %endif
 
-%meson build \
+%meson \
 	--force-fallback-for=syn,unicode-ident,quote,proc-macro2 \
 	-Dplatforms=x11%{?with_wayland:,wayland} \
+	-Dandroid-libbacktrace=disabled \
 	-Ddri-drivers-path=%{_libdir}/xorg/modules/dri \
 	-Degl=%{?with_egl:enabled}%{!?with_egl:disabled} \
 	-Dgallium-drivers=${gallium_drivers} \
@@ -1304,6 +1305,7 @@ export BINDGEN_EXTRA_CLANG_ARGS="-mfloat-abi=hard"
 	-Dintel-rt=%{?with_intel_rt:enabled}%{!?with_intel_rt:disabled} \
 	-Dlibunwind=enabled \
 	-Dlmsensors=%{?with_lm_sensors:enabled}%{!?with_lm_sensors:disabled} \
+	-Dmicrosoft-clc=disabled \
 	%{?with_opencl_spirv:-Dopencl-spirv=true} \
 	-Dosmesa=true \
 	-Dsse2=%{__true_false sse2} \
@@ -1316,14 +1318,14 @@ export BINDGEN_EXTRA_CLANG_ARGS="-mfloat-abi=hard"
 	-Dimagination-srv=true
 %endif
 
-%ninja_build -C build
+%meson_build
 
-%{?with_tests:%ninja_test -C build}
+%{?with_tests:%meson_test}
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%ninja_install -C build
+%meson_install
 
 install -d $RPM_BUILD_ROOT%{_libdir}/gbm
 
