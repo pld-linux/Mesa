@@ -13,7 +13,6 @@
 %bcond_without	gbm		# Graphics Buffer Manager
 %bcond_without	nine		# Nine Direct3D 9+ state tracker (for Wine)
 %bcond_without	opencl		# OpenCL support
-%bcond_without	opencl_spirv	# OpenCL SPIRV support
 %bcond_without	ocl_icd		# OpenCL as ICD (installable client driver)
 %bcond_without	glvnd		# OpenGL vendor neutral dispatcher support
 %bcond_without	va		# VA library
@@ -89,7 +88,7 @@
 %undefine	with_intel_rt
 %endif
 
-%if %{with intel_vk} || %{with gallium_rusticl} || %{with opencl_spirv}
+%if %{with intel_vk} || %{with gallium_rusticl}
 %define		with_clc	1
 %else
 %ifarch %{ix86} %{x8664} x32
@@ -105,12 +104,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	24.3.4
+Version:	25.0.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	c64b7e2b4f1c7782c41bf022edbb365c
+# Source0-md5:	a545926c68b925acce0efcd857f10925
 Source1:	https://crates.io/api/v1/crates/syn/%{syn_crate_ver}/download?/syn-%{syn_crate_ver}.tar.gz
 # Source1-md5:	01a9bc27d9bb67760e8736034737cd20
 Source2:	https://crates.io/api/v1/crates/unicode-ident/%{unicode_ident_crate_ver}/download?/unicode-ident-%{unicode_ident_crate_ver}.tar.gz
@@ -123,7 +122,7 @@ Source5:	https://crates.io/api/v1/crates/paste/%{paste_crate_ver}/download?/past
 # Source5-md5:	1781b204ec7b6b1ef9232d429e6a973a
 Patch0:		x32.patch
 URL:		https://www.mesa3d.org/
-%if %{with opencl_spirv} || %{with gallium_rusticl}
+%if %{with gallium_rusticl}
 BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3
 %endif
 %{?with_gallium_zink:BuildRequires:	Vulkan-Loader-devel}
@@ -136,10 +135,8 @@ BuildRequires:	elfutils-devel
 BuildRequires:	expat-devel >= 1.95
 BuildRequires:	flex >= 2.5.35
 BuildRequires:	gcc >= %{gcc_ver}
-%if %{with radv} || %{with intel_vk}
 BuildRequires:	glslang >= 11.3.0
-%endif
-%ifarch %{armv6}
+%ifnarch %{arch_with_atomics64}
 BuildRequires:	libatomic-devel
 %endif
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
@@ -178,8 +175,8 @@ BuildRequires:	rust-bindgen >= 0.65.0
 %endif
 %{?with_nvk:BuildRequires:	rust-cbindgen >= 0.25}
 BuildRequires:	sed >= 4.0
-%if %{with opencl_spirv} || %{with clc}
-BuildRequires:	spirv-tools-devel >= 2022.1
+%if %{with clc}
+BuildRequires:	spirv-tools-devel >= 2024.3
 %endif
 BuildRequires:	tar >= 1:1.22
 BuildRequires:	udev-devel
@@ -228,7 +225,6 @@ Summary:	Mesa implementation of EGL Native Platform Graphics Interface library
 Summary(pl.UTF-8):	Implementacja Mesa biblioteki interfejsu EGL
 License:	MIT
 Group:		Libraries
-Requires:	%{name}-libglapi%{?_isa} = %{version}-%{release}
 # glx driver in libEGL dlopens libGL.so
 Requires:	OpenGL >= 1.2
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
@@ -291,7 +287,6 @@ Summary(pl.UTF-8):	Wolnodostępna implementacja Mesa3D biblioteki libGL ze stand
 License:	MIT
 Group:		X11/Libraries
 Requires:	%{name}-libgallium%{?_isa} = %{version}-%{release}
-Requires:	%{name}-libglapi%{?_isa} = %{version}-%{release}
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
 Requires:	libxcb%{?_isa} >= 1.17
 %if %{with glvnd}
@@ -372,7 +367,6 @@ Pliki nagłówkowe biblioteki libGL z projektu Mesa3D.
 Summary:	Mesa implementation of GLES (OpenGL ES) libraries
 Summary(pl.UTF-8):	Implementacja Mesa bibliotek GLES (OpenGL ES)
 Group:		Libraries
-Requires:	%{name}-libglapi%{?_isa} = %{version}-%{release}
 %if %{with glvnd}
 Requires:	libglvnd-libGLES%{?_isa} >= %{libglvnd_ver}
 %endif
@@ -561,6 +555,8 @@ Summary(pl.UTF-8):	Wspólna biblioteka Mesa Gallium
 Group:		Libraries
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
 Requires:	zlib%{?_isa} >= %{zlib_ver}
+Provides:	Mesa-libglapi = %{version}-%{release}
+Obsoletes:	Mesa-libglapi < 25.0.0
 
 %description libgallium
 Common Mesa Gallium library.
@@ -606,19 +602,6 @@ Header file for Mesa Graphics Buffer Manager library.
 %description libgbm-devel -l pl.UTF-8
 Plik nagłówkowy biblioteki Mesa Graphics Buffer Manager (zarządcy
 bufora graficznego).
-
-%package libglapi
-Summary:	Mesa GL API shared library
-Summary(pl.UTF-8):	Biblioteka współdzielona Mesa GL API
-Group:		Libraries
-Conflicts:	Mesa-libEGL < 8.0.1-2
-
-%description libglapi
-Mesa GL API shared library, common for various APIs (EGL, GL, GLES).
-
-%description libglapi -l pl.UTF-8
-Biblioteka współdzielona Mesa GL API, wspólna dla różnych API (EGL,
-GL, GLES).
 
 %package libxatracker
 Summary:	Xorg Gallium3D accelleration library
@@ -1306,7 +1289,6 @@ export BINDGEN_EXTRA_CLANG_ARGS="-mfloat-abi=hard"
 	-Dlibunwind=enabled \
 	-Dlmsensors=%{?with_lm_sensors:enabled}%{!?with_lm_sensors:disabled} \
 	-Dmicrosoft-clc=disabled \
-	%{?with_opencl_spirv:-Dopencl-spirv=true} \
 	-Dosmesa=true \
 	-Dsse2=%{__true_false sse2} \
 	-Dva-libs-path=%{_libdir}/libva/dri \
@@ -1328,9 +1310,6 @@ rm -rf $RPM_BUILD_ROOT
 %meson_install
 
 install -d $RPM_BUILD_ROOT%{_libdir}/gbm
-
-# not used externally
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/libglapi.so
 
 %if %{without glvnd}
 # remove "OS ABI: Linux 2.4.20" tag, so private copies (nvidia or fglrx),
@@ -1367,9 +1346,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %post	libgbm -p /sbin/ldconfig
 %postun	libgbm -p /sbin/ldconfig
-
-%post	libglapi -p /sbin/ldconfig
-%postun	libglapi -p /sbin/ldconfig
 
 %post	libxatracker -p /sbin/ldconfig
 %postun	libxatracker -p /sbin/ldconfig
@@ -1517,13 +1493,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/gbm.h
 %{_pkgconfigdir}/gbm.pc
 %endif
-
-%files libglapi
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libglapi.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libglapi.so.0
-# libglapi-devel? nothing seems to need it atm.
-#%attr(755,root,root) %{_libdir}/libglapi.so
 
 %if %{with xa}
 %files libxatracker
