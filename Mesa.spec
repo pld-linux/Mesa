@@ -1261,6 +1261,7 @@ export BINDGEN_EXTRA_CLANG_ARGS="-mfloat-abi=hard"
 %endif
 %endif
 
+export RUSTFLAGS="%{rpmrustflags} --target=%rust_target"
 %meson \
 	--force-fallback-for=syn,unicode-ident,quote,proc-macro2 \
 	-Dplatforms=x11%{?with_wayland:,wayland} \
