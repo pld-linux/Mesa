@@ -1268,6 +1268,9 @@ export RUSTFLAGS="%{rpmrustflags} --target=%rust_target"
 	-Dandroid-libbacktrace=disabled \
 	-Ddri-drivers-path=%{_libdir}/xorg/modules/dri \
 	-Degl=%{?with_egl:enabled}%{!?with_egl:disabled} \
+	-Dexpat=enabled \
+	-Dgallium-d3d12-video=disabled \
+	-Dgallium-d3d12-video-graphics=disabled \
 	-Dgallium-drivers=${gallium_drivers} \
 	%{?with_hud_extra:-Dgallium-extra-hud=true} \
 	-Dgallium-nine=%{?with_nine:true}%{!?with_nine:false} \
@@ -1296,6 +1299,7 @@ export RUSTFLAGS="%{rpmrustflags} --target=%rust_target"
 	-Dvideo-codecs=all \
 	-Dvulkan-drivers=${vulkan_drivers} \
 	-Dvulkan-icd-dir=/usr/share/vulkan/icd.d \
+	-Dxmlconfig=enabled \
 %ifarch %{arm} aarch64
 	-Dfreedreno-kmds=msm,virtio \
 	-Dimagination-srv=true
