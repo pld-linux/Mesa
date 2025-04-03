@@ -1270,7 +1270,7 @@ export RUSTFLAGS="%{rpmrustflags} --target=%rust_target"
 	-Degl=%{?with_egl:enabled}%{!?with_egl:disabled} \
 	-Dexpat=enabled \
 	-Dgallium-d3d12-video=disabled \
-	-Dgallium-d3d12-video-graphics=disabled \
+	-Dgallium-d3d12-graphics=disabled \
 	-Dgallium-drivers=${gallium_drivers} \
 	%{?with_hud_extra:-Dgallium-extra-hud=true} \
 	-Dgallium-nine=%{?with_nine:true}%{!?with_nine:false} \
