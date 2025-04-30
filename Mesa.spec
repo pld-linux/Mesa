@@ -104,12 +104,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	25.0.4
+Version:	25.0.5
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	2e920916b613b5bcf1f752c9caae3d89
+# Source0-md5:	7135bf390ee1b0b002870f76661fdca3
 Source1:	https://crates.io/api/v1/crates/syn/%{syn_crate_ver}/download?/syn-%{syn_crate_ver}.tar.gz
 # Source1-md5:	01a9bc27d9bb67760e8736034737cd20
 Source2:	https://crates.io/api/v1/crates/unicode-ident/%{unicode_ident_crate_ver}/download?/unicode-ident-%{unicode_ident_crate_ver}.tar.gz
@@ -120,7 +120,6 @@ Source4:	https://crates.io/api/v1/crates/proc-macro2/%{proc_macro2_crate_ver}/do
 # Source4-md5:	480a3b8e8201739e157bb648f9243962
 Source5:	https://crates.io/api/v1/crates/paste/%{paste_crate_ver}/download?/paste-%{paste_crate_ver}.tar.gz
 # Source5-md5:	1781b204ec7b6b1ef9232d429e6a973a
-Patch0:		x32.patch
 URL:		https://www.mesa3d.org/
 %if %{with gallium_rusticl}
 BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3
@@ -1203,7 +1202,6 @@ Sterownik Vulkan dla kart VirtIO.
 
 %prep
 %setup -q -n mesa-%{version}
-%patch -P0 -p1
 
 install -d subprojects/packagecache
 cp -p %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} %{SOURCE5} subprojects/packagecache
