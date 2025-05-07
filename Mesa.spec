@@ -48,7 +48,7 @@
 %define		zlib_ver		1.2.8
 %define		wayland_ver		1.23
 %define		libglvnd_ver		1.3.4-2
-%define		llvm_ver		15.0.0
+%define		llvm_ver		18.0.0
 %define		gcc_ver 		6:8
 
 %if %{without gallium}
@@ -104,12 +104,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	25.0.5
+Version:	25.1.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	7135bf390ee1b0b002870f76661fdca3
+# Source0-md5:	fa1c0d57ac718048c924cfc724e9ee38
 Source1:	https://crates.io/api/v1/crates/syn/%{syn_crate_ver}/download?/syn-%{syn_crate_ver}.tar.gz
 # Source1-md5:	01a9bc27d9bb67760e8736034737cd20
 Source2:	https://crates.io/api/v1/crates/unicode-ident/%{unicode_ident_crate_ver}/download?/unicode-ident-%{unicode_ident_crate_ver}.tar.gz
@@ -181,7 +181,7 @@ BuildRequires:	tar >= 1:1.22
 BuildRequires:	udev-devel
 # wayland-{client,server}
 %{?with_wayland:BuildRequires:	wayland-devel >= %{wayland_ver}}
-%{?with_wayland:BuildRequires:	wayland-protocols >= 1.38}
+%{?with_wayland:BuildRequires:	wayland-protocols >= 1.41}
 %{?with_wayland:BuildRequires:	wayland-egl-devel >= %{wayland_ver}}
 BuildRequires:	xcb-util-keysyms-devel
 BuildRequires:	xorg-lib-libX11-devel
@@ -200,9 +200,9 @@ BuildRequires:	zlib-devel >= %{zlib_ver}
 BuildRequires:	zstd-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-# libGLESv1_CM, libGLESv2, libGL, libOSMesa:
+# libGLESv1_CM, libGLESv2, libGL, libEGL:
 #  _glapi_tls_Dispatch is defined in libglapi, but it's some kind of symbol ldd -r doesn't notice(?)
-%define		skip_post_check_so	libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libOSMesa.so.* libGLX_mesa.so.0.*
+%define		skip_post_check_so	libGLESv1_CM.so.1.* libGLESv2.so.2.* libGL.so.1.* libEGL_mesa.so.0.* libGLX_mesa.so.0.*
 
 %description
 Mesa is a 3-D graphics library with an API which is very similar to
@@ -414,35 +414,6 @@ Header files for Mesa GLES libraries.
 
 %description libGLES-devel -l pl.UTF-8
 Pliki nagłówkowe bibliotek Mesa GLES.
-
-%package libOSMesa
-Summary:	OSMesa (off-screen renderer) library
-Summary(pl.UTF-8):	Biblioteka OSMesa (renderująca bitmapy w pamięci)
-License:	MIT
-Group:		Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-
-%description libOSMesa
-OSMesa (off-screen renderer) library.
-
-%description libOSMesa -l pl.UTF-8
-Biblioteka OSMesa (renderująca bitmapy w pamięci).
-
-%package libOSMesa-devel
-Summary:	Header file for OSMesa (off-screen renderer) library
-Summary(pl.UTF-8):	Plik nagłówkowy biblioteki OSMesa (renderującej bitmapy w pamięci)
-License:	MIT
-Group:		Development/Libraries
-Requires:	%{name}-libOSMesa%{?_isa} = %{version}-%{release}
-# for <GL/gl.h> only
-Requires:	OpenGL-devel
-Obsoletes:	Mesa-libOSMesa-static < 18.3
-
-%description libOSMesa-devel
-Header file for OSMesa (off-screen renderer) library.
-
-%description libOSMesa-devel -l pl.UTF-8
-Plik nagłówkowy biblioteki OSMesa (renderującej bitmapy w pamięci).
 
 %package OpenCL-icd
 Summary:	Mesa implementation of OpenCL (Compuing Language) API ICD
@@ -1332,9 +1303,6 @@ rm -rf $RPM_BUILD_ROOT
 %post	libGLES -p /sbin/ldconfig
 %postun	libGLES -p /sbin/ldconfig
 
-%post	libOSMesa -p /sbin/ldconfig
-%postun	libOSMesa -p /sbin/ldconfig
-
 %post	OpenCL-icd -p /sbin/ldconfig
 %postun	OpenCL-icd -p /sbin/ldconfig
 
@@ -1431,17 +1399,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/glesv2.pc
 %endif
 
-%files libOSMesa
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libOSMesa.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libOSMesa.so.8
-
-%files libOSMesa-devel
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libOSMesa.so
-%{_includedir}/GL/osmesa.h
-%{_pkgconfigdir}/osmesa.pc
-
 %if %{with opencl}
 %if %{with gallium_rusticl}
 %files Rusticl-icd
@@ -1494,6 +1451,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libgbm.so
 %{_includedir}/gbm.h
+%{_includedir}/gbm_backend_abi.h
 %{_pkgconfigdir}/gbm.pc
 %endif
 
@@ -1570,6 +1528,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/etnaviv_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/kgsl_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/msm_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/apple_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/armada-drm_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/exynos_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/gm12u320_dri.so
