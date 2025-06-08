@@ -150,6 +150,7 @@ BuildRequires:	llvm-devel >= %{llvm_ver}
 %if %{with opencl} || %{with clc}
 BuildRequires:	llvm-libclc
 %endif
+%{?with_lm_sensors:BuildRequires:	lm_sensors-devel}
 BuildRequires:	meson >= 1.4.0
 BuildRequires:	ninja >= 1.5
 BuildRequires:	pkgconfig
@@ -192,10 +193,7 @@ BuildRequires:	xorg-lib-libXxf86vm-devel
 BuildRequires:	xorg-lib-libxshmfence-devel >= 1.1
 BuildRequires:	xorg-proto-dri2proto-devel >= %{dri2proto_ver}
 BuildRequires:	xorg-proto-glproto-devel >= %{glproto_ver}
-%if %{with gallium}
-%{?with_lm_sensors:BuildRequires:	lm_sensors-devel}
 BuildRequires:	xz
-%endif
 BuildRequires:	zlib-devel >= %{zlib_ver}
 BuildRequires:	zstd-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -1233,16 +1231,16 @@ export BINDGEN_EXTRA_CLANG_ARGS="-mfloat-abi=hard"
 export RUSTFLAGS="%{rpmrustflags} --target=%rust_target"
 %meson \
 	--force-fallback-for=syn,unicode-ident,quote,proc-macro2 \
-	-Dplatforms=x11%{?with_wayland:,wayland} \
+	-Dallow-kcmp=enabled \
 	-Dandroid-libbacktrace=disabled \
 	-Ddri-drivers-path=%{_libdir}/xorg/modules/dri \
-	-Degl=%{?with_egl:enabled}%{!?with_egl:disabled} \
+	-Degl=%{__enabled_disabled egl} \
 	-Dexpat=enabled \
 	-Dgallium-d3d12-video=disabled \
 	-Dgallium-d3d12-graphics=disabled \
 	-Dgallium-drivers=${gallium_drivers} \
 	%{?with_hud_extra:-Dgallium-extra-hud=true} \
-	-Dgallium-nine=%{?with_nine:true}%{!?with_nine:false} \
+	-Dgallium-nine=%{__true_false nine} \
 %if %{with opencl}
 %if %{with ocl_icd}
 	-Dgallium-opencl=icd \
@@ -1253,22 +1251,31 @@ export RUSTFLAGS="%{rpmrustflags} --target=%rust_target"
 %else
 	-Dgallium-opencl=disabled \
 %endif
-	-Dgallium-va=%{?with_va:enabled}%{!?with_va:disabled} \
-	%{?with_vdpau:-Dgallium-vdpau=enabled} \
-	-Dgallium-xa=%{?with_xa:enabled}%{!?with_xa:disabled} \
-	-Dgbm=%{?with_gbm:enabled}%{!?with_gbm:disabled} \
-	-Dglvnd=%{?with_glvnd:enabled}%{!?with_glvnd:disabled} \
-	-Dintel-rt=%{?with_intel_rt:enabled}%{!?with_intel_rt:disabled} \
+	-Dgallium-va=%{__enabled_disabled va} \
+	-Dgallium-vdpau=%{__enabled_disabled vdpau} \
+	-Dgallium-xa=%{__enabled_disabled xa} \
+	-Dgbm=%{__enabled_disabled gbm} \
+	-Dgles1=enabled \
+	-Dgles2=enabled \
+	-Dglvnd=%{__enabled_disabled glvnd} \
+	-Dintel-rt=%{__enabled_disabled intel_rt} \
 	-Dlibunwind=enabled \
-	-Dlmsensors=%{?with_lm_sensors:enabled}%{!?with_lm_sensors:disabled} \
+	-Dllvm=enabled \
+	-Dlmsensors=%{__enabled_disabled lm_sensors} \
 	-Dmicrosoft-clc=disabled \
 	-Dosmesa=true \
+	-Dplatforms=x11%{?with_wayland:,wayland} \
+	-Dshader-cache=enabled \
+	-Dshared-llvm=enabled \
 	-Dsse2=%{__true_false sse2} \
 	-Dva-libs-path=%{_libdir}/libva/dri \
+	-Dvalgrind=disabled \
 	-Dvideo-codecs=all \
 	-Dvulkan-drivers=${vulkan_drivers} \
 	-Dvulkan-icd-dir=/usr/share/vulkan/icd.d \
+	-Dxlib-lease=enabled \
 	-Dxmlconfig=enabled \
+	-Dzstd=enabled \
 %ifarch %{arm} aarch64
 	-Dfreedreno-kmds=msm,virtio \
 	-Dimagination-srv=true
