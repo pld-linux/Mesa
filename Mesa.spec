@@ -46,7 +46,7 @@
 %define		dri2proto_ver		2.8
 %define		glproto_ver		1.4.14
 %define		zlib_ver		1.2.8
-%define		wayland_ver		1.23
+%define		wayland_ver		1.24
 %define		libglvnd_ver		1.3.4-2
 %define		llvm_ver		18.0.0
 %define		gcc_ver 		6:8
@@ -105,7 +105,7 @@ Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
 Version:	25.1.7
-Release:	1
+Release:	2
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
