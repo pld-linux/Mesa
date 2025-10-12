@@ -166,7 +166,7 @@ BuildRequires:	python3-PyYAML
 %ifarch %{arm} aarch64
 BuildRequires:	python3-pycparser >= 2.20
 %endif
-BuildRequires:	rpmbuild(macros) >= 2.042
+BuildRequires:	rpmbuild(macros) >= 2.050
 %if %{with gallium_rusticl} || %{with nvk}
 BuildRequires:	rust >= 1.76.0
 %endif
@@ -489,6 +489,7 @@ Summary:	Rusticl implementation of OpenCL (Compuing Language) API ICD
 Summary(pl.UTF-8):	Implementacja Rusticl API OpenCL (języka obliczeń) ICD
 License:	MIT
 Group:		Libraries
+%{?rust_req}
 Requires:	filesystem >= 4.0-29
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
 Requires:	llvm-libclc
@@ -1114,6 +1115,7 @@ Summary:	nvk - experimental Mesa Vulkan driver for NVIDIA GPUs
 Summary(pl.UTF-8):	nvk - eksperymentalny sterownik Vulkan dla GPU firmy NVIDIA
 License:	MIT
 Group:		Libraries
+%{?rust_req}
 Requires:	libdrm%{?_isa} >= %{libdrm_ver}
 Requires:	libxcb%{?_isa} >= 1.17
 Requires:	xorg-lib-libxshmfence%{?_isa} >= 1.1
