@@ -1,0 +1,11 @@
+--- mesa-25.1.9/src/gallium/drivers/panfrost/pan_resource.c.orig	2025-08-27 18:58:02.000000000 +0200
++++ mesa-25.1.9/src/gallium/drivers/panfrost/pan_resource.c	2025-11-22 22:34:49.604439615 +0100
+@@ -875,7 +875,7 @@
+       uint32_t flags = PAN_BO_DELAY_MMAP;
+ 
+       /* If the resource is never exported, we can make the BO private. */
+-      if (template->bind & PIPE_BIND_SHARED)
++      //if (template->bind & PIPE_BIND_SHARED)
+          flags |= PAN_BO_SHAREABLE;
+ 
+       so->bo =
