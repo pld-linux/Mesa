@@ -8,4 +8,4 @@
 +      //if (template->bind & PIPE_BIND_SHARED)
           flags |= PAN_BO_SHAREABLE;
  
-       so->bo =
+       char *res_label =
