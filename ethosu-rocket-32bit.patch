@@ -1,0 +1,73 @@
+From 38409e16385c610b28430386bf4bea3c116295b3 Mon Sep 17 00:00:00 2001
+From: Linus Karl <linus@lotz.li>
+Date: Tue, 18 Nov 2025 10:17:20 +0100
+Subject: [PATCH 1/2] rocket: fix build on non LP64 architectures
+
+Cc: mesa-stable
+Signed-off-by: Linus Karl <linus@lotz.li>
+---
+ src/gallium/drivers/rocket/intercept.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/src/gallium/drivers/rocket/intercept.c b/src/gallium/drivers/rocket/intercept.c
+index 6ffb8647d61f5..7388b252ed2b9 100644
+--- a/src/gallium/drivers/rocket/intercept.c
++++ b/src/gallium/drivers/rocket/intercept.c
+@@ -5,6 +5,7 @@
+ 
+ #include <dlfcn.h>
+ #include <fcntl.h>
++#include <inttypes.h>
+ #include <linux/limits.h>
+ #include <stdarg.h>
+ #include <stdint.h>
+@@ -67,7 +68,7 @@ static struct bo *
+ find_bo(uint64_t dma_address, unsigned *offset)
+ {
+    for (int j = 0; j < context.next_handle_id; j++) {
+-      fprintf(stderr, "needle %lx hay %lx i %d\n", dma_address,
++      fprintf(stderr, "needle %" PRIx64 " hay %" PRIx64 " i %d\n", dma_address,
+               context.bos[j].dma_addr, j);
+       if (dma_address >= context.bos[j].dma_addr &&
+           dma_address < context.bos[j].dma_addr + context.bos[j].size) {
+@@ -85,7 +86,7 @@ dump_buffer(const char *name, uint64_t dma_address, unsigned size)
+    unsigned offset = 0;
+    struct bo *bo = find_bo(dma_address, &offset);
+ 
+-   fprintf(stderr, "dump_buffer name %s dma 0x%lx size %u bo %p\n", name,
++   fprintf(stderr, "dump_buffer name %s dma 0x%" PRIx64 " size %u bo %p\n", name,
+            dma_address, size, bo);
+ 
+    if (size == 0 || size + offset > bo->size)
+-- 
+GitLab
+
+
+From df15beff21b40c7947d3d4710877efbe1c6d91cd Mon Sep 17 00:00:00 2001
+From: Linus Karl <linus@lotz.li>
+Date: Fri, 21 Nov 2025 12:22:40 +0100
+Subject: [PATCH 2/2] ethos: fix build on non LP64 architectures
+
+Cc: mesa-stable
+Closes: https://gitlab.freedesktop.org/mesa/mesa/-/issues/14310
+Signed-off-by: Linus Karl <linus@lotz.li>
+---
+ src/gallium/drivers/ethosu/ethosu_coefs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/gallium/drivers/ethosu/ethosu_coefs.c b/src/gallium/drivers/ethosu/ethosu_coefs.c
+index fe793fcc321c7..0fed9e4a9297e 100644
+--- a/src/gallium/drivers/ethosu/ethosu_coefs.c
++++ b/src/gallium/drivers/ethosu/ethosu_coefs.c
+@@ -82,7 +82,7 @@ fill_weights(struct ethosu_subgraph *subgraph, struct ethosu_operation *operatio
+    }
+    pipe_buffer_unmap(subgraph->base.context, transfer_in);
+ 
+-   long padded_size = 0;
++   int64_t padded_size = 0;
+    *weights_size = mlw_reorder_encode(
+       IFM_UBLOCK.depth,
+       OFM_UBLOCK.depth,
+-- 
+GitLab
+
