@@ -90,12 +90,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	25.3.4
+Version:	25.3.5
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	dc664e63fb2c2785e89fa1327515ee80
+# Source0-md5:	8e699baecbb0a15b5651cc0db2035a4c
 Source1:	https://crates.io/api/v1/crates/syn/%{syn_crate_ver}/download?/syn-%{syn_crate_ver}.tar.gz
 # Source1-md5:	112875c142d1023400b0262ea1996de0
 Source2:	https://crates.io/api/v1/crates/unicode-ident/%{unicode_ident_crate_ver}/download?/unicode-ident-%{unicode_ident_crate_ver}.tar.gz
@@ -1159,7 +1159,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/rcar-du_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/repaper_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/rockchip_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/rocket_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/rzg2l-du_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/ssd130x_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/st7586_dri.so
