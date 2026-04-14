@@ -162,7 +162,7 @@ BuildRequires:	rpmbuild(macros) >= 2.050
 BuildRequires:	rust >= 1.82.0
 %endif
 %if %{with gallium_rusticl} || %{with nvk}
-BuildRequires:	rust-bindgen >= 0.71.1
+BuildRequires:	rust-bindgen >= 0.72.1
 %endif
 %{?with_nvk:BuildRequires:	rust-cbindgen >= 0.25}
 BuildRequires:	sed >= 4.0
