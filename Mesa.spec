@@ -90,12 +90,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	26.0.6
+Version:	26.1.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	7c2058b9a440c4d4c01a67a6612044d0
+# Source0-md5:	3c0c22c513dd4be2afae6f1fdb1449fd
 Source1:	https://crates.io/api/v1/crates/syn/%{syn_crate_ver}/download?/syn-%{syn_crate_ver}.tar.gz
 # Source1-md5:	112875c142d1023400b0262ea1996de0
 Source2:	https://crates.io/api/v1/crates/unicode-ident/%{unicode_ident_crate_ver}/download?/unicode-ident-%{unicode_ident_crate_ver}.tar.gz
@@ -133,6 +133,7 @@ BuildRequires:	libdisplay-info-devel >= %{libdisplay_info_ver}
 BuildRequires:	libdrm-devel >= %{libdrm_ver}
 %{?with_glvnd:BuildRequires:	libglvnd-devel >= %{libglvnd_ver}}
 BuildRequires:	libstdc++-devel >= %{gcc_ver}
+%{?with_gallium_rusticl:BuildRequires:	libstdc++-static >= %{gcc_ver}}
 BuildRequires:	libunwind-devel
 %{?with_va:BuildRequires:	libva-devel}
 %{?with_va:BuildRequires:	pkgconfig(libva) >= 1.8.0}
@@ -151,7 +152,7 @@ BuildRequires:	pkgconfig(xcb-dri3) >= 1.17
 BuildRequires:	pkgconfig(xcb-glx) >= 1.8.1
 BuildRequires:	pkgconfig(xcb-present) >= 1.17
 BuildRequires:	pkgconfig(xcb-randr) >= 1.12
-BuildRequires:	python3 >= 1:3.9
+BuildRequires:	python3 >= 1:3.10
 BuildRequires:	python3-Mako >= 0.8.0
 BuildRequires:	python3-PyYAML
 %ifarch %{arm} aarch64
