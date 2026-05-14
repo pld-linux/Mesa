@@ -108,7 +108,6 @@ Source5:	https://crates.io/api/v1/crates/paste/%{paste_crate_ver}/download?/past
 # Source5-md5:	1781b204ec7b6b1ef9232d429e6a973a
 Source6:	https://crates.io/api/v1/crates/rustc-hash/%{rustc_hash_crate_ver}/download?/rustc-hash-%{rustc_hash_crate_ver}.tar.gz
 # Source6-md5:	9f5da5d4deefacf77ae9ca3cbe5c7c6a
-Patch0:		panfrost-shareable-res.patch
 URL:		https://www.mesa3d.org/
 %if %{with gallium_rusticl}
 BuildRequires:	SPIRV-LLVM-Translator-devel >= 15.0.0.0
@@ -847,9 +846,6 @@ Sterownik Vulkan dla kart VirtIO.
 
 %prep
 %setup -q -n mesa-%{version}
-%ifarch %{arm} aarch64
-%patch -P0 -p1
-%endif
 
 install -d subprojects/packagecache
 cp -p %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} %{SOURCE5} %{SOURCE6} subprojects/packagecache
