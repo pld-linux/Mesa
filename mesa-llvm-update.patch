@@ -1,0 +1,163 @@
+--- mesa-25.1.9/src/compiler/clc/clc_helpers.cpp.orig	2026-05-26 19:34:09.808767807 +0200
++++ mesa-25.1.9/src/compiler/clc/clc_helpers.cpp	2026-05-26 19:37:39.850963244 +0200
+@@ -24,12 +24,9 @@
+ // OTHER DEALINGS IN THE SOFTWARE.
+ 
+ #include <cstdlib>
+-#include <filesystem>
+ #include <sstream>
+ #include <mutex>
+ 
+-#include "util/ralloc.h"
+-#include "util/set.h"
+ #include <llvm/ADT/ArrayRef.h>
+ #include <llvm/IR/DiagnosticPrinter.h>
+ #include <llvm/IR/DiagnosticInfo.h>
+@@ -68,7 +65,17 @@
+ #include <llvm/Support/VirtualFileSystem.h>
+ #endif
+ 
++#if LLVM_VERSION_MAJOR >= 22
++#include <clang/Options/OptionUtils.h>
++#endif
++
++/* We have to include our own headers after LLVM/clang as they seem to use
++ * `UNUSED` within enum definitions:
++ * https://github.com/llvm/llvm-project/blob/ea443eeb2ab8ed49ffb783c2025fed6629a36f10/clang/include/clang/Basic/OffloadArch.h#L19
++ */
+ #include "util/macros.h"
++#include "util/ralloc.h"
++#include "util/set.h"
+ #include "glsl_types.h"
+ 
+ #include "spirv.h"
+@@ -84,8 +91,6 @@
+ 
+ #include "clc_helpers.h"
+ 
+-namespace fs = std::filesystem;
+-
+ /* Use the highest version of SPIRV supported by SPIRV-Tools. */
+ constexpr spv_target_env spirv_target = SPV_ENV_UNIVERSAL_1_6;
+ 
+@@ -866,7 +871,7 @@ clc_compile_to_llvm_module(LLVMContext &
+    c->getDiagnosticOpts().ShowCarets = false;
+ 
+    c->createDiagnostics(
+-#if LLVM_VERSION_MAJOR >= 20
++#if LLVM_VERSION_MAJOR >= 20 && LLVM_VERSION_MAJOR < 22
+                    *llvm::vfs::getRealFileSystem(),
+ #endif
+                    new clang::TextDiagnosticPrinter(
+@@ -874,7 +879,11 @@ clc_compile_to_llvm_module(LLVMContext &
+                            diag_opts));
+ 
+    c->setTarget(clang::TargetInfo::CreateTargetInfo(
++#if LLVM_VERSION_MAJOR >= 21
++                   c->getDiagnostics(), c->getInvocation().getTargetOpts()));
++#else
+                    c->getDiagnostics(), c->getInvocation().TargetOpts));
++#endif
+ 
+    c->getFrontendOpts().ProgramAction = clang::frontend::EmitLLVMOnly;
+ 
+@@ -917,27 +926,29 @@ clc_compile_to_llvm_module(LLVMContext &
+    // GetResourcePath is a way to retrieve the actual libclang resource dir based on a given binary
+    // or library.
+    auto tmp_res_path =
+-#if LLVM_VERSION_MAJOR >= 20
++#if LLVM_VERSION_MAJOR >= 22
++      clang::GetResourcesPath(std::string(clang_path));
++#elif LLVM_VERSION_MAJOR >= 20
+       Driver::GetResourcesPath(std::string(clang_path));
+ #else
+       Driver::GetResourcesPath(std::string(clang_path), CLANG_RESOURCE_DIR);
+ #endif
+-   auto clang_res_path = fs::path(tmp_res_path) / "include";
++   auto clang_res_path = tmp_res_path + "/include";
+ 
+    free(clang_path);
+ 
+    c->getHeaderSearchOpts().UseBuiltinIncludes = true;
+    c->getHeaderSearchOpts().UseStandardSystemIncludes = true;
+-   c->getHeaderSearchOpts().ResourceDir = clang_res_path.string();
++   c->getHeaderSearchOpts().ResourceDir = clang_res_path;
+ 
+    // Add opencl-c generic search path
+-   c->getHeaderSearchOpts().AddPath(clang_res_path.string(),
++   c->getHeaderSearchOpts().AddPath(clang_res_path,
+                                     clang::frontend::Angled,
+                                     false, false);
+ 
+    auto clang_install_res_path =
+-      fs::path(LLVM_LIB_DIR) / "clang" / std::to_string(LLVM_VERSION_MAJOR) / "include";
+-   c->getHeaderSearchOpts().AddPath(clang_install_res_path.string(),
++      std::string(LLVM_LIB_DIR) + "/clang/" + std::to_string(LLVM_VERSION_MAJOR) + "/include";
++   c->getHeaderSearchOpts().AddPath(clang_install_res_path,
+                                     clang::frontend::Angled,
+                                     false, false);
+ #endif
+--- mesa-25.1.9/src/gallium/frontends/clover/llvm/invocation.cpp.orig	2026-05-26 20:30:38.110411801 +0200
++++ mesa-25.1.9/src/gallium/frontends/clover/llvm/invocation.cpp	2026-05-26 21:35:14.356079042 +0200
+@@ -234,8 +234,14 @@ namespace {
+                             std::string &r_log) {
+       std::unique_ptr<clang::CompilerInstance> c { new clang::CompilerInstance };
+       clang::TextDiagnosticBuffer *diag_buffer = new clang::TextDiagnosticBuffer;
++#if LLVM_VERSION_MAJOR >= 20
++      clang::DiagnosticOptions diagOpts;
++      clang::DiagnosticsEngine diag { llvm::makeIntrusiveRefCnt<clang::DiagnosticIDs>(),
++            diagOpts, diag_buffer };
++#else
+       clang::DiagnosticsEngine diag { new clang::DiagnosticIDs,
+             new clang::DiagnosticOptions, diag_buffer };
++#endif
+ 
+       // Parse the compiler options.  A file name should be present at the end
+       // and must have the .cl extension in order for the CompilerInvocation
+@@ -316,15 +322,22 @@ namespace {
+                                 get_language_version(opts, device_clc_version));
+ 
+       c->createDiagnostics(
+-#if LLVM_VERSION_MAJOR >= 20
++#if LLVM_VERSION_MAJOR >= 20 && LLVM_VERSION_MAJOR < 22
+                            *llvm::vfs::getRealFileSystem(),
+ #endif
+                            new clang::TextDiagnosticPrinter(
+                               *new raw_string_ostream(r_log),
+-                              &c->getDiagnosticOpts(), true));
++#if LLVM_VERSION_MAJOR < 21
++                              &
++#endif
++			      c->getDiagnosticOpts(), true));
+ 
+       c->setTarget(clang::TargetInfo::CreateTargetInfo(
++#if LLVM_VERSION_MAJOR >= 21
++                           c->getDiagnostics(), c->getInvocation().getTargetOpts()));
++#else
+                            c->getDiagnostics(), c->getInvocation().TargetOpts));
++#endif
+ 
+       return c;
+    }
+@@ -344,7 +357,9 @@ namespace {
+       // GetResourcePath is a way to retrieve the actual libclang resource dir based on a given
+       // binary or library.
+       std::string clang_resource_dir =
+-#if LLVM_VERSION_MAJOR >= 20
++#if LLVM_VERSION_MAJOR >= 22
++         clang::GetResourcesPath(std::string(libclang_path));
++#elif LLVM_VERSION_MAJOR >= 20
+          clang::driver::Driver::GetResourcesPath(std::string(libclang_path));
+ #else
+          clang::driver::Driver::GetResourcesPath(std::string(libclang_path), CLANG_RESOURCE_DIR);
+--- mesa-25.1.9/src/gallium/frontends/clover/llvm/codegen/native.cpp.orig	2026-05-26 21:45:19.372801384 +0200
++++ mesa-25.1.9/src/gallium/frontends/clover/llvm/codegen/native.cpp	2026-05-26 21:45:34.249387458 +0200
+@@ -115,7 +115,7 @@ namespace {
+          fail(r_log, build_error(), err);
+ 
+       std::unique_ptr<TargetMachine> tm {
+-         t->createTargetMachine(target.triple, target.cpu, "", {},
++         t->createTargetMachine(::llvm::Triple(target.triple), target.cpu, "", {},
+ #if LLVM_VERSION_MAJOR >= 16
+                                 std::nullopt, std::nullopt,
+ #else
