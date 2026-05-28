@@ -18,6 +18,7 @@
 %bcond_without	vdpau		# VDPAU driver
 %bcond_without	wayland		# Wayland EGL
 %bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
+%bcond_without	vulkan		# Vulkan drivers
 %bcond_without	nvk		# nvidia Vulkan driver
 %bcond_without	radv		# radeon Vulkan driver
 %bcond_without	intel_rt	# Intel Ray Tracing support
@@ -1218,6 +1219,7 @@ vc4 \
 
 gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 
+%if %{with vulkan}
 vulkan_drivers="swrast virtio %{?with_radv:amd} %{?with_intel_vk:intel intel_hasvk} %{?with_nvk:nouveau} \
 %ifarch %{arm} aarch64
 broadcom freedreno imagination-experimental panfrost \
@@ -1226,6 +1228,7 @@ asahi
 %endif
 %endif
 "
+%endif
 
 vulkan_drivers=$(echo $vulkan_drivers | xargs | tr ' ' ',')
 
@@ -1700,6 +1703,7 @@ rm -rf $RPM_BUILD_ROOT
 
 ### drivers: vulkan
 
+%if %{with vulkan}
 %ifarch %{arm} aarch64
 %ifarch aarch64
 %files vulkan-icd-asahi
@@ -1762,3 +1766,4 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libvulkan_virtio.so
 %{_datadir}/vulkan/icd.d/virtio_icd.*.json
+%endif
