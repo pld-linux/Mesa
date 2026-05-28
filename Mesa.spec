@@ -15,6 +15,7 @@
 %bcond_without	ocl_icd		# OpenCL as ICD (installable client driver)
 %bcond_without	glvnd		# OpenGL vendor neutral dispatcher support
 %bcond_without	va		# VA library
+%bcond_without	vdpau		# VDPAU driver
 %bcond_without	wayland		# Wayland EGL
 %bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
 %bcond_without	nvk		# nvidia Vulkan driver
@@ -58,6 +59,7 @@
 %undefine	with_nine
 %undefine	with_opencl
 %undefine	with_va
+%undefine	with_vdpau
 %undefine	with_xa
 %endif
 
@@ -69,10 +71,6 @@
 %if %{without opencl}
 %undefine	with_gallium_rusticl
 %undefine	with_ocl_icd
-%endif
-
-%if %{with gallium}
-%define		with_vdpau	1
 %endif
 
 %ifarch %{x86_with_sse2}
