@@ -1,5 +1,4 @@
 # TODO:
-# - libtizonia >= 0.10.0 as an alternative for bellagio?
 # - bcond for perfetto peformance analysis? (BR: perfetto)
 #
 # Conditional build:
