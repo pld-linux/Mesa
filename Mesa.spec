@@ -1300,7 +1300,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %meson_install
 
+%if %{with gbm}
 install -d $RPM_BUILD_ROOT%{_libdir}/gbm
+%endif
 
 %if %{without glvnd}
 # remove "OS ABI: Linux 2.4.20" tag, so private copies (nvidia or fglrx),
@@ -1514,30 +1516,28 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/d3d.pc
 %endif
 
+%if %{with gallium} && %{with gbm}
 %files dri-driver
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/libdril_dri.so
+%ifarch %{ix86} %{x8664} x32
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/crocus_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/iris_dri.so
+%endif
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/kms_swrast_dri.so
+%if %{with gallium_nouveau}
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
+%endif
 %if %{with gallium_radeon}
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/r300_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/r600_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/radeonsi_dri.so
 %endif
-%ifarch %{ix86} %{x8664} x32
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
-%if %{with gallium}
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/crocus_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/iris_dri.so
-%endif
-%endif
-%if %{with gallium_nouveau}
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
-%endif
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
 %if %{with gallium_zink}
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/zink_dri.so
 %endif
-%if %{with gallium}
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/kms_swrast_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
 %ifarch %{arm} aarch64
 %ifarch aarch64
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/asahi_dri.so
@@ -1590,10 +1590,10 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/v3d_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/vc4_dri.so
-%endif
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/virtio_gpu_dri.so
 %ifarch %{ix86} %{x8664} x32
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/vmwgfx_dri.so
+%endif
 %endif
 %endif
 
