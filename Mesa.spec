@@ -6,23 +6,23 @@
 %bcond_without	gallium_i915	# gallium i915 driver
 %bcond_without	gallium_nouveau	# gallium nouveau driver
 %bcond_without	gallium_radeon	# gallium radeon drivers
-%bcond_without	gallium_rusticl	# gallium OpenCL frontend
+%bcond_with	gallium_rusticl	# gallium OpenCL frontend
 %bcond_without	gallium_zink	# gallium zink driver (based on vulkan)
-%bcond_without	egl		# EGL libraries
-%bcond_without	opengl		# OpenGL (desktop/ES) and DRI libraries
-%bcond_without	gbm		# Graphics Buffer Manager
+%bcond_with	egl		# EGL libraries
+%bcond_with	opengl		# OpenGL (desktop/ES) and DRI libraries
+%bcond_with	gbm		# Graphics Buffer Manager (and xorg DRI drivers)
 %bcond_without	nine		# Nine Direct3D 9+ state tracker (for Wine)
 %bcond_without	opencl		# OpenCL support
 %bcond_without	ocl_icd		# OpenCL as ICD (installable client driver)
-%bcond_without	glvnd		# OpenGL vendor neutral dispatcher support
-%bcond_without	va		# VA library
+%bcond_with	glvnd		# OpenGL vendor neutral dispatcher support
+%bcond_with	va		# VA library
 %bcond_without	vdpau		# VDPAU driver
-%bcond_without	wayland		# Wayland EGL
+%bcond_with	wayland		# Wayland EGL
 %bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
-%bcond_without	vulkan		# Vulkan drivers
-%bcond_without	nvk		# nvidia Vulkan driver
-%bcond_without	radv		# radeon Vulkan driver
-%bcond_without	intel_rt	# Intel Ray Tracing support
+%bcond_with	vulkan		# Vulkan drivers
+%bcond_with	nvk		# nvidia Vulkan driver
+%bcond_with	radv		# radeon Vulkan driver
+%bcond_with	intel_rt	# Intel Ray Tracing support
 %bcond_with	sse2		# SSE2 instructions
 %bcond_with	hud_extra	# HUD block/NIC I/O HUD stats support
 %bcond_with	lm_sensors	# HUD lm_sensors support
