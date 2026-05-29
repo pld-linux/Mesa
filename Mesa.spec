@@ -11,14 +11,10 @@
 %bcond_without	egl		# EGL libraries
 %bcond_without	opengl		# OpenGL (desktop/ES) and DRI libraries
 %bcond_without	gbm		# Graphics Buffer Manager
-%bcond_without	nine		# Nine Direct3D 9+ state tracker (for Wine)
-%bcond_without	opencl		# OpenCL support
-%bcond_without	ocl_icd		# OpenCL as ICD (installable client driver)
 %bcond_without	glvnd		# OpenGL vendor neutral dispatcher support
 %bcond_without	va		# VA library
 %bcond_without	vdpau		# VDPAU driver
 %bcond_without	wayland		# Wayland EGL
-%bcond_without	xa		# XA state tracker (for vmwgfx xorg driver)
 %bcond_without	vulkan		# Vulkan drivers
 %bcond_without	nvk		# nvidia Vulkan driver
 %bcond_without	radv		# radeon Vulkan driver
@@ -28,11 +24,12 @@
 %bcond_with	lm_sensors	# HUD lm_sensors support
 %bcond_with	tests		# tests
 
-%define		syn_crate_ver		2.0.68
+%define		syn_crate_ver		2.0.87
 %define		unicode_ident_crate_ver	1.0.12
-%define		quote_crate_ver		1.0.33
+%define		quote_crate_ver		1.0.35
 %define		proc_macro2_crate_ver	1.0.86
 %define		paste_crate_ver		1.0.14
+%define		rustc_hash_crate_ver	2.1.1
 
 %define		va_api_version		%(pkg-config --modversion libva 2> /dev/null || echo ERROR)
 %define		va_api_major		%(echo %{va_api_version} | cut -d . -f 1)
@@ -58,21 +55,13 @@
 %undefine	with_gallium_nouveau
 %undefine	with_gallium_radeon
 %undefine	with_gallium_rusticl
-%undefine	with_nine
-%undefine	with_opencl
 %undefine	with_va
 %undefine	with_vdpau
-%undefine	with_xa
 %endif
 
 %if %{without egl}
 %undefine	with_gbm
 %undefine	with_wayland
-%endif
-
-%if %{without opencl}
-%undefine	with_gallium_rusticl
-%undefine	with_ocl_icd
 %endif
 
 %ifarch %{x86_with_sse2}
@@ -103,35 +92,38 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	25.1.9
-Release:	2
+Version:	25.2.8
+Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	437f63d5f06a2a4e429c79d9c8b8e455
+# Source0-md5:	c555052c29e6fdfe3cfb68c05707ca09
 Source1:	https://crates.io/api/v1/crates/syn/%{syn_crate_ver}/download?/syn-%{syn_crate_ver}.tar.gz
-# Source1-md5:	01a9bc27d9bb67760e8736034737cd20
+# Source1-md5:	112875c142d1023400b0262ea1996de0
 Source2:	https://crates.io/api/v1/crates/unicode-ident/%{unicode_ident_crate_ver}/download?/unicode-ident-%{unicode_ident_crate_ver}.tar.gz
 # Source2-md5:	ca65153603a1a7240bbd9d2ce19f2d67
 Source3:	https://crates.io/api/v1/crates/quote/%{quote_crate_ver}/download?/quote-%{quote_crate_ver}.tar.gz
-# Source3-md5:	0ddb8bccd3198892d0dd0ec7151f7cd3
+# Source3-md5:	0358b31bf59c7915bb03f9e66f2d1ea3
 Source4:	https://crates.io/api/v1/crates/proc-macro2/%{proc_macro2_crate_ver}/download?/proc-macro2-%{proc_macro2_crate_ver}.tar.gz
 # Source4-md5:	480a3b8e8201739e157bb648f9243962
 Source5:	https://crates.io/api/v1/crates/paste/%{paste_crate_ver}/download?/paste-%{paste_crate_ver}.tar.gz
 # Source5-md5:	1781b204ec7b6b1ef9232d429e6a973a
+Source6:	https://crates.io/api/v1/crates/rustc-hash/%{rustc_hash_crate_ver}/download?/rustc-hash-%{rustc_hash_crate_ver}.tar.gz
+# Source6-md5:	9f5da5d4deefacf77ae9ca3cbe5c7c6a
 Patch0:		panfrost-shareable-res.patch
-Patch1:		mesa-c11-threads-update.patch
 Patch2:		mesa-llvm-update.patch
 URL:		https://www.mesa3d.org/
 %if %{with gallium_rusticl}
-BuildRequires:	SPIRV-LLVM-Translator-devel >= 8.0.1.3
+BuildRequires:	SPIRV-LLVM-Translator-devel >= 15.0.0.0
 %endif
 %{?with_gallium_zink:BuildRequires:	Vulkan-Loader-devel}
 BuildRequires:	bison >= 2.4.1
 %if %{with gallium_rusticl} || %{with nvk}
 BuildRequires:	clang >= %{llvm_ver}
 %endif
-%{?with_opencl:BuildRequires:	clang-devel >= %{llvm_ver}}
+%if %{with clc} || %{with gallium_rusticl}
+BuildRequires:	clang-devel >= %{llvm_ver}
+%endif
 BuildRequires:	elfutils-devel
 BuildRequires:	expat-devel >= 1.95
 BuildRequires:	flex >= 2.5.35
@@ -149,11 +141,11 @@ BuildRequires:	libunwind-devel
 %{?with_vdpau:BuildRequires:	libvdpau-devel >= 1.5}
 BuildRequires:	libxcb-devel >= 1.17
 BuildRequires:	llvm-devel >= %{llvm_ver}
-%if %{with opencl} || %{with clc}
+%if %{with clc}
 BuildRequires:	llvm-libclc
 %endif
 %{?with_lm_sensors:BuildRequires:	lm_sensors-devel}
-BuildRequires:	meson >= 1.4.0
+BuildRequires:	meson >= 1.7.0
 BuildRequires:	ninja >= 1.5
 BuildRequires:	pkgconfig
 BuildRequires:	pkgconfig(talloc) >= 2.0.1
@@ -162,7 +154,7 @@ BuildRequires:	pkgconfig(xcb-dri3) >= 1.17
 BuildRequires:	pkgconfig(xcb-glx) >= 1.8.1
 BuildRequires:	pkgconfig(xcb-present) >= 1.17
 BuildRequires:	pkgconfig(xcb-randr) >= 1.12
-BuildRequires:	python3 >= 1:3.2
+BuildRequires:	python3 >= 1:3.8
 BuildRequires:	python3-Mako >= 0.8.0
 BuildRequires:	python3-PyYAML
 %ifarch %{arm} aarch64
@@ -170,10 +162,10 @@ BuildRequires:	python3-pycparser >= 2.20
 %endif
 BuildRequires:	rpmbuild(macros) >= 2.050
 %if %{with gallium_rusticl} || %{with nvk}
-BuildRequires:	rust >= 1.76.0
+BuildRequires:	rust >= 1.78.0
 %endif
 %if %{with gallium_rusticl} || %{with nvk}
-BuildRequires:	rust-bindgen >= 0.65.0
+BuildRequires:	rust-bindgen >= 0.71.1
 %endif
 %{?with_nvk:BuildRequires:	rust-cbindgen >= 0.25}
 BuildRequires:	sed >= 4.0
@@ -415,77 +407,6 @@ Header files for Mesa GLES libraries.
 %description libGLES-devel -l pl.UTF-8
 Pliki nagłówkowe bibliotek Mesa GLES.
 
-%package OpenCL-icd
-Summary:	Mesa implementation of OpenCL (Compuing Language) API ICD
-Summary(pl.UTF-8):	Implementacja Mesa API OpenCL (języka obliczeń) ICD
-License:	MIT
-Group:		Libraries
-Requires:	filesystem >= 4.0-29
-Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	llvm-libclc
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Provides:	OpenCL = 1.1
-Provides:	ocl-icd-driver
-
-%description OpenCL-icd
-This package contains Mesa implementation of OpenCL - standard for
-cross-platform, parallel programming of modern processors found in
-personal computers, servers and handheld/embedded devices. OpenCL
-specification can be found on Khronos Group site:
-<http://www.khronos.org/opencl/>. Mesa implements OpenCL 1.1.
-
-The implementation is provided as an installable client driver (ICD)
-for use with the ocl-icd loader.
-
-%description OpenCL-icd -l pl.UTF-8
-Ten pakiet zawiera implementację Mesa standardu OpenCL - standardu
-wieloplatformowego, równoległego programowania nowoczesnych
-procesorów, jakie znajdują się w komputerach osobistych, serwerach
-oraz urządzeniach przenośnych/wbudowanych. Specyfikację OpenCL można
-znaleźć na stronie Khronos Group: <http://www.khronos.org/opencl/>.
-Mesa zawiera implementację OpenCL w wersji 1.1.
-
-Implementacja dostarczona jest w postaci instalowalnego sterownika
-klienta (ICD), który może być użyty z loaderem ocl-icd.
-
-%package libOpenCL
-Summary:	Mesa implementation of OpenCL (Compuing Language) API
-Summary(pl.UTF-8):	Implementacja Mesa API OpenCL (języka obliczeń)
-License:	MIT
-Group:		Libraries
-Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	llvm-libclc
-Provides:	OpenCL = 1.1
-
-%description libOpenCL
-This package contains Mesa implementation of OpenCL - standard for
-cross-platform, parallel programming of modern processors found in
-personal computers, servers and handheld/embedded devices. OpenCL
-specification can be found on Khronos Group site:
-<http://www.khronos.org/opencl/>. Mesa implements OpenCL 1.1.
-
-%description libOpenCL -l pl.UTF-8
-Ten pakiet zawiera implementację Mesa standardu OpenCL - standardu
-wieloplatformowego, równoległego programowania nowoczesnych
-procesorów, jakie znajdują się w komputerach osobistych, serwerach
-oraz urządzeniach przenośnych/wbudowanych. Specyfikację OpenCL można
-znaleźć na stronie Khronos Group: <http://www.khronos.org/opencl/>.
-Mesa zawiera implementację OpenCL w wersji 1.1.
-
-%package libOpenCL-devel
-Summary:	Header files for Mesa OpenCL library
-Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki Mesa OpenCL
-License:	MIT
-Group:		Development/Libraries
-Requires:	%{name}-libOpenCL%{?_isa} = %{version}-%{release}
-Provides:	OpenCL-devel = 1.2
-
-%description libOpenCL-devel
-Header files for Mesa OpenCL library.
-
-%description libOpenCL-devel -l pl.UTF-8
-Pliki nagłówkowe biblioteki Mesa OpenCL.
-
 %package Rusticl-icd
 Summary:	Rusticl implementation of OpenCL (Compuing Language) API ICD
 Summary(pl.UTF-8):	Implementacja Rusticl API OpenCL (języka obliczeń) ICD
@@ -574,33 +495,6 @@ Header file for Mesa Graphics Buffer Manager library.
 Plik nagłówkowy biblioteki Mesa Graphics Buffer Manager (zarządcy
 bufora graficznego).
 
-%package libxatracker
-Summary:	Xorg Gallium3D accelleration library
-Summary(pl.UTF-8):	Biblioteka akceleracji Gallium3D dla Xorg
-Group:		X11/Libraries
-Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-
-%description libxatracker
-Xorg Gallium3D accelleration library (used by new vmwgfx driver).
-
-%description libxatracker -l pl.UTF-8
-Biblioteka akceleracji Gallium3D dla Xorg (używana przez nowy
-sterownik vmwgfx).
-
-%package libxatracker-devel
-Summary:	Header files for Xorg Gallium3D accelleration library
-Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki akceleracji Gallium3D dla Xorg
-Group:		X11/Development/Libraries
-Requires:	%{name}-libxatracker%{?_isa} = %{version}-%{release}
-Requires:	libdrm-devel%{?_isa} >= %{libdrm_ver}
-
-%description libxatracker-devel
-Header files for Xorg Gallium3D accelleration library.
-
-%description libxatracker-devel -l pl.UTF-8
-Pliki nagłówkowe biblioteki akceleracji Gallium3D dla Xorg.
-
 %package khrplatform-devel
 Summary:	Khronos platform header file
 Summary(pl.UTF-8):	Plik nagłówkowy platformy Khronos
@@ -632,31 +526,6 @@ Direct Rendering Infrastructure interface header file.
 
 %description dri-devel -l pl.UTF-8
 Plik nagłówkowy interfejsu DRI (Direct Rendering Infrastructure).
-
-%package d3d
-Summary:	Nine Direct3D9 driver (for Wine)
-Summary(pl.UTF-8):	Sterownik Direct3D9 Nine (dla Wine)
-Group:		Libraries
-Requires:	libdrm%{?_isa} >= %{libdrm_ver}
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-
-%description d3d
-Nine Direct3D9 driver (for Wine).
-
-%description d3d -l pl.UTF-8
-Sterownik Direct3D9 Nine (dla Wine).
-
-%package d3d-devel
-Summary:	Nine Direct3D9 driver API
-Summary(pl.UTF-8):	API sterownika Direct3D9 Nine
-Group:		Development/Libraries
-Requires:	libdrm-devel%{?_isa} >= %{libdrm_ver}
-
-%description d3d-devel
-Nine Direct3D9 driver API.
-
-%description d3d-devel -l pl.UTF-8
-API sterownika Direct3D9 Nine.
 
 %package dri-driver
 Summary:	X.org DRI driver
@@ -734,181 +603,6 @@ X.org Gallium DRI driver.
 
 %description dri-driver -l pl.UTF-8
 Sterownik X.org DRI Gallium.
-
-%package pipe-driver-crocus
-Summary:	crocus driver for Mesa Gallium dynamic pipe loader
-Summary(pl.UTF-8):	Sterownik crocus dla dynamicznego systemu potoków szkieletu Mesa Gallium
-Group:		Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-
-%description pipe-driver-crocus
-crocus driver for Mesa Gallium dynamic pipe loader. It supports Intel
-Gen4/Gen5/Gen6/Gen7 chips.
-
-%description pipe-driver-crocus -l pl.UTF-8
-Sterownik crocus dla dynamicznego systemu potoków szkieletu Mesa
-Gallium. Obsługuje układy Intela Gen4/Gen5/Gen6/Gen7.
-
-%package pipe-driver-i915
-Summary:	i915 driver for Mesa Gallium dynamic pipe loader
-Summary(pl.UTF-8):	Sterownik i915 dla dynamicznego systemu potoków szkieletu Mesa Gallium
-Group:		Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Obsoletes:	Mesa-gbm-driver-i915 < 11.1.1
-Obsoletes:	Mesa-opencl-driver-i915 < 9.1
-
-%description pipe-driver-i915
-i915 driver for Mesa Gallium dynamic pipe loader. It supports Intel
-915/945/G33/Q33/Q35/Pineview chips.
-
-%description pipe-driver-i915 -l pl.UTF-8
-Sterownik i915 dla dynamicznego systemu potoków szkieletu Mesa
-Gallium. Obsługuje układy Intela z serii 915/945/G33/Q33/Q35/Pineview.
-
-%package pipe-driver-iris
-Summary:	iris driver for Mesa Gallium dynamic pipe loader
-Summary(pl.UTF-8):	Sterownik iris dla dynamicznego systemu potoków szkieletu Mesa Gallium
-Group:		Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-
-%description pipe-driver-iris
-iris driver for Mesa Gallium dynamic pipe loader. It supports Intel
-Iris (Gen8+) card family (Broadwell, Skylake, Broxton, Kabylake,
-Coffeelake, Geminilake, Whiskey Lake, Comet Lake, Cannonlake, Ice
-Lake, Elkhart Lake).
-
-%description pipe-driver-iris -l pl.UTF-8
-Sterownik iris dla dynamicznego systemu potoków szkieletu Mesa
-Gallium. Obsługuje układy Intela z rodziny kart Intel Iris (Gen8+:
-Broadwell, Skylake, Broxton, Kabylake, Coffeelake, Geminilake, Whiskey
-Lake, Comet Lake, Cannonlake, Ice Lake, Elkhart Lake).
-
-%package pipe-driver-kmsro
-Summary:	kmsro driver for Mesa Gallium dynamic pipe loader
-Summary(pl.UTF-8):	Sterownik kmsro dla dynamicznego systemu potoków szkieletu Mesa Gallium
-Group:		Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-
-%description pipe-driver-kmsro
-kmsro driver for Mesa Gallium dynamic pipe loader.
-
-%description pipe-driver-kmsro -l pl.UTF-8
-Sterownik kmsro dla dynamicznego systemu potoków szkieletu Mesa
-Gallium.
-
-%package pipe-driver-msm
-Summary:	msm (freedreno) driver for Mesa Gallium dynamic pipe loader
-Summary(pl.UTF-8):	Sterownik msm (freedreno) dla dynamicznego systemu potoków szkieletu Mesa Gallium
-Group:		Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-
-%description pipe-driver-msm
-msm (freedreno) driver for Mesa Gallium dynamic pipe loader. It
-supports Adreno chips.
-
-%description pipe-driver-msm -l pl.UTF-8
-Sterownik msm (freedreno) dla dynamicznego systemu potoków szkieletu
-Mesa Gallium. Obsługuje układy Adreno.
-
-%package pipe-driver-nouveau
-Summary:	nouveau driver for Mesa Gallium dynamic pipe loader
-Summary(pl.UTF-8):	Sterownik nouveau dla dynamicznego systemu potoków szkieletu Mesa Gallium
-Group:		Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Obsoletes:	Mesa-gbm-driver-nouveau < 11.1.1
-Obsoletes:	Mesa-opencl-driver-nouveau < 9.1
-
-%description pipe-driver-nouveau
-nouveau driver for Mesa Gallium dynamic pipe loader. It supports
-NVidia adapters.
-
-%description pipe-driver-nouveau -l pl.UTF-8
-Sterownik nouveau dla dynamicznego systemu potoków szkieletu Mesa
-Gallium. Obsługuje karty graficzne firmy NVidia.
-
-%package pipe-driver-r300
-Summary:	r300 driver for Mesa Gallium dynamic pipe loader
-Summary(pl.UTF-8):	Sterownik r300 dla dynamicznego systemu potoków szkieletu Mesa Gallium
-Group:		Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Obsoletes:	Mesa-gbm-driver-r300 < 11.1.1
-Obsoletes:	Mesa-opencl-driver-r300 < 9.1
-
-%description pipe-driver-r300
-r300 driver for Mesa Gallium dynamic pipe loader. It supports ATI
-Radeon adapters based on R300/R400/RS690/R500 chips.
-
-%description pipe-driver-r300 -l pl.UTF-8
-Sterownik r300 dla dynamicznego systemu potoków szkieletu Mesa
-Gallium. Obsługuje karty graficzne ATI Radeon oparte na układach
-R300/R400/RS690/R500.
-
-%package pipe-driver-r600
-Summary:	r600 driver for Mesa Gallium dynamic pipe loader
-Summary(pl.UTF-8):	Sterownik r600 dla dynamicznego systemu potoków szkieletu Mesa Gallium
-Group:		Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Obsoletes:	Mesa-gbm-driver-r600 < 11.1.1
-Obsoletes:	Mesa-libllvmradeon < 9.2
-Obsoletes:	Mesa-opencl-driver-r600 < 9.1
-
-%description pipe-driver-r600
-r600 driver for Mesa Gallium dynamic pipe loader. It supports ATI
-Radeon adapters based on R600/R700 chips.
-
-%description pipe-driver-r600 -l pl.UTF-8
-Sterownik r600 dla dynamicznego systemu potoków szkieletu Mesa
-Gallium. Obsługuje karty graficzne ATI Radeon oparte na układach
-R600/R700.
-
-%package pipe-driver-radeonsi
-Summary:	radeonsi driver for Mesa Gallium dynamic pipe loader
-Summary(pl.UTF-8):	Sterownik radeonsi dla dynamicznego systemu potoków szkieletu Mesa Gallium
-Group:		Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Obsoletes:	Mesa-gbm-driver-radeonsi < 11.1.1
-Obsoletes:	Mesa-libllvmradeon < 9.2
-Obsoletes:	Mesa-opencl-driver-radeonsi < 9.1
-
-%description pipe-driver-radeonsi
-radeonsi driver for Mesa Gallium dynamic pipe loader. It supports ATI
-Radeon adapters based on Southern Islands chips.
-
-%description pipe-driver-radeonsi -l pl.UTF-8
-Sterownik radeonsi dla dynamicznego systemu potoków szkieletu Mesa
-Gallium. Obsługuje karty graficzne ATI Radeon oparte na układach
-Southern Islands.
-
-%package pipe-driver-swrast
-Summary:	Software (swrast) driver for Mesa Gallium dynamic pipe loader
-Summary(pl.UTF-8):	Sterownik programowy (swrast) dla dynamicznego systemu potoków szkieletu Mesa Gallium
-Group:		Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Obsoletes:	Mesa-gbm-driver-swrast < 11.1.1
-Obsoletes:	Mesa-opencl-driver-swrast < 9.1
-
-%description pipe-driver-swrast
-Software (swrast) driver for Mesa Gallium dynamic pipe loader.
-
-%description pipe-driver-swrast -l pl.UTF-8
-Sterownik programowy (swrast) dla dynamicznego systemu potoków
-szkieletu Mesa Gallium.
-
-%package pipe-driver-vmwgfx
-Summary:	vmwgfx driver for Mesa Gallium dynamic pipe loader
-Summary(pl.UTF-8):	Sterownik vmwgfx dla dynamicznego systemu potoków szkieletu Mesa Gallium
-Group:		Libraries
-Requires:	zlib%{?_isa} >= %{zlib_ver}
-Obsoletes:	Mesa-gbm-driver-vmwgfx < 11.1.1
-Obsoletes:	Mesa-opencl-driver-vmwgfx < 9.1
-
-%description pipe-driver-vmwgfx
-vmwgfx driver for Mesa Gallium dynamic pipe loader. It supports VMware
-virtual video adapter.
-
-%description pipe-driver-vmwgfx -l pl.UTF-8
-Sterownik vmwgfx dla dynamicznego systemu potoków szkieletu Mesa
-Gallium. Obsługuje wirtualną kartę graficzną VMware.
 
 %package -n libva-driver-gallium
 Summary:	VA driver for Gallium State Tracker
@@ -1179,24 +873,15 @@ Sterownik Vulkan dla kart VirtIO.
 
 %prep
 %setup -q -n mesa-%{version}
-%patch -P1 -p1
 %patch -P2 -p1
 %ifarch %{arm} aarch64
 %patch -P0 -p1
 %endif
 
 install -d subprojects/packagecache
-cp -p %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} %{SOURCE5} subprojects/packagecache
+cp -p %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} %{SOURCE5} %{SOURCE6} subprojects/packagecache
 
 %build
-%if %{with opencl}
-if [ "$(llvm-config --has-rtti)" != "YES" ] ; then
-	echo "Clover (gallium OpenCL) requires LLVM with RTTI!"
-	exit 1
-fi
-%endif
-
-
 gallium_drivers="virgl llvmpipe softpipe %{?with_gallium_zink:zink} \
 %ifarch %{ix86} %{x8664} x32
 svga iris %{?with_gallium_i915:i915} crocus \
@@ -1220,7 +905,6 @@ v3d \
 vc4 \
 %endif
 "
-# TODO: asahi (Apple Silicon) - arm/aarch64?
 
 gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
 
@@ -1245,7 +929,7 @@ export BINDGEN_EXTRA_CLANG_ARGS="-mfloat-abi=hard"
 
 export RUSTFLAGS="%{rpmrustflags} --target=%rust_target"
 %meson \
-	--force-fallback-for=syn,unicode-ident,quote,proc-macro2 \
+	--force-fallback-for=syn,unicode-ident,quote,proc-macro2,rustc-hash \
 	-Dallow-kcmp=enabled \
 	-Dandroid-libbacktrace=disabled \
 	-Ddri-drivers-path=%{_libdir}/xorg/modules/dri \
@@ -1255,20 +939,9 @@ export RUSTFLAGS="%{rpmrustflags} --target=%rust_target"
 	-Dgallium-d3d12-graphics=disabled \
 	-Dgallium-drivers=${gallium_drivers} \
 	%{?with_hud_extra:-Dgallium-extra-hud=true} \
-	-Dgallium-nine=%{__true_false nine} \
-%if %{with opencl}
-%if %{with ocl_icd}
-	-Dgallium-opencl=icd \
-%else
-	-Dgallium-opencl=standalone \
-%endif
 	%{?with_gallium_rusticl:-Dgallium-rusticl=true -Drust_std=2021} \
-%else
-	-Dgallium-opencl=disabled \
-%endif
 	-Dgallium-va=%{__enabled_disabled va} \
 	-Dgallium-vdpau=%{__enabled_disabled vdpau} \
-	-Dgallium-xa=%{__enabled_disabled xa} \
 	-Dgbm=%{__enabled_disabled gbm} \
 	-Dgles1=%{__enabled_disabled opengl} \
 	-Dgles2=%{__enabled_disabled opengl} \
@@ -1279,7 +952,6 @@ export RUSTFLAGS="%{rpmrustflags} --target=%rust_target"
 	-Dlmsensors=%{__enabled_disabled lm_sensors} \
 	-Dmicrosoft-clc=disabled \
 	-Dopengl=%{__true_false opengl} \
-	-Dosmesa=true \
 	-Dplatforms=x11%{?with_wayland:,wayland} \
 	-Dshader-cache=enabled \
 	-Dshared-llvm=enabled \
@@ -1328,23 +1000,14 @@ rm -rf $RPM_BUILD_ROOT
 %post	libGLES -p /sbin/ldconfig
 %postun	libGLES -p /sbin/ldconfig
 
-%post	OpenCL-icd -p /sbin/ldconfig
-%postun	OpenCL-icd -p /sbin/ldconfig
-
 %post	Rusticl-icd -p /sbin/ldconfig
 %postun	Rusticl-icd -p /sbin/ldconfig
-
-%post	libOpenCL -p /sbin/ldconfig
-%postun	libOpenCL -p /sbin/ldconfig
 
 %post	libgallium -p /sbin/ldconfig
 %postun	libgallium -p /sbin/ldconfig
 
 %post	libgbm -p /sbin/ldconfig
 %postun	libgbm -p /sbin/ldconfig
-
-%post	libxatracker -p /sbin/ldconfig
-%postun	libxatracker -p /sbin/ldconfig
 
 %if %{with egl}
 %files libEGL
@@ -1426,7 +1089,6 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %endif
 
-%if %{with opencl}
 %if %{with gallium_rusticl}
 %files Rusticl-icd
 %defattr(644,root,root,755)
@@ -1434,29 +1096,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libRusticlOpenCL.so
 %{_libdir}/libRusticlOpenCL.so.*.*.*
 %ghost %{_libdir}/libRusticlOpenCL.so.1
-%endif
-%if %{with ocl_icd}
-%files OpenCL-icd
-%defattr(644,root,root,755)
-/etc/OpenCL/vendors/mesa.icd
-%{_libdir}/libMesaOpenCL.so
-%{_libdir}/libMesaOpenCL.so.*.*.*
-%ghost %{_libdir}/libMesaOpenCL.so.1
-# currently only OpenCL uses dynamic pipe loader
-%dir %{_libdir}/gallium-pipe
-%else
-%files libOpenCL
-%defattr(644,root,root,755)
-%{_libdir}/libOpenCL.so.*.*.*
-%ghost %{_libdir}/libOpenCL.so.1
-# currently only OpenCL uses dynamic pipe loader
-%dir %{_libdir}/gallium-pipe
-
-%files libOpenCL-devel
-%defattr(644,root,root,755)
-%{_libdir}/libOpenCL.so
-%{_includedir}/CL
-%endif
 %endif
 
 %if %{with opengl}
@@ -1484,21 +1123,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/gbm.pc
 %endif
 
-%if %{with xa}
-%files libxatracker
-%defattr(644,root,root,755)
-%{_libdir}/libxatracker.so.*.*
-%ghost %{_libdir}/libxatracker.so.2
-
-%files libxatracker-devel
-%defattr(644,root,root,755)
-%{_libdir}/libxatracker.so
-%{_includedir}/xa_composite.h
-%{_includedir}/xa_context.h
-%{_includedir}/xa_tracker.h
-%{_pkgconfigdir}/xatracker.pc
-%endif
-
 %if %{with egl} && %{without glvnd}
 %files khrplatform-devel
 %defattr(644,root,root,755)
@@ -1512,20 +1136,6 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
 %{_pkgconfigdir}/dri.pc
-%endif
-
-### drivers: d3d
-
-%if %{with nine}
-%files d3d
-%defattr(644,root,root,755)
-%dir %{_libdir}/d3d
-%{_libdir}/d3d/d3dadapter9.so*
-
-%files d3d-devel
-%defattr(644,root,root,755)
-%{_includedir}/d3dadapter
-%{_pkgconfigdir}/d3d.pc
 %endif
 
 %if %{with gallium} && %{with gbm}
@@ -1605,68 +1215,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/xorg/modules/dri/virtio_gpu_dri.so
 %ifarch %{ix86} %{x8664} x32
 %{_libdir}/xorg/modules/dri/vmwgfx_dri.so
-%endif
-%endif
-%endif
-
-### drivers: pipe
-
-%if %{with gallium}
-%if %{with opencl}
-%ifarch %{ix86} %{x8664} x32
-%files pipe-driver-crocus
-%defattr(644,root,root,755)
-%{_libdir}/gallium-pipe/pipe_crocus.so
-
-%if %{with gallium_i915}
-%files pipe-driver-i915
-%defattr(644,root,root,755)
-%{_libdir}/gallium-pipe/pipe_i915.so
-%endif
-
-%files pipe-driver-iris
-%defattr(644,root,root,755)
-%{_libdir}/gallium-pipe/pipe_iris.so
-%endif
-
-%ifarch %{arm} aarch64
-%files pipe-driver-kmsro
-%defattr(644,root,root,755)
-%{_libdir}/gallium-pipe/pipe_kmsro.so
-
-%files pipe-driver-msm
-%defattr(644,root,root,755)
-%{_libdir}/gallium-pipe/pipe_msm.so
-%endif
-
-%if %{with gallium_nouveau}
-%files pipe-driver-nouveau
-%defattr(644,root,root,755)
-%{_libdir}/gallium-pipe/pipe_nouveau.so
-%endif
-
-%if %{with gallium_radeon}
-%files pipe-driver-r300
-%defattr(644,root,root,755)
-%{_libdir}/gallium-pipe/pipe_r300.so
-
-%files pipe-driver-r600
-%defattr(644,root,root,755)
-%{_libdir}/gallium-pipe/pipe_r600.so
-
-%files pipe-driver-radeonsi
-%defattr(644,root,root,755)
-%{_libdir}/gallium-pipe/pipe_radeonsi.so
-%endif
-
-%files pipe-driver-swrast
-%defattr(644,root,root,755)
-%{_libdir}/gallium-pipe/pipe_swrast.so
-
-%ifarch %{ix86} %{x8664} x32
-%files pipe-driver-vmwgfx
-%defattr(644,root,root,755)
-%{_libdir}/gallium-pipe/pipe_vmwgfx.so
 %endif
 %endif
 %endif
