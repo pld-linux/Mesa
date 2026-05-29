@@ -9,6 +9,7 @@
 %bcond_without	gallium_rusticl	# gallium OpenCL frontend
 %bcond_without	gallium_zink	# gallium zink driver (based on vulkan)
 %bcond_without	egl		# EGL libraries
+%bcond_without	opengl		# OpenGL (desktop/ES) and DRI libraries
 %bcond_without	gbm		# Graphics Buffer Manager
 %bcond_without	nine		# Nine Direct3D 9+ state tracker (for Wine)
 %bcond_without	opencl		# OpenCL support
@@ -913,7 +914,9 @@ Gallium. Obsługuje wirtualną kartę graficzną VMware.
 Summary:	VA driver for Gallium State Tracker
 Summary(pl.UTF-8):	Sterowniki VA do Gallium
 Group:		Libraries
+%if %{with opengl}
 Requires:	%{name}-libgallium%{?_isa} = %{version}-%{release}
+%endif
 Requires:	libva(va-api)%{?_isa} >= %{va_api_major}.%{va_api_minor}
 %if %{with va}
 %if %{with gallium_nouveau}
@@ -941,7 +944,9 @@ Summary:	Mesa Gallium driver for the vdpau API
 Summary(pl.UTF-8):	Sterownik Mesa Gallium dla API vdpau
 License:	MIT
 Group:		X11/Libraries
+%if %{with opengl}
 Requires:	%{name}-libgallium%{?_isa} = %{version}-%{release}
+%endif
 Requires:	libvdpau%{?_isa} >= 1.5
 %if %{with vdpau}
 %if %{with gallium_nouveau}
@@ -1265,14 +1270,15 @@ export RUSTFLAGS="%{rpmrustflags} --target=%rust_target"
 	-Dgallium-vdpau=%{__enabled_disabled vdpau} \
 	-Dgallium-xa=%{__enabled_disabled xa} \
 	-Dgbm=%{__enabled_disabled gbm} \
-	-Dgles1=enabled \
-	-Dgles2=enabled \
+	-Dgles1=%{__enabled_disabled opengl} \
+	-Dgles2=%{__enabled_disabled opengl} \
 	-Dglvnd=%{__enabled_disabled glvnd} \
 	-Dintel-rt=%{__enabled_disabled intel_rt} \
 	-Dlibunwind=enabled \
 	-Dllvm=enabled \
 	-Dlmsensors=%{__enabled_disabled lm_sensors} \
 	-Dmicrosoft-clc=disabled \
+	-Dopengl=%{__true_false opengl} \
 	-Dosmesa=true \
 	-Dplatforms=x11%{?with_wayland:,wayland} \
 	-Dshader-cache=enabled \
@@ -1304,7 +1310,7 @@ rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT%{_libdir}/gbm
 %endif
 
-%if %{without glvnd}
+%if %{with opengl} && %{without glvnd}
 # remove "OS ABI: Linux 2.4.20" tag, so private copies (nvidia or fglrx),
 # set up via /etc/ld.so.conf.d/*.conf will be preferred over this
 strip -R .note.ABI-tag $RPM_BUILD_ROOT%{_libdir}/libGL.so.*.*
@@ -1368,6 +1374,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/EGL/eglmesaext.h
 %endif
 
+%if %{with opengl}
 %files libGL
 %defattr(644,root,root,755)
 %doc docs/{*.rst,README.UVD,features.txt,relnotes/*.rst}
@@ -1417,6 +1424,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/glesv1_cm.pc
 %{_pkgconfigdir}/glesv2.pc
 %endif
+%endif
 
 %if %{with opencl}
 %if %{with gallium_rusticl}
@@ -1451,9 +1459,11 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %endif
 
+%if %{with opengl}
 %files libgallium
 %defattr(644,root,root,755)
 %{_libdir}/libgallium-%{version}.so
+%endif
 
 %if %{with gbm}
 %files libgbm
@@ -1496,11 +1506,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/KHR/khrplatform.h
 %endif
 
+%if %{with opengl}
 %files dri-devel
 %defattr(644,root,root,755)
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
 %{_pkgconfigdir}/dri.pc
+%endif
 
 ### drivers: d3d
 
@@ -1664,6 +1676,10 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with va}
 %files -n libva-driver-gallium
 %defattr(644,root,root,755)
+%if %{without opengl}
+%{_libdir}/libva/dri/gallium_drv_video.so
+%endif
+# symlinks to libgallium or gallium_drv_video
 %if %{with gallium_radeon}
 %{_libdir}/libva/dri/r600_drv_video.so
 %{_libdir}/libva/dri/radeonsi_drv_video.so
@@ -1679,6 +1695,10 @@ rm -rf $RPM_BUILD_ROOT
 # ldconfig is not used in vdpau tree, so package all symlinks
 %files -n libvdpau-driver-gallium
 %defattr(644,root,root,755)
+%if %{without opengl}
+%{_libdir}/vdpau/libvdpau_gallium.so.1.0.0
+%endif
+# symlinks to libgallium or libgdpau_gallium
 %if %{with gallium_nouveau}
 %{_libdir}/vdpau/libvdpau_nouveau.so.1.0.0
 %{_libdir}/vdpau/libvdpau_nouveau.so.1.0
