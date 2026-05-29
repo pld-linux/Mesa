@@ -988,20 +988,20 @@ rm -rf $RPM_BUILD_ROOT
 %files libEGL
 %defattr(644,root,root,755)
 %if %{with glvnd}
-%attr(755,root,root) %{_libdir}/libEGL_mesa.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libEGL_mesa.so.0
+%{_libdir}/libEGL_mesa.so.*.*
+%ghost %{_libdir}/libEGL_mesa.so.0
 %{_datadir}/glvnd/egl_vendor.d/50_mesa.json
 %else
-%attr(755,root,root) %{_libdir}/libEGL.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libEGL.so.1
+%{_libdir}/libEGL.so.*.*
+%ghost %{_libdir}/libEGL.so.1
 %endif
 
 %files libEGL-devel
 %defattr(644,root,root,755)
 %if %{with glvnd}
-%attr(755,root,root) %{_libdir}/libEGL_mesa.so
+%{_libdir}/libEGL_mesa.so
 %else
-%attr(755,root,root) %{_libdir}/libEGL.so
+%{_libdir}/libEGL.so
 %dir %{_includedir}/EGL
 %{_includedir}/EGL/egl.h
 %{_includedir}/EGL/eglext.h
@@ -1016,15 +1016,15 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc docs/{*.rst,README.UVD,features.txt,relnotes/*.rst}
 %if %{with glvnd}
-%attr(755,root,root) %{_libdir}/libGLX_mesa.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libGLX_mesa.so.0
-%attr(755,root,root) %{_libdir}/libGLX_mesa.so
+%{_libdir}/libGLX_mesa.so.*.*
+%ghost %{_libdir}/libGLX_mesa.so.0
+%{_libdir}/libGLX_mesa.so
 %else
-%attr(755,root,root) %{_libdir}/libGL.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libGL.so.1
+%{_libdir}/libGL.so.*.*
+%ghost %{_libdir}/libGL.so.1
 # symlink for binary apps which fail to conform Linux OpenGL ABI
 # (and dlopen libGL.so instead of libGL.so.1; the same does Mesa libEGL)
-%attr(755,root,root) %{_libdir}/libGL.so
+%{_libdir}/libGL.so
 %endif
 %{_datadir}/drirc.d
 
@@ -1044,17 +1044,17 @@ rm -rf $RPM_BUILD_ROOT
 %files libGLES
 %defattr(644,root,root,755)
 %if %{without glvnd}
-%attr(755,root,root) %{_libdir}/libGLESv1_CM.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libGLESv1_CM.so.1
-%attr(755,root,root) %{_libdir}/libGLESv2.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libGLESv2.so.2
+%{_libdir}/libGLESv1_CM.so.*.*.*
+%ghost %{_libdir}/libGLESv1_CM.so.1
+%{_libdir}/libGLESv2.so.*.*
+%ghost %{_libdir}/libGLESv2.so.2
 %endif
 
 %files libGLES-devel
 %defattr(644,root,root,755)
 %if %{without glvnd}
-%attr(755,root,root) %{_libdir}/libGLESv1_CM.so
-%attr(755,root,root) %{_libdir}/libGLESv2.so
+%{_libdir}/libGLESv1_CM.so
+%{_libdir}/libGLESv2.so
 %{_includedir}/GLES
 %{_includedir}/GLES2
 %{_includedir}/GLES3
@@ -1066,29 +1066,29 @@ rm -rf $RPM_BUILD_ROOT
 %files Rusticl-icd
 %defattr(644,root,root,755)
 /etc/OpenCL/vendors/rusticl.icd
-%attr(755,root,root) %{_libdir}/libRusticlOpenCL.so
-%attr(755,root,root) %{_libdir}/libRusticlOpenCL.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libRusticlOpenCL.so.1
+%{_libdir}/libRusticlOpenCL.so
+%{_libdir}/libRusticlOpenCL.so.*.*.*
+%ghost %{_libdir}/libRusticlOpenCL.so.1
 %endif
 
 %files libgallium
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libgallium-%{version}.so
+%{_libdir}/libgallium-%{version}.so
 
 %if %{with gbm}
 %files libgbm
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libgbm.so.*.*
-%attr(755,root,root) %ghost %{_libdir}/libgbm.so.1
+%{_libdir}/libgbm.so.*.*
+%ghost %{_libdir}/libgbm.so.1
 %dir %{_libdir}/gbm
 
 %files libgbm-backend-dri
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/gbm/dri_gbm.so
+%{_libdir}/gbm/dri_gbm.so
 
 %files libgbm-devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libgbm.so
+%{_libdir}/libgbm.so
 %{_includedir}/gbm.h
 %{_includedir}/gbm_backend_abi.h
 %{_pkgconfigdir}/gbm.pc
@@ -1110,82 +1110,82 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium}
 %files dri-driver
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/libdril_dri.so
+%{_libdir}/xorg/modules/dri/libdril_dri.so
 # symlinks to libdril_dri
 %ifarch %{ix86} %{x8664} x32
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/crocus_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/iris_dri.so
+%{_libdir}/xorg/modules/dri/crocus_dri.so
+%{_libdir}/xorg/modules/dri/i915_dri.so
+%{_libdir}/xorg/modules/dri/iris_dri.so
 %endif
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/kms_swrast_dri.so
+%{_libdir}/xorg/modules/dri/kms_swrast_dri.so
 %if %{with gallium_nouveau}
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
+%{_libdir}/xorg/modules/dri/nouveau_dri.so
 %endif
 %if %{with gallium_radeon}
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/r300_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/r600_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/radeonsi_dri.so
+%{_libdir}/xorg/modules/dri/r300_dri.so
+%{_libdir}/xorg/modules/dri/r600_dri.so
+%{_libdir}/xorg/modules/dri/radeonsi_dri.so
 %endif
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
+%{_libdir}/xorg/modules/dri/swrast_dri.so
 %if %{with gallium_zink}
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/zink_dri.so
+%{_libdir}/xorg/modules/dri/zink_dri.so
 %endif
 %ifarch %{arm} aarch64
 %ifarch aarch64
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/asahi_dri.so
+%{_libdir}/xorg/modules/dri/asahi_dri.so
 %endif
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/etnaviv_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/kgsl_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/msm_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/apple_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/armada-drm_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/exynos_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/gm12u320_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/hdlcd_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/hx8357d_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/ili9163_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/ili9225_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/ili9341_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/ili9486_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/imx-dcss_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/imx-drm_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/imx-lcdif_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/ingenic-drm_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/kirin_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/komeda_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/mali-dp_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/mcde_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/mediatek_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/meson_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/mi0283qt_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/mxsfb-drm_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/panel-mipi-dbi_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/pl111_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/rcar-du_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/repaper_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/rockchip_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/rzg2l-du_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/ssd130x_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/st7586_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/st7735r_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/sti_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/stm_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/sun4i-drm_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/udl_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/vkms_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/zynqmp-dpsub_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/lima_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/panfrost_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/panthor_dri.so
+%{_libdir}/xorg/modules/dri/etnaviv_dri.so
+%{_libdir}/xorg/modules/dri/kgsl_dri.so
+%{_libdir}/xorg/modules/dri/msm_dri.so
+%{_libdir}/xorg/modules/dri/apple_dri.so
+%{_libdir}/xorg/modules/dri/armada-drm_dri.so
+%{_libdir}/xorg/modules/dri/exynos_dri.so
+%{_libdir}/xorg/modules/dri/gm12u320_dri.so
+%{_libdir}/xorg/modules/dri/hdlcd_dri.so
+%{_libdir}/xorg/modules/dri/hx8357d_dri.so
+%{_libdir}/xorg/modules/dri/ili9163_dri.so
+%{_libdir}/xorg/modules/dri/ili9225_dri.so
+%{_libdir}/xorg/modules/dri/ili9341_dri.so
+%{_libdir}/xorg/modules/dri/ili9486_dri.so
+%{_libdir}/xorg/modules/dri/imx-dcss_dri.so
+%{_libdir}/xorg/modules/dri/imx-drm_dri.so
+%{_libdir}/xorg/modules/dri/imx-lcdif_dri.so
+%{_libdir}/xorg/modules/dri/ingenic-drm_dri.so
+%{_libdir}/xorg/modules/dri/kirin_dri.so
+%{_libdir}/xorg/modules/dri/komeda_dri.so
+%{_libdir}/xorg/modules/dri/mali-dp_dri.so
+%{_libdir}/xorg/modules/dri/mcde_dri.so
+%{_libdir}/xorg/modules/dri/mediatek_dri.so
+%{_libdir}/xorg/modules/dri/meson_dri.so
+%{_libdir}/xorg/modules/dri/mi0283qt_dri.so
+%{_libdir}/xorg/modules/dri/mxsfb-drm_dri.so
+%{_libdir}/xorg/modules/dri/panel-mipi-dbi_dri.so
+%{_libdir}/xorg/modules/dri/pl111_dri.so
+%{_libdir}/xorg/modules/dri/rcar-du_dri.so
+%{_libdir}/xorg/modules/dri/repaper_dri.so
+%{_libdir}/xorg/modules/dri/rockchip_dri.so
+%{_libdir}/xorg/modules/dri/rzg2l-du_dri.so
+%{_libdir}/xorg/modules/dri/ssd130x_dri.so
+%{_libdir}/xorg/modules/dri/st7586_dri.so
+%{_libdir}/xorg/modules/dri/st7735r_dri.so
+%{_libdir}/xorg/modules/dri/sti_dri.so
+%{_libdir}/xorg/modules/dri/stm_dri.so
+%{_libdir}/xorg/modules/dri/sun4i-drm_dri.so
+%{_libdir}/xorg/modules/dri/udl_dri.so
+%{_libdir}/xorg/modules/dri/vkms_dri.so
+%{_libdir}/xorg/modules/dri/zynqmp-dpsub_dri.so
+%{_libdir}/xorg/modules/dri/lima_dri.so
+%{_libdir}/xorg/modules/dri/panfrost_dri.so
+%{_libdir}/xorg/modules/dri/panthor_dri.so
 %if %{with gallium_nouveau}
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/tegra_dri.so
+%{_libdir}/xorg/modules/dri/tegra_dri.so
 %endif
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/v3d_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/vc4_dri.so
+%{_libdir}/xorg/modules/dri/v3d_dri.so
+%{_libdir}/xorg/modules/dri/vc4_dri.so
 %endif
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/virtio_gpu_dri.so
+%{_libdir}/xorg/modules/dri/virtio_gpu_dri.so
 %ifarch %{ix86} %{x8664} x32
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/vmwgfx_dri.so
+%{_libdir}/xorg/modules/dri/vmwgfx_dri.so
 %endif
 %endif
 
@@ -1195,13 +1195,13 @@ rm -rf $RPM_BUILD_ROOT
 %files -n libva-driver-gallium
 %defattr(644,root,root,755)
 %if %{with gallium_radeon}
-%attr(755,root,root) %{_libdir}/libva/dri/r600_drv_video.so
-%attr(755,root,root) %{_libdir}/libva/dri/radeonsi_drv_video.so
+%{_libdir}/libva/dri/r600_drv_video.so
+%{_libdir}/libva/dri/radeonsi_drv_video.so
 %endif
 %if %{with gallium_nouveau}
-%attr(755,root,root) %{_libdir}/libva/dri/nouveau_drv_video.so
+%{_libdir}/libva/dri/nouveau_drv_video.so
 %endif
-%attr(755,root,root) %{_libdir}/libva/dri/virtio_gpu_drv_video.so
+%{_libdir}/libva/dri/virtio_gpu_drv_video.so
 %endif
 
 ### drivers: vulkan
@@ -1211,61 +1211,61 @@ rm -rf $RPM_BUILD_ROOT
 %ifarch aarch64
 %files vulkan-icd-asahi
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libvulkan_asahi.so
+%{_libdir}/libvulkan_asahi.so
 %{_datadir}/vulkan/icd.d/asahi_icd.*.json
 %endif
 
 %files vulkan-icd-broadcom
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libvulkan_broadcom.so
+%{_libdir}/libvulkan_broadcom.so
 %{_datadir}/vulkan/icd.d/broadcom_icd.*.json
 
 %files vulkan-icd-freedreno
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libvulkan_freedreno.so
+%{_libdir}/libvulkan_freedreno.so
 %{_datadir}/vulkan/icd.d/freedreno_icd.*.json
 
 %files vulkan-icd-panfrost
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libvulkan_panfrost.so
+%{_libdir}/libvulkan_panfrost.so
 %{_datadir}/vulkan/icd.d/panfrost_icd.*.json
 
 %files vulkan-icd-powervr
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libvulkan_powervr_mesa.so
+%{_libdir}/libvulkan_powervr_mesa.so
 %{_datadir}/vulkan/icd.d/powervr_mesa_icd.*.json
 %endif
 
 %ifarch %{ix86} %{x8664} x32
 %files vulkan-icd-intel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libvulkan_intel.so
-%attr(755,root,root) %{_libdir}/libvulkan_intel_hasvk.so
+%{_libdir}/libvulkan_intel.so
+%{_libdir}/libvulkan_intel_hasvk.so
 %{_datadir}/vulkan/icd.d/intel_icd.*.json
 %{_datadir}/vulkan/icd.d/intel_hasvk_icd.*.json
 %endif
 
 %files vulkan-icd-lavapipe
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libvulkan_lvp.so
+%{_libdir}/libvulkan_lvp.so
 %{_datadir}/vulkan/icd.d/lvp_icd.*.json
 
 %if %{with nvk}
 %files vulkan-icd-nouveau
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libvulkan_nouveau.so
+%{_libdir}/libvulkan_nouveau.so
 %{_datadir}/vulkan/icd.d/nouveau_icd.*.json
 %endif
 
 %if %{with radv}
 %files vulkan-icd-radeon
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libvulkan_radeon.so
+%{_libdir}/libvulkan_radeon.so
 %{_datadir}/vulkan/icd.d/radeon_icd.*.json
 %endif
 
 %files vulkan-icd-virtio
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libvulkan_virtio.so
+%{_libdir}/libvulkan_virtio.so
 %{_datadir}/vulkan/icd.d/virtio_icd.*.json
 %endif
