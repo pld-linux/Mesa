@@ -1107,30 +1107,29 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/internal/dri_interface.h
 %{_pkgconfigdir}/dri.pc
 
+%if %{with gallium}
 %files dri-driver
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/libdril_dri.so
+# symlinks to libdril_dri
+%ifarch %{ix86} %{x8664} x32
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/crocus_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/iris_dri.so
+%endif
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/kms_swrast_dri.so
+%if %{with gallium_nouveau}
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
+%endif
 %if %{with gallium_radeon}
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/r300_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/r600_dri.so
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/radeonsi_dri.so
 %endif
-%ifarch %{ix86} %{x8664} x32
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/i915_dri.so
-%if %{with gallium}
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/crocus_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/iris_dri.so
-%endif
-%endif
-%if %{with gallium_nouveau}
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/nouveau_dri.so
-%endif
+%attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
 %if %{with gallium_zink}
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/zink_dri.so
 %endif
-%if %{with gallium}
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/kms_swrast_dri.so
-%attr(755,root,root) %{_libdir}/xorg/modules/dri/swrast_dri.so
 %ifarch %{arm} aarch64
 %ifarch aarch64
 %attr(755,root,root) %{_libdir}/xorg/modules/dri/asahi_dri.so
