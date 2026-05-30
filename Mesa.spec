@@ -953,7 +953,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %meson_install
 
+%if %{with gbm}
 install -d $RPM_BUILD_ROOT%{_libdir}/gbm
+%endif
 
 %if %{without glvnd}
 # remove "OS ABI: Linux 2.4.20" tag, so private copies (nvidia or fglrx),
