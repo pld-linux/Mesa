@@ -17,7 +17,7 @@
 %bcond_without	vulkan		# Vulkan drivers
 %bcond_without	nvk		# nvidia Vulkan driver
 %bcond_without	radv		# radeon Vulkan driver
-%bcond_without	intel_rt	# Intel Ray Tracing support
+%bcond_without	intel_rt	# Intel Ray Tracing support (for Vulkan)
 %bcond_with	sse2		# SSE2 instructions
 %bcond_with	hud_extra	# HUD block/NIC I/O HUD stats support
 %bcond_with	lm_sensors	# HUD lm_sensors support
