@@ -97,12 +97,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	26.1.4
+Version:	26.1.5
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	f6ada38a248179e38f562876b7680b91
+# Source0-md5:	43a3987f42b2a2229c496c0ceec6de4d
 Source1:	https://crates.io/api/v1/crates/syn/%{syn_crate_ver}/download?/syn-%{syn_crate_ver}.tar.gz
 # Source1-md5:	112875c142d1023400b0262ea1996de0
 Source2:	https://crates.io/api/v1/crates/unicode-ident/%{unicode_ident_crate_ver}/download?/unicode-ident-%{unicode_ident_crate_ver}.tar.gz
