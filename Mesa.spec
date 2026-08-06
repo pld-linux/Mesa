@@ -22,6 +22,7 @@
 %bcond_with	hud_extra	# HUD block/NIC I/O HUD stats support
 %bcond_with	lm_sensors	# HUD lm_sensors support
 %bcond_with	tests		# tests
+%bcond_with	panfrost_rust	# experimental panfrost compiler
 
 %define		syn_crate_ver		2.0.87
 %define		unicode_ident_crate_ver	1.0.12
@@ -40,7 +41,7 @@
 # (until they start to be somehow versioned themselves)
 %define		glapi_ver		7.1.0
 # other packages
-%define		libdrm_ver		2.4.121
+%define		libdrm_ver		2.4.133
 %define		dri2proto_ver		2.8
 %define		glproto_ver		1.4.14
 %define		zlib_ver		1.2.8
@@ -97,12 +98,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	26.1.6
+Version:	26.2.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	1b93168f43f809525503263939caa9f6
+# Source0-md5:	3636b86809bf94f45a50da43a7908ef7
 Source1:	https://crates.io/api/v1/crates/syn/%{syn_crate_ver}/download?/syn-%{syn_crate_ver}.tar.gz
 # Source1-md5:	112875c142d1023400b0262ea1996de0
 Source2:	https://crates.io/api/v1/crates/unicode-ident/%{unicode_ident_crate_ver}/download?/unicode-ident-%{unicode_ident_crate_ver}.tar.gz
@@ -164,8 +165,8 @@ BuildRequires:	python3-PyYAML
 BuildRequires:	python3-pycparser >= 2.20
 %endif
 BuildRequires:	rpmbuild(macros) >= 2.050
-%if %{with gallium_rusticl} || %{with nvk}
-BuildRequires:	rust >= 1.82.0
+%if %{with gallium_rusticl} || %{with nvk} || %{with panfrost_rust}
+BuildRequires:	rust >= 1.85.0
 %endif
 %if %{with gallium_rusticl} || %{with nvk}
 BuildRequires:	rust-bindgen >= 0.72.1
