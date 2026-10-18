@@ -942,7 +942,7 @@ r300 r600 radeonsi \
 %{?with_gallium_lima:lima} \
 %{?with_gallium_panfrost:panfrost} \
 %{?with_gallium_rocket:rocket} \
-%{?with_gallium_nouveau:tegra} \
+%{?with_gallium_tegra:tegra} \
 %{?with_gallium_v3d:v3d} \
 %{?with_gallium_vc3:vc4} \
 "
