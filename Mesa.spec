@@ -2,27 +2,39 @@
 # - bcond for perfetto peformance analysis? (BR: perfetto)
 #
 # Conditional build:
-%bcond_without	gallium		# gallium drivers
-%bcond_without	gallium_i915	# gallium i915 driver
-%bcond_without	gallium_nouveau	# gallium nouveau driver
-%bcond_without	gallium_radeon	# gallium radeon drivers
-%bcond_without	gallium_rusticl	# gallium OpenCL frontend
-%bcond_without	gallium_zink	# gallium zink driver (based on vulkan)
-%bcond_without	egl		# EGL libraries
-%bcond_without	opengl		# OpenGL (desktop/ES) and DRI libraries
-%bcond_without	gbm		# Graphics Buffer Manager
-%bcond_without	glvnd		# OpenGL vendor neutral dispatcher support
-%bcond_without	va		# VA library
-%bcond_without	wayland		# Wayland EGL
-%bcond_without	vulkan		# Vulkan drivers
-%bcond_without	nvk		# nvidia Vulkan driver
-%bcond_without	radv		# radeon Vulkan driver
-%bcond_without	intel_rt	# Intel Ray Tracing support (for Vulkan)
-%bcond_with	sse2		# SSE2 instructions
-%bcond_with	hud_extra	# HUD block/NIC I/O HUD stats support
-%bcond_with	lm_sensors	# HUD lm_sensors support
-%bcond_with	tests		# tests
-%bcond_with	panfrost_rust	# experimental panfrost compiler
+%bcond_without	gallium			# gallium drivers
+%bcond_without	gallium_asahi		# gallium asahi driver (aarch64 only)
+%bcond_without	gallium_ethosu		# gallium ethosu driver (arm only)
+%bcond_without	gallium_etvaviv		# gallium etnaviv driver (arm only)
+%bcond_without	gallium_freedreno	# gallium freedreno drivers (arm only)
+%bcond_without	gallium_i915		# gallium i915 driver
+%bcond_without	gallium_intel		# gallium intel drivers (crocus, i915, iris; x86 only)
+%bcond_without	gallium_lima		# gallium lima driver (arm only)
+%bcond_without	gallium_nouveau		# gallium nouveau driver (including tegra on arm)
+%bcond_without	gallium_panfrost	# gallium panfrost drivers (panfrost, panthor; arm only)
+%bcond_without	gallium_radeon		# gallium radeon drivers
+%bcond_without	gallium_rocket		# gallium rocket driver (arm only)
+%bcond_without	gallium_tegra		# gallium tegra driver (arm only, requires nouveau)
+%bcond_without	gallium_v3d		# gallium v3d driver (arm only)
+%bcond_without	gallium_vc4		# gallium vc4 driver (arm only)
+%bcond_without	gallium_vmwgfx		# gallium vmwgfx driver (x86 only)
+%bcond_without	gallium_zink		# gallium zink driver (based on vulkan)
+%bcond_without	gallium_rusticl		# gallium OpenCL frontend
+%bcond_without	egl			# EGL libraries
+%bcond_without	opengl			# OpenGL (desktop/ES) and DRI libraries
+%bcond_without	gbm			# Graphics Buffer Manager
+%bcond_without	glvnd			# OpenGL vendor neutral dispatcher support
+%bcond_without	va			# VA library
+%bcond_without	wayland			# Wayland EGL
+%bcond_without	vulkan			# Vulkan drivers
+%bcond_without	nvk			# nvidia Vulkan driver
+%bcond_without	radv			# radeon Vulkan driver
+%bcond_without	intel_rt		# Intel Ray Tracing support (for Vulkan)
+%bcond_with	sse2			# SSE2 instructions
+%bcond_with	hud_extra		# HUD block/NIC I/O HUD stats support
+%bcond_with	lm_sensors		# HUD lm_sensors support
+%bcond_with	tests			# tests
+%bcond_with	panfrost_rust		# experimental panfrost compiler
 
 %define		syn_crate_ver		2.0.87
 %define		unicode_ident_crate_ver	1.0.12
@@ -51,12 +63,44 @@
 %define		gcc_ver 		6:8
 %define		libdisplay_info_ver	0.1.1
 
+%ifnarch %{ix86} %{x8664} x32
+%undefine	with_gallium_intel
+%endif
+%ifnarch %{arm} aarch64
+%undefine	with_gallium_ethosu
+%undefine	with_gallium_etnaviv
+%undefine	with_gallium_freedreno
+%undefine	with_gallium_lima
+%undefine	with_gallium_panfrost
+%undefine	with_gallium_rocket
+%undefine	with_gallium_tegra
+%undefine	with_gallium_v3d
+%undefine	with_gallium_vc4
+%endif
+%ifnarch aarch64
+%undefine	with_gallium_asahi
+%endif
 %if %{without gallium}
-%undefine	with_gallium_i915
+%undefine	with_gallium_asahi
+%undefine	with_gallium_ethosu
+%undefine	with_gallium_etnaviv
+%undefine	with_gallium_freedreno
+%undefine	with_gallium_intel
+%undefine	with_gallium_lima
 %undefine	with_gallium_nouveau
+%undefine	with_gallium_panfrost
 %undefine	with_gallium_radeon
+%undefine	with_gallium_rocket
 %undefine	with_gallium_rusticl
+%undefine	with_gallium_v3d
+%undefine	with_gallium_vc4
 %undefine	with_va
+%endif
+%if %{without gallium_intel}
+%undefine	with_gallium_i915
+%endif
+%if %{without gallium_nouveau}
+%undefine	with_gallium_tegra
 %endif
 
 %if %{without vulkan}
@@ -76,6 +120,12 @@
 
 %ifarch %{ix86} %{x8664} x32
 %define		with_intel_vk	1
+%endif
+%ifarch %{arm} aarch64
+%define		with_gallium_kmsro	1
+%endif
+%ifarch aarch64
+%define		with_gallum_asahi	1
 %endif
 
 %ifnarch %{arch64}
@@ -540,31 +590,47 @@ Provides:	Mesa-dri-driver-ati-radeon-R300 = %{version}
 Provides:	Mesa-dri-driver-ati-radeon-R600 = %{version}
 Provides:	Mesa-dri-driver-ati-radeon-SI = %{version}
 %endif
+%if %{with gallium_intel}
 Provides:	Mesa-dri-driver-intel-crocus = %{version}
 %if %{with gallium_i915}
 Provides:	Mesa-dri-driver-intel-i915 = %{version}
 %endif
 Provides:	Mesa-dri-driver-intel-iris = %{version}
+%endif
 %if %{with gallium_nouveau}
 Provides:	Mesa-dri-driver-nouveau = %{version}
 %endif
 Provides:	Mesa-dri-driver-swrast = %{version}
 Provides:	Mesa-dri-driver-virgl = %{version}
+%if %{with gallium_vmfgfx}
 Provides:	Mesa-dri-driver-vmwgfx = %{version}
+%endif
 %if %{with gallium_zink}
 Provides:	Mesa-dri-driver-zink = %{version}
 %endif
-%ifarch %{arm} aarch64
+%if %{with gallium_etnaviv}
 Provides:	Mesa-dri-driver-etnaviv = %{version}
+%endif
+%if %{with gallium_freedreno}
 Provides:	Mesa-dri-driver-freedreno = %{version}
+%endif
+%if %{with gallium_kmsro}
 Provides:	Mesa-dri-driver-kmsro = %{version}
+%endif
+%if %{with gallium_lima}
 Provides:	Mesa-dri-driver-lima = %{version}
+%endif
+%if %{with gallium_panfrost}
 Provides:	Mesa-dri-driver-panfrost = %{version}
 Provides:	Mesa-dri-driver-panthor = %{version}
-%if %{with gallium_nouveau}
+%endif
+%if %{with gallium_tegra}
 Provides:	Mesa-dri-driver-tegra = %{version}
 %endif
+%if %{with gallium_v3d}
 Provides:	Mesa-dri-driver-v3d = %{version}
+%endif
+%if %{with gallium_vc4}
 Provides:	Mesa-dri-driver-vc4 = %{version}
 %endif
 Obsoletes:	Mesa-dri-driver-ati-radeon-R300 < 24.2.0
@@ -861,29 +927,24 @@ cp -p %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} %{SOURCE5} %{SOURCE6} subproje
 
 %build
 gallium_drivers="virgl llvmpipe softpipe %{?with_gallium_zink:zink} \
-%ifarch %{ix86} %{x8664} x32
-svga iris %{?with_gallium_i915:i915} crocus \
+%{?with_gallium_vmwgfx:svga} \
+%if %{with gallium_intel}
+iris %{?with_gallium_i915:i915} crocus \
 %endif
 %if %{with gallium_radeon}
 r300 r600 radeonsi \
 %endif
-%if %{with gallium_nouveau}
-nouveau
-%endif
-%ifarch %{arm} aarch64
-%ifarch aarch64
-asahi
-%endif
-ethosu \
-etnaviv \
-freedreno \
-lima \
-panfrost \
-rocket \
+%{?with_gallium_nouveau:nouveau} \
+%{?with_gallium_asahi:asahi} \
+%{?with_gallium_ethosu:ethosu} \
+%{?with_gallium_etnaviv:etnaviv} \
+%{?with_gallium_freedreno:freedreno} \
+%{?with_gallium_lima:lima} \
+%{?with_gallium_panfrost:panfrost} \
+%{?with_gallium_rocket:rocket} \
 %{?with_gallium_nouveau:tegra} \
-v3d \
-vc4 \
-%endif
+%{?with_gallium_v3d:v3d} \
+%{?with_gallium_vc3:vc4} \
 "
 
 gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
@@ -957,6 +1018,11 @@ export RUSTFLAGS="%{rpmrustflags} --target=%rust_target"
 rm -rf $RPM_BUILD_ROOT
 
 %meson_install
+
+%if %{with gallium} && %{without gallium_kmsro}
+# symlinks created also on !ARM archs
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/xorg/modules/dri/{apple,armada-drm,exynos,gm12u320,hdlcd,hx8357d,ili9163,ili9225,ili9341,ili9486,imx-dcss,imx-drm,imx-lcdif,ingenic-drm,kirin,komeda,mali-dp,mcde,mediatek,meson,mi0283qt,mxsfb-drm,panel-mipi-dbi,pl111,rcar-du,repaper,rockchip,rzg2l-du,ssd130x,st7586,st7735r,sti,stm,sun4i-drm,udl,vkms,zynqmp-dpsub}_dri.so
+%endif
 
 %if %{with gbm}
 install -d $RPM_BUILD_ROOT%{_libdir}/gbm
@@ -1123,9 +1189,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %{_libdir}/xorg/modules/dri/libdril_dri.so
 # symlinks to libdril_dri
-%ifarch %{ix86} %{x8664} x32
+%if %{with gallium_intel}
 %{_libdir}/xorg/modules/dri/crocus_dri.so
+%if %{with gallium_i915}
 %{_libdir}/xorg/modules/dri/i915_dri.so
+%endif
 %{_libdir}/xorg/modules/dri/iris_dri.so
 %endif
 %{_libdir}/xorg/modules/dri/kms_swrast_dri.so
@@ -1141,13 +1209,17 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gallium_zink}
 %{_libdir}/xorg/modules/dri/zink_dri.so
 %endif
-%ifarch %{arm} aarch64
-%ifarch aarch64
+%if %{with gallium_asahi}
 %{_libdir}/xorg/modules/dri/asahi_dri.so
 %endif
+%if %{with gallium_etnaviv}
 %{_libdir}/xorg/modules/dri/etnaviv_dri.so
+%endif
+%if %{with gallium_freedreno}
 %{_libdir}/xorg/modules/dri/kgsl_dri.so
 %{_libdir}/xorg/modules/dri/msm_dri.so
+%endif
+%if %{with gallium_kmsro}
 %{_libdir}/xorg/modules/dri/apple_dri.so
 %{_libdir}/xorg/modules/dri/armada-drm_dri.so
 %{_libdir}/xorg/modules/dri/exynos_dri.so
@@ -1185,17 +1257,25 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/xorg/modules/dri/udl_dri.so
 %{_libdir}/xorg/modules/dri/vkms_dri.so
 %{_libdir}/xorg/modules/dri/zynqmp-dpsub_dri.so
+%endif
+%if %{with gallium_lima}
 %{_libdir}/xorg/modules/dri/lima_dri.so
+%endif
+%if %{with gallium_panfrost}
 %{_libdir}/xorg/modules/dri/panfrost_dri.so
 %{_libdir}/xorg/modules/dri/panthor_dri.so
-%if %{with gallium_nouveau}
+%endif
+%if %{with gallium_tegra}
 %{_libdir}/xorg/modules/dri/tegra_dri.so
 %endif
+%if %{with gallium_v3d}
 %{_libdir}/xorg/modules/dri/v3d_dri.so
+%endif
+%if %{with gallium_vc4}
 %{_libdir}/xorg/modules/dri/vc4_dri.so
 %endif
 %{_libdir}/xorg/modules/dri/virtio_gpu_dri.so
-%ifarch %{ix86} %{x8664} x32
+%if %{with gallium_vmwgfx}
 %{_libdir}/xorg/modules/dri/vmwgfx_dri.so
 %endif
 %endif
