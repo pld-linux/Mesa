@@ -944,7 +944,7 @@ r300 r600 radeonsi \
 %{?with_gallium_rocket:rocket} \
 %{?with_gallium_tegra:tegra} \
 %{?with_gallium_v3d:v3d} \
-%{?with_gallium_vc3:vc4} \
+%{?with_gallium_vc4:vc4} \
 "
 
 gallium_drivers=$(echo $gallium_drivers | xargs | tr ' ' ',')
