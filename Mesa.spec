@@ -148,12 +148,12 @@
 Summary:	Free OpenGL implementation
 Summary(pl.UTF-8):	Wolnodostępna implementacja standardu OpenGL
 Name:		Mesa
-Version:	26.2.7
+Version:	26.3.0
 Release:	1
 License:	MIT (core) and others - see license.html file
 Group:		X11/Libraries
 Source0:	https://archive.mesa3d.org/mesa-%{version}.tar.xz
-# Source0-md5:	5e75712888682520864a443a3bf7b28d
+# Source0-md5:	ae1c3ef9c6a42eeafc04d969a43fd2cc
 Source1:	https://crates.io/api/v1/crates/syn/%{syn_crate_ver}/download?/syn-%{syn_crate_ver}.tar.gz
 # Source1-md5:	112875c142d1023400b0262ea1996de0
 Source2:	https://crates.io/api/v1/crates/unicode-ident/%{unicode_ident_crate_ver}/download?/unicode-ident-%{unicode_ident_crate_ver}.tar.gz
@@ -219,7 +219,7 @@ BuildRequires:	rpmbuild(macros) >= 2.050
 BuildRequires:	rust >= 1.85.0
 %endif
 %if %{with gallium_rusticl} || %{with nvk}
-BuildRequires:	rust-bindgen >= 0.72.1
+BuildRequires:	rust-bindgen >= 0.73.2
 %endif
 %{?with_nvk:BuildRequires:	rust-cbindgen >= 0.25}
 BuildRequires:	sed >= 4.0
@@ -228,9 +228,10 @@ BuildRequires:	spirv-tools-devel >= 2024.3
 %endif
 BuildRequires:	tar >= 1:1.22
 BuildRequires:	udev-devel
+BuildRequires:	venus-protocol
 # wayland-{client,server}
 %{?with_wayland:BuildRequires:	wayland-devel >= %{wayland_ver}}
-%{?with_wayland:BuildRequires:	wayland-protocols >= 1.41}
+%{?with_wayland:BuildRequires:	wayland-protocols >= 1.49}
 %{?with_wayland:BuildRequires:	wayland-egl-devel >= %{wayland_ver}}
 BuildRequires:	xcb-util-keysyms-devel
 BuildRequires:	xorg-lib-libX11-devel >= 1.6
